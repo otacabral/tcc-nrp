@@ -1,0 +1,27 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Dado publico - baixar da fonte, ver README
+instancias/
+avaliador/
+
+# Saidas geradas - exceto o consolidado, que e resultado do TCC
+resultados/*
+!resultados/consolidado.csv
+*.log
+*.lp
+*.mps
+*.sol
+
+# Sistema
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
