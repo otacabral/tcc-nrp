@@ -27,6 +27,8 @@ from pathlib import Path
 
 from lxml import etree
 
+from parser import descobrir_instancias
+
 RAIZ = Path(__file__).resolve().parents[1]
 DIR_INSTANCIAS = RAIZ / "instancias"
 XSD_ENTRADA = RAIZ / "docs" / "scheme_input.xsd"
@@ -34,7 +36,6 @@ CSV_INVENTARIO = RAIZ / "docs" / "inventario_instancias.csv"
 CSV_OPCIONAIS = RAIZ / "docs" / "uso_elementos_opcionais.csv"
 
 XS = "{http://www.w3.org/2001/XMLSchema}"
-LOTES_VALIDOS = ("early", "late", "hidden", "hint")
 DIAS_SEMANA = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
                "Saturday", "Sunday")  # indice = date.weekday()
 
@@ -59,60 +60,8 @@ RESTRICOES_CONTRATO = [
 ]
 
 
-# ---------------------------------------------------------------------------
-# 1. Descoberta
-# ---------------------------------------------------------------------------
-
-def descobrir(dir_instancias: Path) -> tuple[list[dict], list[str]]:
-    """Lista as instancias com track/lote derivados dos diretorios.
-
-    track = 1o nivel abaixo de instancias/; lote = 2o nivel. Subpasta com o
-    mesmo nome do track = lote "early"; as demais seguem <track>_<lote>_xml.
-    Niveis extras abaixo do 2o (ex.: sprint_hidden_xml/sprint_hidden_xml/)
-    sao tolerados. O lote tambem e derivado do nome do arquivo e as duas
-    leituras sao conferidas.
-    """
-    achados, avisos = [], []
-    for caminho in sorted(dir_instancias.rglob("*.xml")):
-        rel = caminho.relative_to(dir_instancias)
-        if "__MACOSX" in rel.parts or caminho.name.startswith("._"):
-            continue
-        if len(rel.parts) < 3:
-            avisos.append(f"fora da estrutura track/lote: {rel.as_posix()}")
-            continue
-
-        track, pasta_lote = rel.parts[0], rel.parts[1]
-        if pasta_lote == track:
-            lote = "early"
-        else:
-            lote = re.sub(rf"^{re.escape(track)}_", "", pasta_lote)
-            lote = re.sub(r"_xml$", "", lote)
-        if lote not in LOTES_VALIDOS:
-            avisos.append(f"lote desconhecido '{lote}': {rel.as_posix()}")
-
-        m = re.fullmatch(r"([a-z]+)(?:_([a-z]+))?(\d+)", caminho.stem)
-        if not m:
-            avisos.append(f"nome fora do padrao: {rel.as_posix()}")
-            numero, lote_nome, track_nome = "", "?", "?"
-        else:
-            track_nome, lote_nome, numero = m.group(1), m.group(2) or "early", m.group(3)
-        if (track_nome, lote_nome) != (track, lote):
-            avisos.append(f"pasta diz {track}/{lote}, nome diz "
-                          f"{track_nome}/{lote_nome}: {rel.as_posix()}")
-        if len(rel.parts) > 3:
-            avisos.append(f"nivel extra de diretorio (tolerado): {rel.as_posix()}")
-
-        achados.append({
-            "track": track,
-            "lote": lote,
-            "numero": numero,
-            # nome usado na literatura / Tabela 6 de Santos et al. (2016)
-            "nome_literatura": f"{track}_{lote}{numero}",
-            "arquivo": rel.as_posix(),
-            "_caminho": caminho,
-        })
-    return achados, avisos
-
+# A descoberta das instancias vive em parser.py (descobrir_instancias), para nao existir em
+# duas versoes. Regra: track = 1o nivel, lote = 2o nivel, subpasta igual ao track = early.
 
 # ---------------------------------------------------------------------------
 # 2. Validacao
@@ -388,7 +337,7 @@ def verificar(linhas: list[dict]) -> list[str]:
 
 def main() -> int:
     esquema = carregar_esquema(XSD_ENTRADA)
-    instancias, avisos_desc = descobrir(DIR_INSTANCIAS)
+    instancias, avisos_desc = descobrir_instancias(DIR_INSTANCIAS)
     print(f"{len(instancias)} instancias encontradas em {DIR_INSTANCIAS}")
     for a in avisos_desc:
         print(f"  aviso: {a}")
@@ -398,10 +347,10 @@ def main() -> int:
 
     linhas, colunas = [], []
     for inst in instancias:
-        doc = etree.parse(str(inst["_caminho"]))
+        doc = etree.parse(str(inst["caminho"]))
         ok, erros = validar(esquema, doc)
         dados, avisos = extrair(doc)
-        linha = {k: v for k, v in inst.items() if not k.startswith("_")}
+        linha = {k: v for k, v in inst.items() if k != "caminho"}
         linha.update({"xsd_valido": int(ok), "xsd_erros": erros})
         linha.update(dados)
         if dados["id_xml"] != Path(inst["arquivo"]).stem:

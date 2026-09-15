@@ -222,8 +222,31 @@ Pontos de atenção verificados nos arquivos originais e na documentação ofici
 ## 8. Stack
 
 - Python + Pyomo — camada de modelagem, independente do solver
-- HiGHS como solver padrão; CPLEX ou Gurobi se houver licença acadêmica institucional
-  (a troca não exige reescrever o modelo)
+- **Arranjo de solver, revisto em 2026-09-15.** A escolha original do HiGHS vinha do escopo
+  anterior do trabalho — uma interface de escalas para o hospital, em que solver livre era
+  requisito de distribuição. Com o escopo atual esse requisito caiu. O arranjo passa a ser:
+  - **desenvolvimento e validação no HiGHS**, que não exige licença. Conferir a função
+    objetivo contra o avaliador oficial funciona em qualquer escala viável, portanto não
+    depende de solver forte;
+  - **licença acadêmica de Gurobi ou CPLEX solicitada em paralelo**, por ser o item de prazo
+    mais incerto e o que menos depende do autor;
+  - **escolha do solver dos experimentos por medição, na semana 3**, comparando o tempo até
+    provar otimalidade em `long01` entre os solvers disponíveis. A escolha vira dado
+    reportável, não preferência;
+  - o solver é parâmetro da chamada, nunca do modelo: `appsi_highs`, `appsi_gurobi`,
+    `cplex_direct`. Trocar não exige reescrever nada.
+
+  Motivo de fundo: o valor ótimo não depende do solver, e as afirmações fortes do trabalho
+  (viabilidade, ótimo comprovado, distribuição da penalidade) também não. O que o solver
+  determina é **até que tamanho se consegue provar otimalidade** — e isso limita o quanto a
+  instância brasileira pode ser realista, já que o Experimento A projeta efetivo de 90 a 100
+  profissionais contra 49 do `long01`. O argumento para usar solver comercial é não ter de
+  encolher a instância brasileira para caber no solver.
+
+  Ressalvas a registrar no texto: resultado obtido em solver comercial exige licença para ser
+  reproduzido; e configurações comparadas entre si têm de usar o mesmo solver, pelo mesmo
+  motivo que usam os mesmos pesos. Cada linha de `resultados/consolidado.csv` registra solver
+  e versão.
 - Git para versionamento
 - Avaliador oficial da competição (Java) para validação
 

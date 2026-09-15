@@ -15,6 +15,12 @@ Sessao 1 - varredura
       (correcoes e regra de ativacao em DECISOES.md; P1 e P2 registradas em
       PROPOSTAS.md e validadas em 15/09)
 
+Fora de sessao, fazer assim que possivel
+- [ ] solicitar licenca academica de Gurobi ou CPLEX. Prazo incerto e nao
+      depende de mim; nada trava se nao sair. Atencao: a versao do gurobipy
+      instalada por pip vem com licenca limitada a modelos pequenos, que nao
+      resolve long01
+
 Sessao 2 - parser
 - [ ] src/instancia.py: dataclasses puras, sem Pyomo
 - [ ] src/parser.py: XML -> Instancia, respeitando on= e expandindo
@@ -37,6 +43,8 @@ Sessao 3 - encanamento
       cobrar penalidade dessa restricao ali, a leitura do booleano esta errada
 - [ ] resolver AlternativeSkillCategory: flag no codigo, duas rodadas contra
       long01 = 197, so uma bate -> entrada datada em DECISOES.md
+- [ ] medir tempo ate provar otimalidade em long01 nos solvers disponiveis e
+      escolher o dos experimentos -> entrada datada em DECISOES.md
 - [ ] MARCO: sprint01 = 56, long01 = 197
 - [ ] confirmacao independente: sprint02 = 58, long02 = 219
 - [ ] cobertura ampla: medium_late05 = 107. E o alvo que exercita fins de semana

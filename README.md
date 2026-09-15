@@ -5,6 +5,10 @@ instancias da First International Nurse Rostering Competition (2010).
 
 Stack: Python, Pyomo, HiGHS. Avaliador oficial em Java.
 
+O solver e parametro da chamada, nao do modelo. HiGHS e o padrao, por nao exigir
+licenca; Gurobi ou CPLEX entram nos experimentos se a licenca academica sair, sem
+reescrever o modelo. Ver CONTEXTO_PROJETO.md, secao 8.
+
 ## Estrutura
 
 - `src/` - codigo
