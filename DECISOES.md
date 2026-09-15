@@ -51,6 +51,9 @@ de modelo, não de leitura.
 Nota adicional: o formato já prever ativação por restrição é argumento a favor do
 experimento de variantes — ligar e desligar regra é mecanismo nativo do benchmark.
 
+Ampliado em 2026-09-15: o `on=` sozinho não cobre todos os casos presentes nos arquivos.
+Ver a entrada "Regra geral de ativação de restrição flexível".
+
 ---
 
 ## 2026-09-08 — Cobertura vem por dia da semana
@@ -60,6 +63,18 @@ O parser expande para os dias do horizonte.
 
 Nas instâncias inspecionadas existe apenas `<Preferred>`; não há `<Minimum>` nem
 `<Maximum>`.
+
+Confirmado em 2026-09-15 pela varredura das 69 instâncias: todas usam apenas
+`DayOfWeekCover`, e dentro de `<Cover>` aparecem apenas `<Shift>` e `<Preferred>`. Nenhuma
+usa `DateSpecificCover`. Fonte: `docs/inventario_instancias.csv`, colunas
+`blocos_cobertura` e `tags_em_cover`.
+
+Regra de precedência, para o gerador da instância brasileira: a documentação oficial
+(seção 3.1) determina que a cobertura por data específica **tem preferência** sobre a
+cobertura por dia da semana. Nenhuma instância do INRC exercita isso, mas o parser já
+implementa a precedência, e é o mecanismo disponível caso a instância brasileira precise de
+demanda diferenciada em datas específicas — feriados, por exemplo. O `src/inspecionar.py`
+já expande a cobertura com essa precedência; o parser da Sessão 2 deve fazer o mesmo.
 
 ---
 
@@ -79,6 +94,13 @@ Ressalva a registrar no texto: a cobertura resulta em contagem fixa por categori
 "ao menos 1 das N de um pool comum".
 
 Nota: apenas 6 dos 49 profissionais de `long01` têm a habilidade `HeadNurse`.
+
+Acrescentado em 2026-09-15: nenhum profissional, em nenhuma das 69 instâncias, tem
+`HeadNurse` sem ter também `Nurse`. A habilidade é acumulativa, não excludente — os 6
+chefes de `long01` podem cobrir qualquer turno, e só eles podem cobrir `DH`. A instância
+brasileira precisa decidir se reproduz essa hierarquia (enfermeiro cobre posto de técnico)
+ou trata as categorias como disjuntas. Fonte: `docs/inventario_instancias.csv`, coluna
+`combinacoes_habilidade`.
 
 ---
 
@@ -160,21 +182,159 @@ normalizadas a totais absolutos.
 
 ---
 
+## 2026-09-15 — Regra geral de ativação de restrição flexível
+
+Uma restrição flexível entra no modelo se, e somente se, estiver **ligada** e tiver **peso
+maior que zero**. "Ligada" significa `on="1"` nas restrições que têm esse atributo
+(`MaxNumAssignments`, `MaxConsecutiveWorkingDays` etc.) e conteúdo `true` nas que só têm
+peso (`CompleteWeekends`, `NoNightShiftBeforeFreeWeekend`, `AlternativeSkillCategory`,
+`IdenticalShiftTypesDuringWeekend`, `SingleAssignmentPerDay`).
+
+Por quê: a varredura de 2026-09-15 mostrou que os dois marcadores se contradizem nos
+arquivos, e a decisão anterior — que trata só do `on=` — não cobre todos os casos.
+Contagem sobre os 235 contratos das 69 instâncias:
+
+| Situação | Contratos | Efeito da regra adotada |
+|---|---|---|
+| `on="1"` com peso 0 | 16 | fora do modelo (não penalizaria nada de todo jeito) |
+| `on="0"` com peso > 0 | 79 | fora do modelo — o `on=` prevalece sobre o peso |
+| conteúdo `false` com peso > 0 | 40 | fora do modelo — o booleano é o interruptor |
+
+Os dois primeiros casos não alteram o valor objetivo: peso 0 não soma. O caso que altera é
+o terceiro, e é nele que a regra assume risco.
+
+**Amparo na documentação oficial** (Haspeslagh et al., *First International Nurse Rostering
+Competition 2010*, 5 maio 2010), verificado em 2026-09-15:
+
+- O **formato texto**, seção 3.1.2, descreve as restrições sem atributo `on` como
+  `CompleteWeekends (on|weight) (<boolean>|<int>)`, e idem para
+  `IdenticalShiftTypesDuringWeekend`, `NoNightShiftBeforeFreeWeekend`,
+  `TwoFreeDaysAfterNightShifts`, `AlternativeSkillCategory` e `SingleAssignmentPerDay`. Ou
+  seja: **o booleano do XML é o campo `on`**. O exemplo do apêndice D confirma a ordem —
+  `SingleAssignmentPerDay` aparece como `(1|1)`, ligada com peso 1. Conteúdo `false` é
+  restrição desligada, não "ligada com valor falso".
+- O **apêndice A** traz o pseudocódigo do avaliador: toda penalidade é `custo × distância`,
+  onde o custo é o peso do XML. Com peso 0 a parcela é nula por construção. Logo, a metade
+  "peso > 0" da regra não é hipótese adicional — é consequência aritmética do avaliador.
+
+O documento **não** define em prosa o atributo `on=` das demais restrições; ele aparece no
+esquema e no formato texto como campo, sem explicação. A leitura adotada é a única
+compatível com o formato texto.
+
+Teste de regressão a rodar no Passo 3 assim mesmo: `sprint_hidden06` a `sprint_hidden10`
+trazem `NoNightShiftBeforeFreeWeekend` com conteúdo `false` e peso 10 — é o caso em que a
+regra morde. Se o avaliador cobrar penalidade dessa restrição ali, a leitura está errada.
+
+Fonte dos dados: `docs/inventario_instancias.csv`, colunas `<Restricao>_on`,
+`<Restricao>_peso` e `<Restricao>_valor`.
+
+---
+
+## 2026-09-15 — Quinto alvo de validação: `medium_late05`
+
+Acrescentado `medium_late05` (ótimo 107, Tabela 6 de Santos et al., 2016) ao conjunto de
+validação, que passa a ser `sprint01` = 56, `sprint02` = 58, `long01` = 197, `long02` = 219
+e `medium_late05` = 107.
+
+**Por quê.** Os quatro alvos anteriores pertencem todos ao lote *early*, e a varredura de
+2026-09-15 mostrou que nesse lote quatro restrições flexíveis estão desligadas em todos os
+contratos: máximo e mínimo de fins de semana consecutivos, turno noturno antes de fim de
+semana livre e habilidade alternativa. Além disso, todos os pesos do lote valem 1 e a
+definição de fim de semana é sempre `SaturdaySunday`. Um erro de multiplicação por peso, ou
+no tratamento de `FridaySaturdaySunday`, passaria nos quatro sem ser detectado. Validar
+sobre eles prova 8 das 13 restrições, não as 13.
+
+A escolha do `medium_late05` entre as 60 instâncias com valor de referência se deu por
+cobertura: é a que exercita todas as restrições que aparecem ligadas em alguma instância do
+benchmark, e ainda tem duas habilidades, pesos diferenciados de 1 a 10 e pedidos de folga.
+Tem gap 0 na Tabela 6, ou seja, 107 é ótimo comprovado, não melhor solução conhecida.
+
+Amparo: a documentação oficial (Haspeslagh et al., 2010) trata os lotes *early*, *late* e
+*hidden* como momentos de divulgação (Regra 7), não como classes de dificuldade, e a seção
+2.2 declara que instâncias diferentes podem atribuir pesos diferentes às restrições. A
+própria competição rankeou finalistas sobre *early* + *late*. Validar sobre um lote só não
+tem respaldo no desenho da competição.
+
+Custo baixo, porque conferir a função objetivo no avaliador não exige provar o ótimo: basta
+que o valor interno coincida com o do avaliador em qualquer escala viável. A comparação com
+o 107 é um segundo teste, separável. É validação, não experimento, e não disputa o prazo de
+congelamento de 14/10.
+
+Proposta P1 do `PROPOSTAS.md`, validada em 2026-09-15.
+
+---
+
+## 2026-09-15 — Escopo: implementar as 13 flexíveis, inclusive as não exercitadas
+
+O modelo implementa as 13 restrições flexíveis da definição oficial, mais as metades "on"
+dos pedidos (`DayOnRequests` e `ShiftOnRequests`), mesmo que três desses itens não sejam
+exercitados por nenhuma instância do INRC-2010:
+
+| Item | Situação nos dados |
+|---|---|
+| Máximo de fins de semana trabalhados em quatro semanas | presente nos 235 contratos, `on="0"` em todos |
+| Folgas após sequência de turnos noturnos | elemento ausente em todas as 69 instâncias |
+| Pedidos para trabalhar (dia e turno) | nenhuma instância traz `DayOnRequests` ou `ShiftOnRequests` |
+
+**Por quê.** As três constam da definição oficial do problema, com semântica fixada: a seção
+2.1 lista o máximo de fins de semana em quatro semanas e as folgas após noites entre os
+campos do contrato; a seção 2.2.3 dá a numeração formal de "Two free days after a night
+shift" (Tabela 7), com o número de folgas fixo em duas — o elemento do XML é booleano e não
+tem parâmetro; e os pedidos "on" têm numeração própria, com `min pert = 1`. Santos et al.
+(2016) implementam as 13 — as restrições 11 e 12 da formulação deles são justamente as duas
+em questão.
+
+Como o trabalho se posiciona em relação a essa formulação, implementar menos exigiria
+justificar a diferença. "Não implementei porque nenhuma instância usava" é uma delimitação
+que a banca pode questionar; "implementei e não pude validar externamente" é uma ressalva de
+método.
+
+**Ressalva obrigatória no texto:** esses três itens não têm conferência externa possível com
+os dados do INRC-2010. Nenhuma instância produz penalidade deles, então nem o avaliador
+oficial nem a Tabela 6 dizem se a implementação está correta. Devem ser declarados como
+implementados e não validados.
+
+**Consequência para a instância brasileira:** havendo escolha entre limitar fins de semana
+pela restrição de fins de semana consecutivos (exercitada por 49 instâncias, portanto
+validável) ou pela de fins de semana em quatro semanas (exercitada por nenhuma), usar a
+primeira.
+
+Proposta P2 do `PROPOSTAS.md`, alternativa A′, validada em 2026-09-15.
+
+---
+
 ## Perguntas abertas
 
 ### A habilidade é restrição rígida ou flexível?
 
-`AlternativeSkillCategory` varia de forma independente entre instâncias:
+`AlternativeSkillCategory` aparece ora com conteúdo `true`, ora `false`, e o peso nem
+sempre acompanha. A varredura de 2026-09-15 separou os casos em que isso importa dos casos
+em que não importa:
 
-| Arquivo | Valor |
-|---|---|
-| long01, sprint01, sprint_hidden01, sprint_late01 | `weight="0"` → false |
-| long_late01 | `weight="10"` → **true** |
-| sprint_hint01 | `weight="10"` → false |
+| Instâncias | Conteúdo e peso | Importa? |
+|---|---|---|
+| duas habilidades (todas as `long`, `medium_hidden`, `medium_late05`) | `true` sempre com peso > 0; `false` sempre com peso 0 | sim — e são coerentes |
+| uma habilidade só (todas as `sprint`, demais `medium`) | inclui `false` com peso 10 | não — sem segunda habilidade a restrição não tem o que penalizar |
+
+Ou seja: a incoerência que motivou esta pergunta (`false` com peso 10, em `sprint_hint01`)
+está inteira no grupo em que a restrição é inócua. Nas instâncias em que ela pode morder,
+valor e peso são coerentes. Isso elimina a hipótese de "valor residual" como problema
+prático, mas **não** resolve o que `false` significa.
 
 Leitura provável, **não confirmada**: `true` = categoria alternativa permitida mas
-penalizada; `false` = não permitida (restrição de domínio). O peso 10 com `false` no
-`hint01` seria valor residual não lido.
+penalizada; `false` = não permitida (restrição de domínio). A favor dessa leitura: Santos
+et al. (2016), Tabela 2, listam a habilidade alternativa como restrição flexível lógica
+(índice 10), penalizada no coeficiente ν das variáveis de atribuição.
+
+O que a documentação oficial diz (seção 2.2.3, "Alternative skill", Tabela 10), verificado
+em 2026-09-15: cada unidade de tempo em que o profissional **não** tem a habilidade exigida
+recebe um número próprio, com `max pert = 0`. Traduzindo: quando a restrição está ligada,
+cada atribuição fora da habilidade custa uma vez o peso. Isso define a semântica do caso
+`true`, mas o documento **não** diz o que acontece quando ela está desligada — e é
+justamente esse o caso do `long01`. Pela regra de ativação adotada, desligada significa sem
+penalidade, o que tornaria a atribuição fora da habilidade gratuita. A leitura alternativa é
+que a habilidade volta a ser restrição de domínio. O teste com `long01` = 197 separa as
+duas, e continua sendo o método.
 
 **Método de resolução, custo zero:** `long_early01` tem ótimo comprovado em 197 (Tabela 6
 de Santos et al., 2016). As duas leituras geram modelos diferentes — se `false` = proibido,

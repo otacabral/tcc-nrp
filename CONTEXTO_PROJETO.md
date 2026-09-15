@@ -169,6 +169,16 @@ literatura revisada (71 de 110), contra 4 trabalhos em nurse-day.
 Santos et al. entra como referência de formulação e fonte de valores de comparação — não
 como código a reproduzir.
 
+**Escopo das restrições, decidido em 2026-09-15.** Implementam-se as 13 flexíveis, mais as
+metades "on" dos pedidos (`DayOnRequests`, `ShiftOnRequests`), mesmo que três desses itens
+não sejam exercitados por nenhuma instância do INRC-2010: o máximo de fins de semana em
+quatro semanas (`on="0"` nos 235 contratos), as folgas após sequência de turnos noturnos
+(elemento ausente em todas) e os pedidos para trabalhar. A semântica dos três está fixada na
+documentação oficial, e Santos et al. os implementam. Ressalva a declarar no texto: esses
+três são implementados **sem conferência externa possível** — nenhuma instância produz
+penalidade deles, então nem o avaliador nem a Tabela 6 atestam a implementação. Ver
+`DECISOES.md`, entrada de 15/09.
+
 ## 7. Estrutura das instâncias do INRC-2010
 
 Formato XML, raiz `SchedulingPeriod`, com dez blocos: `StartDate`, `EndDate`, `Skills`,
@@ -197,9 +207,17 @@ Pontos de atenção verificados nos arquivos originais e na documentação ofici
 - **Nomenclatura:** o lote *early* tem arquivos sem o sufixo. O que a literatura chama de
   `sprint_early01` é o `sprint01.xml` da pasta sem sufixo. Mapear ao cruzar com a Tabela 6 de
   Santos et al.
-- Lotes: *early* (sem sufixo), *late*, *hidden* e *hint*. As instâncias `hint` usam **pesos
-  diferenciados** por tipo de restrição (de 1 a 10), enquanto os demais lotes usam pesos
-  uniformes 0/1 — material mais adequado à análise de sensibilidade.
+- Lotes: *early* (sem sufixo), *late*, *hidden* e *hint*. **Corrigido em 2026-09-15 pela
+  varredura das instâncias:** apenas o lote *early* usa pesos uniformes 0/1. Os lotes
+  *late*, *hidden* e *hint* usam pesos diferenciados por tipo de restrição — valores 3, 4,
+  5, 7 e 10, e 31 em três instâncias `medium`. A redação anterior atribuía os pesos
+  diferenciados só ao lote *hint*, o que está errado. Consequência: material para análise
+  de sensibilidade existe nos três lotes, não em três instâncias por track.
+- **A pasta tem 69 arquivos XML, não 60:** as 60 instâncias da competição mais 9 do lote
+  *hint* (3 por track). Santos et al. (2016) reportam resultados para as 60; as `hint` não
+  têm valor de referência na Tabela 6 e só podem ser conferidas pelo avaliador oficial, que
+  pontua uma escala dada mas não prova otimalidade. Verificado em 2026-09-15; inventário
+  completo em `docs/inventario_instancias.csv`.
 
 ## 8. Stack
 
@@ -242,8 +260,13 @@ Registrada, vira insumo; discutida na hora, vira desvio.
 ## 11. Convenções de trabalho
 
 - Nenhum resultado numérico vale sem passar pelo avaliador oficial ou ser conferível contra a
-  Tabela 6 de Santos et al. (2016). Alvos iniciais: `sprint01` = 56, `sprint02` = 58,
-  `long01` = 197, `long02` = 219.
+  Tabela 6 de Santos et al. (2016). Alvos de validação: `sprint01` = 56, `sprint02` = 58,
+  `long01` = 197, `long02` = 219 e `medium_late05` = 107.
+- **`medium_late05` acrescentado em 2026-09-15.** Os quatro alvos anteriores são todos do
+  lote *early*, que desliga quatro restrições flexíveis e usa peso 1 em todas — validar só
+  neles prova 8 das 13 restrições. O `medium_late05` exercita todas as que aparecem ligadas
+  em alguma instância, com pesos de 1 a 10, duas habilidades e pedidos de folga, e tem gap 0
+  na Tabela 6. Ver `DECISOES.md`, entrada de 15/09.
 - Toda decisão de modelagem não óbvia vai para `DECISOES.md` no momento em que é tomada, com
   data e justificativa. Três linhas bastam. Esse arquivo é a matéria-prima dos capítulos.
 - O Passo 3 do pipeline — validação no avaliador — não é postergado. Sem conferência externa,

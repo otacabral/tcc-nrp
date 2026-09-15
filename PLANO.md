@@ -8,9 +8,12 @@ Congelamento numerico: 14/10/2026. Entrega: 04/11/2026.
 ## Semana 1 (ate 15/09) - encanamento validado
 
 Sessao 1 - varredura
-- [ ] src/inspecionar.py: percorre as 60 instancias, valida contra
-      docs/scheme_input.xsd, emite docs/inventario_instancias.csv
-- [ ] ler a tabela; achados para DECISOES.md ou PROPOSTAS.md
+- [x] src/inspecionar.py: percorre as 69 instancias (60 da competicao + 9 do
+      lote hint), valida contra docs/scheme_input.xsd, emite
+      docs/inventario_instancias.csv e docs/uso_elementos_opcionais.csv
+- [x] ler a tabela; achados para DECISOES.md ou PROPOSTAS.md
+      (correcoes e regra de ativacao em DECISOES.md; P1 e P2 registradas em
+      PROPOSTAS.md e validadas em 15/09)
 
 Sessao 2 - parser
 - [ ] src/instancia.py: dataclasses puras, sem Pyomo
@@ -29,10 +32,19 @@ Sessao 3 - encanamento
 
 - [ ] ativar as 13 flexiveis UMA POR VEZ, conferindo no avaliador a cada uma
       (modo sem -p detalha violacoes por profissional e aponta a divergencia)
+- [ ] regressao da regra de ativacao: sprint_hidden06 a 10 tem
+      NoNightShiftBeforeFreeWeekend com conteudo false e peso 10. Se o avaliador
+      cobrar penalidade dessa restricao ali, a leitura do booleano esta errada
 - [ ] resolver AlternativeSkillCategory: flag no codigo, duas rodadas contra
       long01 = 197, so uma bate -> entrada datada em DECISOES.md
 - [ ] MARCO: sprint01 = 56, long01 = 197
 - [ ] confirmacao independente: sprint02 = 58, long02 = 219
+- [ ] cobertura ampla: medium_late05 = 107. E o alvo que exercita fins de semana
+      consecutivos, turno noturno antes de fim de semana livre, habilidade
+      alternativa e pesos diferentes de 1
+- [ ] implementar tambem, SEM conferencia externa possivel: maximo de fins de
+      semana em quatro semanas, folgas apos noites, pedidos "on" de dia e turno.
+      Marcar no texto como implementados e nao validados
 
 ## Semana 4 (30/09-06/10) - instancia brasileira
 

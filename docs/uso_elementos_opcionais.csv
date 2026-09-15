@@ -1,0 +1,66 @@
+﻿tipo;pai;nome;n_instancias;de;instancias
+atributo;AlternativeSkillCategory;weight;69;69;todas
+atributo;CompleteWeekends;weight;69;69;todas
+elemento;Contract;AlternativeSkillCategory;69;69;todas
+elemento;Contract;CompleteWeekends;69;69;todas
+elemento;Contract;IdenticalShiftTypesDuringWeekend;69;69;todas
+elemento;Contract;MaxConsecutiveFreeDays;69;69;todas
+elemento;Contract;MaxConsecutiveWorkingDays;69;69;todas
+elemento;Contract;MaxConsecutiveWorkingWeekends;69;69;todas
+elemento;Contract;MaxNumAssignments;69;69;todas
+elemento;Contract;MaxWorkingWeekendsInFourWeeks;69;69;todas
+elemento;Contract;MinConsecutiveFreeDays;69;69;todas
+elemento;Contract;MinConsecutiveWorkingDays;69;69;todas
+elemento;Contract;MinConsecutiveWorkingWeekends;69;69;todas
+elemento;Contract;MinNumAssignments;69;69;todas
+elemento;Contract;NoNightShiftBeforeFreeWeekend;69;69;todas
+elemento;Contract;SingleAssignmentPerDay;69;69;todas
+elemento;Contract;TwoFreeDaysAfterNightShifts;0;69;nenhuma
+elemento;Contract;UnwantedPatterns;69;69;todas
+elemento;Contract;WeekendDefinition;69;69;todas
+elemento;Cover;Preferred;69;69;todas
+elemento;CoverRequirements;DateSpecificCover;0;69;nenhuma
+elemento;CoverRequirements;DayOfWeekCover;69;69;todas
+elemento;DayOffRequests;DayOff;49;69;todas exceto long_hidden01,long_hidden02,long_hidden03,long_hidden04,long_hidden05,long_hint01,long_hint02,long_hint03,long_late01,long_late02,long_late03,long_late04,long_late05,medium_hidden01,medium_hidden02,medium_hidden03,medium_hidden04,medium_hidden05,sprint_late08,sprint_late09
+elemento;DayOnRequests;DayOn;0;69;nenhuma
+elemento;Employee;Name;69;69;todas
+elemento;Employee;Skills;69;69;todas
+atributo;IdenticalShiftTypesDuringWeekend;weight;69;69;todas
+atributo;MaxConsecutiveFreeDays;on;69;69;todas
+atributo;MaxConsecutiveFreeDays;weight;69;69;todas
+atributo;MaxConsecutiveWorkingDays;on;69;69;todas
+atributo;MaxConsecutiveWorkingDays;weight;69;69;todas
+atributo;MaxConsecutiveWorkingWeekends;on;69;69;todas
+atributo;MaxConsecutiveWorkingWeekends;weight;69;69;todas
+atributo;MaxNumAssignments;on;69;69;todas
+atributo;MaxNumAssignments;weight;69;69;todas
+atributo;MaxWorkingWeekendsInFourWeeks;on;69;69;todas
+atributo;MaxWorkingWeekendsInFourWeeks;weight;69;69;todas
+atributo;MinConsecutiveFreeDays;on;69;69;todas
+atributo;MinConsecutiveFreeDays;weight;69;69;todas
+atributo;MinConsecutiveWorkingDays;on;69;69;todas
+atributo;MinConsecutiveWorkingDays;weight;69;69;todas
+atributo;MinConsecutiveWorkingWeekends;on;69;69;todas
+atributo;MinConsecutiveWorkingWeekends;weight;69;69;todas
+atributo;MinNumAssignments;on;69;69;todas
+atributo;MinNumAssignments;weight;69;69;todas
+atributo;NoNightShiftBeforeFreeWeekend;weight;69;69;todas
+atributo;Pattern;ID;57;69;todas exceto medium_early01,medium_early02,medium_early03,medium_early04,medium_early05,medium_late03,sprint_hint02,sprint_late06,sprint_late07,sprint_late08,sprint_late09,sprint_late10
+atributo;Pattern;weight;57;69;todas exceto medium_early01,medium_early02,medium_early03,medium_early04,medium_early05,medium_late03,sprint_hint02,sprint_late06,sprint_late07,sprint_late08,sprint_late09,sprint_late10
+atributo;PatternEntry;index;57;69;todas exceto medium_early01,medium_early02,medium_early03,medium_early04,medium_early05,medium_late03,sprint_hint02,sprint_late06,sprint_late07,sprint_late08,sprint_late09,sprint_late10
+elemento;Patterns;Pattern;57;69;todas exceto medium_early01,medium_early02,medium_early03,medium_early04,medium_early05,medium_late03,sprint_hint02,sprint_late06,sprint_late07,sprint_late08,sprint_late09,sprint_late10
+atributo;SchedulingPeriod;OrganisationID;0;69;nenhuma
+elemento;SchedulingPeriod;DayOffRequests;69;69;todas
+elemento;SchedulingPeriod;DayOnRequests;0;69;nenhuma
+elemento;SchedulingPeriod;Patterns;69;69;todas
+elemento;SchedulingPeriod;ShiftOffRequests;69;69;todas
+elemento;SchedulingPeriod;ShiftOnRequests;0;69;nenhuma
+elemento;SchedulingPeriod;Skills;69;69;todas
+elemento;Shift;Description;69;69;todas
+elemento;Shift;Skills;69;69;todas
+elemento;ShiftOffRequests;ShiftOff;49;69;todas exceto long_hidden01,long_hidden02,long_hidden03,long_hidden04,long_hidden05,long_hint01,long_hint02,long_hint03,long_late01,long_late02,long_late03,long_late04,long_late05,medium_hidden01,medium_hidden02,medium_hidden03,medium_hidden04,medium_hidden05,sprint_late08,sprint_late09
+elemento;ShiftOnRequests;ShiftOn;0;69;nenhuma
+atributo;SingleAssignmentPerDay;weight;69;69;todas
+elemento;Skills;Skill;69;69;todas
+atributo;TwoFreeDaysAfterNightShifts;weight;0;69;nenhuma
+elemento;UnwantedPatterns;Pattern;57;69;todas exceto medium_early01,medium_early02,medium_early03,medium_early04,medium_early05,medium_late03,sprint_hint02,sprint_late06,sprint_late07,sprint_late08,sprint_late09,sprint_late10
