@@ -40,15 +40,29 @@ executar o avaliador oficial.
 ## Avaliador oficial
 
 O `evaluator.jar` distribuido pela competicao NAO declara `Main-Class` no
-manifesto, entao `java -jar` falha com "no main manifest attribute".
-Executar via classpath, indicando a classe principal:
+manifesto, entao `java -jar` falha com "no main manifest attribute". Ele tambem
+NAO embute as dependencias. Sao tres, e sem elas o avaliador morre com
+`NoClassDefFoundError`:
 
-    java -cp avaliador\evaluator.jar dds.nrp.core.evaluation.ScheduleEvaluator instancia.xml solucao.xml
+| Jar | Para que | Onde baixar |
+|---|---|---|
+| dom4j 1.6.1 ou 2.x | leitura do XML | Maven Central: `dom4j/dom4j` |
+| jaxen 1.2.0 | XPath do dom4j (`selectSingleNode`) | Maven Central: `jaxen/jaxen` |
+| jaxb-api 2.3.1 | `javax.xml.bind.DatatypeConverter`, removido do JDK a partir do Java 11 | Maven Central: `javax.xml.bind/jaxb-api` |
+
+Baixar os tres e colocar em `avaliador/`, ao lado do `evaluator.jar`. Com eles la,
+o curinga do classpath resolve tudo:
+
+    java -cp "avaliador\*" dds.nrp.core.evaluation.ScheduleEvaluator instancia.xml solucao.xml
 
 Opcoes:
 
 - `-h` imprime a ajuda
-- `-p` imprime apenas o valor da penalidade, sem as violacoes detalhadas
+- `-p` imprime apenas o valor da penalidade, sem as violacoes detalhadas.
+  **Tem de vir antes dos arquivos** — o `main` so reconhece `-p` como primeiro
+  argumento; depois dos arquivos ele responde "Syntax error"
+
+O `src/validar.py` monta esse comando sozinho e avisa qual dependencia falta.
 
 Sem `-p`, a saida detalha as violacoes, o que permite identificar qual
 restricao e qual profissional divergem do modelo. E o modo usado na

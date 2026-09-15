@@ -29,20 +29,30 @@ Sessao 2 - parser
 - [ ] conferencia: sprint01 com on="0" nas tres restricoes de fim de semana
 
 Sessao 3 - encanamento
-- [ ] src/modelo.py: apenas as duas rigidas
-- [ ] src/solucao.py: escreve XML, valida contra docs/scheme_solution.xsd
-- [ ] src/validar.py: chama o avaliador, compara com o objetivo interno
-- [ ] MARCO: sprint01 aprovada como viavel pelo avaliador oficial
+- [x] src/modelo.py: apenas as duas rigidas, com solver como parametro e flag
+      --habilidade-livre
+- [x] src/solucao.py: escreve XML, valida contra docs/scheme_solution.xsd,
+      confere as duas rigidas antes de chamar o avaliador
+- [x] src/validar.py: chama o avaliador, compara com o objetivo interno
+- [x] dependencias do avaliador resolvidas: dom4j, jaxen e jaxb-api em
+      avaliador/ (o evaluator.jar nao as embute; jaxb saiu do JDK no Java 11).
+      O -p tem de vir ANTES dos arquivos. Ver README.md
+- [x] MARCO: sprint01 aprovada como viavel pelo avaliador oficial (penalidade
+      294 no modelo minimo, que ainda nao tem funcao objetivo)
+- [x] varredura completa: as 69 instancias montadas, resolvidas, escala viavel,
+      XML validado no esquema e ACEITO pelo avaliador oficial
 
 ## Semanas 2-3 (ate 29/09) - modelo completo
 
 - [ ] ativar as 13 flexiveis UMA POR VEZ, conferindo no avaliador a cada uma
       (modo sem -p detalha violacoes por profissional e aponta a divergencia)
-- [ ] regressao da regra de ativacao: sprint_hidden06 a 10 tem
-      NoNightShiftBeforeFreeWeekend com conteudo false e peso 10. Se o avaliador
-      cobrar penalidade dessa restricao ali, a leitura do booleano esta errada
-- [ ] resolver AlternativeSkillCategory: flag no codigo, duas rodadas contra
-      long01 = 197, so uma bate -> entrada datada em DECISOES.md
+- [x] regressao da regra de ativacao: FEITA em 15/09, regra confirmada no
+      avaliador por dois testes independentes. Ver DECISOES.md
+- [ ] resolver AlternativeSkillCategory: flag no codigo (ja existe:
+      --habilidade-livre), duas rodadas contra long01 = 197, so uma bate ->
+      entrada datada em DECISOES.md. ATENCAO: o avaliador NAO arbitra isso, ele
+      e indiferente a habilidade quando a flag esta em false. Quem arbitra e o
+      197 da Tabela 6, entao o teste so roda com a funcao objetivo completa
 - [ ] medir tempo ate provar otimalidade em long01 nos solvers disponiveis e
       escolher o dos experimentos -> entrada datada em DECISOES.md
 - [ ] MARCO: sprint01 = 56, long01 = 197

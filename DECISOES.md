@@ -221,9 +221,27 @@ O documento **não** define em prosa o atributo `on=` das demais restrições; e
 esquema e no formato texto como campo, sem explicação. A leitura adotada é a única
 compatível com o formato texto.
 
-Teste de regressão a rodar no Passo 3 assim mesmo: `sprint_hidden06` a `sprint_hidden10`
-trazem `NoNightShiftBeforeFreeWeekend` com conteúdo `false` e peso 10 — é o caso em que a
-regra morde. Se o avaliador cobrar penalidade dessa restrição ali, a leitura está errada.
+**Confirmada no avaliador oficial em 2026-09-15.** Três evidências independentes:
+
+1. *Teste com conteúdo `false` e peso alto.* Em `sprint_hidden06`,
+   `NoNightShiftBeforeFreeWeekend` tem conteúdo `false` e peso 10. Gerou-se uma escala viável
+   com duas ocorrências de turno noturno na véspera de fim de semana livre — a situação que
+   essa restrição penaliza. Na saída detalhada do avaliador, com 12 tipos de violação
+   listados, essa restrição não aparece nenhuma vez.
+2. *Teste com `on="0"` e peso alto.* Na mesma instância,
+   `MinConsecutiveWorkingWeekends` está ligada nos contratos 0 e 1 e desligada no contrato 2,
+   com peso 3 nos três. As violações reportadas pelo avaliador, cruzadas por profissional:
+   4 nos profissionais do contrato 0, 2 nos do contrato 1, **zero** nos do contrato 2. O peso
+   é idêntico; o que muda é o `on=`.
+3. *Código-fonte do avaliador.* O `evaluator.jar` foi empacotado com os `.java` junto dos
+   `.class`. Em `SchedulingPeriodParser`, as restrições sem atributo `on=` são lidas com
+   `mspdo = DatatypeConverter.parseBoolean(elemento.getText())`, e o booleano vai para o
+   mesmo campo que o `on=` preenche nas demais. Em
+   `MaxAndMinConsecutiveWorkingWeekendsCondition`, a numeração só é construída dentro de
+   `if (contract.MIN_CONSECUTIVE_WORKING_WEEKENDS_ON)`, e toda condição nasce com
+   `ENABLED = false`.
+
+A regra deixa de ser convenção adotada e passa a ser comportamento verificado.
 
 Fonte dos dados: `docs/inventario_instancias.csv`, colunas `<Restricao>_on`,
 `<Restricao>_peso` e `<Restricao>_valor`.
@@ -303,7 +321,44 @@ Proposta P2 do `PROPOSTAS.md`, alternativa A′, validada em 2026-09-15.
 
 ---
 
+## 2026-09-15 — Cobertura: igualdade também onde a demanda não é declarada
+
+No modelo, para **todo** par (dia, tipo de turno) do horizonte, a soma das atribuições é
+igual à demanda. Quando o bloco de cobertura do dia da semana não lista um turno, a demanda
+daquele turno naquele dia é zero — e a igualdade proíbe qualquer atribuição a ele. Não é
+"sem restrição".
+
+Exemplo concreto: em `long01` o turno `DH` só aparece na cobertura dos dias úteis. Pela regra
+adotada, ninguém faz `DH` no sábado e no domingo.
+
+Por quê: a documentação oficial (2.2.1) exige que toda a demanda seja atendida, e Santos et
+al. (2016) modelam a cobertura como igualdade, não como limite inferior. Com desigualdade, o
+modelo poderia alocar profissionais além do necessário sem custo nenhum enquanto a função
+objetivo estiver incompleta, e mais tarde usaria a folga para diluir penalidades.
+
+Conferido: o modelo mínimo com essa regra produziu escala aceita pelo avaliador oficial nas
+69 instâncias. O avaliador rejeita tanto cobertura excedida quanto turno não atribuído, o que
+é consistente com igualdade.
+
+Implementado em `src/modelo.py`, restrição `cobertura`.
+
+---
+
 ## Perguntas abertas
+
+### Fim de semana incompleto no horizonte
+
+O horizonte pode começar ou terminar no meio de um fim de semana, deixando um bloco parcial —
+um domingo solto no primeiro dia, por exemplo. As restrições de fim de semana (completos,
+turnos idênticos, consecutivos) precisam de uma convenção para esses blocos: ignorar,
+avaliar como se fossem completos, ou avaliar proporcionalmente.
+
+Nas 69 instâncias do INRC **não ocorre**: todos os blocos de todos os contratos são completos,
+verificado em 2026-09-15 pelo `src/parser.py`. Por isso a pergunta não bloqueia a validação.
+
+Ela bloqueia a instância brasileira, cuja data de início ainda não foi escolhida. Saída mais
+simples: escolher início e fim que fechem fins de semana completos, e a pergunta desaparece.
+`Instancia.fins_de_semana()` já marca cada bloco com `completo=True/False`.
 
 ### A habilidade é restrição rígida ou flexível?
 
@@ -321,31 +376,45 @@ está inteira no grupo em que a restrição é inócua. Nas instâncias em que e
 valor e peso são coerentes. Isso elimina a hipótese de "valor residual" como problema
 prático, mas **não** resolve o que `false` significa.
 
-Leitura provável, **não confirmada**: `true` = categoria alternativa permitida mas
-penalizada; `false` = não permitida (restrição de domínio). A favor dessa leitura: Santos
-et al. (2016), Tabela 2, listam a habilidade alternativa como restrição flexível lógica
-(índice 10), penalizada no coeficiente ν das variáveis de atribuição.
+**Correção de 2026-09-15: a leitura que estava registrada aqui como provável está
+invertida.** Esta entrada dizia que `false` significaria categoria alternativa proibida, isto
+é, restrição de domínio. Para o avaliador oficial, é o contrário.
 
-O que a documentação oficial diz (seção 2.2.3, "Alternative skill", Tabela 10), verificado
-em 2026-09-15: cada unidade de tempo em que o profissional **não** tem a habilidade exigida
-recebe um número próprio, com `max pert = 0`. Traduzindo: quando a restrição está ligada,
-cada atribuição fora da habilidade custa uma vez o peso. Isso define a semântica do caso
-`true`, mas o documento **não** diz o que acontece quando ela está desligada — e é
-justamente esse o caso do `long01`. Pela regra de ativação adotada, desligada significa sem
-penalidade, o que tornaria a atribuição fora da habilidade gratuita. A leitura alternativa é
-que a habilidade volta a ser restrição de domínio. O teste com `long01` = 197 separa as
-duas, e continua sendo o método.
+*O que a documentação oficial diz* (seção 2.2.3, "Alternative skill", Tabela 10): cada
+unidade de tempo em que o profissional não tem a habilidade exigida recebe um número próprio,
+com `max pert = 0`. Ou seja, quando a restrição está ligada, cada atribuição fora da
+habilidade custa uma vez o peso. O documento não diz o que acontece quando ela está
+desligada.
 
-**Método de resolução, custo zero:** `long_early01` tem ótimo comprovado em 197 (Tabela 6
-de Santos et al., 2016). As duas leituras geram modelos diferentes — se `false` = proibido,
-o ótimo é ≥ 197; se `false` = livre, é ≤ 197. Só uma dá exatamente 197.
+*O que o código do avaliador faz.* `hasSkill` aparece em um único ponto de todo o código,
+dentro de `AlternativeSkillCondition`, sob `if (contract.ALTERNATIVE_SKILL)`. Com a flag em
+`false`, a condição não é sequer construída. As únicas checagens rígidas do avaliador são
+cobertura excedida (`NoShiftToAssignException`) e turno não atribuído (`AllShiftsAssigned`).
+Não existe checagem rígida de habilidade em lugar nenhum.
 
-Implementar a habilidade como *flag* no código e rodar as duas versões. Resolve-se na
-própria validação do Passo 3.
+*Confirmação empírica.* Resolveu-se o modelo mínimo de `long01` nas duas leituras. Com
+habilidade livre, 46 atribuições ao turno `DH` couberam a profissionais sem `HeadNurse`, e o
+avaliador devolveu 1516 — contra 1517 da versão rígida. Nenhuma penalidade foi cobrada pelas
+46 violações.
 
-Alternativa: o relatório técnico da competição (CODeS/Technical Report/2010/1, citado nos
-anais do PATAT 2010) traz a descrição formal das restrições e resolveria a questão
-diretamente.
+**Consequência para o método de resolução — também registrado errado antes.** Esta entrada
+dizia que a pergunta se resolveria na validação do Passo 3, no avaliador. Não se resolve: o
+avaliador é indiferente à habilidade quando a flag está em `false`, então ele aceita as duas
+leituras. Quem arbitra é a **Tabela 6**: `long_early01` tem ótimo comprovado em 197, e as
+duas leituras geram modelos diferentes — se `false` = proibido, o ótimo é ≥ 197; se
+`false` = livre, é ≤ 197. Reproduzir 197 exige a leitura certa.
+
+A flag já existe no código: `construir(inst, habilidade_rigida=...)` em `src/modelo.py`, e
+`--habilidade-livre` na linha de comando. O teste roda nas semanas 2-3, quando a função
+objetivo estiver completa — antes disso não há o que comparar com 197.
+
+Ressalva a registrar no texto, qualquer que seja o resultado: se a leitura rígida for a que
+reproduz a literatura, o modelo será mais restritivo que o avaliador. Isso é uma escolha de
+modelagem declarada, não um erro — e é defensável, porque compor equipe por categoria é
+justamente o mecanismo que a instância brasileira usa.
+
+Alternativa ainda não consultada: o relatório técnico da competição (CODeS/Technical
+Report/2010/1, citado nos anais do PATAT 2010) traz a descrição formal das restrições.
 
 ### Grau de dependência assistencial da instância brasileira
 
