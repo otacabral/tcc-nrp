@@ -69,11 +69,10 @@ Sessao 3 - encanamento
       leva ~1h partindo de solucao gulosa. Rodar com limite maior
 - [x] regressao da regra de ativacao: FEITA em 15/09, regra confirmada no
       avaliador por dois testes independentes. Ver DECISOES.md
-- [ ] resolver AlternativeSkillCategory: flag no codigo (ja existe:
-      --habilidade-livre), duas rodadas contra long01 = 197, so uma bate ->
-      entrada datada em DECISOES.md. ATENCAO: o avaliador NAO arbitra isso, ele
-      e indiferente a habilidade quando a flag esta em false. Quem arbitra e o
-      197 da Tabela 6, entao o teste so roda com a funcao objetivo completa
+- [x] AlternativeSkillCategory RESOLVIDA em 22/09: habilidade e flexivel com
+      coeficiente na variavel de atribuicao. O item que mandava rodar as duas
+      leituras contra o 197 foi REMOVIDO por nao distinguir as hipoteses; o
+      motivo esta na entrada de 22/09 do DECISOES.md, para nao ser reaberto
 - [ ] medir tempo ate provar otimalidade em long01 nos solvers disponiveis e
       escolher o dos experimentos -> entrada datada em DECISOES.md
 - [x] MARCO: sprint01 = 56, long01 = 197
@@ -81,9 +80,11 @@ Sessao 3 - encanamento
 - [ ] cobertura ampla: medium_late05 = 107. E o alvo que exercita fins de semana
       consecutivos, turno noturno antes de fim de semana livre, habilidade
       alternativa e pesos diferentes de 1
-- [ ] implementar tambem, SEM conferencia externa possivel: maximo de fins de
-      semana em quatro semanas, folgas apos noites, pedidos "on" de dia e turno.
-      Marcar no texto como implementados e nao validados
+- [x] implementadas, SEM conferencia externa possivel: maximo de fins de semana
+      em quatro semanas e folgas apos noites, em avaliacao.py e modelo.py. Os
+      pedidos "on" ja estavam. Inertes nos dados do INRC: sprint01 = 56 e
+      long01 = 197 nao se alteraram depois de acrescenta-las. Marcar no texto
+      como implementadas e nao validadas
 
 ## Semana 4 (30/09-06/10) - instancia brasileira
 

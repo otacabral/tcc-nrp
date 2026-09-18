@@ -36,8 +36,15 @@ está classificada como afirmação fraca no CONTEXTO, seção 5.
 
 A semântica das 13 restrições flexíveis foi fixada **antes** de a função objetivo existir,
 num calculador de penalidade em Python puro (`src/avaliacao.py`), conferido contra o avaliador
-oficial em 207 escalas geradas nas 69 instâncias — comparando cada par profissional ×
-restrição, não apenas o total. Igualdade exata em todas.
+oficial em 207 escalas geradas nas 69 instâncias, mais 36 escalas adversárias — comparando
+cada par profissional × restrição, não apenas o total. Igualdade exata em todas.
+
+Procedência das escalas, que o texto precisa declarar: nenhuma veio do modelo ou do solver.
+Foram construídas por seis heurísticas com vieses diferentes — guloso aleatório, guloso
+ignorando habilidade, concentrado, janelas por profissional, alternado e concentrado nas
+bordas do horizonte. Se viessem do solver seriam todas de penalidade baixa e parecidas entre
+si, e exercitariam pouco cada restrição. A tabela de procedência e a cobertura por restrição
+estão no `DECISOES.md`, entrada de 18/09.
 
 Só depois disso a função objetivo foi escrita, e o teste dela passou a ser interno: escala
 fixada no modelo, valor da objetivo igual ao do calculador. Esse teste encontrou um erro real
@@ -58,6 +65,27 @@ no fim".
 - **18/09 — Semântica das flexíveis validada fora do modelo.** O método descrito acima.
 - **18/09 — Função objetivo: uma folga por violação, não por termo.** As duas convenções de
   linearização e o erro que elas corrigiram.
+
+## 3.1 A ressalva das treze tem três níveis, e a conta fecha em 13
+
+| Nível | Quantas | Quais | O que se pode afirmar |
+|---|---|---|---|
+| Validadas | 10 | número de atribuições; dias consecutivos de trabalho; dias consecutivos de folga; fins de semana consecutivos; fim de semana completo; turnos idênticos no fim de semana; habilidade alternativa; padrões indesejados; pedido de dia; pedido de turno | conferidas contra o avaliador oficial e contra ótimos publicados |
+| Implementadas sem conferência possível | 2 | máximo de fins de semana em quatro semanas; folgas após noites | nenhuma instância as exercita; implementadas por completude da definição oficial |
+| Fora da função objetivo por divergência declarada | 1 | turno noturno antes de fim de semana livre | o avaliador oficial não a pontua; mantê-la faria o modelo divergir em 44 instâncias |
+
+Os pedidos "on" — trabalhar num dia ou num turno — **não são restrições à parte**: são a
+metade positiva das restrições 12 e 13, cujas metades negativas estão validadas. Estão
+implementados, e nenhuma instância os exercita.
+
+A terceira linha não é ressalva de método, é escolha que precisa ser defendida. Não misturar
+com a segunda. E ela tem medida: das 44 instâncias em que a restrição está ligada, 43 tiveram
+pelo menos uma ocorrência da situação penalizável nas escalas de teste, num total de 815; a
+única sem nenhuma não tem turno noturno, então a situação é impossível ali.
+
+Estado do código: as 13 estão implementadas. As duas do segundo nível entraram em 22/09, e
+`sprint01` = 56 e `long01` = 197 não se alteraram com elas — confirmação de que são inertes
+nos dados do INRC.
 
 ## 4. Propostas ainda abertas
 

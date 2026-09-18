@@ -371,6 +371,19 @@ avaliador para contradizer e a regra tem sentido clínico, ela entra normalmente
 O mesmo vale, sem consequência prática, para `MaxWorkingWeekendsInFourWeeks`: também não tem
 classe de condição no avaliador, e está desligada nos 235 contratos.
 
+**Contagem correta das 13, para o texto** (corrigida em 2026-09-22; a redação anterior somava
+15 porque contava os pedidos "on" como restrições à parte):
+
+| Situação | Quantas | Quais |
+|---|---|---|
+| Implementadas e validadas contra o avaliador e contra ótimos publicados | 10 | número de atribuições; dias consecutivos de trabalho; dias consecutivos de folga; fins de semana consecutivos; fim de semana completo; turnos idênticos no fim de semana; habilidade alternativa; padrões indesejados; pedido de dia; pedido de turno |
+| Implementadas sem conferência externa possível | 2 | máximo de fins de semana em quatro semanas; folgas após noites |
+| Fora da função objetivo por divergência declarada do avaliador | 1 | turno noturno antes de fim de semana livre |
+
+Os pedidos "on" — trabalhar num dia ou num turno — não são restrições à parte: são a metade
+positiva das restrições 12 e 13, cujas metades negativas estão validadas. Estão implementadas
+e nenhuma instância as exercita.
+
 ---
 
 ## 2026-09-18 — Semântica das flexíveis validada fora do modelo
@@ -380,8 +393,45 @@ A penalidade de uma escala passou a ser calculada também em Python puro, em
 existir.
 
 Resultado: 207 escalas nas 69 instâncias, penalidade idêntica à do avaliador em todas, par a
-par de profissional × restrição. Das 19 chaves de penalidade, 13 foram exercitadas; as 6 que
-ficaram em zero são exatamente as que nenhuma instância produz.
+par de profissional × restrição. Mais 36 escalas adversárias em 6 instâncias, também idênticas.
+
+**Procedência das escalas** — o texto vai precisar disso, porque tamanho de conjunto de teste
+não é cobertura. Nenhuma das escalas veio do modelo nem de solver: todas foram construídas por
+heurísticas próprias, com vieses diferentes de propósito.
+
+| Gerador | O que produz | Para que serve |
+|---|---|---|
+| guloso aleatório | atende a demanda sorteando quem está livre | caso geral, escalas densas |
+| guloso ignorando habilidade | idem, sem respeitar a habilidade do turno | exercita a habilidade alternativa |
+| concentrado | sempre os mesmos profissionais primeiro | produz ociosos e horizontes cheios |
+| janelas | cada profissional só aceita dias de uma janela sorteada | blocos curtos e folgas longas |
+| alternado | prefere quem não trabalhou no dia anterior | blocos de tamanho 1 em série |
+| bordas | concentra o trabalho no início ou no fim do horizonte | convenções de borda do horizonte |
+
+Que as escalas não venham do solver é a parte importante: se viessem, seriam todas de
+penalidade baixa e estruturalmente parecidas, e exercitariam pouco cada restrição. A cobertura
+efetiva está medida: 13 das 19 chaves de penalidade dispararam, com milhares de violações
+cada.
+
+As 6 chaves que ficaram em zero **não têm todas o mesmo motivo**, e a distinção importa:
+
+| Chave | Por que zero |
+|---|---|
+| máximo de fins de semana em quatro semanas | desligada nos 235 contratos |
+| folgas após noites | elemento ausente em todas as instâncias |
+| pedidos "on" de dia e de turno | nenhuma instância traz esses blocos |
+| turno noturno antes de fim de semana livre | **está ligada em 44 instâncias; é o avaliador que não a pontua** |
+
+As três primeiras linhas são ausência de dado. A última é divergência declarada, e as 44
+instâncias em que a restrição está ligada funcionam como teste: em todas elas o cálculo com
+peso zero coincidiu com o avaliador.
+
+Esse teste só vale se a situação penalizável de fato ocorreu nas escalas. Medido: das 44
+instâncias com a restrição ligada, **43 tiveram pelo menos uma ocorrência** de turno noturno
+na véspera de fim de semana livre, num total de 815 ocorrências, considerando apenas
+profissionais cujo contrato tem a restrição ativa. A única sem nenhuma é a `sprint_late02`,
+que não tem tipo de turno noturno — a situação é impossível ali por construção. Ou seja, o
+teste cobriu todas as instâncias em que ele podia existir.
 
 Por que isso vale registro: separa erro de semântica de erro de modelagem. Quando a função
 objetivo do Pyomo divergir, a dúvida não será mais "entendi a restrição errado ou linearizei
@@ -430,6 +480,40 @@ Ressalva de leitura, para nao virar erro no texto: quando o solver para no limit
 folgas nao estao apertadas e o valor da funcao objetivo fica **acima** da penalidade real da
 escala. Só vale comparar objetivo com penalidade quando a otimalidade foi provada; fora disso,
 a penalidade que conta e a calculada pelo `avaliacao.py` sobre a escala.
+
+---
+
+## 2026-09-22 — Habilidade é restrição flexível, não restrição de domínio
+
+O profissional pode ser atribuído a turno cuja habilidade ele não tem; a atribuição é
+**penalizada, não proibida**. A penalidade entra como coeficiente na própria variável de
+atribuição `x[n,s,d]`, quando a restrição está ativa no contrato.
+
+**Por quê.** Três evidências convergentes:
+
+1. *A formulação de referência.* Santos et al. (2016, p. 228) declaram duas restrições
+   rígidas — cobrir a demanda e um turno por pessoa por dia — e listam a habilidade
+   alternativa entre as 13 flexíveis, item 10. Na p. 231, as flexíveis 10 e 13 são penalizadas
+   diretamente nos coeficientes de `x`, pelo coeficiente ν.
+2. *O avaliador oficial.* `hasSkill` aparece num único ponto do código, dentro de
+   `AlternativeSkillCondition`, sob a flag do contrato. Não há checagem rígida de habilidade em
+   lugar nenhum: as únicas rígidas são cobertura excedida e turno não atribuído.
+3. *A reprodução do ótimo.* Com essa leitura, `long01` dá **exatamente 197**, com otimalidade
+   provada — o valor da Tabela 6.
+
+**A versão rígida passa a ser divergência declarada de modelagem**, não interpretação
+disputada do benchmark. Ela fica reservada à instância brasileira, onde compor equipe por
+categoria é justamente o mecanismo em estudo. A flag permanece no código:
+`construir(inst, habilidade_rigida=True)` e `--habilidade-rigida` na linha de comando.
+
+**Por que o teste planejado foi cancelado.** O `PLANO.md` mandava rodar as duas leituras
+contra `long01` = 197 e ver qual batia. O item foi removido, e o motivo fica aqui para não
+ser reaberto: as duas leituras **não são distinguíveis** por esse teste. Em `long01` a
+restrição está desligada, logo o coeficiente é zero e a habilidade não custa nada; a leitura
+rígida apenas restringe o conjunto viável, então só pode devolver 197 ou mais. Se devolvesse
+197 também, o empate não diria nada. A rodada que valia é a livre, e ela já foi feita.
+
+Proposta P3 do `PROPOSTAS.md`, validada em 2026-09-22.
 
 ---
 

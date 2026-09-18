@@ -137,8 +137,10 @@ escolha, usar a primeira.
 
 ## 2026-09-18 — P3: habilidade como restrição flexível, não como domínio
 
-**Status:** aguardando validação. Origem: revisão feita no projeto de redação, conferida
-contra o artigo em 18/09.
+**Status: VALIDADA em 2026-09-22.** Habilidade é flexível com coeficiente na variável de
+atribuição; a versão rígida fica como divergência declarada, reservada à instância brasileira.
+Decisão registrada em `DECISOES.md`, entrada "Habilidade é restrição flexível, não restrição
+de domínio", que também registra por que o teste das duas leituras foi cancelado.
 
 ### O que se propõe
 

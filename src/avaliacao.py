@@ -140,6 +140,29 @@ def _fins_de_semana(inst, n, agenda, contrato):
                                    len(f.datas) - quantas, r.peso, f"fds {f.indice} {turno}")
 
 
+def _fds_em_quatro_semanas(inst, n, agenda, contrato):
+    """Maximo de fins de semana trabalhados em quatro semanas.
+
+    NAO VALIDADA EXTERNAMENTE: a restricao esta com `on="0"` nos 235 contratos das 69
+    instancias, e o avaliador oficial sequer tem classe de condicao para ela. Implementada
+    por completude da definicao oficial (secao 2.1) e porque interessa ao regime 12x36.
+
+    Leitura adotada, declarada por nao haver arbitro: janela deslizante de quatro fins de
+    semana consecutivos; excesso = trabalhados na janela menos o limite, contado uma vez por
+    janela. E a mesma contagem que `modelo.py` lineariza.
+    """
+    r = contrato.max_working_weekends_in_four_weeks
+    if not r.ativa:
+        return
+    fds = inst.fins_de_semana(contrato.id)
+    trabalhados = [any(d in agenda for d in f.datas) for f in fds]
+    for i in range(len(fds) - 3):
+        conta = sum(trabalhados[i:i + 4])
+        if conta > r.valor:
+            yield Violacao(n, "max_working_weekends_in_four_weeks", conta - r.valor, r.peso,
+                           f"janela {i}")
+
+
 def _noite_antes_de_fds_livre(inst, n, agenda, contrato):
     """NAO PONTUA. O avaliador oficial nao avalia esta restricao.
 
@@ -282,6 +305,7 @@ def violacoes(inst: Instancia, escala) -> list[Violacao]:
         saida += list(_dias_consecutivos(inst, n, trabalha, contrato))
         saida += list(_folgas_consecutivas(inst, n, trabalha, contrato))
         saida += list(_fins_de_semana(inst, n, dias_trabalhados, contrato))
+        saida += list(_fds_em_quatro_semanas(inst, n, dias_trabalhados, contrato))
         saida += list(_noite_antes_de_fds_livre(inst, n, dias_trabalhados, contrato))
         saida += list(_folgas_apos_noites(inst, n, dias_trabalhados, contrato))
         saida += list(_habilidade(inst, n, dias_trabalhados, contrato))

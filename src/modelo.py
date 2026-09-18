@@ -187,6 +187,7 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
         fds = inst.fins_de_semana(c.id)
         precisa_wk = (c.max_consecutive_working_weekends.ativa
                       or c.min_consecutive_working_weekends.ativa
+                      or c.max_working_weekends_in_four_weeks.ativa
                       or com_noite_antes_de_fds and c.no_night_shift_before_free_weekend.ativa)
         wk = {}
         if precisa_wk:
@@ -212,6 +213,30 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
                     depois = (1 - wk[t + R]) if t + R < nw else 1
                     nova_folga("min_consecutive_working_weekends", r.peso * (r.valor - R),
                                sum(wk[j] for j in range(t, t + R)) + antes + depois - (R + 1))
+
+        # maximo de fins de semana trabalhados em quatro semanas. Nenhuma instancia do INRC
+        # a exercita e o avaliador nao tem condicao para ela: implementada por completude da
+        # definicao oficial, sem conferencia externa possivel. Ver DECISOES.md.
+        r = c.max_working_weekends_in_four_weeks
+        if r.ativa:
+            for i in range(len(fds) - 3):
+                nova_folga("max_working_weekends_in_four_weeks", r.peso,
+                           sum(wk[j] for j in range(i, i + 4)) - r.valor)
+
+        # duas folgas depois de uma sequencia de noites. Mesma situacao: implementada sem
+        # conferencia externa possivel, porque o elemento nao aparece em nenhuma instancia.
+        r = c.two_free_days_after_night_shifts
+        if r.ativa:
+            noturnos = [s for s, t in inst.turnos.items() if t.noturno and n in elegiveis[s]]
+            if noturnos:
+                for i in range(nd):
+                    noite_hoje = sum(m.x[n, s, dias[i]] for s in noturnos)
+                    noite_amanha = (sum(m.x[n, s, dias[i + 1]] for s in noturnos)
+                                    if i + 1 < nd else 0)
+                    for j in (i + 1, i + 2):
+                        if j < nd:
+                            nova_folga("two_free_days_after_night_shifts", r.peso,
+                                       noite_hoje - noite_amanha + y[j] - 1)
 
         # fim de semana completo: penalidade = |W| x (numero de blocos) - dias trabalhados
         r = c.complete_weekends
@@ -443,21 +468,27 @@ def main() -> int:
     if problemas:
         return 1
 
+    penalidade_final = 0
     if not args.minimo:
         do_modelo, do_python = valor_objetivo(m), penalidade(inst, escala)
+        penalidade_final = do_python
+        otimo = "optimal" in estado(resultado).lower()
         bate = do_modelo == do_python
         print(f"objetivo do modelo: {do_modelo} | avaliacao.py: {do_python} | "
-              + ("OK" if bate else "DIVERGEM"))
-        if not bate:
+              + ("OK" if bate else ("acima, solver parado no limite de tempo"
+                                    if not otimo else "DIVERGEM")))
+        # Parado no limite de tempo, as folgas nao estao apertadas e o objetivo do modelo
+        # fica ACIMA da penalidade real da escala. So ha divergencia de verdade quando o
+        # solver provou otimalidade.
+        if not bate and otimo:
             return 1
 
     destino = Path(args.saida) if args.saida else (
         raiz / "resultados" / f"{inst.id}{'_minimo' if args.minimo else ''}.xml")
-    escrever_xml(inst, escala, destino,
-                 penalidade=0 if args.minimo else valor_objetivo(m), validar=True)
+    escrever_xml(inst, escala, destino, penalidade=penalidade_final, validar=True)
     print(f"solucao escrita e validada: {destino}")
     print(f"proximo passo: python src\\validar.py {args.instancia} {destino}"
-          + ("" if args.minimo else f" --objetivo {valor_objetivo(m)}"))
+          + ("" if args.minimo else f" --objetivo {penalidade_final}"))
     return 0
 
 
