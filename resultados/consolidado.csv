@@ -1,0 +1,6 @@
+﻿instancia;arquivo;tabela6;modelo;avaliador_oficial;situacao;segundos;variaveis;restricoes;ambiente
+sprint_early01;sprint01.xml;56;56;56;otimo provado;2.5;3018;2450;HiGHS via SciPy, container de desenvolvimento
+sprint_early02;sprint02.xml;58;58;58;otimo provado;0.9;3032;2464;HiGHS via SciPy, container de desenvolvimento
+long_early01;long01.xml;197;197;197;otimo provado;5.0;15225;10857;HiGHS via SciPy, container de desenvolvimento
+long_early02;long02.xml;219;219;219;otimo provado;19.1;15225;10857;HiGHS via SciPy, container de desenvolvimento
+medium_late05;medium_late05.xml;107;716;716;limite de tempo, 520s;520.0;15320;13060;HiGHS via SciPy, container de desenvolvimento

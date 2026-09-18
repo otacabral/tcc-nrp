@@ -22,11 +22,14 @@ Fora de sessao, fazer assim que possivel
       resolve long01
 
 Sessao 2 - parser
-- [ ] src/instancia.py: dataclasses puras, sem Pyomo
-- [ ] src/parser.py: XML -> Instancia, respeitando on= e expandindo
-      DayOfWeekCover para os dias do horizonte
-- [ ] conferencia: long01 = 740 atribuicoes, 49 profissionais, 6 HeadNurse
-- [ ] conferencia: sprint01 com on="0" nas tres restricoes de fim de semana
+- [x] src/instancia.py: dataclasses puras, sem Pyomo
+- [x] src/parser.py: XML -> Instancia, respeitando on= e expandindo
+      DayOfWeekCover para os dias do horizonte (com DateSpecificCover tendo
+      precedencia) e conferindo integridade referencial
+- [x] conferencia: long01 = 740 atribuicoes, 49 profissionais, 6 HeadNurse
+- [x] conferencia: sprint01 com on="0" nas tres restricoes de fim de semana
+- [x] conferencia cruzada: as 69 instancias batem com o inventario da Sessao 1
+      em 9 campos cada
 
 Sessao 3 - encanamento
 - [x] src/modelo.py: apenas as duas rigidas, com solver como parametro e flag
@@ -44,8 +47,26 @@ Sessao 3 - encanamento
 
 ## Semanas 2-3 (ate 29/09) - modelo completo
 
-- [ ] ativar as 13 flexiveis UMA POR VEZ, conferindo no avaliador a cada uma
-      (modo sem -p detalha violacoes por profissional e aponta a divergencia)
+- [x] src/avaliacao.py: penalidade de uma escala em Python puro, restricao por
+      restricao e profissional por profissional. Oraculo de semantica para a
+      funcao objetivo, e decomposicao por profissional para o Experimento B
+- [x] semantica das 13 flexiveis conferida contra o avaliador oficial: 207
+      escalas nas 69 instancias, penalidade IDENTICA em todas, por profissional
+      e por restricao. As 13 exercitaveis pelos dados foram exercitadas; as 6
+      que ficaram com zero sao as que nenhuma instancia produz
+- [x] achado: NoNightShiftBeforeFreeWeekend NAO e pontuada pelo avaliador. O
+      campo e lido e nunca usado por nenhuma condicao. Implementa-la faria o
+      modelo divergir em 44 das 69 instancias, medium_late05 inclusive
+- [x] funcao objetivo no modelo.py, espelhando avaliacao.py. Montada por familia
+      de restricao (m.parcela[familia]), o que permite comparar com avaliacao.py
+      restricao por restricao quando divergir — e alimenta o Experimento B
+- [x] teste de linearizacao: escala fixada no modelo, objetivo do modelo igual ao
+      de avaliacao.py. Achou um erro real — o padrao de dia fixo penalizava uma
+      vez por dia do fim de semana em vez de uma vez por semana
+- [x] MARCO ANTECIPADO: sprint01 = 56, sprint02 = 58, long01 = 197, long02 = 219,
+      todos com otimo provado e batendo no avaliador oficial
+- [ ] medium_late05 = 107: nao fechou em 230s. Pela Tabela 3 do Santos, o CPLEX
+      leva ~1h partindo de solucao gulosa. Rodar com limite maior
 - [x] regressao da regra de ativacao: FEITA em 15/09, regra confirmada no
       avaliador por dois testes independentes. Ver DECISOES.md
 - [ ] resolver AlternativeSkillCategory: flag no codigo (ja existe:
@@ -55,8 +76,8 @@ Sessao 3 - encanamento
       197 da Tabela 6, entao o teste so roda com a funcao objetivo completa
 - [ ] medir tempo ate provar otimalidade em long01 nos solvers disponiveis e
       escolher o dos experimentos -> entrada datada em DECISOES.md
-- [ ] MARCO: sprint01 = 56, long01 = 197
-- [ ] confirmacao independente: sprint02 = 58, long02 = 219
+- [x] MARCO: sprint01 = 56, long01 = 197
+- [x] confirmacao independente: sprint02 = 58, long02 = 219
 - [ ] cobertura ampla: medium_late05 = 107. E o alvo que exercita fins de semana
       consecutivos, turno noturno antes de fim de semana livre, habilidade
       alternativa e pesos diferentes de 1
@@ -90,16 +111,22 @@ Sessao 3 - encanamento
 
 ## Convencoes de codigo
 
-src/ tem seis arquivos com fronteira definida:
+src/ tem fronteira definida por arquivo:
 
 | Arquivo | Papel |
 |---|---|
 | instancia.py | dataclasses puras, zero Pyomo |
-| parser.py | XML -> Instancia |
+| parser.py | XML -> Instancia; tambem a descoberta dos arquivos |
+| avaliacao.py | penalidade de uma escala em Python puro, por restricao e por profissional |
 | modelo.py | Instancia -> modelo Pyomo |
 | solucao.py | solucao Pyomo -> XML do avaliador |
 | validar.py | invoca o avaliador e compara objetivos |
-| experimentos.py | Experimentos A e B |
+| inspecionar.py | varredura das instancias, emite os inventarios em docs/ |
+| experimentos.py | Experimentos A e B (a fazer) |
+
+avaliacao.py nao estava no plano original. Entrou na semana 2 com duas funcoes: fixar a
+semantica das flexiveis contra o avaliador antes de a funcao objetivo existir, e decompor a
+penalidade por profissional, que e o que o Experimento B pede e o modelo nao da.
 
 Regra: modelo.py consome apenas Instancia, nunca XML. E o que permite a
 instancia brasileira entrar sem tocar no modelo.

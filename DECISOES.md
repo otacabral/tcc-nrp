@@ -344,6 +344,95 @@ Implementado em `src/modelo.py`, restrição `cobertura`.
 
 ---
 
+## 2026-09-18 — Restrição não pontuada pelo avaliador fica fora da função objetivo
+
+`NoNightShiftBeforeFreeWeekend` **não entra na função objetivo nas instâncias do INRC**.
+Continua implementada e documentada em `src/avaliacao.py`, e volta a valer na instância
+brasileira.
+
+**Por quê.** O avaliador oficial não pontua essa restrição. Verificado em 2026-09-18 no
+código-fonte que acompanha o `evaluator.jar`: o campo `NO_NIGHT_FREE` é lido pelo parser,
+guardado no contrato e reescrito na saída, mas nenhuma condição o lê — a classe que monta as
+condições da numeração instancia treze, e não há nenhuma para esta. Confirmado
+empiricamente: o rótulo "No night shift before free weekend" não aparece na saída detalhada
+em nenhuma instância, nem quando a restrição está ligada com peso 10 e a escala contém
+exatamente a situação que ela penalizaria.
+
+**Consequência.** A restrição está ligada em 44 das 69 instâncias, entre elas a
+`medium_late05`, que é alvo de validação. Implementá-la com peso faria o valor do modelo
+divergir do avaliador nessas 44 — e o sintoma pareceria erro da nossa função objetivo.
+
+**Relação com a P2.** A P2, validada em 15/09, mandou implementar as 13 flexíveis. Esta
+entrada não a revoga: o modelo cobre as 13. O que muda é que uma delas fica com peso zero
+nas instâncias do INRC, por divergência declarada do avaliador — situação diferente das
+outras três, que apenas não são exercitadas pelos dados. Na instância brasileira, onde não há
+avaliador para contradizer e a regra tem sentido clínico, ela entra normalmente.
+
+O mesmo vale, sem consequência prática, para `MaxWorkingWeekendsInFourWeeks`: também não tem
+classe de condição no avaliador, e está desligada nos 235 contratos.
+
+---
+
+## 2026-09-18 — Semântica das flexíveis validada fora do modelo
+
+A penalidade de uma escala passou a ser calculada também em Python puro, em
+`src/avaliacao.py`, e conferida contra o avaliador oficial **antes** de a função objetivo
+existir.
+
+Resultado: 207 escalas nas 69 instâncias, penalidade idêntica à do avaliador em todas, par a
+par de profissional × restrição. Das 19 chaves de penalidade, 13 foram exercitadas; as 6 que
+ficaram em zero são exatamente as que nenhuma instância produz.
+
+Por que isso vale registro: separa erro de semântica de erro de modelagem. Quando a função
+objetivo do Pyomo divergir, a dúvida não será mais "entendi a restrição errado ou linearizei
+errado" — a semântica já está fixada contra o árbitro externo, e o que sobra é linearização.
+
+Efeito colateral útil: a decomposição por profissional que o Experimento B exige — penalidade
+máxima individual, amplitude, dispersão — sai desse módulo, já que o modelo só devolve o
+total.
+
+---
+
+## 2026-09-18 — Funcao objetivo: uma folga por violacao, nao por termo
+
+A funcao objetivo lineariza a semantica fixada em `src/avaliacao.py`. Duas convencoes de
+construcao, ambas com consequencia numerica:
+
+**Uma variavel de folga por violacao, com tantos limites inferiores quantos forem
+necessarios.** O erro que isso corrige foi real: o padrao "livre na sexta, trabalha no fim de
+semana" gerava uma folga por dia do fim de semana, entao quem trabalhasse sabado e domingo
+pagava duas vezes. O avaliador cobra uma vez por semana. No `long02` isso valia 16 pontos, e
+era a diferenca entre provar 221 e provar o otimo correto, 219.
+
+**Contagem por janela, quando a penalidade e proporcional ao excesso.** Para o maximo de dias
+consecutivos com limite L, uma folga por janela de L+1 dias reproduz exatamente `bloco - L`,
+porque um bloco de tamanho R contem R-L janelas inteiras. Para o minimo, um indicador por
+(inicio, tamanho de bloco curto), com dia virtual de folga fora do horizonte — bloco encostado
+na borda conta.
+
+A funcao objetivo e montada **por familia de restricao** (`m.parcela[familia]`). Nao e
+enfeite: foi a decomposicao que localizou o erro acima, e e a mesma decomposicao que o
+Experimento B precisa.
+
+**Resultado da validacao**, com o modelo completo e habilidade tratada como flexivel:
+
+| Instancia | Otimo provado | Tabela 6 | Avaliador oficial |
+|---|---|---|---|
+| sprint01 | 56 | 56 | 56 |
+| sprint02 | 58 | 58 | 58 |
+| long01 | 197 | 197 | 197 |
+| long02 | 219 | 219 | 219 |
+
+Os tres valores coincidem em cada linha: funcao objetivo do modelo, `avaliacao.py` e avaliador
+oficial. `medium_late05` = 107 segue pendente por tempo de solver, nao por semantica.
+
+Ressalva de leitura, para nao virar erro no texto: quando o solver para no limite de tempo, as
+folgas nao estao apertadas e o valor da funcao objetivo fica **acima** da penalidade real da
+escala. Só vale comparar objetivo com penalidade quando a otimalidade foi provada; fora disso,
+a penalidade que conta e a calculada pelo `avaliacao.py` sobre a escala.
+
+---
+
 ## Perguntas abertas
 
 ### Fim de semana incompleto no horizonte

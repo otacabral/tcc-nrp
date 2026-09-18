@@ -132,3 +132,102 @@ Se a instância brasileira precisar limitar fins de semana trabalhados, há duas
 candidatas: a de fins de semana consecutivos, exercitada por 49 instâncias e portanto
 validável, e a de fins de semana em quatro semanas, não exercitada por nenhuma. Havendo
 escolha, usar a primeira.
+
+---
+
+## 2026-09-18 — P3: habilidade como restrição flexível, não como domínio
+
+**Status:** aguardando validação. Origem: revisão feita no projeto de redação, conferida
+contra o artigo em 18/09.
+
+### O que se propõe
+
+Adotar a habilidade como **restrição flexível com coeficiente na variável de atribuição**,
+que é a formulação de Santos et al. (2016), e tratar a versão rígida — profissional só pode
+cobrir turno cuja habilidade ele tem — como **divergência declarada de modelagem, reservada
+à instância brasileira**.
+
+### Por quê
+
+- Santos et al. (2016, p. 228) declaram duas rígidas, as mesmas da documentação oficial, e
+  listam habilidade alternativa entre as 13 flexíveis (item 10).
+- Na p. 231, as flexíveis 10 e 13 são penalizadas diretamente nos coeficientes de `x[n,s,d]`,
+  pelo coeficiente ν. Habilidade, na referência, é custo na atribuição.
+- Coincide com o que o código do `evaluator.jar` faz (ver `DECISOES.md`, 15/09): `hasSkill`
+  só aparece dentro de `AlternativeSkillCondition`, sob a flag; não há checagem rígida.
+
+### Consequência para o teste planejado nas semanas 2-3
+
+O teste das duas leituras contra `long01` = 197 **não distingue as hipóteses**. Em `long01` a
+restrição está desligada, logo ν = 0 e a habilidade não custa nada. A leitura rígida restringe
+o conjunto viável, então só pode dar ótimo maior ou igual a 197 — e, se a restrição não for
+ativa no ótimo, dá exatamente 197 também. Empate não decide nada.
+
+O que muda no plano: a rodada **livre** continua valendo, e é a rodada de validação — se ela
+der exatamente 197, o modelo está certo. A rodada rígida deixa de ser necessária para
+validar; vira diagnóstico opcional.
+
+### Consequência para o código
+
+`src/modelo.py` hoje tem `habilidade_rigida=True` como padrão, restringindo o domínio das
+variáveis. Validada esta proposta, o padrão inverte: variáveis para todo (n, s, d), com
+penalidade ν quando a restrição estiver ativa. A flag permanece, para a instância brasileira.
+
+---
+
+## 2026-09-18 — P4: o invariante do Experimento A precisa ser declarado
+
+**Status:** aguardando validação. **É a proposta mais consequente aberta até aqui, e a única
+que precisa do orientador antes de qualquer código da semana 4.**
+
+### O problema
+
+O Experimento A compara o efetivo mínimo viável sob turnos de 8 horas e sob 12×36 "para a
+mesma cobertura assistencial". A expressão é ambígua, e a escolha decide o **sinal** do
+resultado principal do trabalho.
+
+| Invariante | O que acontece com `long01` | Efetivo mínimo sob 12×36 |
+|---|---|---|
+| **Atribuições** (740 nos dois regimes) | as 740 atribuições passam de 8h para 12h: a assistência entregue sobe de 5.920 h para 8.880 h, mais 50% | ⌈740/14⌉ = **53**, contra 49 |
+| **Horas** (5.920 h nos dois regimes) | mesma assistência entregue | ⌈(5920/12)/14⌉ = **36**, contra 49 |
+
+Pelo invariante de atribuições, o 12×36 "exige mais gente" — mas exige porque comprou 50% mais
+cuidado. Pelo invariante de horas, o 12×36 **economiza cerca de 27% do efetivo**.
+
+### O que isso derruba
+
+A entrada do `DECISOES.md` de 08/09, "12×36 é inviável no efetivo original: vira Experimento
+A", está construída sobre o invariante de atribuições: 740 atribuições contra capacidade de
+49 × 14 = 686, dando 108% de utilização. Sob o invariante de horas não há inviabilidade
+nenhuma — sobra folga. A motivação registrada do Experimento A depende de uma escolha que
+nunca foi declarada.
+
+A estimativa de "90 a 100 profissionais" registrada na mesma entrada não decorre de nenhum
+dos dois invariantes. Pela aritmética da própria entrada o piso é 53.
+
+### Agravante: o baseline não é um regime de 8 horas brasileiro
+
+`long01` opera a 54% de utilização — 49 profissionais para 740 atribuições em 28 dias, cerca
+de 15 turnos por pessoa, algo como 30 horas semanais. Comparar esse baseline com um 12×36 em
+utilização plena mistura mudança de regime com mudança de utilização, e são efeitos separáveis.
+
+### Por que isso é risco de banca
+
+Uma banca de Engenharia de Produção sabe que o 12×36 é adotado em hospital brasileiro em parte
+por economizar efetivo. Um resultado afirmando que ele quase dobra o efetivo será lido como
+artefato de modelagem — e a leitura estará correta. Isso está no objetivo geral do trabalho,
+não numa nota de rodapé.
+
+### Encaminhamentos possíveis, a levar ao orientador
+
+1. **Invariante de horas**, com o efetivo de 8 horas recalculado no mesmo critério de
+   utilização do 12×36. A pergunta vira "quanto de efetivo cada regime exige para a mesma
+   assistência", e o resultado esperado é economia, não inviabilidade.
+2. **Invariante de horas com as restrições legais brasileiras como rígidas** — descanso de 36
+   horas, teto mensal, composição mínima por categoria. Aqui o efetivo mínimo deixa de ser
+   divisão e passa a depender do modelo, que é o que dá conteúdo ao Experimento A.
+3. **Deslocar o peso do trabalho para o Experimento B**: com cada regime no seu efetivo
+   mínimo, comparar a distribuição da penalidade entre profissionais. Sobrevive a qualquer
+   escolha de invariante, e é afirmação forte pela classificação do próprio `CONTEXTO` §5.
+
+Recomendação: 2 como desenho principal, com 3 como resultado que não depende dele.
