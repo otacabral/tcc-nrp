@@ -107,12 +107,23 @@ extensão do formato. Logo o avaliador oficial permanece aplicável também a el
 
 ### Experimento A — efetivo mínimo viável por regime
 
-Para a mesma cobertura assistencial, qual o efetivo mínimo viável sob turnos de 8 horas e
-sob plantão de 12×36?
+Para a **mesma assistência em horas-profissional**, qual o efetivo mínimo viável sob turnos
+de 8 horas e sob plantão de 12×36?
 
-Motivação: sob `MaxConsecutiveWorkingDays = 1`, a demanda de `long01` (740 atribuições)
-excede a capacidade de 49 profissionais (686). A instância seria inviável nas restrições
-rígidas. O efetivo passa portanto a ser **resultado**, não parâmetro fixo.
+O invariante é **horas**, não atribuições (decisão de 18/09, proposta P4). Converter as 740
+atribuições de 8 h em 740 plantões de 12 h compraria 50% mais cuidado e depois cobraria esse
+cuidado como custo do regime; a comparação só isola o efeito do regime se a assistência
+entregue for a mesma dos dois lados. A demanda é portanto **reconstruída**: vira perfil
+horário e é reagregada em janelas de 12 h. A regra aritmética dessa reagregação é a proposta
+P5, ainda aberta.
+
+O efetivo é **resultado, não parâmetro** — nos dois regimes. O baseline de 8 horas é
+recalculado no mesmo critério de utilização, e não são os 49 profissionais do `long01`, que
+operam a 54% de utilização e não representam um regime de 8 horas brasileiro.
+
+O resultado reportado é a **distância percentual entre o piso aritmético** (horas dividido
+pela capacidade individual) **e o efetivo mínimo viável** em cada regime. O piso é aritmética;
+a diferença até o mínimo viável é o que as restrições custam, e é o que o modelo tem a dizer.
 
 É medida de viabilidade — independente do algoritmo de resolução.
 
@@ -121,6 +132,12 @@ rígidas. O efetivo passa portanto a ser **resultado**, não parâmetro fixo.
 Com o efetivo dimensionado em cada regime, comparar penalidade total e sua distribuição
 entre profissionais: penalidade máxima individual, amplitude entre o mais e o menos
 penalizado, dispersão em relação à média.
+
+O problema tem **ótimos múltiplos**: escalas distintas alcançam o mesmo Z\* e distribuem a
+penalidade de maneiras diferentes. Reportar a dispersão de uma solução ótima seria reportar o
+desempate do solver. Cada célula custa portanto **três resoluções**: o ótimo Z\*, depois Z\*
+fixado como restrição com a dispersão minimizada e com a dispersão maximizada. O reportado é
+a **amplitude** entre os dois extremos, que é propriedade do conjunto de ótimos.
 
 É propriedade da instância no ótimo — independente do algoritmo.
 
@@ -239,8 +256,10 @@ Pontos de atenção verificados nos arquivos originais e na documentação ofici
   Motivo de fundo: o valor ótimo não depende do solver, e as afirmações fortes do trabalho
   (viabilidade, ótimo comprovado, distribuição da penalidade) também não. O que o solver
   determina é **até que tamanho se consegue provar otimalidade** — e isso limita o quanto a
-  instância brasileira pode ser realista, já que o Experimento A projeta efetivo de 90 a 100
-  profissionais contra 49 do `long01`. O argumento para usar solver comercial é não ter de
+  instância brasileira pode ser realista, já que o efetivo dos dois regimes é resultado do
+  modelo e não está limitado aos 49 do `long01`. (A estimativa de "90 a 100 profissionais"
+  que constava aqui foi retirada em 18/09: decorria do invariante de atribuições, abandonado
+  por P4, e não seguia da aritmética de nenhum dos dois invariantes.) O argumento para usar solver comercial é não ter de
   encolher a instância brasileira para caber no solver.
 
   Ressalvas a registrar no texto: resultado obtido em solver comercial exige licença para ser

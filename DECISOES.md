@@ -371,7 +371,7 @@ avaliador para contradizer e a regra tem sentido clínico, ela entra normalmente
 O mesmo vale, sem consequência prática, para `MaxWorkingWeekendsInFourWeeks`: também não tem
 classe de condição no avaliador, e está desligada nos 235 contratos.
 
-**Contagem correta das 13, para o texto** (corrigida em 2026-09-22; a redação anterior somava
+**Contagem correta das 13, para o texto** (corrigida em 2026-09-18; a redação anterior somava
 15 porque contava os pedidos "on" como restrições à parte):
 
 | Situação | Quantas | Quais |
@@ -483,7 +483,7 @@ a penalidade que conta e a calculada pelo `avaliacao.py` sobre a escala.
 
 ---
 
-## 2026-09-22 — Habilidade é restrição flexível, não restrição de domínio
+## 2026-09-18 — Habilidade é restrição flexível, não restrição de domínio
 
 O profissional pode ser atribuído a turno cuja habilidade ele não tem; a atribuição é
 **penalizada, não proibida**. A penalidade entra como coeficiente na própria variável de
@@ -513,7 +513,85 @@ restrição está desligada, logo o coeficiente é zero e a habilidade não cust
 rígida apenas restringe o conjunto viável, então só pode devolver 197 ou mais. Se devolvesse
 197 também, o empate não diria nada. A rodada que valia é a livre, e ela já foi feita.
 
-Proposta P3 do `PROPOSTAS.md`, validada em 2026-09-22.
+Proposta P3 do `PROPOSTAS.md`, validada em 2026-09-18.
+
+---
+
+## 2026-09-18 — Invariante do Experimento A: horas de assistência
+
+O Experimento A compara os dois regimes a **horas de assistência constantes**, não a
+atribuições constantes. A instância de 12×36 tem de entregar a mesma assistência em
+horas-profissional que a instância de 8 horas de onde ela foi derivada.
+
+**Por quê.** Sob o invariante de atribuições, passar 740 turnos de 8 h para 12 h compra 50%
+mais cuidado e depois cobra esse cuidado como se fosse custo do regime: o 12×36 apareceria
+exigindo mais gente por um motivo que não é o regime. A comparação só isola o efeito do
+regime se a assistência entregue for a mesma nos dois lados. Resolve a proposta P4.
+
+**Consequências declaradas:**
+
+1. A conversão da demanda de 8 h para blocos de 12 h é **reconstrução**, não reetiquetagem:
+   a demanda vira um perfil horário e é reagregada nas janelas de 12 h.
+2. O efetivo do regime de 8 horas é **recalculado** no mesmo critério do 12×36. O baseline
+   deixa de ser os 49 profissionais do `long01`, que operam a 54% de utilização e não
+   representam um regime de 8 horas brasileiro. Comparar 49 com um 12×36 em utilização plena
+   misturaria mudança de regime com mudança de utilização.
+3. O resultado do Experimento A é a **distância percentual entre o piso aritmético e o efetivo
+   mínimo viável**, em cada regime — não o número absoluto de profissionais. O piso vem da
+   divisão horas/capacidade; o mínimo viável vem do modelo. A diferença entre os dois é o que
+   as restrições custam, e é o que o modelo tem a dizer.
+
+**Ressalva.** A entrada de 08/09 "12×36 é inviável no efetivo original: vira Experimento A"
+foi construída sobre o invariante de atribuições e **está superada** nessa parte: sob o
+invariante de horas não há inviabilidade no efetivo original. A estimativa de "90 a 100
+profissionais" registrada lá não decorre de nenhum dos dois invariantes e não deve ser usada.
+
+**Pendência aberta.** A regra aritmética da conversão ainda não está fechada: a regra de teto
+por janela não satisfaz este invariante. Ver P5 no `PROPOSTAS.md`.
+
+---
+
+## 2026-09-18 — Composição da equipe e grau de dependência são parâmetros de entrada
+
+A instância brasileira é construída por `src/instancia_br.py` com **composição da equipe por
+categoria** (enfermeiro / técnico) e **grau de dependência assistencial** como parâmetros de
+entrada, variáveis, e não como valores fixados no código.
+
+**Por quê.** O objetivo específico 5 é análise de sensibilidade. Se a composição e o grau de
+dependência estiverem embutidos no construtor, a análise de sensibilidade exige editar código
+a cada cenário, e o que for publicado no texto não é reprodutível a partir de um comando. Como
+parâmetros, cada cenário é uma linha em `resultados/consolidado.csv` com os parâmetros na
+própria linha.
+
+**Consequência.** O grau de dependência assistencial deixa de ser pergunta aberta: não está em
+base pública porque é classificação clínica, não cadastral, e por isso entra como parâmetro em
+três níveis (mínimo, intermediário, intensivo) em vez de suposição única. O mesmo vale para a
+composição por categoria, cuja origem normativa é declarada mas cujo valor é varrido.
+
+---
+
+## 2026-09-18 — Experimento B: fixar o ótimo e reportar a amplitude da dispersão
+
+No Experimento B, a distribuição da penalidade entre profissionais é medida **com o valor
+ótimo Z\* fixado como restrição**, resolvendo duas vezes: uma minimizando a medida de
+dispersão e outra maximizando-a. O resultado reportado é a **amplitude** entre os dois, não um
+número único.
+
+**Por quê.** O problema tem ótimos múltiplos: várias escalas distintas alcançam o mesmo Z\*, e
+elas distribuem a penalidade de maneiras diferentes entre as pessoas. Reportar a dispersão de
+*uma* solução ótima é reportar o desempate arbitrário do solver, que muda com a versão, com a
+semente e com a ordem das restrições. Com Z\* fixado e a dispersão otimizada nos dois sentidos,
+o que se afirma é uma propriedade do conjunto de ótimos, não do solver.
+
+**Consequência.** Cada célula do Experimento B custa três resoluções, não uma: o ótimo e os
+dois extremos. As instâncias precisam ser pequenas o bastante para provar otimalidade três
+vezes — exigência que já estava no `PLANO.md` e agora tem motivo registrado.
+
+**Ressalva.** Se a amplitude sair estreita, a afirmação fica forte: a distribuição é
+propriedade do ótimo. Se sair larga, a afirmação vira outra e igualmente publicável: o critério
+de penalidade total **não determina** a distribuição, e escolher entre ótimos é decisão de
+gestão que o modelo não toma sozinho. Os dois desfechos servem ao trabalho; nenhum deles é
+resultado negativo.
 
 ---
 
@@ -589,11 +667,11 @@ justamente o mecanismo que a instância brasileira usa.
 Alternativa ainda não consultada: o relatório técnico da competição (CODeS/Technical
 Report/2010/1, citado nos anais do PATAT 2010) traz a descrição formal das restrições.
 
-### Grau de dependência assistencial da instância brasileira
+### ~~Grau de dependência assistencial da instância brasileira~~ — FECHADA em 18/09
 
-Não está em base pública — é classificação clínica, não cadastral. Decisão: tratar como
-**parâmetro experimental** (mínimo, intermediário, intensivo) em vez de suposição fixa.
-A confirmar com o orientador.
+Resolvida: entra como parâmetro de entrada em três níveis, junto com a composição por
+categoria. Ver a entrada "Composição da equipe e grau de dependência são parâmetros de
+entrada". Mantida aqui só para não parecer que a pergunta foi esquecida.
 
 ### Status jurídico do arcabouço normativo de dimensionamento
 

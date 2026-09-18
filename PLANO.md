@@ -69,10 +69,10 @@ Sessao 3 - encanamento
       leva ~1h partindo de solucao gulosa. Rodar com limite maior
 - [x] regressao da regra de ativacao: FEITA em 15/09, regra confirmada no
       avaliador por dois testes independentes. Ver DECISOES.md
-- [x] AlternativeSkillCategory RESOLVIDA em 22/09: habilidade e flexivel com
+- [x] AlternativeSkillCategory RESOLVIDA em 18/09: habilidade e flexivel com
       coeficiente na variavel de atribuicao. O item que mandava rodar as duas
       leituras contra o 197 foi REMOVIDO por nao distinguir as hipoteses; o
-      motivo esta na entrada de 22/09 do DECISOES.md, para nao ser reaberto
+      motivo esta na entrada de 18/09 do DECISOES.md, para nao ser reaberto
 - [ ] medir tempo ate provar otimalidade em long01 nos solvers disponiveis e
       escolher o dos experimentos -> entrada datada em DECISOES.md
 - [x] MARCO: sprint01 = 56, long01 = 197
@@ -88,21 +88,98 @@ Sessao 3 - encanamento
 
 ## Semana 4 (30/09-06/10) - instancia brasileira
 
-- [ ] src/instancia_br.py: constroi Instancia em codigo, serializa para XML
-      oficial, valida contra o esquema antes de resolver
+- [ ] BLOQUEIO: P5 do PROPOSTAS.md, a discretizacao da demanda em blocos de 12h.
+      Medido em 18/09: nenhuma regra de arredondamento serve. Teto e maior resto
+      caem os dois no TOPO da faixa admissivel do pico de 48h — 40 contra faixa
+      [38,40] no total, 8 e 7 contra faixa [5,8] no chefe. As duas inflam o piso
+      de efetivo do 12x36, que e o lado que o trabalho mede. Proposta: demanda
+      por janela vira variavel inteira entre piso e teto, com o total por
+      categoria fixado. Nada de instancia brasileira antes de fechar isso
+- [ ] REQUISITO ANTI-TAUTOLOGIA, antes de qualquer codigo: o perfil continuo
+      tem de vir da necessidade assistencial HORA A HORA (horas de enfermagem por
+      paciente em 24 h, do dimensionamento normativo), NUNCA de blocos de 8 h nem
+      de 12 h. Montado como "manha, tarde, noite", o braco de 8 h nasce com
+      residuo zero de graca e a assimetria volta embutida no primitivo, invisivel
+- [ ] conferencia do gerador: reagregar o perfil emitido nos DOIS tamanhos de
+      janela e verificar que nenhum dos dois da residuo zero. Residuo zero em
+      qualquer um deles reprova o perfil — e sintoma de que o primitivo foi
+      construido naquele tamanho (e o que acontece nas 4 instancias de controle)
+- [ ] src/instancia_br.py: o PRIMITIVO e o perfil assistencial horario continuo,
+      nao a demanda ja em blocos. Os dois regimes (8h e 12x36) sao emitidos a
+      partir dele pela mesma regra, o que torna a comparacao simetrica por
+      construcao. Medido em 18/09: o long01 nao permite essa simetria porque
+      seus turnos se sobrepoem (D e DH cruzam a fronteira das 14:30) e o perfil
+      continuo de origem dele nao existe
+- [ ] src/instancia_br.py: serializa para XML oficial, valida contra o esquema
+      antes de resolver. Emitir DUAS instancias, uma por teto e outra por maior
+      resto por categoria, que sao as duas pontas do intervalo reportado
+- [ ] REQUISITO do gerador: as duas instancias emitidas saem do MESMO perfil
+      continuo e diferem SO na regra de reagregacao. Se nascerem de perfis
+      diferentes, o par deixa de medir o efeito da regra. Conferencia: os dois
+      XML tem de ter o mesmo total de horas antes do arredondamento
 - [ ] desagregacao enfermeiro/tecnico via tipo de turno por horario x categoria
 - [ ] regime 12x36 como MaxConsecutiveWorkingDays = 1
 - [ ] efetivo parametrizavel (e resultado no Experimento A, nao parametro)
-- [ ] grau de dependencia assistencial em tres niveis
+- [ ] composicao por categoria e grau de dependencia como PARAMETROS DE ENTRADA
+      da funcao construtora, varridos nos experimentos, nao fixados no codigo
+      (decisao de 18/09; e o que torna o objetivo especifico 5 reprodutivel)
+- [ ] regra de discretizacao da demanda como PARAMETRO do gerador (fixa por regra
+      ou variavel em faixa), pelo mesmo motivo dos outros dois
+- [ ] conferencia obrigatoria: horas-profissional da instancia nova x 5.920 h do
+      long01, POR CATEGORIA, com tolerancia de um bloco de 12 h por categoria.
+      A tolerancia e necessaria: 5.920 nao e divisivel por 12 (= 493,33 blocos)
 
 ## Semana 5 (07-13/10) - experimentos
 
 - [ ] src/experimentos.py, saida em resultados/consolidado.csv
-- [ ] Experimento A: efetivo minimo viavel em 8h e em 12x36
+- [ ] Experimento A: efetivo minimo viavel em 8h e em 12x36, a horas de
+      assistencia constantes. Reportar a DISTANCIA PERCENTUAL entre o piso
+      aritmetico e o minimo viavel em cada regime, nao o numero absoluto.
+      O efetivo de 8h e recalculado, nao e os 49 do long01
+- [ ] Experimento A: reportar INTERVALO, nao ponto. A comparacao entre regimes
+      se faz com o intervalo inteiro, nunca com a ponta que mais favorece
+- [ ] declarar no texto: na categoria do chefe o intervalo e 60% da grandeza,
+      logo o Experimento A nao sustenta afirmacao quantitativa ali. Sobra a
+      qualitativa, que e o achado
 - [ ] Experimento B: penalidade total e distribuicao (maxima individual,
-      amplitude, dispersao)
+      amplitude, dispersao). TRES resolucoes por celula: o otimo Z*, depois Z*
+      fixado com a dispersao minimizada e maximizada. Reportar a amplitude
 - [ ] pesos identicos entre configuracoes; instancias pequenas o bastante
       para PROVAR otimalidade
+
+## Dependencias externas a este projeto
+
+- [ ] coluna na planilha de triagem dos 110 sobre reagregacao de turnos
+      sobrepostos em janelas disjuntas. Ate ela existir, a frase "a literatura
+      nao discute esse passo" fica SUSPENSA: sem denominador e "nao achei".
+      O achado pode ser apresentado sem essa frase — ele tem denominador
+      proprio (65 de 69 instancias) e grupo de controle (as 4 sem sobreposicao)
+- [ ] ENQUADRAMENTO no texto: a inversao (12x36 distorcendo menos que 8 h) e
+      achado SOBRE O BENCHMARK, nao sobre regimes de jornada. Nas 4 instancias
+      sem sobreposicao a intuicao ingenua esta certa: 12 h custa ~19%, 8 h custa
+      zero. A inversao so existe onde ha sobreposicao, e existe porque ela
+      penaliza o arranjo de 8 h. Escrito de outro jeito, a banca le que o
+      trabalho mostrou o 12x36 discretizando melhor. Nao mostrou
+- [ ] o achado da reagregacao e METODOLOGIA, nao resultado. Cabe numa subsecao
+      do capitulo de dados. Esta FECHADO: nao abrir medicao nova sobre ele
+- [ ] TERMO no texto: "reagregacao de turnos sobrepostos em janelas disjuntas",
+      nunca "discretizacao" como nome do efeito. Nas instancias sem
+      sobreposicao o residuo em janelas de 8 h e zero, e chamar de
+      discretizacao generica convida a pergunta com a resposta errada
+- [ ] as tres fontes normativas da instancia brasileira. O portao FICOU MAIS
+      ESTREITO em 18/09: com o perfil assistencial continuo como primitivo do
+      gerador (P5 revisao 2), as fontes nao alimentam mais a instancia — elas a
+      constituem. Sem fontes nao ha primitivo; sem primitivo nao ha instancia,
+      nem Experimento A, nem B
+- [ ] reescrita do objetivo especifico 2 no projeto de redacao: a instancia
+      passa a ser construida a partir de perfil assistencial derivado de
+      parametros normativos, calibrada para o porte de uma instancia do
+      benchmark. PORTE = total de horas-profissional no horizonte = 5.920 h do
+      long01, que e o proprio invariante da P4. Ver P6 do PROPOSTAS.md
+- [ ] no projeto de redacao, junto com o especifico 2: reformular o gap (nao e
+      "reparametrizar um benchmark", e "construir instancia a partir de
+      parametros normativos calibrada a um benchmark") e dizer na delimitacao
+      1.4 que a instancia e SINTETICA, para nao ser lida como estudo de caso
 
 ## 14/10 - congelamento
 
