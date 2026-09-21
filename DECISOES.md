@@ -595,6 +595,60 @@ resultado negativo.
 
 ---
 
+## 2026-09-21 — Instância brasileira: parâmetros do Parecer Normativo COFEN nº 1/2024
+
+A instância brasileira é construída a partir do Parecer Normativo COFEN nº 1/2024, calibrada
+ao porte do `long01`. Parâmetros extraídos e conferidos na fonte primária pelo projeto de
+redação; **não reinterpretar a norma no código**.
+
+| Grau | Horas/paciente/24 h | % enfermeiros | % técnicos |
+|---|---|---|---|
+| Mínimo | 4 | 33% (mínimo que garanta 1 por turno) | 67% |
+| Intermediário | 6 | 33% (mínimo que garanta 1 por turno) | 67% |
+| Alta dependência | 10 | 36% | 64% |
+| Semi-intensivo | 10 | 42% | 58% |
+| Intensivo | 18 | 52% | 48% |
+
+**O que foi decidido:**
+
+1. **Porte** = 5.920 horas-profissional em 28 dias = 211,43 h/dia. É o mesmo número do
+   invariante da P4, o que amarra as duas propostas: o `long01` fica como referência de
+   escala, não como fonte de demanda.
+2. **Perfil uniforme nas 24 h.** O Parecer dá horas por paciente em 24 h, sem curva horária.
+   Logo 211,43 / 24 = **8,81 profissionais presentes em qualquer hora**.
+3. **Carga semanal de 42 h nos dois regimes.** No 12×36 é estrutural (máx. 14 plantões em
+   28 dias); no de 8 h entra como `MaxNumAssignments` = 21.
+4. **Quadro de referência** do Experimento A, sem IST: QP_ref = 211,43 × 7 / 42 = **35,24**.
+   A fórmula do Parecer (QP = THE × DS × (1 + IST) / CHS) **não depende de regime de
+   jornada** — dá o mesmo quadro para os dois. É isso que o Experimento A põe à prova.
+5. **Grau de dependência como parâmetro**, com o porte fixo em todos os níveis: o que muda é
+   só a composição exigida (33% a 52% de enfermeiros). Isola o efeito da composição.
+6. **Composição no quadro, não na cobertura** (leitura literal do Parecer): o percentual se
+   aplica a quantos enfermeiros são contratados, e a cobertura só carrega o piso de 1
+   enfermeiro por janela onde a norma o prevê — mínimo e intermediário. No código isso vira
+   um turno genérico por janela mais um turno de enfermeiro com cobertura 1.
+7. **A proporção profissional/paciente por turno não é usada.** Era da Resolução 543/2017,
+   revogada. O Parecer não a traz.
+8. **Fora de escopo, declarado:** IST de 15%, 5% de educação permanente, enfermeiros para
+   atividades gerenciais e acréscimo de 10% por restrição de atividade. São fatores de
+   dimensionamento, fora do horizonte de escalonamento, e o IST é multiplicativo igual nos
+   dois regimes — não altera a comparação relativa. Robustez a ausências fica como trabalho
+   futuro.
+
+**Consequência a declarar no texto.** Manter o porte fixo em todos os graus significa que a
+unidade representada **muda de tamanho** conforme o grau: 52,9 pacientes no mínimo contra
+11,7 no intensivo. O número de pacientes nunca entra no modelo — a escala só vê horas e
+composição — mas precisa estar no texto para o leitor saber o que a instância representa.
+
+**Pré-resultado medido em 21/09, antes de qualquer otimização.** Com perfil uniforme, o piso
+aritmético de efetivo é **36 nos dois regimes**: 8,81 por janela vira 9 pelo teto, o que dá
+216 h/dia (+2,16%) e 36 profissionais tanto em 8 h quanto em 12×36. A P5 não se coloca nesta
+instância — o resíduo de arredondamento é idêntico nos dois. Consequência: **qualquer
+diferença que o Experimento A encontrar vem das restrições de escalonamento, não da
+aritmética.** É o que torna o experimento uma pergunta e não uma divisão.
+
+---
+
 ## Perguntas abertas
 
 ### Fim de semana incompleto no horizonte

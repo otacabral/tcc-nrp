@@ -577,6 +577,59 @@ da regra e passa a medir a diferença entre dois perfis. Isso é implementação
 
 ---
 
+## 2026-09-21 — P7: três lacunas encontradas ao escrever o gerador
+
+**Status:** aguardando validação. Nenhuma bloqueia o esqueleto, que está pronto e emitindo
+XML válido. As três afetam o que o Experimento A mede.
+
+### P7.1 — O item 7 da decisão de 21/09 veio com o marcador em branco
+
+A decisão relatada traz "Descanso no regime de 8 h — **[A VALIDAR / VALIDADO]**". O
+marcador não foi resolvido. Implementei como **ligado por padrão**, pelo argumento da
+própria decisão: sem as regras de descanso o braço de 8 h ganha liberdade que o 12×36 não
+tem, e a comparação fica enviesada. A flag `--sem-descanso-clt` desliga, para medir o efeito.
+
+Só precisa de um "validado" ou de um "não".
+
+### P7.2 — No 12×36, `MaxConsecutiveWorkingDays = 1` não garante as 36 h após o plantão noturno
+
+A decisão de 08/09 encoda o 12×36 como um dia sim, um dia não. Isso basta para o plantão
+diurno, mas **não para o noturno**:
+
+| Sequência | Fim | Início seguinte | Descanso | `MaxConsec = 1` permite? |
+|---|---|---|---|---|
+| Diurno dia *d* → diurno dia *d*+2 | 19:00 *d* | 07:00 *d*+2 | 36 h | sim, e está correto |
+| **Noturno dia *d* → diurno dia *d*+2** | **07:00 *d*+1** | **07:00 *d*+2** | **24 h** | **sim, e está errado** |
+| Noturno *d* → noturno *d*+2 | 07:00 *d*+1 | 19:00 *d*+2 | 60 h | sim, correto |
+
+Conserto: um padrão indesejado de três entradas — noturno, folga, diurno. Uma linha no
+gerador.
+
+**Por que importa agora.** O braço de 8 h acabou de ganhar as três proibições de
+interjornada (P7.1). Deixar o 12×36 com um furo de descanso é a assimetria da Revisão 2 de
+novo, com os papéis trocados: desta vez favorecendo o 12×36.
+
+### P7.3 — Os limites legais são flexíveis no formato do INRC, e o Experimento A precisa que binde
+
+No esquema oficial toda restrição de contrato é flexível, com peso. O teto de 42 h/semana
+(`MaxNumAssignments`) e o descanso entram como flexíveis com peso 1 — se o modelo os tratar
+assim, "efetivo mínimo viável" vira capacidade dividida por demanda, e o Experimento A perde
+o conteúdo: qualquer efetivo é viável, basta pagar a penalidade.
+
+Duas saídas, e a escolha é de formulação:
+
+1. **Flag `rigidas_legais` em `modelo.py`** (recomendado): as restrições marcadas como de
+   origem legal entram como rígidas. O arquivo XML emitido continua sendo uma instância
+   normal do INRC, reutilizável por terceiros e aceita pelo avaliador oficial — a rigidez é
+   opção de quem resolve, não propriedade do arquivo.
+2. **Peso alto no arquivo.** Não recomendado: distorce o objetivo, contamina o Experimento B
+   e entrega ao reusuário uma instância com pesos arbitrários.
+
+Recomendação: 1. É a mesma forma da flag `habilidade_rigida` que a P3 já reservou para esta
+instância.
+
+---
+
 ## Nota de contenção, 18/09 — o lugar do achado da reagregação
 
 O achado já rendeu três revisões, uma varredura nas 69, um grupo de controle e dois scripts.

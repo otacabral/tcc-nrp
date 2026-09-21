@@ -88,46 +88,63 @@ Sessao 3 - encanamento
 
 ## Semana 4 (30/09-06/10) - instancia brasileira
 
-- [ ] BLOQUEIO: P5 do PROPOSTAS.md, a discretizacao da demanda em blocos de 12h.
+- [x] BLOQUEIO DA P5 DISSOLVIDO em 21/09: com perfil uniforme, cada janela de
+      8 h e cada janela de 12 h pede os mesmos 8,81 profissionais, e o residuo
+      e IDENTICO nos dois regimes (teto: 9 por janela, +2,16% nos dois). O piso
+      aritmetico e 36 nos DOIS. A assimetria da P5 nao se coloca nesta
+      instancia. Mantidas as duas instancias por regra e a conferencia de
+      total de horas com tolerancia de um bloco. Historico abaixo:
+- [x] BLOQUEIO: P5 do PROPOSTAS.md, a discretizacao da demanda em blocos de 12h.
       Medido em 18/09: nenhuma regra de arredondamento serve. Teto e maior resto
       caem os dois no TOPO da faixa admissivel do pico de 48h — 40 contra faixa
       [38,40] no total, 8 e 7 contra faixa [5,8] no chefe. As duas inflam o piso
       de efetivo do 12x36, que e o lado que o trabalho mede. Proposta: demanda
       por janela vira variavel inteira entre piso e teto, com o total por
       categoria fixado. Nada de instancia brasileira antes de fechar isso
-- [ ] REQUISITO ANTI-TAUTOLOGIA, antes de qualquer codigo: o perfil continuo
+- [x] REQUISITO ANTI-TAUTOLOGIA, antes de qualquer codigo: o perfil continuo
       tem de vir da necessidade assistencial HORA A HORA (horas de enfermagem por
       paciente em 24 h, do dimensionamento normativo), NUNCA de blocos de 8 h nem
       de 12 h. Montado como "manha, tarde, noite", o braco de 8 h nasce com
       residuo zero de graca e a assimetria volta embutida no primitivo, invisivel
-- [ ] conferencia do gerador: reagregar o perfil emitido nos DOIS tamanhos de
+- [x] conferencia do gerador: reagregar o perfil emitido nos DOIS tamanhos de
       janela e verificar que nenhum dos dois da residuo zero. Residuo zero em
       qualquer um deles reprova o perfil — e sintoma de que o primitivo foi
       construido naquele tamanho (e o que acontece nas 4 instancias de controle)
-- [ ] src/instancia_br.py: o PRIMITIVO e o perfil assistencial horario continuo,
+- [x] src/instancia_br.py: o PRIMITIVO e o perfil assistencial horario continuo,
       nao a demanda ja em blocos. Os dois regimes (8h e 12x36) sao emitidos a
       partir dele pela mesma regra, o que torna a comparacao simetrica por
       construcao. Medido em 18/09: o long01 nao permite essa simetria porque
       seus turnos se sobrepoem (D e DH cruzam a fronteira das 14:30) e o perfil
       continuo de origem dele nao existe
-- [ ] src/instancia_br.py: serializa para XML oficial, valida contra o esquema
+- [x] src/instancia_br.py: serializa para XML oficial, valida contra o esquema
       antes de resolver. Emitir DUAS instancias, uma por teto e outra por maior
       resto por categoria, que sao as duas pontas do intervalo reportado
-- [ ] REQUISITO do gerador: as duas instancias emitidas saem do MESMO perfil
+- [x] REQUISITO do gerador: as duas instancias emitidas saem do MESMO perfil
       continuo e diferem SO na regra de reagregacao. Se nascerem de perfis
       diferentes, o par deixa de medir o efeito da regra. Conferencia: os dois
       XML tem de ter o mesmo total de horas antes do arredondamento
-- [ ] desagregacao enfermeiro/tecnico via tipo de turno por horario x categoria
-- [ ] regime 12x36 como MaxConsecutiveWorkingDays = 1
-- [ ] efetivo parametrizavel (e resultado no Experimento A, nao parametro)
-- [ ] composicao por categoria e grau de dependencia como PARAMETROS DE ENTRADA
+- [x] desagregacao enfermeiro/tecnico via tipo de turno por horario x categoria
+- [x] regime 12x36 como MaxConsecutiveWorkingDays = 1 (COM FURO: ver P7.2,
+      o plantao noturno so ganha 24 h de descanso, nao 36)
+- [x] efetivo parametrizavel (e resultado no Experimento A, nao parametro)
+- [x] composicao por categoria e grau de dependencia como PARAMETROS DE ENTRADA
       da funcao construtora, varridos nos experimentos, nao fixados no codigo
       (decisao de 18/09; e o que torna o objetivo especifico 5 reprodutivel)
-- [ ] regra de discretizacao da demanda como PARAMETRO do gerador (fixa por regra
+- [x] regra de discretizacao da demanda como PARAMETRO do gerador (fixa por regra
       ou variavel em faixa), pelo mesmo motivo dos outros dois
-- [ ] conferencia obrigatoria: horas-profissional da instancia nova x 5.920 h do
+- [x] conferencia obrigatoria: horas-profissional da instancia nova x 5.920 h do
       long01, POR CATEGORIA, com tolerancia de um bloco de 12 h por categoria.
       A tolerancia e necessaria: 5.920 nao e divisivel por 12 (= 493,33 blocos)
+
+- [ ] P7 do PROPOSTAS.md, tres lacunas achadas ao escrever o gerador. Nenhuma
+      trava o esqueleto; as tres afetam o que o Experimento A mede:
+      P7.1 o item 7 da decisao de 21/09 veio com "[A VALIDAR / VALIDADO]" em
+      branco (descanso CLT no braco de 8 h) — implementado ligado por padrao;
+      P7.2 o 12x36 fica com 24 h de descanso depois do plantao noturno, nao 36;
+      P7.3 os limites legais sao flexiveis no formato do INRC e precisam bindar,
+      o que pede uma flag `rigidas_legais` no modelo.py
+- [ ] emitir as instancias dos 5 graus x 2 regimes x 2 regras depois que a P7
+      fechar, e versionar em instancias/br/
 
 ## Semana 5 (07-13/10) - experimentos
 
@@ -166,7 +183,10 @@ Sessao 3 - encanamento
       nunca "discretizacao" como nome do efeito. Nas instancias sem
       sobreposicao o residuo em janelas de 8 h e zero, e chamar de
       discretizacao generica convida a pergunta com a resposta errada
-- [ ] as tres fontes normativas da instancia brasileira. O portao FICOU MAIS
+- [x] FECHADO em 21/09: Parecer Normativo COFEN 1/2024. Os parametros estao na
+      entrada de 21/09 do DECISOES.md. Historico do portao, mantido porque
+      explica o desenho: as fontes NAO alimentam a instancia, elas a
+      constituem. O portao FICOU MAIS
       ESTREITO em 18/09: com o perfil assistencial continuo como primitivo do
       gerador (P5 revisao 2), as fontes nao alimentam mais a instancia — elas a
       constituem. Sem fontes nao ha primitivo; sem primitivo nao ha instancia,
@@ -200,6 +220,7 @@ src/ tem fronteira definida por arquivo:
 | solucao.py | solucao Pyomo -> XML do avaliador |
 | validar.py | invoca o avaliador e compara objetivos |
 | inspecionar.py | varredura das instancias, emite os inventarios em docs/ |
+| instancia_br.py | perfil assistencial continuo -> Instancia -> XML oficial |
 | experimentos.py | Experimentos A e B (a fazer) |
 
 avaliacao.py nao estava no plano original. Entrou na semana 2 com duas funcoes: fixar a
