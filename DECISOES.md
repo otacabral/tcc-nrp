@@ -640,12 +640,62 @@ unidade representada **muda de tamanho** conforme o grau: 52,9 pacientes no mín
 11,7 no intensivo. O número de pacientes nunca entra no modelo — a escala só vê horas e
 composição — mas precisa estar no texto para o leitor saber o que a instância representa.
 
-**Pré-resultado medido em 21/09, antes de qualquer otimização.** Com perfil uniforme, o piso
-aritmético de efetivo é **36 nos dois regimes**: 8,81 por janela vira 9 pelo teto, o que dá
-216 h/dia (+2,16%) e 36 profissionais tanto em 8 h quanto em 12×36. A P5 não se coloca nesta
-instância — o resíduo de arredondamento é idêntico nos dois. Consequência: **qualquer
-diferença que o Experimento A encontrar vem das restrições de escalonamento, não da
-aritmética.** É o que torna o experimento uma pergunta e não uma divisão.
+**Controle do desenho, não resultado.** O piso aritmético de efetivo é **36 nos dois
+regimes** — 8,81 por janela vira 9 pelo teto, dando 216 h/dia (+2,16%) e 36 profissionais
+tanto em 8 h quanto em 12×36. Isso sai **por construção**, porque a carga semanal foi
+igualada em 42 h; não é achado e não deve ser reportado como tal. A forma correta para a
+metodologia:
+
+> Com a carga semanal igualada, o piso aritmético coincide nos dois regimes, de modo que
+> qualquer diferença no mínimo viável decorre das restrições de escalonamento.
+
+A P5 também não se coloca nesta instância: com perfil uniforme o resíduo de arredondamento é
+idêntico nos dois regimes.
+
+---
+
+## 2026-09-21 — Definição de viável, e limites legais como rígidos
+
+**Viável = satisfaz a cobertura e todos os limites legais de jornada e descanso.** As demais
+restrições flexíveis entram apenas na penalidade, que é objeto do Experimento B.
+
+É a definição que vai para o capítulo de método, e ela decide o que o Experimento A mede.
+
+**Por quê.** No formato do INRC toda restrição de contrato é flexível, com peso. Se os
+limites legais forem tratados assim, "efetivo mínimo viável" vira capacidade dividida por
+demanda: qualquer efetivo é viável, basta pagar a penalidade. O experimento perderia o
+conteúdo.
+
+**Como.** Flag `rigidas_legais` em `modelo.py`, com o conjunto `RIGIDAS_LEGAIS_BR`
+(`max_num_assignments`, `max_consecutive_working_days`, `unwanted_patterns`). O limite vira
+restrição rígida em vez de ganhar folga — mesma expressão, sem Big-M e sem peso alto. O
+padrão é vazio, o que preserva o comportamento do INRC e mantém os quatro ótimos publicados
+reproduzindo.
+
+**O XML continua sendo instância normal do INRC.** A rigidez é opção de quem resolve, não
+propriedade do arquivo: uma escala que respeita os limites tem violação zero neles, e o
+avaliador oficial cobra zero. A instância segue reutilizável por terceiros.
+
+**Regras de descanso codificadas, e conferidas.** `src/instancia_br.py --conferencia`
+enumera todas as sequências que o contrato admite e mede o intervalo:
+
+| Regime | Menor intervalo | Exigido | Caso mais apertado |
+|---|---|---|---|
+| 12×36 | **36 h** | 36 h (CLT art. 59-A) | diurno *d* → diurno *d*+2, e noturno *d* → noturno *d*+2 |
+| 8 h | **16 h** | 11 h (art. 66) | manhã *d* → manhã *d*+1 |
+| 8 h, com o dia do meio livre | **24 h** | 24 h (art. 67) | noturno *d* → manhã *d*+2 |
+
+As duas regras valem, e valem justas — o descanso semanal é atingido no limite.
+
+**No 12×36, `MaxConsecutiveWorkingDays = 1` não bastava.** O plantão noturno termina às 07:00
+do dia seguinte; com o dia do meio livre, o diurno de dois dias depois começa às 07:00 — são
+24 h, não 36. Única combinação com o furo. Corrigido pelo padrão indesejado `clt_36h_N_D`
+(noturno, folga, diurno). Não é escolha de modelagem: o art. 59-A fala em doze horas seguidas
+por trinta e seis horas ininterruptas de descanso. Propostas P7.1, P7.2 e P7.3, validadas em
+21/09.
+
+**Consequência a observar na análise:** a proibição tende a separar a equipe em turmas fixas
+de dia e de noite. Vale olhar isso nas escalas do Experimento B.
 
 ---
 

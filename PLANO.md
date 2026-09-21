@@ -136,13 +136,15 @@ Sessao 3 - encanamento
       long01, POR CATEGORIA, com tolerancia de um bloco de 12 h por categoria.
       A tolerancia e necessaria: 5.920 nao e divisivel por 12 (= 493,33 blocos)
 
-- [ ] P7 do PROPOSTAS.md, tres lacunas achadas ao escrever o gerador. Nenhuma
-      trava o esqueleto; as tres afetam o que o Experimento A mede:
-      P7.1 o item 7 da decisao de 21/09 veio com "[A VALIDAR / VALIDADO]" em
-      branco (descanso CLT no braco de 8 h) — implementado ligado por padrao;
-      P7.2 o 12x36 fica com 24 h de descanso depois do plantao noturno, nao 36;
-      P7.3 os limites legais sao flexiveis no formato do INRC e precisam bindar,
-      o que pede uma flag `rigidas_legais` no modelo.py
+- [x] P7.1, P7.2 e P7.3 VALIDADAS e implementadas em 21/09. Descanso conferido
+      por enumeracao: 36 h no 12x36, 16 h de interjornada e 24 h de descanso
+      semanal no de 8 h. Ver DECISOES.md, entrada "Definicao de viavel"
+- [ ] BLOQUEIO DO EXPERIMENTO B: P7.4 revisada. Aplicado o criterio, sobra so a
+      familia de pedidos de folga — e a instancia brasileira nao tem pedidos,
+      entao a penalidade seria zero nos dois bracos. complete_weekends e
+      identical_shift_types_during_weekend estavam na lista de ENTRA e sao
+      estruturais; a familia de fins de semana esta OFF nos tres contratos do
+      long01, logo nao ha peso a herdar. Ver PROPOSTAS.md, P7.4 revisao
 - [ ] emitir as instancias dos 5 graus x 2 regimes x 2 regras depois que a P7
       fechar, e versionar em instancias/br/
 

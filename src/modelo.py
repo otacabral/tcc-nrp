@@ -32,8 +32,16 @@ SOLVER_PADRAO = "appsi_highs"
 # Construcao
 # ---------------------------------------------------------------------------
 
+RIGIDAS_LEGAIS_BR = frozenset({
+    "max_num_assignments",             # teto de 42 h/semana
+    "max_consecutive_working_days",    # alternancia do 12x36; descanso semanal no de 8 h
+    "unwanted_patterns",               # interjornada de 11 h; noturno -> folga -> diurno
+})
+
+
 def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool = False,
-              noite_antes_de_fds_livre: bool = False) -> pyo.ConcreteModel:
+              noite_antes_de_fds_livre: bool = False,
+              rigidas_legais: frozenset[str] = frozenset()) -> pyo.ConcreteModel:
     """Monta o modelo.
 
     `flexiveis=False` da o modelo minimo, so com as duas rigidas e funcao objetivo nula —
@@ -48,6 +56,17 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
     `noite_antes_de_fds_livre=True` liga a restricao que o avaliador oficial nao pontua. Fica
     desligada nas instancias do INRC, sob pena de divergir em 44 delas, e ligada na instancia
     brasileira. Ver DECISOES.md, 18/09.
+
+    `rigidas_legais` e o conjunto de familias que entram como RIGIDAS em vez de penalizadas.
+    No formato do INRC toda restricao de contrato e flexivel; na instancia brasileira os
+    limites de jornada e descanso vem de lei e nao sao negociaveis contra penalidade. Sem
+    isso, "efetivo minimo viavel" do Experimento A viraria capacidade dividida por demanda:
+    qualquer efetivo seria viavel, bastando pagar a penalidade. Use `RIGIDAS_LEGAIS_BR`.
+
+    **O padrao e vazio**, que preserva o comportamento do INRC — e o que mantem os quatro
+    otimos publicados reproduzindo. A rigidez e opcao de quem resolve, nao propriedade do
+    arquivo: o XML emitido continua sendo instancia normal do INRC, e uma escala que respeita
+    os limites tem violacao zero neles, logo o avaliador oficial cobra zero. Ver P7.3.
     """
     m = pyo.ConcreteModel(name=inst.id)
     dias = inst.dias
@@ -96,7 +115,7 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
 
     if flexiveis:
         _adicionar_flexiveis(m, inst, elegiveis, habilidade_rigida,
-                             noite_antes_de_fds_livre)
+                             noite_antes_de_fds_livre, rigidas_legais)
     else:
         m.objetivo = pyo.Objective(expr=0, sense=pyo.minimize)
     return m
@@ -107,7 +126,7 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
 # ---------------------------------------------------------------------------
 
 def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
-                         com_noite_antes_de_fds) -> None:
+                         com_noite_antes_de_fds, rigidas_legais=frozenset()) -> None:
     dias = inst.dias
     nd = len(dias)
     profissionais = tuple(inst.profissionais)
@@ -339,12 +358,22 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
             somar("shift_on_requests", p.peso * (1 - m.x[p.profissional, p.turno, p.data]))
 
     # --- materializa folgas e restricoes
-    m.folga = pyo.Var(list(folgas), domain=pyo.NonNegativeReals)
+    # Familias em `rigidas_legais` nao ganham folga: o proprio limite vira restricao rigida.
+    # E a mesma expressao com a folga fixada em zero — nada de Big-M nem de peso alto.
+    penalizadas = [k for k, v in folgas.items() if v[0] not in rigidas_legais]
+    m.folga = pyo.Var(penalizadas, domain=pyo.NonNegativeReals)
     m.limite_folga = pyo.ConstraintList()
+    m.rigidas_legais = pyo.ConstraintList()
     for nome, (familia, coef, limites) in folgas.items():
+        if familia in rigidas_legais:
+            for limite in limites:
+                m.rigidas_legais.add(limite <= 0)
+            continue
         for limite in limites:
             m.limite_folga.add(m.folga[nome] >= limite)
         somar(familia, coef * m.folga[nome])
+    if not parcelas:   # tudo rigido: objetivo nulo, o problema vira de viabilidade pura
+        parcelas["nenhuma"] = [0.0]
     m.auxiliares = pyo.ConstraintList()
     for expr in restricoes:
         m.auxiliares.add(expr)

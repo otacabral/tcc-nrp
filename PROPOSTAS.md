@@ -579,8 +579,16 @@ da regra e passa a medir a diferença entre dois perfis. Isso é implementação
 
 ## 2026-09-21 — P7: três lacunas encontradas ao escrever o gerador
 
-**Status:** aguardando validação. Nenhuma bloqueia o esqueleto, que está pronto e emitindo
-XML válido. As três afetam o que o Experimento A mede.
+**Status: VALIDADAS em 2026-09-21, as três. Implementadas.** P7.1 fica ligada por padrão com
+`--sem-descanso-clt` só para medir o efeito; P7.2 virou o padrão indesejado `clt_36h_N_D`;
+P7.3 virou a flag `rigidas_legais` em `modelo.py`, com o conjunto `RIGIDAS_LEGAIS_BR`.
+A definição de viável está registrada no `DECISOES.md`, entrada de 21/09.
+
+**Conferência do descanso, rodada em `src/instancia_br.py --conferencia`:** enumerando todas
+as sequências que o contrato admite, o menor intervalo é **36 h no 12×36** (exatamente o
+art. 59-A, depois da P7.2) e **16 h de interjornada no de 8 h**, com **24 h no caso do dia
+livre** — que é o descanso semanal do art. 67, atingido no limite pela sequência noturno dia
+*d* → manhã dia *d*+2. As duas regras valem, e valem justas.
 
 ### P7.1 — O item 7 da decisão de 21/09 veio com o marcador em branco
 
@@ -627,6 +635,87 @@ Duas saídas, e a escolha é de formulação:
 
 Recomendação: 1. É a mesma forma da flag `habilidade_rigida` que a P3 já reservou para esta
 instância.
+
+---
+
+## 2026-09-21 — P7.4 (revisão): aplicado o critério, sobra quase nada do `long01`
+
+**Status:** aguardando validação. O critério da decisão de 21/09 está certo; a **lista de
+quais restrições entram está errada em dois itens**, e o que sobra depois de corrigi-la é
+pequeno demais para sustentar o Experimento B como desenhado.
+
+### Os valores reais dos contratos do `long01`
+
+Três contratos: `fulltime`, `75_time`, `50_percent`.
+
+| Restrição flexível | c0 | c1 | c2 | Entra? |
+|---|---|---|---|---|
+| single_assignment_per_day | sim/p1 | sim/p1 | sim/p1 | não — é rígida de fato |
+| max_num_assignments | 16/p1 | 12/p1 | 5/p1 | não — é o limite legal, rígido por P7.3 |
+| min_num_assignments | 6/p1 | 6/p1 | 3/p1 | não — estrutural (piso de jornada) |
+| max_consecutive_working_days | 7/p1 | 5/p1 | 5/p1 | **não — estrutural** |
+| min_consecutive_working_days | 1/p1 | 1/p1 | 2/p1 | **não — estrutural** |
+| max_consecutive_free_days | 5/p1 | 7/p1 | 8/p1 | **não — estrutural** |
+| min_consecutive_free_days | 1/p1 | 1/p1 | 1/p1 | **não — estrutural** |
+| max_consecutive_working_weekends | off | off | off | queria entrar, mas **não há o que herdar** |
+| min_consecutive_working_weekends | off | off | off | idem |
+| max_working_weekends_in_four_weeks | off | off | off | idem |
+| **complete_weekends** | **sim/p1** | **sim/p1** | **sim/p1** | **NÃO — ver abaixo** |
+| **identical_shift_types_during_weekend** | **sim/p1** | **sim/p1** | **sim/p1** | **NÃO — ver abaixo** |
+| no_night_shift_before_free_weekend | off | off | off | não — o avaliador não a pontua |
+| two_free_days_after_night_shifts | ausente | ausente | ausente | não existe no arquivo |
+| alternative_skill_category | off | off | off | não |
+| padrões indesejados (0, 1, 2) | p1 | p1 | p1 | não — referenciam os turnos do `long01` |
+| pedidos de folga | 490 de dia + 245 de turno, peso 1 | | | **sim** |
+
+### Os dois itens que a lista classificou errado
+
+**`complete_weekends` é estrutural, e é o caso mais grave de todos.** Sob 12×36 com
+`MaxConsecutiveWorkingDays = 1` rígido, **ninguém pode trabalhar sábado e domingo**. Logo todo
+profissional que trabalha um dia de fim de semana viola a restrição, sempre.
+
+A conta, no efetivo 36: sábado pede 2 janelas × 9 = 18 blocos, domingo idem, e nenhum desses
+36 blocos pode ser da mesma pessoa. São 36 pessoas violando, uma vez por fim de semana, em
+quatro fins de semana: **144 de penalidade estrutural, inevitável, só no braço do 12×36** —
+com o efetivo inteiro violando toda semana. No braço de 8 h a restrição é satisfazível com
+zero. É exatamente a armadilha que a P7.4 foi criada para evitar, e é o maior termo.
+
+**`identical_shift_types_during_weekend` é estrutural na direção oposta.** No 12×36 ninguém
+trabalha os dois dias do fim de semana, então a restrição é **vacuamente satisfeita** e vale
+zero sempre; no de 8 h pode ser violada. Penaliza um braço só, pelo mesmo motivo.
+
+Regra que os dois casos sugerem, e que vale registrar: **uma restrição é estrutural quando o
+próprio regime determina se ela pode ser violada** — seja forçando a violação, seja
+impedindo-a. Não basta perguntar se ela "significa a mesma coisa": `complete_weekends`
+significa exatamente a mesma coisa nos dois regimes, e é justamente por isso que ela captura
+a diferença de regime em vez da qualidade da escala.
+
+### O que sobra
+
+Aplicado o critério corrigido, **a única família comparável que o `long01` tem com peso é a
+dos pedidos de folga.** A família de fins de semana — a que o critério mais claramente
+aprova — está **desligada nos três contratos**, então não há peso nenhum a herdar dela.
+
+E há um segundo problema: **a instância brasileira não tem pedidos.** Pedidos são por
+profissional; o gerador não cria nenhum. Hoje, a penalidade do Experimento B seria zero nos
+dois braços.
+
+### Encaminhamentos
+
+1. **Gerar pedidos de folga na instância brasileira, por regra declarada** (quantos por
+   profissional, sorteados com semente fixa e publicada), e medir o Experimento B sobre o
+   atendimento de pedidos: quantos ficam sem atender e como se distribuem entre as pessoas.
+   É medida de equidade, é neutra entre regimes e é o que a família sobrevivente mede.
+   **Recomendado.**
+2. **Ligar a família de fins de semana** (máximo/mínimo de fins de semana consecutivos) com
+   valores e pesos **declarados por nós** — o `long01` não os fornece. Deixa de ser "pesos
+   herdados"; passa a ser parâmetro do experimento, o que é defensável desde que dito.
+3. **Só (1)**, e declarar no texto que o Experimento B mede uma dimensão de equidade, não a
+   penalidade total do benchmark.
+
+Recomendação: 1 + 2, com os pesos de (2) declarados como escolha e varridos se houver tempo.
+A frase "pesos herdados do `long01`, declarados" precisa ser reescrita de qualquer forma: não
+há o que herdar na família que interessa.
 
 ---
 

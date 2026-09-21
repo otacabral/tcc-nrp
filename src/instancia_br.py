@@ -245,6 +245,38 @@ def conferir_par(perfil: dict[int, float], duracao: int,
     return erros
 
 
+def conferir_descanso(regime: str, descanso_clt: bool = True) -> tuple[float, list[str]]:
+    """Menor intervalo entre o fim de um turno e o inicio do proximo, entre as sequencias
+    que o contrato admite. Confere que as regras de descanso codificadas de fato valem.
+
+    Enumera todos os pares (turno no dia d, turno no dia d+k) para k = 1 e 2, descarta os
+    proibidos por MaxConsecutiveWorkingDays e pelos padroes indesejados, e mede o intervalo.
+    O k = 2 com o dia do meio livre e o caso do descanso semanal: no regime de 8 h e ele que
+    tem de dar pelo menos 24 h (CLT art. 67), aproximado por no maximo 6 dias seguidos.
+    """
+    turnos = {tid: (ini, ini + dur) for tid, ini, dur, _ in REGIMES[regime]}
+    max_consec = 1 if regime == "12x36" else 6
+    proibidos = set()
+    if regime == "12x36":
+        proibidos.add(("N", 2, "D"))
+    elif descanso_clt:
+        proibidos |= {("N", 1, "M"), ("N", 1, "T"), ("T", 1, "M")}
+
+    menor, linhas = float("inf"), []
+    for k in (1, 2):
+        if k == 1 and max_consec < 2:
+            linhas.append(f"   k=1: proibido por MaxConsecutiveWorkingDays = {max_consec}")
+            continue
+        for a, (_, fim_a) in turnos.items():
+            for b, (ini_b, _) in turnos.items():
+                if (a, k, b) in proibidos:
+                    continue
+                intervalo = (k * 24 + ini_b) - fim_a
+                linhas.append(f"   {a} dia d -> {b} dia d+{k}: {intervalo:2.0f} h")
+                menor = min(menor, intervalo)
+    return menor, linhas
+
+
 # --- montagem da Instancia ------------------------------------------------------------
 
 def _flex(valor=None, ligada=True, peso=1) -> Flexivel:
@@ -278,7 +310,7 @@ def _contrato(regime: str, descanso_clt: bool) -> Contrato:
     A rigidez e opcao do modelo (`modelo.py`), nao do arquivo — assim a instancia emitida
     continua sendo uma instancia normal do INRC, reutilizavel por terceiros. Ver P7.
     """
-    padroes = ()
+    padroes = ("clt_36h_N_D",) if regime == "12x36" else ()
     if regime == "8h" and descanso_clt:
         padroes = ("clt_N_M", "clt_N_T", "clt_T_M")
     return Contrato(
@@ -305,7 +337,7 @@ def _contrato(regime: str, descanso_clt: bool) -> Contrato:
 
 
 def _padroes(regime: str, descanso_clt: bool) -> dict[str, Padrao]:
-    """Sequencias proibidas pela interjornada de 11 h (CLT art. 66).
+    """Sequencias proibidas pelas regras de descanso.
 
     Janelas 07-15 (M), 15-23 (T) e 23-07 (N). Os tres pares com menos de 11 h de intervalo:
 
@@ -323,7 +355,16 @@ def _padroes(regime: str, descanso_clt: bool) -> dict[str, Padrao]:
     fim de um turno e o inicio do proximo, em qualquer combinacao admitida acima. E
     aproximacao declarada, nao equivalencia.
     """
-    if regime != "8h" or not descanso_clt:
+    if regime == "12x36":
+        # As 36 h do art. 59-A nao sao garantidas por MaxConsecutiveWorkingDays = 1. O
+        # plantao noturno termina as 07:00 do dia seguinte; com o dia do meio livre, o
+        # plantao diurno de dois dias depois comeca as 07:00 — sao 24 h, nao 36. Unica
+        # combinacao com o furo; diurno->diurno da 36 h e noturno->noturno da 60 h. P7.2.
+        return {"clt_36h_N_D": Padrao(
+            id="clt_36h_N_D", peso=1,
+            entradas=(EntradaPadrao("N", "Any"), EntradaPadrao("None", "Any"),
+                      EntradaPadrao("D", "Any")))}
+    if not descanso_clt:
         return {}
     pares = (("N", "M"), ("N", "T"), ("T", "M"))
     return {
@@ -557,6 +598,17 @@ def relatorio_conferencias() -> int:
                   f"({(h / PORTE_HORAS - 1) * 100:+.2f}%) | {blocos} blocos | "
                   f"piso por capacidade {blocos / cap:.2f}")
         print()
+    print("descanso minimo admitido pelo contrato:")
+    for regime in sorted(REGIMES):
+        menor, linhas = conferir_descanso(regime)
+        exigido = 36 if regime == "12x36" else 11
+        marca = "OK" if menor >= exigido - 1e-9 else "REPROVOU"
+        print(f"   {regime:6s} menor intervalo {menor:.0f} h | exigido {exigido} h | {marca}")
+        for l in linhas:
+            print(f"   {l}")
+        if menor < exigido:
+            erros.append(f"{regime}: descanso minimo {menor:.0f} h, exigido {exigido} h")
+    print()
     print("pacientes implicitos e composicao (efetivo 36):")
     for nome, g in GRAUS.items():
         print(f"   {nome:15s} {pacientes(g):5.1f} pacientes | "
