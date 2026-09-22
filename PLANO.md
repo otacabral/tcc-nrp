@@ -139,7 +139,81 @@ Sessao 3 - encanamento
 - [x] P7.1, P7.2 e P7.3 VALIDADAS e implementadas em 21/09. Descanso conferido
       por enumeracao: 36 h no 12x36, 16 h de interjornada e 24 h de descanso
       semanal no de 8 h. Ver DECISOES.md, entrada "Definicao de viavel"
-- [ ] BLOQUEIO DO EXPERIMENTO B: P7.4 revisada. Aplicado o criterio, sobra so a
+- [x] PORTAO FECHADO em 21/09: sprint01 = 56 com otimo provado, appsi_highs,
+      2978 variaveis e 2450 restricoes. A flag rigidas_legais nao alterou o
+      caminho padrao, como esperado
+- [x] m.pena[n] no modelo.py: a penalidade decomposta por profissional, ao lado
+      de m.parcela[familia]. E o pre-requisito da P9. Escrito DEPOIS de o portao
+      fechar, e nao testado aqui — pede a regressao de novo
+- [x] src/regressao.py: um comando confere os 4 alvos em 4 dimensoes cada
+      (otimo provado, Tabela 6, espelho de avaliacao.py, decomposicao por
+      profissional). Substitui a conferencia manual alvo a alvo
+- [x] regressao --todos PASSOU em 21/09 nos quatro alvos: sprint01 56,
+      sprint02 58, long01 197, long02 219, otimo provado e decomposicao por
+      profissional conferida. Portao aberto
+- [x] P9 VALIDADA em 21/09: penalidade individual maxima; forma B nas sprints
+      guardando o maximo de CADA profissional; forma A (binarias, M = Z*) de
+      reserva nas longas; minimax no lado do minimo
+- [x] src/experimentos.py: Experimento B, as duas formas, saida em
+      resultados/experimento_b.csv (perfil por profissional) e
+      experimento_b_resumo.csv. Escrito sem execucao — o Pyomo nao esta no
+      ambiente da sessao
+- [x] MARCO, 21/09: Experimento B fechado nas duas sprints, forma B.
+      sprint01 Z=56, piso teorico 6, intervalo [7, 18], amplitude 11, 385 s.
+      sprint02 Z=58, piso teorico 6, intervalo [7, 18], amplitude 11, 285 s.
+      Perfil completo por profissional em resultados/experimento_b.csv.
+      Desfecho LARGO: o criterio de penalidade total NAO determina a
+      distribuicao entre pessoas
+- [x] melhorias no experimentos.py apos a primeira rodada: --alvo para rodar uma
+      instancia so, andamento resolucao a resolucao, e gravacao do CSV a cada
+      alvo concluido. As longas levam horas e nao podem depender de a rodada
+      inteira terminar
+- [x] MARCO, 22/09: long01 fechado na forma B. Z=197, N=49, piso teorico 5,
+      intervalo [11, 19], amplitude 8, 4166 s (69 min). ACHADO: o profissional
+      28 tem maximo ZERO, logo nao e penalizado em NENHUMA escala otima —
+      invariancia provada, porque o maximo e zero e a pena nunca e negativa
+- [x] BUG CORRIGIDO em 22/09: `--alvo` escrevia o CSV por cima, e rodar long01
+      apagou as duas sprints. O _gravar agora MESCLA por (instancia,
+      profissional). As linhas das sprints foram restauradas a partir da copia
+      lida antes da sobrescrita — sao os mesmos numeros que a maquina imprimiu
+- [x] MARCO, 22/09: EXPERIMENTO B FECHADO nas quatro instancias. long02 na
+      forma B: Z=219, intervalo [14, 20], concentracao inevitavel 3,1x a media,
+      margem de gestao 1,4x, 193 min de calculo real
+- [x] ACHADO REPLICADO: long01 e long02 tem os MESMOS 49 profissionais, e os
+      perfis de maximo tem correlacao 0,89. A exposicao e propriedade da pessoa,
+      nao sorteio da instancia. A EXPLICACAO e o contrato: teto 16 -> maximo
+      medio 6,2; teto 12 -> 9,3; teto 5 -> 15,8. Quanto menor o teto de jornada,
+      maior a penalidade que a escolha entre otimos pode impor
+- [x] o profissional 28 DEIXA de ser o achado: maximo 0 no long01 mas 1 no
+      long02, entao o zero exato era da instancia. O que fica e a tabela por
+      contrato. Responde a exigencia do projeto de redacao de explicar o motivo
+      antes de o caso entrar no texto
+- [ ] tempo do long02: 47.601 s de parede menos 36.036 s de suspensao da maquina
+      = 11.565 s reais. UMA das 51 resolucoes sem tempo medido. Ressalva na
+      coluna `observacao` do resumo. Nao reportar o numero sem ela
+- [ ] RODAR quando der: `python src\\experimentos.py --por-pessoa` nas duas
+      sprints (minutos), para o intervalo individual. No long01/long02 so com a
+      maquina livre — dobra as 51 resolucoes
+- [ ] limitacao a declarar: a coluna "pena na escala minimax" e de UMA solucao,
+      nao o minimo de cada pessoa. So o profissional 28 tem invariancia provada.
+      Para intervalo por pessoa seriam mais N resolucoes — pergunta aberta ao
+      projeto de redacao
+- [x] P7.4 RESOLVIDA em 21/09: regra de estrutural validada em tres degraus;
+      familia de fins de semana NAO ligada; nucleo do Experimento B migra para
+      as 4 instancias do INRC com otimo provado (P8). Ver DECISOES.md
+- [x] conferido em 21/09, sem solver: a penalidade decompoe exatamente por
+      profissional (soma = Z* nas quatro) e cada parcela individual bate com o
+      avaliador oficial nos 118 profissionais. Todo numero do Experimento B tem
+      conferencia externa
+- [ ] P9 do PROPOSTAS.md: medida de dispersao. Sem objecao a penalidade
+      individual maxima; falta decidir a forma de maximizar (B nas sprints, A
+      nas longas) e implementar o pre-requisito m.pena[n] no modelo.py
+- [ ] Experimento B, nucleo: sprint01 e sprint02 primeiro; long01 e long02 se
+      fecharem no tempo. Se nao fecharem, declarar o experimento nas sprints
+- [ ] EXTENSAO, so se sobrar tempo: versao por regime na instancia brasileira,
+      grau intermediario, penalidade so de pedidos de folga calibrados no long01,
+      com varias sementes publicadas. Uma semente so e anedota
+- [ ] (historico) BLOQUEIO DO EXPERIMENTO B: P7.4 revisada. Aplicado o criterio, sobra so a
       familia de pedidos de folga — e a instancia brasileira nao tem pedidos,
       entao a penalidade seria zero nos dois bracos. complete_weekends e
       identical_shift_types_during_weekend estavam na lista de ENTRA e sao
@@ -150,7 +224,7 @@ Sessao 3 - encanamento
 
 ## Semana 5 (07-13/10) - experimentos
 
-- [ ] src/experimentos.py, saida em resultados/consolidado.csv
+- [x] src/experimentos.py, saida em resultados/experimento_b.csv
 - [ ] Experimento A: efetivo minimo viavel em 8h e em 12x36, a horas de
       assistencia constantes. Reportar a DISTANCIA PERCENTUAL entre o piso
       aritmetico e o minimo viavel em cada regime, nao o numero absoluto.
@@ -223,7 +297,8 @@ src/ tem fronteira definida por arquivo:
 | validar.py | invoca o avaliador e compara objetivos |
 | inspecionar.py | varredura das instancias, emite os inventarios em docs/ |
 | instancia_br.py | perfil assistencial continuo -> Instancia -> XML oficial |
-| experimentos.py | Experimentos A e B (a fazer) |
+| regressao.py | confere os 4 alvos em 4 dimensoes; portao de toda alteracao no modelo |
+| experimentos.py | Experimento B: intervalo da penalidade individual maxima |
 
 avaliacao.py nao estava no plano original. Entrou na semana 2 com duas funcoes: fixar a
 semantica das flexiveis contra o avaliador antes de a funcao objetivo existir, e decompor a

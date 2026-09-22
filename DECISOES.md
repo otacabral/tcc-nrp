@@ -699,6 +699,114 @@ de dia e de noite. Vale olhar isso nas escalas do Experimento B.
 
 ---
 
+## 2026-09-21 — Experimento B: núcleo no INRC, e o que entra na penalidade comparada
+
+### Restrição estrutural: a regra
+
+**Uma restrição é estrutural quando o regime determina se ela pode ser violada.** Três
+degraus:
+
+| O regime… | Exemplo | Tratamento |
+|---|---|---|
+| força ou impede a violação | `complete_weekends`, `identical_shift_types_during_weekend` | fora da penalidade comparada |
+| altera a chance de violação | pedidos de folga | dentro, lido como efeito do regime |
+| não interfere | — | dentro |
+
+Os pedidos ficam no degrau do meio: na mesma carga de 42 h semanais o 12×36 folga 14 dos 28
+dias e o de 8 h folga 7, então um pedido sorteado cai em folga com probabilidades diferentes.
+É efeito real do regime, não artefato.
+
+**Leitura obrigatória no texto:** *o regime concede mais dias livres na mesma carga* — nunca
+*as escalas são mais justas*.
+
+### A família de fins de semana não é ligada
+
+Dois motivos. **Quase estrutural no efetivo mínimo:** perto do máximo de 14 plantões o 12×36
+opera quase em alternância estrita, e alternância estrita numa semana de 7 dias cai em um dia
+de todo fim de semana — a família fica quase determinada pelo regime justamente onde o
+experimento mede. **Sem conferência externa:** o máximo de fins de semana em quatro semanas é
+uma das duas implementadas sem conferência possível; ligá-la com valores nossos apoiaria o
+resultado em código nunca validado.
+
+### O núcleo do Experimento B roda no INRC, com ótimo provado
+
+A pergunta central — *entre as escalas de custo mínimo, quanto a distribuição da penalidade
+entre profissionais pode variar* — **não depende de regime**. Roda nas quatro instâncias com
+Z\* provado: `sprint01` = 56, `sprint02` = 58, `long01` = 197, `long02` = 219. Sem dado
+sintético: a penalidade é a do próprio benchmark.
+
+Ordem: as duas `sprint` primeiro (10 profissionais, otimalidade tripla praticamente garantida);
+as `long` se fecharem no tempo. Se não fecharem, o experimento fica nas sprints, declarado.
+
+**Verificado em 21/09, antes de qualquer otimização.** A penalidade decompõe exatamente por
+profissional, e cada parcela individual bate com o avaliador oficial:
+
+| Instância | Z\* | Σ p_n | Profissionais | Divergências por profissional | max p_n | zerados |
+|---|---|---|---|---|---|---|
+| `sprint01` | 56 | 56 | 10 | **0** | 14 | 0 |
+| `sprint02` | 58 | 58 | 10 | **0** | 12 | 1 |
+| `long01` | 197 | 197 | 49 | **0** | 16 | 8 |
+| `long02` | 219 | 219 | 49 | **0** | 15 | 4 |
+
+Duas consequências. A soma das parcelas individuais é **exatamente** Z\*, então a fatia do
+profissional mais penalizado é participação num total fixo — a medida do Experimento B está
+bem definida. E **todo número que o Experimento B reportar tem conferência externa**: o
+avaliador oficial imprime o custo por empregado, e ele coincide com o `avaliacao.py` nos 118
+profissionais das quatro instâncias. A coluna "max p_n" é de **um** ótimo arbitrário; o
+experimento é justamente medir o intervalo em que ela pode variar.
+
+### Versão por regime: extensão, só se sobrar tempo antes de 14/10
+
+Instância brasileira, grau intermediário apenas, penalidade só de pedidos de folga gerados por
+regra declarada: mesma taxa por profissional que o `long01`, mesma divisão entre pedido de dia
+e de turno, mesmo peso — só a posição é sorteada, com **várias sementes publicadas** e a
+variação entre elas reportada. Uma semente só é anedota.
+
+A frase "pesos herdados do `long01`, declarados" sai do registro: na família que interessa não
+havia o que herdar.
+
+---
+
+## 2026-09-22 — Medida de dispersão do Experimento B: penalidade individual máxima
+
+A dispersão comparada é a **penalidade individual máxima**, `max_n p_n`, com o total fixado
+em Z\*. O reportado é o **intervalo** entre o mínimo e o máximo que ela pode assumir entre as
+escalas ótimas. Resolve a proposta P9.
+
+**Por que a medida se sustenta.** A penalidade decompõe exatamente por profissional (soma =
+Z\*, conferido nas quatro instâncias contra o avaliador oficial), então `max_n p_n` é
+participação num total fixo. É linear, e tem leitura gerencial direta: *entre as escalas
+ótimas, quem sai pior recebe entre tanto e tanto*. O valor fica sempre em `[⌈Z*/N⌉, Z*]`.
+
+**Por que fixar o total já garante escala ótima.** Cada folga é variável contínua limitada
+por baixo pelo excesso que representa. Exigir que a soma dê exatamente Z\* força duas coisas
+de uma vez: a escala tem de ser ótima, senão a soma dos limites passaria de Z\*, que é o
+mínimo; e cada folga tem de valer exatamente o seu limite, senão a soma passaria. Logo `p_n`
+é a penalidade real da pessoa, não um valor inflado pelo solver. O mesmo vale para os termos
+que não usam folga — fins de semana completos, turnos idênticos, habilidade e pedidos são
+funções exatas das variáveis de atribuição, sem folga nenhuma.
+
+**As formas.** Minimizar o máximo é minimax: uma variável `t`, N restrições `t >= p_n`, uma
+resolução. Maximizar o máximo é maximizar função convexa, então precisa de disjunção:
+
+| Forma | Como | Custo | Devolve |
+|---|---|---|---|
+| **B** | uma resolução por profissional, maximizando `p_n` | N resoluções independentes | o **perfil completo** |
+| **A** | binárias `z_n`, `Σ z_n = 1`, `t <= p_n + M(1 − z_n)`, com **M = Z\*** | 1 resolução, +N binárias | só o máximo geral |
+
+`M = Z\*` é válido e justo, porque `0 <= p_n <= Z\*` — não há patologia de Big-M.
+
+**Adotado:** forma B nas duas `sprint`, guardando o máximo de **cada** profissional, porque o
+perfil completo vai para o capítulo de resultados; forma A como reserva nas duas `long`, se as
+49 resoluções ficarem lentas. Implementado em `src/experimentos.py`.
+
+**Como ler o resultado, nos dois desfechos.** Amplitude estreita: a distribuição é propriedade
+do ótimo. Amplitude larga: o critério de penalidade total **não determina** a distribuição, e
+escolher entre ótimos é decisão de gestão que o modelo não toma sozinho. Os dois são
+publicáveis; nenhum é resultado negativo.
+
+---
+
 ## Perguntas abertas
 
 ### Fim de semana incompleto no horizonte

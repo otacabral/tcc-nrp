@@ -134,13 +134,20 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
     # Expression propria. Isso permite comparar o modelo com avaliacao.py restricao por
     # restricao quando os dois divergirem, e alimenta a decomposicao do Experimento B.
     parcelas: dict[str, list] = {}
+    # a mesma penalidade, decomposta tambem POR PROFISSIONAL. As duas decomposicoes
+    # convivem: `m.parcela[familia]` serve a conferencia contra avaliacao.py restricao por
+    # restricao; `m.pena[n]` e o que o Experimento B precisa, porque a medida de dispersao
+    # opera sobre a fatia de cada pessoa num total fixado em Z*. Ver PROPOSTAS.md, P9.
+    por_prof: dict[str, list] = {}
+    dono = [None]        # profissional a quem pertence o termo sendo criado
     restricoes = []      # expressoes auxiliares
-    folgas = {}          # nome -> (familia, coef, expressao do limite inferior)
+    folgas = {}          # nome -> (familia, coef, dono, expressao do limite inferior)
 
     contador = [0]
 
-    def somar(familia, expr):
+    def somar(familia, expr, quem=None):
         parcelas.setdefault(familia, []).append(expr)
+        por_prof.setdefault(quem if quem is not None else dono[0], []).append(expr)
 
     def nova_folga(familia, coef, *limites):
         """Cria UMA folga, penalizada por coef, maior ou igual a cada limite dado. Como
@@ -151,11 +158,12 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
         no fim de semana) e uma violacao por semana, nao uma por dia trabalhado."""
         contador[0] += 1
         nome = f"{familia}__{contador[0]}"
-        folgas[nome] = (familia, coef, list(limites))
+        folgas[nome] = (familia, coef, dono[0], list(limites))
         return nome
 
     # --- por profissional
     for n in profissionais:
+        dono[0] = n
         c = inst.contrato_de(n)
         y = [m.y[n, dias[i]] for i in range(nd)]
 
@@ -345,17 +353,22 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
                     nova_folga("unwanted_patterns", padrao.peso, sum(casamento) - (len(casamento) - 1))
 
     # --- pedidos individuais
+    dono[0] = None
     for p in inst.pedidos:
         if p.peso <= 0:
             continue
         if p.tipo == "folga_dia":
-            somar("day_off_requests", p.peso * m.y[p.profissional, p.data])
+            somar("day_off_requests", p.peso * m.y[p.profissional, p.data],
+                  quem=p.profissional)
         elif p.tipo == "folga_turno" and p.profissional in elegiveis.get(p.turno, ()):
-            somar("shift_off_requests", p.peso * m.x[p.profissional, p.turno, p.data])
+            somar("shift_off_requests", p.peso * m.x[p.profissional, p.turno, p.data],
+                  quem=p.profissional)
         elif p.tipo == "trabalho_dia":
-            somar("day_on_requests", p.peso * (1 - m.y[p.profissional, p.data]))
+            somar("day_on_requests", p.peso * (1 - m.y[p.profissional, p.data]),
+                  quem=p.profissional)
         elif p.tipo == "trabalho_turno" and p.profissional in elegiveis.get(p.turno, ()):
-            somar("shift_on_requests", p.peso * (1 - m.x[p.profissional, p.turno, p.data]))
+            somar("shift_on_requests", p.peso * (1 - m.x[p.profissional, p.turno, p.data]),
+                  quem=p.profissional)
 
     # --- materializa folgas e restricoes
     # Familias em `rigidas_legais` nao ganham folga: o proprio limite vira restricao rigida.
@@ -364,14 +377,14 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
     m.folga = pyo.Var(penalizadas, domain=pyo.NonNegativeReals)
     m.limite_folga = pyo.ConstraintList()
     m.rigidas_legais = pyo.ConstraintList()
-    for nome, (familia, coef, limites) in folgas.items():
+    for nome, (familia, coef, quem, limites) in folgas.items():
         if familia in rigidas_legais:
             for limite in limites:
                 m.rigidas_legais.add(limite <= 0)
             continue
         for limite in limites:
             m.limite_folga.add(m.folga[nome] >= limite)
-        somar(familia, coef * m.folga[nome])
+        somar(familia, coef * m.folga[nome], quem=quem)
     if not parcelas:   # tudo rigido: objetivo nulo, o problema vira de viabilidade pura
         parcelas["nenhuma"] = [0.0]
     m.auxiliares = pyo.ConstraintList()
@@ -380,6 +393,10 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
 
     familias = sorted(parcelas)
     m.parcela = pyo.Expression(familias, rule=lambda m, f: sum(parcelas[f]))
+    # Invariante: sum(m.pena[n]) == sum(m.parcela[f]) == objetivo. Conferido em
+    # src/regressao.py, porque e o que sustenta a medida do Experimento B.
+    m.pena = pyo.Expression(list(profissionais),
+                            rule=lambda m, n: sum(por_prof.get(n, [])))
     m.objetivo = pyo.Objective(expr=sum(m.parcela[f] for f in familias), sense=pyo.minimize)
 
 

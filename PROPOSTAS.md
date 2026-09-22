@@ -244,8 +244,18 @@ Recomendação: 2 como desenho principal, com 3 como resultado que não depende 
 
 ## 2026-09-18 — P5: a discretização da demanda em blocos de 12 h
 
-**Status:** aguardando validação. Bloqueia a instância brasileira. É desenho experimental, não
-implementação — por isso está aqui e não foi aplicada.
+**Status: DISSOLVIDA em 2026-09-21. Não bloqueia mais nada.** Com o perfil assistencial
+uniforme do Parecer, cada janela de 8 h e cada janela de 12 h pedem os mesmos 8,81
+profissionais, e o resíduo de arredondamento é **idêntico nos dois regimes** (+2,16% pelo
+teto). A assimetria que esta proposta media não se coloca na instância brasileira.
+
+Permanecem em vigor as duas medidas que ela originou: emitir as duas instâncias por regra
+(teto e maior resto) e conferir o total de horas com tolerância de um bloco.
+
+**O que sobra é achado de metodologia**, não decisão pendente: a reagregação de turnos
+sobrepostos em janelas disjuntas domina o efeito de regime na categoria escassa, nas 65 de 69
+instâncias do INRC que têm sobreposição. Lugar dele: uma subseção do capítulo de dados. Ver a
+nota de contenção no fim deste arquivo.
 
 **Revisão de 18/09, após medir os picos.** A versão anterior desta proposta recomendava a regra
 de maior resto. **A recomendação mudou**: nenhuma regra de arredondamento serve, e o motivo
@@ -523,9 +533,12 @@ Duas exigências:
 
 ## 2026-09-18 — P6: o objetivo específico 2 mudou de escopo sem ter sido reescrito
 
-**Status:** aguardando validação. Não é proposta de mudar nada — é o registro de que uma
-mudança **já aconteceu** por consequência da P5, e precisa ser declarada antes de virar
-capítulo.
+**Status: VALIDADA em 2026-09-21.** A reescrita do objetivo específico 2 fica com o projeto de
+redação, junto com a reformulação do gap e a menção na delimitação 1.4 de que a instância é
+sintética. Porte definido numericamente: 5.920 horas-profissional, o mesmo invariante da P4.
+
+Não era proposta de mudar nada — é o registro de que uma mudança **já tinha acontecido** por
+consequência da P5, e precisava ser declarada antes de virar capítulo.
 
 ### O que mudou
 
@@ -640,9 +653,15 @@ instância.
 
 ## 2026-09-21 — P7.4 (revisão): aplicado o critério, sobra quase nada do `long01`
 
-**Status:** aguardando validação. O critério da decisão de 21/09 está certo; a **lista de
-quais restrições entram está errada em dois itens**, e o que sobra depois de corrigi-la é
-pequeno demais para sustentar o Experimento B como desenhado.
+**Status: RESOLVIDA em 2026-09-21.** As duas reclassificações foram aceitas e o critério ganhou
+um degrau a mais: **uma restrição é estrutural quando o regime determina se ela pode ser
+violada** — forçando a violação, como `complete_weekends`, ou impedindo-a, como
+`identical_shift_types_during_weekend`. A família de fins de semana **não é ligada**, por ser
+quase estrutural no efetivo mínimo e por não ter conferência externa possível. O núcleo do
+Experimento B migrou para as quatro instâncias do INRC com ótimo provado. Decisão registrada
+no `DECISOES.md`, entrada de 21/09 "Experimento B: núcleo no INRC".
+
+O diagnóstico abaixo é o que motivou a mudança, e fica como matéria-prima do capítulo.
 
 ### Os valores reais dos contratos do `long01`
 
@@ -716,6 +735,76 @@ dois braços.
 Recomendação: 1 + 2, com os pesos de (2) declarados como escolha e varridos se houver tempo.
 A frase "pesos herdados do `long01`, declarados" precisa ser reescrita de qualquer forma: não
 há o que herdar na família que interessa.
+
+---
+
+## 2026-09-21 — P9: a medida de dispersão do Experimento B
+
+**Status: VALIDADA em 2026-09-21. Implementada em `src/experimentos.py`.** Penalidade
+individual máxima; **forma B** (uma resolução por profissional) nas sprints, guardando o
+máximo de cada um; **forma A** (binárias, `M = Z*`) como reserva nas longas; minimax no lado
+do mínimo. Decisão registrada no `DECISOES.md`, entrada de 21/09.
+
+### A medida se sustenta
+
+**Penalidade individual máxima.** Conferido em 21/09: a penalidade decompõe **exatamente** por
+profissional — Σ p_n = Z\* nas quatro instâncias, sem sobra — e cada parcela bate com o
+avaliador oficial nos 118 profissionais. Então `max_n p_n` é participação num total fixo, é
+linear, e tem leitura gerencial direta. Sem ressalva.
+
+Duas balizas úteis para o texto. O valor fica sempre em **[⌈Z\*/N⌉, Z\*]**: em `sprint01`,
+entre 6 e 56. E o ótimo arbitrário que já temos salvo dá `max p_n` = 14 em `sprint01`, 12 em
+`sprint02`, 16 em `long01` e 15 em `long02` — um ponto dentro do intervalo que o experimento
+vai medir, útil para calibrar expectativa.
+
+### Minimizar é trivial; maximizar é a decisão
+
+**Minimizar** é o minimax usual: uma variável contínua *t*, N restrições `t >= p_n`, minimizar
+*t*. Linear, barato, nada a decidir.
+
+**Maximizar** o máximo é maximizar uma função convexa — não convexo, precisa de disjunção.
+Duas formas:
+
+| | Como | Custo | Subproduto |
+|---|---|---|---|
+| **A. binárias** | `z_n ∈ {0,1}`, `Σ z_n = 1`, `t <= p_n + M(1 − z_n)`, maximizar *t* | 1 resolução, +N binárias | — |
+| **B. uma resolução por profissional** | maximizar `p_n` com *n* fixo, tomar o maior | N resoluções, paralelizáveis | o **perfil por profissional**: quanto cada um pode ser feito carregar entre os ótimos |
+
+Sobre o Big-M de (A): **`M = Z\*` é válido e justo**, porque `0 <= p_n <= Σ p_k = Z\*`. Não há
+patologia de Big-M aqui — o limitante é exato, não arbitrado.
+
+**Recomendação: B nas duas `sprint`, A como reserva nas duas `long`.** Nas sprints são 10
+resoluções independentes, cada uma mais fácil que a com binárias, e o perfil por profissional
+que sai de graça é resultado melhor do que o número único: permite dizer *quanto cada posição
+pode ser feita carregar*, não só *quanto a pior posição carrega*. Nas longas são 49 resoluções,
+e aí (A) com uma resolução e 49 binárias tende a compensar.
+
+### Pré-requisito: escrito em 21/09, depois que o portão fechou
+
+**`m.pena[n]` existe.** A regressão do item 6 passou — `sprint01` = 56 com ótimo provado — e
+então a segunda alteração do `modelo.py` entrou: `m.pena[n]` como `Expression` ao lado de
+`m.parcela[familia]`. As duas decomposições convivem, uma por família e outra por pessoa.
+
+Ela também **não foi executada aqui** (o Pyomo continua fora do ambiente da sessão), e por
+isso entrou junto o `src/regressao.py`: um comando que confere os quatro alvos em quatro
+dimensões cada — ótimo provado, valor da Tabela 6, espelho do `avaliacao.py`, e o invariante
+`sum(m.pena[n]) == objetivo` com igualdade profissional por profissional. **A P9 não avança
+antes dessa regressão passar.**
+
+O registro do diagnóstico original fica abaixo, porque explica por que a mudança era pequena.
+
+**`modelo.py` não sabia calcular `p_n`.** A função objetivo é montada por família de restrição
+(`m.parcela[familia]`), não por profissional — foi assim que ela nasceu, para permitir a
+comparação restrição por restrição com o `avaliacao.py`.
+
+A mudança é pequena e o terreno é favorável: **toda** folga é criada dentro do laço
+`for n in profissionais`, e o laço dos pedidos itera sobre `Pedido`, que carrega o campo
+`profissional`. Basta `nova_folga` receber a quem a folga pertence, acumular por profissional
+e expor `m.pena[n]` como `Expression` ao lado de `m.parcela[familia]`. As duas decomposições
+convivem: uma por família, outra por pessoa.
+
+Foi exatamente isso que foi feito: `nova_folga` e `somar` passaram a registrar o dono do
+termo, e `m.pena[n]` soma os termos de cada pessoa.
 
 ---
 
