@@ -45,13 +45,17 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
     """Monta o modelo.
 
     `flexiveis=False` da o modelo minimo, so com as duas rigidas e funcao objetivo nula —
-    util para conferir viabilidade e para o Experimento A, que e pergunta de viabilidade.
+    util para conferir viabilidade pura. **Nao serve para o Experimento A**: sem as flexiveis
+    as familias nem chegam a existir, entao `rigidas_legais` nao tem o que endurecer e os
+    limites legais somem do modelo. O Experimento A usa `flexiveis=True` com
+    `rigidas_legais=RIGIDAS_LEGAIS_BR` (ver `src/experimento_a.py`).
 
     `habilidade_rigida=True` restringe o dominio: profissional so cobre turno cuja habilidade
     tem. **O padrao e False**, que reproduz a formulacao de referencia — Santos et al. (2016)
     penalizam a habilidade no coeficiente da variavel de atribuicao, e o avaliador oficial nao
-    trata habilidade como rigida em lugar nenhum. A versao rigida fica para a instancia
-    brasileira. Ver PROPOSTAS.md, P3, **ainda nao validada**: se for recusada, inverter aqui.
+    trata habilidade como rigida em lugar nenhum. Ver PROPOSTAS.md, P3, **VALIDADA em
+    18/09**: a versao rigida fica como divergencia declarada, reservada a instancia
+    brasileira, que a usa.
 
     `noite_antes_de_fds_livre=True` liga a restricao que o avaliador oficial nao pontua. Fica
     desligada nas instancias do INRC, sob pena de divergir em 44 delas, e ligada na instancia
@@ -139,6 +143,10 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
     # restricao; `m.pena[n]` e o que o Experimento B precisa, porque a medida de dispersao
     # opera sobre a fatia de cada pessoa num total fixado em Z*. Ver PROPOSTAS.md, P9.
     por_prof: dict[str, list] = {}
+    # e a decomposicao cruzada, (profissional, familia). Nao custa resolucao nenhuma: os
+    # mesmos termos, guardados numa terceira chave. Serve a conferencia 1 do projeto de
+    # redacao (22/09): de que familia e feita a penalidade de quem carrega mais.
+    por_par: dict[tuple[str, str], list] = {}
     dono = [None]        # profissional a quem pertence o termo sendo criado
     restricoes = []      # expressoes auxiliares
     folgas = {}          # nome -> (familia, coef, dono, expressao do limite inferior)
@@ -146,8 +154,10 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
     contador = [0]
 
     def somar(familia, expr, quem=None):
+        alvo = quem if quem is not None else dono[0]
         parcelas.setdefault(familia, []).append(expr)
-        por_prof.setdefault(quem if quem is not None else dono[0], []).append(expr)
+        por_prof.setdefault(alvo, []).append(expr)
+        por_par.setdefault((alvo, familia), []).append(expr)
 
     def nova_folga(familia, coef, *limites):
         """Cria UMA folga, penalizada por coef, maior ou igual a cada limite dado. Como
@@ -397,6 +407,12 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
     # src/regressao.py, porque e o que sustenta a medida do Experimento B.
     m.pena = pyo.Expression(list(profissionais),
                             rule=lambda m, n: sum(por_prof.get(n, [])))
+    # Terceira decomposicao, que refina as duas: sum_f m.pena_familia[n, f] == m.pena[n] e
+    # sum_n m.pena_familia[n, f] == m.parcela[f]. Nao entra em restricao nenhuma nem no
+    # objetivo — e so leitura depois de resolver.
+    m.pena_familia = pyo.Expression(
+        list(profissionais), familias,
+        rule=lambda m, n, f: sum(por_par.get((n, f), [])))
     m.objetivo = pyo.Objective(expr=sum(m.parcela[f] for f in familias), sense=pyo.minimize)
 
 

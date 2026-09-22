@@ -73,6 +73,19 @@ def conferir(nome: str, caminho: str, z_esperado: int, solver: str,
         erros.append(f"{nome}: m.pena diverge de avaliacao.py em {len(divergem)} "
                      f"profissionais, p.ex. {divergem[:3]}")
 
+    # 5) decomposicao cruzada: a grade (profissional x familia) tem de fechar nos dois
+    # sentidos. Se fechar so num, alguma parcela foi contada no profissional errado.
+    grade = {(n, f): round(pyo.value(m.pena_familia[n, f]))
+             for n in inst.profissionais for f in m.parcela}
+    for n in inst.profissionais:
+        if sum(grade[n, f] for f in m.parcela) != pena[n]:
+            erros.append(f"{nome}: pena_familia nao soma pena[{n}]")
+            break
+    for f in m.parcela:
+        if sum(grade[n, f] for n in inst.profissionais) != round(pyo.value(m.parcela[f])):
+            erros.append(f"{nome}: pena_familia nao soma parcela[{f}]")
+            break
+
     marca = "OK " if not erros else "FALHOU"
     print(f"   {marca} {nome:10s} Z={z:4d} (esperado {z_esperado:4d}) | "
           f"sum(pena)={sum(pena.values()):4d} | max pena={max(pena.values()):3d} | "

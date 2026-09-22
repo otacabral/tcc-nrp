@@ -11,10 +11,16 @@ Saida: `resultados/experimento_b.csv` (uma linha por instancia x profissional) e
 parcial e gravado a cada profissional em `experimento_b_parcial_<instancia>.csv`, apagado
 quando o alvo fecha — uma queda nao joga fora a rodada. Separador ";" e utf-8-sig.
 
-**Custo de tempo, medido em 21/09.** Fixar o total em Z* deixa cada resolucao MUITO mais
-cara: `sprint01` leva 2,5 s para o otimo simples e ~32 s por resolucao com Z* fixado, umas
-13 vezes mais. A forma B faz N+2 resolucoes, entao numa instancia de 49 profissionais sao 51
-— nao rodar as longas sem `--alvo`, e contar em horas.
+**Custo de tempo, medido em 22/09 com relogio de CPU.** Fixar o total em Z* encarece cada
+resolucao: `sprint01` leva 2,5 s para o otimo simples e **~9 s de CPU** por resolucao com Z*
+fixado. A rodada `--por-pessoa` completa das duas sprints (22 resolucoes cada) deu 203,7 s e
+165,5 s de CPU — cerca de 6 minutos no total.
+
+Cuidado ao estimar a partir de rodada antiga: os numeros de 21/09 eram de PARADE (385 s em
+`sprint01`), com a maquina fazendo outras coisas, e dao ~3x o custo real. Uma estimativa
+feita com eles erra o tempo para mais na mesma proporcao — foi o que aconteceu em 22/09.
+Nas longas, medido: `long01` 4.166 s e `long02` 11.565 s de parede na forma B sem
+`--por-pessoa`; contar em horas e usar `--alvo`.
 
 ## A pergunta
 
@@ -76,6 +82,7 @@ import modelo  # noqa: E402
 from avaliacao import por_profissional  # noqa: E402
 from instancia import Instancia  # noqa: E402
 from parser import ler_instancia  # noqa: E402
+from tabela import mesclar_csv  # noqa: E402
 
 RAIZ = Path(__file__).resolve().parents[1]
 SAIDA = RAIZ / "resultados" / "experimento_b.csv"
@@ -108,6 +115,17 @@ def _resolver(m, solver, tempo, rotulo) -> None:
         raise RuntimeError(f"{rotulo}: sem otimo provado ({modelo.estado(res)})")
 
 
+def _composicao(m, n: str) -> dict:
+    """De que familias e feita a penalidade de `n` NESTA escala. Leitura, custo zero.
+
+    CUIDADO ao ler: a composicao NAO e invariante. Entre as escalas otimas em que `p_n` vale
+    o mesmo numero, as familias que o compoem podem mudar — o que sai aqui e a escala que o
+    solver devolveu, nao propriedade do conjunto de otimos. Ver PROPOSTAS.md, P10.
+    """
+    valores = {f: round(pyo.value(m.pena_familia[n, f])) for f in m.parcela}
+    return {f: v for f, v in valores.items() if v != 0}
+
+
 def minimo_do_maximo(inst: Instancia, z: int, solver: str, tempo: int | None):
     """Menor penalidade individual maxima entre as escalas otimas. Minimax, uma resolucao."""
     m = _com_otimo_fixado(inst, z)
@@ -117,7 +135,8 @@ def minimo_do_maximo(inst: Instancia, z: int, solver: str, tempo: int | None):
     m.minimax = pyo.Objective(expr=m.t, sense=pyo.minimize)
     _resolver(m, solver, tempo, f"{inst.id} minimax")
     perfil = {n: round(pyo.value(m.pena[n])) for n in inst.profissionais}
-    return round(pyo.value(m.t)), perfil, modelo.atribuicoes(m)
+    comp = {n: _composicao(m, n) for n in inst.profissionais}
+    return round(pyo.value(m.t)), perfil, modelo.atribuicoes(m), comp
 
 
 def maximo_por_profissional(inst: Instancia, z: int, solver: str, tempo: int | None,
@@ -132,6 +151,7 @@ def maximo_por_profissional(inst: Instancia, z: int, solver: str, tempo: int | N
     total = len(inst.profissionais)
     parcial = SAIDA.with_name(f"experimento_b_parcial_{inst.id}.csv")
     perfil = _retomar(parcial, z)
+    comp = {}
     if perfil:
         print(f"      retomando: {len(perfil)} de {total} ja estavam no parcial", flush=True)
     for i, n in enumerate(inst.profissionais, 1):
@@ -142,6 +162,7 @@ def maximo_por_profissional(inst: Instancia, z: int, solver: str, tempo: int | N
         m.maximiza = pyo.Objective(expr=m.pena[n], sense=pyo.maximize)
         _resolver(m, solver, tempo, f"{inst.id} max p[{n}]")
         perfil[n] = round(pyo.value(m.pena[n]))
+        comp[n] = _composicao(m, n)
         seg, cpu = time.time() - t0, time.process_time() - c0
         if verboso:
             # o relogio de parede conta o tempo em que a maquina ficou suspensa; o de CPU
@@ -151,7 +172,7 @@ def maximo_por_profissional(inst: Instancia, z: int, solver: str, tempo: int | N
                   f"({cpu:.1f}s de CPU, faltam ~{(total - i) * cpu / 60:.0f} min){marca}",
                   flush=True)
         _gravar_parcial(parcial, inst.id, z, perfil)
-    return max(perfil.values()), perfil
+    return max(perfil.values()), perfil, comp
 
 
 def _retomar(caminho: Path, z: int) -> dict:
@@ -222,7 +243,35 @@ def maximo_geral(inst: Instancia, z: int, solver: str, tempo: int | None):
     m.seletor = pyo.Constraint(profs, rule=lambda m, n: m.t <= m.pena[n] + z * (1 - m.z[n]))
     m.maximiza = pyo.Objective(expr=m.t, sense=pyo.maximize)
     _resolver(m, solver, tempo, f"{inst.id} maximax")
-    return round(pyo.value(m.t)), {}
+    return round(pyo.value(m.t)), {}, {}
+
+
+def _gravar_composicao(instancia: str, z: int, comp_min: dict, comp_max: dict) -> None:
+    """`resultados/experimento_b_composicao.csv`: de que familia e feita cada penalidade.
+
+    Uma linha por (instancia, escala, profissional, familia), so com valor diferente de
+    zero. `escala` diz de qual resolucao veio: `minimax` e a escala que minimiza o maior
+    `p_n` — a mesma para todo mundo; `maximo_proprio` e, para cada pessoa, a escala que
+    maximiza a penalidade DELA. Mescla com o arquivo, como os outros dois.
+
+    Sai de graca: sao as mesmas resolucoes do experimento, lidas com mais detalhe. NAO e
+    invariante — ver o aviso em `_composicao` e a P10.
+
+    Numa rodada RETOMADA de um parcial, so os profissionais resolvidos nesta rodada tem
+    linha em `maximo_proprio`: o parcial guarda o valor de `p_n`, nao a escala. Para a
+    composicao completa de uma instancia, rodar ela inteira de uma vez.
+    """
+    novas = [{"instancia": instancia, "Z": z, "escala": escala, "profissional": n,
+              "familia": f, "valor": v}
+             for escala, d in (("minimax", comp_min), ("maximo_proprio", comp_max))
+             for n, fam in d.items() for f, v in sorted(fam.items())]
+    if not novas:
+        return
+    # a escala inteira e refeita a cada rodada: apagar as linhas antigas desta instancia
+    # evita misturar composicoes de rodadas diferentes, que podem ser escalas diferentes.
+    mesclar_csv(SAIDA.with_name("experimento_b_composicao.csv"), novas,
+                ("instancia", "escala", "profissional", "familia"),
+                remover=lambda k: k[0] == instancia)
 
 
 # --- execucao -------------------------------------------------------------------------
@@ -234,31 +283,18 @@ def _gravar(linhas: list[dict], resumos: list[dict]) -> None:
     — foi o que aconteceu em 22/09: rodar `--alvo long01` apagou as duas sprints do CSV.
     A chave e (instancia, profissional) no perfil e (instancia) no resumo: rodar de novo a
     mesma instancia atualiza as linhas dela e preserva as outras.
+
+    As COLUNAS tambem se preservam, e por um motivo aprendido errando duas vezes. Na primeira,
+    escrever por cima apagou LINHAS de outras instancias. Consertei preenchendo com vazio o
+    que faltasse — mas so nas linhas, e o cabecalho continuava sendo o da rodada nova. Na
+    segunda, em 22/09, a rodada `--por-pessoa` trocou a coluna `segundos` por
+    `segundos_parede` e `segundos_cpu`, e a coluna `observacao` das longas — onde estava o
+    registro da maquina suspensa — sumiu do arquivo inteiro. Perder coluna e tao ruim quanto
+    perder linha, e mais silencioso. A regra mora em `src/tabela.py`, que roda sem Pyomo e tem
+    os dois acidentes como caso de teste: `python src\\tabela.py`.
     """
-    SAIDA.parent.mkdir(exist_ok=True)
-    alvos = ((SAIDA, linhas, ("instancia", "profissional")),
-             (SAIDA.with_name("experimento_b_resumo.csv"), resumos, ("instancia",)))
-    for caminho, novos, chave in alvos:
-        if not novos:
-            continue
-        colunas = list(novos[0])
-        acumulado: dict[tuple, dict] = {}
-        if caminho.exists():
-            with caminho.open(newline="", encoding="utf-8-sig") as f:
-                for linha in csv.DictReader(f, delimiter=";"):
-                    if not all(c in linha for c in chave):
-                        continue
-                    # Linha de rodada anterior, possivelmente com MENOS colunas (o formato
-                    # ganhou campos ao longo do tempo). Preencher o que falta com vazio, e
-                    # NUNCA descartar: foi assim que as sprints se perderam em 22/09.
-                    acumulado[tuple(linha[c] for c in chave)] = \
-                        {c: linha.get(c, "") for c in colunas}
-        for linha in novos:
-            acumulado[tuple(str(linha[c]) for c in chave)] = linha
-        with caminho.open("w", newline="", encoding="utf-8-sig") as f:
-            w = csv.DictWriter(f, fieldnames=colunas, delimiter=";", extrasaction="ignore")
-            w.writeheader()
-            w.writerows(acumulado.values())
+    mesclar_csv(SAIDA, linhas, ("instancia", "profissional"))
+    mesclar_csv(SAIDA.with_name("experimento_b_resumo.csv"), resumos, ("instancia",))
 
 
 def rodar(nome: str, caminho: str, z_tabela: int, forma: str, solver: str,
@@ -279,7 +315,7 @@ def rodar(nome: str, caminho: str, z_tabela: int, forma: str, solver: str,
         raise RuntimeError(f"{nome}: objetivo {z}, esperado {z_tabela} (Tabela 6)")
 
     # 2) o lado do minimo
-    mn, perfil_min, escala_min = minimo_do_maximo(inst, z, solver, tempo)
+    mn, perfil_min, escala_min, comp_min = minimo_do_maximo(inst, z, solver, tempo)
     conferencia = por_profissional(inst, escala_min)
     divergem = [n for n in inst.profissionais if perfil_min[n] != conferencia.get(n, 0)]
     if divergem:
@@ -288,10 +324,11 @@ def rodar(nome: str, caminho: str, z_tabela: int, forma: str, solver: str,
 
     # 3) o lado do maximo
     if forma == "B":
-        mx, perfil_max = maximo_por_profissional(inst, z, solver, tempo, verboso)
+        mx, perfil_max, comp_max = maximo_por_profissional(inst, z, solver, tempo, verboso)
         SAIDA.with_name(f"experimento_b_parcial_{inst.id}.csv").unlink(missing_ok=True)
     else:
-        mx, perfil_max = maximo_geral(inst, z, solver, tempo)
+        mx, perfil_max, comp_max = maximo_geral(inst, z, solver, tempo)
+    _gravar_composicao(nome, z, comp_min, comp_max)
 
     # 4) o lado do minimo POR PESSOA, opcional: dobra o numero de resolucoes
     perfil_min_pessoa = minimo_por_profissional(inst, z, solver, tempo, verboso) \

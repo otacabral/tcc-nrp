@@ -818,3 +818,189 @@ O resultado do trabalho continua sendo o Experimento A e o B, que ainda não rod
 de três fontes normativas que ainda não existem. **O achado está fechado**: as próximas horas
 vão para as fontes, não para mais uma medição sobre ele. Registrado aqui para que nenhuma
 sessão futura o reabra por parecer interessante.
+
+---
+
+## 2026-09-22 — P10: a conferência 1 como está pedida não é bem posta
+
+**Status: RECUSADA em 2026-09-22, e a pergunta fica respondida por outro caminho.** Decisão
+do projeto de redação: não medir a composição, nem por intervalo nem por escala testemunha.
+O piso aritmético já responde a pergunta agregada e é mais forte que as duas alternativas;
+reportar a composição de uma escala testemunha reintroduziria o desempate do solver um nível
+abaixo. O `resultados/experimento_b_composicao.csv` **fica gravado como dado, sem nenhuma
+afirmação apoiada nele**. Reavaliar depois do Experimento A.
+
+A instrumentação que já entrou (`m.pena_familia[n, f]`, a conferência cruzada na regressão e
+a gravação do CSV) permanece: não custa resolução, não entra em restrição nem no objetivo, e
+é o que torna a reavaliação barata se ela vier. O que não existe é leitura publicável dela.
+
+O registro abaixo fica como escrito, porque é o raciocínio que levou à recusa.
+
+---
+
+**Status original: aguardando validação.** Pedido do projeto de redação, 22/09, conferência 1:
+"composição da penalidade máxima por família, nos três grupos de contrato. Aplicar a
+decomposição do `avaliacao.py` às escalas de máximo."
+
+**Não implementei a medição.** Implementei só a instrumentação que a torna possível
+(`m.pena_familia[n, f]` no `modelo.py`, gravação em `experimento_b_composicao.csv`), porque
+ela sai de graça das mesmas resoluções. A medição em si esbarra no problema abaixo.
+
+### O problema
+
+A regra de decisão proposta — *"se for dominada por excesso de atribuições, a afirmação
+encolhe; se estiver espalhada, o achado é mais geral"* — supõe que a composição de `max p_n`
+seja única. Ela não é.
+
+A resolução que maximiza `p_n` fixa **o total em Z\*** e **maximiza a soma** das parcelas da
+pessoa. Não fixa de que famílias essa soma é feita. Entre as escalas ótimas em que `p_n` vale
+19, umas podem ter 19 unidades de excesso de jornada e outras 10 de excesso e 9 de dias
+consecutivos. O solver devolve uma delas, e a escolha é desempate — a mesma coisa que o
+Experimento B foi desenhado para não reportar. Ler a composição de uma escala e concluir
+"dominada por excesso" repete, um nível abaixo, o erro que o experimento evita um nível
+acima.
+
+Há duas razões para desconfiar que o caso não é degenerado aqui. As famílias **estão
+acopladas**: passar alguém do teto de 5 para 24 atribuições em 28 dias viola também
+`max_consecutive_working_days`, então parte da composição é forçada e parte é escolha. E a
+troca entre famílias **é barata**, porque nas quatro instâncias todo peso vale 1 — uma
+unidade de excesso de jornada custa o mesmo que uma de dias consecutivos, e o solver não tem
+preferência entre elas.
+
+### A parte que é invariante, e já está medida
+
+Uma parte da pergunta se responde **sem resolver nada**, e essa parte é sólida. A cobertura é
+igualdade, então o total de atribuições de qualquer escala viável é exatamente a demanda `D`.
+Se `D` passa da soma dos tetos de jornada `C`, os `D − C` excedentes existem em toda escala
+viável, e como o peso é 1 isso é piso para `Z*`:
+
+| | D | soma dos tetos | excesso forçado | Z\* | piso/Z\* |
+|---|---|---|---|---|---|
+| sprint01 | 152 | 122 | 30 | 56 | 54% |
+| sprint02 | 152 | 120 | 32 | 58 | 55% |
+| long01 | 740 | 590 | 150 | 197 | 76% |
+| long02 | 740 | 580 | 160 | 219 | 73% |
+
+Isto é `docs/conferencia_contratos.py`. No **total**, a resposta à conferência 1 é sim: a
+penalidade é dominada por excesso de atribuição, e por aritmética, não por propriedade do
+ótimo. O que não se segue disso é a composição **da penalidade individual máxima**, que é o
+que a conferência pede.
+
+### O que proponho no lugar
+
+Perguntar em forma de intervalo, e só para quem importa. Para o profissional que detém
+`max_do_max` (o 4 nas duas longas), e para a família `max_num_assignments`:
+
+- mínimo da parcela dessa família, sujeito a total = Z\* **e** `p_n` = máximo conhecido;
+- máximo da mesma parcela, sob as mesmas restrições.
+
+Se o mínimo já é alto, a dominância é invariante e a afirmação forte se sustenta. Se o
+intervalo for largo, a composição é escolha de gestão — o que é achado, não fracasso: diz que
+a *mesma* carga máxima pode ser entregue como excesso de jornada ou como sequência ruim de
+dias, e essa é uma alavanca de gestão que o total esconde.
+
+Custo: 2 resoluções por (pessoa, família). Restrito a 1 pessoa e 2 ou 3 famílias em cada
+longa, são 8 a 12 resoluções — dezenas de minutos, não horas. As duas restrições extras
+tendem a deixar cada resolução **mais fácil** que as do experimento, não mais difícil.
+
+### Se a resposta for "mede na escala e segue"
+
+Também é defensável, desde que o texto diga o que está dizendo: *"na escala que maximiza a
+penalidade do profissional 4, ela se compõe assim"* — uma escala testemunha, não propriedade
+do conjunto. O `experimento_b_composicao.csv` já sai com a coluna `escala` justamente para
+isso. O que não dá é usar essa leitura para decidir entre "afirmação forte" e "afirmação
+encolhida", porque a decisão ficaria com o desempate do solver.
+
+---
+
+## 2026-09-22 — P11: o lote *early* é uma série controlada; o Experimento B pode usá-la
+
+**Status: NÃO AGORA, decidido em 2026-09-22 — e há problema de desenho antes do custo.**
+
+A objeção do projeto de redação, que é melhor que a minha proposta: entre `long01` e `long02`
+mudam **onze parâmetros ao mesmo tempo**. Cinco pontos assim não dão dose-resposta; dão cinco
+observações num espaço multidimensional. Eu tinha tratado a série como se fosse um eixo, e ela
+não é — a tabela da seção "O que se ganha no lugar" mostra três linhas mudando juntas, e
+nenhuma delas isolada.
+
+A consequência prática: **antes de gastar dez horas de máquina, escrever qual afirmação exata
+as cinco instâncias sustentariam.** Se a resposta for "que apertar contrato piora as três
+medidas", dois pontos já dizem isso e cinco não dizem mais. Se for dose-resposta, cinco pontos
+multidimensionais não dão, e a rodada seria desperdiçada.
+
+**Onde a dose-resposta cabe de verdade:** na instância brasileira, variando **um parâmetro
+por vez** — que é justamente o que o gerador permite e o benchmark não, porque lá os
+parâmetros vêm amarrados no arquivo. E depois de 14/10.
+
+O que sobra desta proposta e vale sozinho, sem rodar nada: **o fato de o lote *early* ser uma
+série controlada precisa entrar no texto**, porque afeta como se lê qualquer média sobre ele,
+inclusive as de outros autores. Isso não custa máquina nenhuma.
+
+O registro abaixo fica como escrito.
+
+---
+
+**Status original: aguardando validação.** Não implementado: só rodar `long03`, `long04` e `long05`
+no Experimento B já é desenho experimental novo.
+
+### O fato, conferido em 22/09
+
+Fui atrás da correlação de 0,89 entre `long01` e `long02` e achei o motivo dela. As duas
+instâncias **não são cenários diferentes**. Conferido em dois níveis independentes — pelo
+`parser.py` e por hash dos blocos do XML bruto, para não depender do meu próprio código:
+
+| bloco do XML | 10 `sprint_early` | 5 `long_early` |
+|---|---|---|
+| `CoverRequirements` | 1 versão | 1 versão |
+| `DayOffRequests`, `ShiftOffRequests` | 1 versão | 1 versão |
+| `Employees`, `ShiftTypes`, `Skills` | 1 versão | 1 versão |
+| **`Contracts`** | **10 versões** | **5 versões** |
+
+`DayOnRequests` e `ShiftOnRequests` estão ausentes em todos. **O lote *early* é um cenário
+por track com variações de regra de contrato.** Todas com ótimo provado na Tabela 6.
+
+Isso invalida a frase que mandei ontem — *"a exposição é propriedade da pessoa, não sorteio
+da instância"* — porque não há sorteio: é o mesmo mês, os mesmos pedidos, a mesma cobertura.
+
+### O que se ganha no lugar, e é melhor
+
+Um experimento controlado sobre **regra de contrato**, que é o objeto do trabalho, com tudo o
+mais fixo. Os dois pontos que já temos:
+
+| | `long01` | `long02` |
+|---|---|---|
+| dias consecutivos (teto, três contratos) | 7 / 5 / 5 | 4 / 4 / 4 |
+| piso de atribuições | 6 / 6 / 3 | 8 / 6 / 4 |
+| teto de atribuições | 16 / 12 / 5 | 16 / 11 / 5 |
+| Z\* | 197 | 219 |
+| concentração inevitável | 2,74× | 3,13× |
+| margem de gestão | 1,73× | 1,43× |
+
+Apertar a regra aumentou o custo, aumentou a concentração e reduziu a margem — as três na
+direção ruim, ao mesmo tempo. Com dois pontos isso é observação. Com cinco vira resultado.
+
+### A proposta
+
+Rodar o Experimento B, forma B, em `long03` (Z\* = 240), `long04` (303) e `long05` (284),
+fechando a série de cinco. Os valores da Tabela 6 estão em Santos et al. (2016), p. 248, e
+os três têm ótimo provado, então o portão de validação de sempre continua valendo.
+
+O que a série de cinco permitiria afirmar, e hoje não dá:
+
+1. Se concentração e margem se movem **monotonicamente** com o aperto da regra, ou se `01` e
+   `02` foram coincidência.
+2. Se a faixa `E/Z*` (excesso forçado sobre o ótimo) de 73% a 81% se mantém, e se o excesso
+   forçado prevê o ótimo dentro da série.
+3. Um eixo de comparação para a instância brasileira: 12×36 contra 8 h é exatamente uma
+   troca de regra de contrato com demanda fixa — o mesmo desenho, com outra regra.
+
+**Custo.** `long01` levou 69 min e `long02` 193 min, então a série toda é da ordem de 6 a 10
+horas de máquina, em rodadas separadas de madrugada. Não bloqueia o Experimento A.
+
+**Contra.** O Experimento A é o resultado central e ainda não rodou; a P11 é aprofundamento
+do B. Se o prazo apertar, ela cai inteira sem prejuízo do trabalho — e a observação da série
+controlada continua valendo como nota metodológica sobre o benchmark, que não custa nada.
+
+**Independente da decisão:** o fato da série controlada precisa entrar no texto de qualquer
+forma, porque afeta como se lê qualquer média sobre o lote *early* — inclusive as de outros
+autores. Não são médias sobre cenários independentes.

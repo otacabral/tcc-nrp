@@ -225,10 +225,18 @@ Sessao 3 - encanamento
 ## Semana 5 (07-13/10) - experimentos
 
 - [x] src/experimentos.py, saida em resultados/experimento_b.csv
+- [x] src/experimento_a.py escrito em 22/09, NAO RODADO (Pyomo so na maquina do
+      Otavio). Varredura linear do efetivo a partir do piso de capacidade, com
+      tres vereditos — viavel, inviavel, indeterminado — e o indeterminado NUNCA
+      contado como inviavel. Cada escala viavel passa pelo avaliador oficial, que
+      tem de cobrar zero nas tres familias rigidas. Primeiro comando:
+      `python src\experimento_a.py --piloto`
 - [ ] Experimento A: efetivo minimo viavel em 8h e em 12x36, a horas de
       assistencia constantes. Reportar a DISTANCIA PERCENTUAL entre o piso
       aritmetico e o minimo viavel em cada regime, nao o numero absoluto.
-      O efetivo de 8h e recalculado, nao e os 49 do long01
+      O efetivo de 8h e recalculado, nao e os 49 do long01.
+      PISO CONFERIDO em 22/09: e 36 nas 20 celulas (5 graus x 2 regimes x
+      2 regras), por construcao do gerador. Nao e resultado, e o denominador
 - [ ] Experimento A: reportar INTERVALO, nao ponto. A comparacao entre regimes
       se faz com o intervalo inteiro, nunca com a ponta que mais favorece
 - [ ] declarar no texto: na categoria do chefe o intervalo e 60% da grandeza,
@@ -247,6 +255,12 @@ Sessao 3 - encanamento
       nao discute esse passo" fica SUSPENSA: sem denominador e "nao achei".
       O achado pode ser apresentado sem essa frase — ele tem denominador
       proprio (65 de 69 instancias) e grupo de controle (as 4 sem sobreposicao)
+- [ ] MESMO PADRAO, decisao de 22/09: coluna na triagem dos 110 sobre o lote
+      early ser UM cenario por track com variacao de contrato. Enquanto ela nao
+      existir, o fato entra no texto como observacao sobre o benchmark — que e
+      conferivel por qualquer um, por hash dos blocos do XML — e NAO como
+      "a literatura nao reporta isso". Sem denominador e "nao achei".
+      Conferencia em docs/conferencia_contratos.py, secao "O QUE DIFERE"
 - [ ] ENQUADRAMENTO no texto: a inversao (12x36 distorcendo menos que 8 h) e
       achado SOBRE O BENCHMARK, nao sobre regimes de jornada. Nas 4 instancias
       sem sobreposicao a intuicao ingenua esta certa: 12 h custa ~19%, 8 h custa

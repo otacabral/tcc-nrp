@@ -1,5 +1,12 @@
 # Nota de passagem — 22/09/2026
 
+> **CORRIGIDA em 22/09, mais tarde.** A seção "O padrão se repetiu nas duas instâncias longas"
+> afirma que `long01` e `long02` têm *"pedidos e cobertura diferentes"*, e conclui daí que a
+> exposição é propriedade da pessoa. **As duas afirmações estão erradas:** as duas instâncias
+> são idênticas em demanda, pedidos, profissionais, habilidades e turnos — só os contratos
+> mudam. A correlação de 0,89 não é replicação. Ver
+> `docs/nota_conferencias_contrato_2026-09-22.md`, seção 0, e a P11.
+
 Consolida cinco rodadas do projeto de códigos que ainda não chegaram ao projeto de redação.
 Cobre da chegada do Parecer COFEN até os primeiros resultados do Experimento B.
 
