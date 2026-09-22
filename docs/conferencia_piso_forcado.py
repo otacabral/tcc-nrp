@@ -90,10 +90,13 @@ def declaracao_1() -> bool:
     print("=" * 88)
     print("\nLido da saida detalhada do AVALIADOR OFICIAL sobre as escalas otimas ja gravadas.")
     ok = True
+    conferidas = 0      # sem isto, uma rodada que pula TODAS as escalas dizia "OK"
+    ausentes = []
     for nome, inst_caminho, sol_caminho in ESCALAS:
         sol = RAIZ / sol_caminho
         if not sol.exists():
-            print(f"\n  {nome}: escala ausente em {sol_caminho} — pulada")
+            print(f"\n  {nome}: escala ausente em {sol_caminho}")
+            ausentes.append(sol_caminho)
             continue
         inst = ler_instancia(str(RAIZ / inst_caminho))
         saida = avaliar(RAIZ / inst_caminho, sol)
@@ -127,8 +130,24 @@ def declaracao_1() -> bool:
         print(f"     profissionais ABAIXO do proprio teto nesta escala otima: {len(abaixo)}"
               f"{'  -> o teto virou piso' if not abaixo else '  ' + str(abaixo[:5])}")
         ok &= lineares and maior > 1 and soma >= piso
+        conferidas += 1
     print("\n  cost == excess com excess > 1 => contagem POR ATRIBUICAO excedente.")
     print("  Saida completa do avaliador em resultados/conferencia_piso/.")
+    if ausentes:
+        print(f"\n  ATENCAO: {len(ausentes)} de {len(ESCALAS)} escalas nao estao no disco.")
+        print("  `resultados/` esta no .gitignore, entao as escalas otimas NAO viajam pelo")
+        print("  repositorio: cada maquina tem as suas. Para gerar as que faltam:")
+        print("      python src\\regressao.py --gravar-escalas")
+        for a in ausentes:
+            print(f"      falta {a}")
+    # Uma conferencia que nao conferiu nada NAO passa. Sem esta linha, a rodada de 22/09
+    # imprimiu "Declaracao 1: OK" tendo pulado as quatro escalas — o pior tipo de defeito
+    # num script cujo trabalho e justamente atestar.
+    if conferidas == 0:
+        print("\n  NADA FOI CONFERIDO. A declaracao 1 NAO esta atestada nesta maquina.")
+        return False
+    if ausentes:
+        print(f"\n  parcial: {conferidas} de {len(ESCALAS)} escalas conferidas.")
     return ok
 
 

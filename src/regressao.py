@@ -4,6 +4,7 @@ Roda da raiz do repositorio, com a .venv ativa:
 
     python src\\regressao.py              # sprint01 e sprint02 (rapido, ~segundos)
     python src\\regressao.py --todos      # inclui long01 e long02 (minutos)
+    python src\\regressao.py --todos --gravar-escalas   # e grava as escalas otimas
 
 Existe porque o ambiente da sessao nao tem Pyomo — o PyPI esta bloqueado por politica de
 rede da organizacao. Toda alteracao no `modelo.py` e escrita sem execucao e precisa desta
@@ -35,6 +36,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import modelo  # noqa: E402
 from avaliacao import penalidade, por_profissional  # noqa: E402
 from parser import ler_instancia  # noqa: E402
+from solucao import escrever_xml  # noqa: E402
+
+RAIZ = Path(__file__).resolve().parents[1]
 
 ALVOS = [
     ("sprint01", "instancias/sprint/sprint/sprint01.xml", 56),
@@ -45,16 +49,18 @@ ALVOS = [
 
 
 def conferir(nome: str, caminho: str, z_esperado: int, solver: str,
-             tempo_limite: int | None) -> list[str]:
+             tempo_limite: int | None, gravar_escala: bool = False) -> list[str]:
     erros = []
     inst = ler_instancia(caminho)
     t0 = time.time()
     m = modelo.construir(inst)
-    res = modelo.resolver(m, solver=solver, tempo_limite=tempo_limite)
+    res = modelo.resolver(m, solver=solver, tempo_limite=tempo_limite, carregar=False)
     seg = time.time() - t0
 
     if not modelo.resolvido(res):
         return [f"{nome}: solver nao provou otimalidade ({modelo.estado(res)})"]
+    if not modelo.carregar_solucao(m, res):
+        return [f"{nome}: solver declarou otimo mas nao entregou solucao"]
 
     z = modelo.valor_objetivo(m)
     escala = modelo.atribuicoes(m)
@@ -86,6 +92,14 @@ def conferir(nome: str, caminho: str, z_esperado: int, solver: str,
             erros.append(f"{nome}: pena_familia nao soma parcela[{f}]")
             break
 
+    if gravar_escala and not erros:
+        # `resultados/` esta no .gitignore, entao a escala otima nao viaja pelo repositorio:
+        # cada maquina precisa gerar a sua. Sem isso, a conferencia do piso forcado
+        # (docs/conferencia_piso_forcado.py) nao tem o que ler e nao atesta nada.
+        destino = RAIZ / "resultados" / f"{nome}_completo.xml"
+        escrever_xml(inst, escala, destino, penalidade=z)
+        print(f"        escala gravada em {destino.relative_to(RAIZ)}")
+
     marca = "OK " if not erros else "FALHOU"
     print(f"   {marca} {nome:10s} Z={z:4d} (esperado {z_esperado:4d}) | "
           f"sum(pena)={sum(pena.values()):4d} | max pena={max(pena.values()):3d} | "
@@ -98,13 +112,18 @@ def main() -> int:
     ap.add_argument("--todos", action="store_true", help="inclui long01 e long02")
     ap.add_argument("--solver", default=modelo.SOLVER_PADRAO)
     ap.add_argument("--tempo", type=int, default=None, help="limite por alvo, em segundos")
+    ap.add_argument("--gravar-escalas", action="store_true",
+                    help="grava a escala otima de cada alvo em resultados/<alvo>_completo.xml."
+                         " Necessario porque resultados/ esta no .gitignore e as escalas nao"
+                         " viajam pelo repositorio; e o insumo de"
+                         " docs/conferencia_piso_forcado.py")
     a = ap.parse_args()
 
     alvos = ALVOS if a.todos else ALVOS[:2]
     print(f"regressao do modelo, solver {a.solver}, {len(alvos)} alvos")
     erros = []
     for nome, caminho, z in alvos:
-        erros += conferir(nome, caminho, z, a.solver, a.tempo)
+        erros += conferir(nome, caminho, z, a.solver, a.tempo, a.gravar_escalas)
 
     print()
     if erros:

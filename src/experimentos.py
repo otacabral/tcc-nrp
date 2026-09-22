@@ -110,9 +110,19 @@ def _com_otimo_fixado(inst: Instancia, z: int) -> pyo.ConcreteModel:
 
 
 def _resolver(m, solver, tempo, rotulo) -> None:
-    res = modelo.resolver(m, solver=solver, tempo_limite=tempo)
+    """Resolve exigindo otimo provado, e falha com mensagem legivel quando nao ha.
+
+    `carregar=False` mesmo aqui, onde o modelo deveria ser viavel: se o Z* passado estiver
+    errado, `_com_otimo_fixado` monta um modelo INVIAVEL, e o appsi levantaria um
+    `RuntimeError` sobre carregamento de solucao — escondendo a causa real atras de uma
+    mensagem sobre outra coisa. Com isto, o erro que aparece e "sem otimo provado", que e o
+    que de fato aconteceu.
+    """
+    res = modelo.resolver(m, solver=solver, tempo_limite=tempo, carregar=False)
     if not modelo.resolvido(res):
         raise RuntimeError(f"{rotulo}: sem otimo provado ({modelo.estado(res)})")
+    if not modelo.carregar_solucao(m, res):
+        raise RuntimeError(f"{rotulo}: solver declarou otimo mas nao entregou solucao")
 
 
 def _composicao(m, n: str) -> dict:

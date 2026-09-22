@@ -79,7 +79,12 @@ NOMES_AVALIADOR = {
     "unwanted_patterns": "Unwanted pattern",
 }
 
-VIAVEL, INVIAVEL, INDETERMINADO = "viavel", "inviavel", "indeterminado"
+# Quatro respostas, nao tres. `indeterminado` e "o solver rodou e nao decidiu" — limite de
+# tempo, tipicamente. `erro` e "o solver nem chegou a responder". Os dois impedem a conclusao,
+# mas por motivos opostos: o primeiro pede mais tempo, o segundo pede conserto. Misturar os
+# dois esconde defeito atras de uma palavra que parece resultado — foi o que aconteceu em
+# 22/09, quando vinte celulas registraram "indeterminado" e a causa era excecao no codigo.
+VIAVEL, INVIAVEL, INDETERMINADO, ERRO = "viavel", "inviavel", "indeterminado", "erro"
 
 
 def classificar(resultado) -> str:
@@ -122,14 +127,33 @@ def conferir_no_avaliador(inst, escala, arquivo: Path) -> list[str]:
 
 def tentar(grau: str, regime: str, regra: str, efetivo: int, solver: str,
            tempo: int | None) -> tuple[str, object, object]:
+    """Uma resolucao de viabilidade. NUNCA levanta: a resposta pode ser "inviavel".
+
+    Resolve com `carregar=False` porque aqui a inviabilidade e resposta esperada, e o
+    appsi/HiGHS levanta `RuntimeError` se tentar carregar solucao que nao existe. A solucao
+    so e carregada depois de o veredito dizer que ha uma.
+
+    Qualquer excecao inesperada vira ERRO, nunca INVIAVEL: confundir "o solver quebrou" com
+    "nao existe escala legal" produziria um efetivo minimo inflado, e ninguem notaria olhando
+    so o CSV. E ERRO em vez de INDETERMINADO porque as duas coisas pedem providencias
+    diferentes — mais tempo contra conserto de codigo.
+    """
     inst = br.construir(grau=grau, regime=regime, regra=regra, efetivo=efetivo)
     m = modelo.construir(inst, flexiveis=True, habilidade_rigida=True,
                          noite_antes_de_fds_livre=True,
                          rigidas_legais=modelo.RIGIDAS_LEGAIS_BR)
-    resultado = modelo.resolver(m, solver=solver, tempo_limite=tempo)
+    try:
+        resultado = modelo.resolver(m, solver=solver, tempo_limite=tempo, carregar=False)
+    except Exception as e:  # noqa: BLE001
+        print(f"      [ERRO] o solver levantou {type(e).__name__}: {e}")
+        return ERRO, inst, None
     veredito = classificar(resultado)
-    escala = modelo.atribuicoes(m) if veredito == VIAVEL else None
-    return veredito, inst, escala
+    if veredito != VIAVEL:
+        return veredito, inst, None
+    if not modelo.carregar_solucao(m, resultado):
+        print("      [ERRO] solver declarou viavel mas nao entregou solucao")
+        return ERRO, inst, None
+    return VIAVEL, inst, modelo.atribuicoes(m)
 
 
 def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
@@ -150,6 +174,32 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
 
     maior_inviavel, menor_viavel, indeterminados, problemas = None, None, [], []
     t0 = time.process_time()
+
+    # Sonda em `piso - 1`, ANTES da varredura. Serve a duas coisas. Primeira: fecha o
+    # intervalo por baixo — sem ela, uma celula viavel ja no piso sai com `maior_inviavel`
+    # vazio, e o intervalo fica aberto num lado. Segunda, e mais importante: e um teste do
+    # MODELO contra a aritmetica. Com um profissional a menos a capacidade nao cobre a
+    # demanda, entao a resposta TEM de ser inviavel. Se vier viavel, a cobertura ou o teto
+    # nao estao valendo, e o resultado da celula nao vale nada.
+    # Limite proprio, mais curto: com capacidade menor que a demanda a propria relaxacao
+    # linear ja e inviavel, entao o solver decide em instantes. Se demorar, e sinal de que o
+    # modelo nao e o que eu penso, e nao vale gastar o limite inteiro vinte vezes.
+    erros = []
+    veredito, _, _ = tentar(grau, regime, regra, piso - 1, solver, min(tempo or 120, 120))
+    if verboso:
+        print(f"   efetivo {piso - 1:3d}: {veredito:14s} (sonda abaixo do piso)", flush=True)
+    if veredito == INVIAVEL:
+        maior_inviavel = piso - 1
+    elif veredito == VIAVEL:
+        problemas.append(f"CONTRADICAO: efetivo {piso - 1} viavel, abaixo do piso de "
+                         f"capacidade {piso}. A cobertura ou o teto nao estao valendo.")
+        print(f"      {problemas[-1]}")
+    elif veredito == ERRO:
+        erros.append(piso - 1)
+        problemas.append(f"a sonda em {piso - 1} deu erro: o intervalo fica aberto por baixo")
+    else:
+        indeterminados.append(piso - 1)
+
     for efetivo in range(piso, piso + margem + 1):
         c0 = time.process_time()
         veredito, inst, escala = tentar(grau, regime, regra, efetivo, solver, tempo)
@@ -160,9 +210,14 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
             maior_inviavel = efetivo
         elif veredito == INDETERMINADO:
             indeterminados.append(efetivo)
+        elif veredito == ERRO:
+            # nao e viavel nem inviavel: nao da para continuar subindo como se soubesse algo
+            erros.append(efetivo)
+            problemas.append(f"erro do solver em {efetivo}; a varredura parou aqui")
+            break
         else:
             ESCALAS.mkdir(parents=True, exist_ok=True)
-            problemas = conferir_no_avaliador(inst, escala, ESCALAS / f"{inst.id}.xml")
+            problemas += conferir_no_avaliador(inst, escala, ESCALAS / f"{inst.id}.xml")
             if problemas:
                 print(f"      CONFERENCIA FALHOU: {problemas}")
             menor_viavel = efetivo
@@ -177,6 +232,10 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
         "maior_inviavel": maior_inviavel if maior_inviavel is not None else "",
         "menor_viavel": menor_viavel if menor_viavel is not None else "",
         "indeterminados": ",".join(str(x) for x in indeterminados),
+        "erros_do_solver": ",".join(str(x) for x in erros),
+        "intervalo": (f"[{maior_inviavel + 1}, {menor_viavel}]"
+                      if maior_inviavel is not None and menor_viavel is not None
+                      else f"[?, {menor_viavel}]" if menor_viavel is not None else "[?, ?]"),
         "distancia_do_piso": (f"{(menor_viavel - piso) / piso:.1%}"
                               if menor_viavel is not None else ""),
         "conferencia": "ok" if menor_viavel is not None and not problemas
@@ -221,19 +280,29 @@ def main() -> int:
         linhas.append(celula(grau, regime, regra, a.solver, a.tempo, a.margem, not a.quieto))
         gravar(linhas)
 
-    print(f"\n{'celula':34s}{'piso':>6s}{'maior inv.':>12s}{'menor viav.':>13s}"
-          f"{'distancia':>11s}{'indeterminados':>16s}")
+    print(f"\n{'celula':36s}{'piso':>6s}{'intervalo':>12s}{'distancia':>11s}"
+          f"{'indet.':>8s}{'erros':>8s}{'conferencia':>14s}")
     for r in linhas:
-        print(f"  {r['grau']:14s}{r['regime']:7s}{r['regra']:11s}{r['piso_de_capacidade']:6d}"
-              f"{str(r['maior_inviavel']):>12s}{str(r['menor_viavel']):>13s}"
-              f"{str(r['distancia_do_piso']):>11s}{str(r['indeterminados']):>16s}")
+        conf = str(r["conferencia"])
+        print(f"  {r['grau']:15s}{r['regime']:7s}{r['regra']:12s}{r['piso_de_capacidade']:6d}"
+              f"{r['intervalo']:>12s}{str(r['distancia_do_piso']):>11s}"
+              f"{str(r['indeterminados']):>8s}{str(r['erros_do_solver']):>8s}"
+              f"{(conf if len(conf) <= 13 else conf[:10] + '...'):>14s}")
     print(f"\nresultado: {SAIDA}")
     print("escalas e saidas do avaliador: resultados/experimento_a/")
+
+    fechadas = [r for r in linhas if r["conferencia"] == "ok" and r["maior_inviavel"] != ""]
+    com_erro = [r for r in linhas if r["erros_do_solver"]]
+    print(f"\ncelulas com intervalo FECHADO nos dois lados e conferencia ok: "
+          f"{len(fechadas)} de {len(linhas)}")
+    if com_erro:
+        print(f"celulas com erro do solver: {len(com_erro)} — o intervalo delas esta aberto,")
+        print("e 'aberto' nao e resultado. Conferir a mensagem antes de ler qualquer numero.")
     print()
     print("LEITURA: comparar os dois regimes pelo INTERVALO inteiro, nunca pela ponta que")
     print("favorece. Onde houver indeterminado, o minimo esta dentro do intervalo, nao no")
     print("`menor_viavel`. Celula com `conferencia` diferente de `ok` nao vale como resultado.")
-    return 0
+    return 1 if com_erro else 0
 
 
 if __name__ == "__main__":

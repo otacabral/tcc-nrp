@@ -19,6 +19,7 @@ O solver e parametro da chamada, nunca do modelo (CONTEXTO_PROJETO.md, secao 8):
 
 from __future__ import annotations
 
+import inspect
 from datetime import date
 
 import pyomo.environ as pyo
@@ -421,8 +422,19 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
 # ---------------------------------------------------------------------------
 
 def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
-             tempo_limite: int | None = None, log: bool = False):
-    """Resolve e devolve o objeto de resultado do Pyomo."""
+             tempo_limite: int | None = None, log: bool = False,
+             carregar: bool = True):
+    """Resolve e devolve o objeto de resultado do Pyomo.
+
+    `carregar=False` e obrigatorio quando a resposta pode ser INVIAVEL. O appsi/HiGHS tenta
+    carregar a solucao assim que termina e, sem solucao, levanta `RuntimeError` em vez de
+    devolver um resultado com `termination_condition = infeasible` — quem chamou nao chega a
+    ver o veredito. Aconteceu em 22/09, na sonda do Experimento A.
+
+    Com `carregar=False` o resultado volta sempre, e quem quiser os valores das variaveis
+    chama `carregar_solucao(m, resultado)` depois de conferir que ha solucao. Nos caminhos que
+    so resolvem modelos sabidamente viaveis o padrao continua valendo, e nada muda.
+    """
     opt = pyo.SolverFactory(solver)
     if tempo_limite is not None:
         if hasattr(opt, "config") and hasattr(opt.config, "time_limit"):
@@ -434,7 +446,51 @@ def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
                     break
                 except Exception:  # noqa: BLE001
                     continue
-    return opt.solve(m, tee=log)
+    if carregar:
+        return opt.solve(m, tee=log)
+
+    # ARMADILHA, custou uma rodada em 22/09: mexer em `opt.config.load_solution` ANTES de
+    # chamar `solve` nao adianta no appsi. O `LegacySolverInterface.solve` refaz o config a
+    # partir dos argumentos legados, e `load_solutions` tem padrao True — ou seja, ele desfaz
+    # o que acabou de ser configurado. O kwarg tem de ir na chamada.
+    if _aceita(opt.solve, "load_solutions"):
+        if hasattr(opt, "config") and hasattr(opt.config, "load_solution"):
+            opt.config.load_solution = False      # cinto, para as versoes que nao refazem
+        return opt.solve(m, tee=log, load_solutions=False)   # e suspensorio
+    if hasattr(opt, "config") and hasattr(opt.config, "load_solution"):
+        opt.config.load_solution = False
+        return opt.solve(m, tee=log)
+    raise RuntimeError(
+        f"o solver {solver} nao oferece jeito de resolver sem carregar a solucao; sem isso "
+        f"uma resposta INVIAVEL vira excecao e nao da para distinguir de erro")
+
+
+def _aceita(funcao, nome: str) -> bool:
+    """A funcao aceita este argumento nomeado? Usado para escolher o dialeto do solver."""
+    try:
+        return nome in inspect.signature(funcao).parameters
+    except (TypeError, ValueError):
+        return False
+
+
+def carregar_solucao(m: pyo.ConcreteModel, resultado) -> bool:
+    """Carrega os valores das variaveis depois de um `resolver(..., carregar=False)`.
+
+    Devolve False se nao houver solucao para carregar — nesse caso `m.x` continua sem valor e
+    `atribuicoes(m)` devolveria vazio, que e silencioso demais para confiar.
+    """
+    carregador = getattr(resultado, "solution_loader", None)
+    if carregador is not None:
+        try:
+            carregador.load_vars()
+            return True
+        except Exception:  # noqa: BLE001
+            return False
+    try:
+        m.solutions.load_from(resultado)
+        return True
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def estado(resultado) -> str:
@@ -517,10 +573,17 @@ def main() -> int:
     print(f"modelo {'minimo' if args.minimo else 'completo'}: {d['variaveis']} variaveis, "
           f"{d['restricoes']} restricoes")
 
-    resultado = resolver(m, solver=args.solver, tempo_limite=args.tempo, log=args.log)
+    # `carregar=False` porque este comando serve justamente para perguntar se ha escala: a
+    # inviabilidade e resposta, nao acidente, e o appsi levantaria excecao ao tentar carregar
+    # solucao inexistente. Ver `resolver`.
+    resultado = resolver(m, solver=args.solver, tempo_limite=args.tempo, log=args.log,
+                         carregar=False)
     print(f"solver {args.solver}: {estado(resultado)}")
     if not resolvido(resultado):
         print("[FALHA] nenhuma escala viavel obtida")
+        return 1
+    if not carregar_solucao(m, resultado):
+        print("[FALHA] o solver declarou viavel mas nao entregou solucao")
         return 1
 
     escala = atribuicoes(m)

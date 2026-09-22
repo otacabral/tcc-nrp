@@ -1004,3 +1004,86 @@ controlada continua valendo como nota metodológica sobre o benchmark, que não 
 **Independente da decisão:** o fato da série controlada precisa entrar no texto de qualquer
 forma, porque afeta como se lê qualquer média sobre o lote *early* — inclusive as de outros
 autores. Não são médias sobre cenários independentes.
+
+---
+
+## 2026-09-22 — P12: o Experimento A responde zero, e a causa é a demanda achatada
+
+**Status: aguardando validação.** Não implementei nada. O piloto rodou, o resultado está no
+`resultados/experimento_a.csv`, e o que ele mostra exige uma decisão antes de virar capítulo.
+
+### O que saiu
+
+| célula | piso de capacidade | menor efetivo viável | distância |
+|---|---|---|---|
+| `intermediario` / 12x36 / teto | 36 | **36** | **0,0%** |
+| `intermediario` / 8h / teto | 36 | **36** | **0,0%** |
+
+Os dois regimes fecham escala legal **exatamente no piso aritmético**. A conferência no
+avaliador oficial passou nos dois: zero violação nas três famílias que aqui são rígidas.
+
+### Por que isso é zero, e por que eu desconfio do zero
+
+Fui ver a demanda que o gerador emite. Com a regra `teto`, no grau `intermediario`:
+
+- 12x36: 8 + 1 profissionais em cada turno, **todos os 28 dias**, sem exceção. D = 504;
+- capacidade: 36 pessoas × 14 plantões = **504**. Demanda e capacidade são o mesmo número;
+- 8 h: 8 + 1 em cada um dos três turnos, todos os dias. D = 756 = 36 × 21.
+
+Ou seja: a instância pede um **empacotamento perfeito**, e existe um. O piso é atingido
+porque a demanda é rigorosamente uniforme — o gerador deriva tudo de um perfil assistencial
+horário constante, que é o que o Parecer COFEN sustenta, já que ele **não fornece curva
+horária**.
+
+Então o zero é honesto, mas é o zero do caso mais fácil possível. A pergunta do Experimento A
+— *o regime de jornada muda o efetivo necessário?* — recebe a resposta "não", e recebe essa
+resposta num cenário construído de um jeito que torna difícil ela ser outra coisa.
+
+### As três saídas, e eu não escolho nenhuma
+
+**(a) Aceitar o zero como resultado.** É defensável e é barato: *a escolha de regime não custa
+efetivo a horas de assistência constantes; as regras de descanso da CLT são absorvidas sem
+pessoa a mais nos dois regimes.* Resultado negativo, mas limpo, conferido no avaliador, e com
+a ressalva da uniformidade declarada em voz alta. A comparação entre regimes migra para o
+Experimento B — distribuição —, que é onde já há sinal.
+
+**(b) Variar o perfil horário.** Um perfil com pico diurno faria o empacotamento perfeito
+sumir e a distância aparecer, provavelmente diferente entre 8 h e 12x36. **Mas a curva seria
+inventada**: o Parecer não tem essa informação, e o TCC passou três semanas estabelecendo que
+o perfil contínuo é a primitiva justamente para não inventar repartição. Trocar isso é
+reabrir a P5 pela porta dos fundos. Se for por aqui, a curva precisa de fonte.
+
+**(c) Variar o horizonte ou o porte para quebrar a divisibilidade.** 5.920 h / 28 dias cai
+redondo; outro porte não cairia. É mais barato que (b) e não inventa curva nenhuma — mas
+mede sensibilidade à aritmética, não ao regime, e o achado seria sobre divisibilidade.
+
+### O que eu recomendaria, se me perguntarem
+
+(a), com a ressalva escrita, **e** rodar as vinte células antes de decidir — custa cerca de 15
+minutos de máquina e dá o quadro inteiro em vez de duas células. Se as vinte derem zero, o
+resultado negativo está sustentado em 5 graus × 2 regimes × 2 regras, e isso é bem mais forte
+que duas linhas. Se alguma não der zero, a decisão muda sozinha.
+
+Rodar as vinte é execução do desenho já validado, não desenho novo — **isso eu faço sem
+esperar**, é só o comando `python src\experimento_a.py --todos`. O que não faço é (b) ou (c).
+
+### Atualização de 22/09, mais tarde: as vinte células rodaram
+
+Rodei o que disse que rodaria sem esperar. **As vinte deram o mesmo resultado:**
+
+- efetivo mínimo viável = **36** em todas, igual ao piso de capacidade, distância **0,0%**;
+- **conferência no avaliador oficial: `ok` nas vinte** — zero violação nas três famílias que
+  aqui são rígidas (`MaxNumAssignments`, `MaxConsecutiveWorkingDays`, `UnwantedPatterns`);
+- custo: de 1,8 s a 56,4 s de CPU por célula. O 12x36 é sistematicamente mais caro de
+  resolver que o de 8 h (dezenas de segundos contra poucos), o que é sinal de que a
+  alternância está de fato restringindo — não é um modelo frouxo devolvendo qualquer coisa.
+
+O resultado negativo está sustentado em 5 graus × 2 regimes × 2 regras, com escala exibida e
+conferida em cada célula. **A opção (a) ficou mais forte do que quando escrevi a proposta.**
+
+**O que ainda falta, e é honesto dizer:** o intervalo está fechado só por cima. A sonda em
+`efetivo = 35`, que deveria provar inviabilidade e fechar por baixo, **quebrou nas vinte** —
+defeito meu no código, não do modelo (o solver levantava exceção em vez de devolver o
+veredito; consertado depois). Até a sonda rodar, o que está demonstrado é *"36 basta"*, não
+*"36 é o mínimo"*. O mínimo não pode ser menor por aritmética de capacidade, mas aritmética
+não é o mesmo que o modelo ter dito.
