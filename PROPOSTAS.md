@@ -1087,3 +1087,55 @@ defeito meu no código, não do modelo (o solver levantava exceção em vez de d
 veredito; consertado depois). Até a sonda rodar, o que está demonstrado é *"36 basta"*, não
 *"36 é o mínimo"*. O mínimo não pode ser menor por aritmética de capacidade, mas aritmética
 não é o mesmo que o modelo ter dito.
+
+### Fechamento de 23/09: o intervalo fechou dos dois lados nas vinte
+
+A sonda consertada rodou. **As vinte células dão intervalo `[36, 36]`** — 35 com inviabilidade
+provada pelo solver, 36 com escala exibida e conferência `ok` no avaliador oficial. Não é mais
+"36 basta": é **36 é o mínimo**, demonstrado nos dois sentidos, em 5 graus × 2 regimes ×
+2 regras.
+
+**E o zero tem explicação mecânica, o que o torna menos frágil do que eu supus.** Os dois
+regimes dão a mesma capacidade por pessoa *em horas*, porque o teto legal é o mesmo:
+
+| regime | plantões em 28 dias | duração | horas | por semana |
+|---|---|---|---|---|
+| 12x36 | 14 | 12 h | 168 | **42 h** |
+| 8 h | 21 | 8 h | 168 | **42 h** |
+
+5.920 h ÷ 168 h = 35,24 pessoas, que é exatamente o `QP_ref` do Parecer. O mínimo viável é o
+teto disso, 36, nos dois regimes. **O que o experimento demonstra não é que a distância é
+zero, e sim que as regras de descanso não chegam a apertar: o que determina o efetivo é o
+teto de 42 h/semana, e ele é igual nos dois regimes por lei.** No 12x36 a alternância um-sim-
+um-não dá 14 plantões em 28 dias, exatamente o teto, e satisfaz as 36 h de descanso por
+construção; no de 8 h, 21 dias de trabalho e 7 de folga sobram para o descanso semanal.
+
+Isso é resultado, e é mais forte que "0,0%": **o modelo reproduz o QP do Parecer e mostra que
+as regras de descanso não acrescentam nada a ele.**
+
+**A ressalva da uniformidade continua valendo, mas menor do que eu escrevi.** Nas células
+`teto` a demanda é rigorosamente uniforme e a capacidade iguala a demanda — empacotamento
+perfeito. Nas células `maior_resto` a demanda **não** é uniforme (7 e 8 alternando conforme o
+dia) e há folga de 11 plantões, e o resultado é o mesmo 36. É teste fraco de robustez, porque
+a não-uniformidade é pequena, mas não é nulo.
+
+**Um achado sobre o modelo, não sobre o regime:** o 12x36 é muito mais caro de resolver —
+mediana de 23,9 s de CPU contra 5,0 s no de 8 h, com pico de 59,9 s. Mesma pergunta, mesma
+resposta, cinco vezes a busca. A alternância rígida corta o espaço de um jeito que o solver
+sente.
+
+### Se o zero for aceito, para onde vai a comparação entre regimes
+
+O Experimento A responde "o regime não muda o efetivo". A pergunta comparativa do trabalho
+fica sem veículo, e há um óbvio: **rodar o Experimento B na instância brasileira**, com
+efetivo fixo em 36, comparando a distribuição da penalidade entre 8 h e 12x36.
+
+É exatamente o desenho que o projeto de redação pediu ao recusar a P11 — **um parâmetro por
+vez, na instância brasileira** —, e aqui o parâmetro é o regime, com horas, porte, grau e
+efetivo todos fixos. Mas contraria a decisão de 21/09, que restringiu o Experimento B às
+instâncias do INRC justamente porque a pergunta dele não dependia de regime. Agora depende,
+por um motivo que não existia então: A voltou nulo.
+
+**Não implemento.** É mudança de escopo do Experimento B e precisa de validação. Se for
+aprovada, o custo é da ordem do Experimento B numa instância de 36 pessoas — as sprints, com
+10, levaram 6 minutos; com 36 deve ficar em dezenas de minutos por regime.

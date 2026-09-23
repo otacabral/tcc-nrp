@@ -231,12 +231,19 @@ Sessao 3 - encanamento
       contado como inviavel. Cada escala viavel passa pelo avaliador oficial, que
       tem de cobrar zero nas tres familias rigidas. Primeiro comando:
       `python src\experimento_a.py --piloto`
-- [ ] Experimento A: efetivo minimo viavel em 8h e em 12x36, a horas de
-      assistencia constantes. Reportar a DISTANCIA PERCENTUAL entre o piso
-      aritmetico e o minimo viavel em cada regime, nao o numero absoluto.
-      O efetivo de 8h e recalculado, nao e os 49 do long01.
-      PISO CONFERIDO em 22/09: e 36 nas 20 celulas (5 graus x 2 regimes x
-      2 regras), por construcao do gerador. Nao e resultado, e o denominador
+- [x] Experimento A RODADO E FECHADO em 23/09, nas 20 celulas (5 graus x
+      2 regimes x 2 regras). Intervalo [36, 36] em todas: 35 com inviabilidade
+      PROVADA e 36 com escala exibida e conferencia `ok` no avaliador oficial.
+      Distancia ao piso: 0,0% nos dois regimes. O piso de capacidade e 36 por
+      construcao do gerador — nao e resultado, e o denominador
+- [x] Experimento A, leitura: o efetivo e determinado pelo teto de 42 h/semana,
+      igual nos dois regimes por lei (14x12h = 21x8h = 168 h em 28 dias). As
+      regras de descanso da CLT nao chegam a apertar. 5.920/168 = 35,24 = o
+      QP_ref do Parecer, e o minimo viavel e o teto disso. Ver P12
+- [ ] DECISAO PENDENTE (P12): aceitar o zero como resultado negativo, com a
+      ressalva da demanda uniforme declarada, e decidir para onde vai a
+      comparacao entre regimes — a candidata e o Experimento B na instancia
+      brasileira, que contraria a decisao de 21/09 e precisa de validacao
 - [ ] Experimento A: reportar INTERVALO, nao ponto. A comparacao entre regimes
       se faz com o intervalo inteiro, nunca com a ponta que mais favorece
 - [ ] declarar no texto: na categoria do chefe o intervalo e 60% da grandeza,
