@@ -1009,7 +1009,29 @@ autores. Não são médias sobre cenários independentes.
 
 ## 2026-09-22 — P12: o Experimento A responde zero, e a causa é a demanda achatada
 
-**Status: aguardando validação.** Não implementei nada. O piloto rodou, o resultado está no
+**Status: DECISÃO 1 ACEITA em 2026-09-23, com o escopo estreitado. DECISÃO 2 DISSOLVIDA —
+não era decisão nova. Prioridade 1 definida: sensibilidade à variação de demanda.**
+
+O projeto de redação aceitou o resultado com a leitura estreita — *sob demanda uniforme,
+nenhuma restrição de escalonamento aperta além do teto de horas* —, não "o regime não muda o
+efetivo". Motivo: com perfil uniforme nenhuma restrição tinha como apertar, e as vinte células
+são a mesma aritmética replicada, não vinte testes independentes. Registrado em `DECISOES.md`,
+entrada de 23/09.
+
+A decisão 2 caiu porque eu errei o diagnóstico: o núcleo do Experimento B ficou no INRC porque
+a instância brasileira **não tem restrição flexível** e a penalidade seria zero — não porque a
+pergunta não dependesse de regime. Isso não mudou. O que cabe é a extensão já decidida em
+21/09: pedidos de folga sintéticos calibrados no `long01`, várias sementes, grau intermediário.
+Ganhou prioridade, mas entra **depois** da sensibilidade de demanda.
+
+**Implementado em 23/09** (execução de desenho validado, não proposta): variação de demanda
+entre dias no gerador, com a forma medida no `long01` e o nível preservado; o piso de
+alternância no `experimento_a.py`; e a varredura `--sensibilidade`. O registro abaixo fica
+como escrito.
+
+---
+
+**Status original: aguardando validação.** Não implementei nada. O piloto rodou, o resultado está no
 `resultados/experimento_a.csv`, e o que ele mostra exige uma decisão antes de virar capítulo.
 
 ### O que saiu

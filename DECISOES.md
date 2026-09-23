@@ -898,6 +898,44 @@ conclusões.
 
 ---
 
+## 2026-09-23 — O efetivo é determinado pelo teto de 42 h semanais, não pelas regras de descanso
+
+O Experimento A, sob **demanda uniforme**, fecha em efetivo mínimo 36 nos dois regimes, nas
+vinte células. A leitura adotada é: **sob demanda uniforme, nenhuma restrição de escalonamento
+aperta além do teto de horas, em nenhum dos dois regimes.**
+
+Por quê. Os dois regimes entregam a mesma capacidade por pessoa em horas, porque o teto legal
+é o mesmo: 14 plantões × 12 h = 21 plantões × 8 h = 168 h em 28 dias = 42 h por semana. E
+5.920 h ÷ 168 h = 35,24, que é exatamente o `QP_ref` do Parecer Normativo COFEN nº 1/2024. O
+mínimo viável é o teto disso, 36. O modelo reproduz o QP do Parecer por um caminho
+independente e mostra que as regras de descanso não acrescentam nada a ele.
+
+**Escopo, e é estreito de propósito.** A afirmação NÃO é "o regime não muda o efetivo". Com
+perfil uniforme nenhuma restrição tinha como apertar: a alternância do 12×36 preenche janelas
+alternadas exatamente, a composição por categoria fecha sozinha porque a proporção é igual em
+toda janela, e o piso de um enfermeiro por turno fica longe do limite. As vinte células são a
+mesma aritmética replicada, não vinte testes independentes. Decisão do projeto de redação,
+23/09.
+
+O que sobrevive como achado positivo: as regras de descanso, **inclusive as 36 h após o
+plantão noturno**, não forçam ociosidade no 12×36. E a sonda provando o efetivo 35 inviável é
+afirmação forte — o mínimo é exato, não apenas suficiente.
+
+Consequência. A hipótese do trabalho é sobre demanda que varia, e ela não foi testada aqui.
+A sensibilidade à variação de demanda entre dias passa a ser a prioridade 1, com a forma da
+variação calibrada no `long01` (29 atribuições por dia útil contra 20 por dia de fim de
+semana) e o nível mantido em 211,4 h/dia. Ver P12 no `PROPOSTAS.md` e
+`docs/nota_experimento_a_2026-09-23.md`.
+
+## 2026-09-23 — Tempo de resolução é afirmação fraca
+
+Tempos de resolução — inclusive a assimetria medida entre 12×36 e 8 h — entram como **uma
+frase no capítulo de método, com escopo declarado**, nunca como resultado. Critério do projeto
+de redação, reafirmado em 23/09.
+
+
+---
+
 ## Modelo de entrada
 
 ```

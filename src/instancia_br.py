@@ -108,8 +108,31 @@ MAX_ATRIBUICOES = {"8h": 21, "12x36": 14}
 
 # --- o primitivo ----------------------------------------------------------------------
 
-def perfil_continuo(porte_horas: float = PORTE_HORAS,
-                    dias: int = DIAS_HORIZONTE) -> dict[int, float]:
+# Forma da variacao entre dias, MEDIDA no long01 em 23/09: 29 atribuicoes em cada dia util e
+# 20 em cada dia de fim de semana, 20 x 29 + 8 x 20 = 740 exatamente. Nao e amplitude
+# arbitraria — e a mesma logica de "calibrado ao porte" que ja governa o nivel, estendida do
+# nivel para a FORMA. Decisao do projeto de redacao, 23/09.
+FORMA_LONG01 = {"util": 29, "fim_de_semana": 20}
+
+
+def fatores_por_dia(dias: int, inicio: date, variacao: float) -> list[float]:
+    """Multiplicador de cada dia do horizonte. Media ponderada exatamente 1.
+
+    `variacao` interpola entre o perfil plano e a forma do `long01`: 0 e plano, 1 e a forma
+    medida inteira, valores no meio sao a mesma forma atenuada. A media dar 1 e o que mantem
+    o NIVEL em 211,4 h/dia enquanto so a forma muda — sem isso a varredura mudaria duas
+    coisas ao mesmo tempo e nao mediria nenhuma.
+    """
+    du = sum(1 for d in range(dias) if (inicio + timedelta(days=d)).weekday() < 5)
+    df = dias - du
+    media = (du * FORMA_LONG01["util"] + df * FORMA_LONG01["fim_de_semana"]) / dias
+    alvo = {True: FORMA_LONG01["util"] / media, False: FORMA_LONG01["fim_de_semana"] / media}
+    return [1 + variacao * (alvo[(inicio + timedelta(days=d)).weekday() < 5] - 1)
+            for d in range(dias)]
+
+
+def perfil_continuo(porte_horas: float = PORTE_HORAS, dias: int = DIAS_HORIZONTE,
+                    variacao: float = 0.0, inicio: date | None = None) -> dict[int, float]:
     """Profissionais presentes em cada hora do horizonte.
 
     A hora 0 e o CORTE do primeiro dia, nao a meia-noite: o horizonte comeca as 07:00 e
@@ -117,11 +140,21 @@ def perfil_continuo(porte_horas: float = PORTE_HORAS,
     fecham exatamente, sem fatia parcial nas pontas (P5, revisao 1).
 
     Derivado da necessidade assistencial em 24 h, hora a hora — nunca de blocos. O Parecer
-    nao fornece curva horaria, entao a necessidade e uniforme; o que NAO se faz e declara-la
-    ja repartida em turnos, que e o vicio descrito no cabecalho.
+    nao fornece curva horaria, entao DENTRO do dia a necessidade e uniforme; o que NAO se faz
+    e declara-la ja repartida em turnos, que e o vicio descrito no cabecalho.
+
+    `variacao` faz a necessidade variar ENTRE dias, mantendo o total. Existe porque com
+    demanda plana nenhuma restricao de escalonamento tinha como apertar: a alternancia do
+    12x36 preenche janelas alternadas exatamente, a composicao fecha sozinha se a proporcao e
+    igual em toda janela, e o piso de um enfermeiro por turno fica longe do limite. O
+    Experimento A com `variacao=0` mede aritmetica de capacidade, nao rigidez de regime.
+    Decisao do projeto de redacao, 23/09.
     """
     por_hora = porte_horas / dias / 24
-    return {h: por_hora for h in range(dias * 24)}
+    if not variacao:
+        return {h: por_hora for h in range(dias * 24)}
+    fatores = fatores_por_dia(dias, inicio or primeira_segunda(), variacao)
+    return {h: por_hora * fatores[h // 24] for h in range(dias * 24)}
 
 
 def pacientes(grau: Grau, porte_horas: float = PORTE_HORAS,
@@ -412,18 +445,20 @@ def _demanda(janelas: dict[int, int], regime: str, grau: Grau,
 def construir(grau: str = "intermediario", efetivo: int = 36, regime: str = "12x36",
               regra: str = "teto", porte_horas: float = PORTE_HORAS,
               dias: int = DIAS_HORIZONTE, inicio: date | None = None,
-              descanso_clt: bool = True) -> Instancia:
+              descanso_clt: bool = True, variacao: float = 0.0) -> Instancia:
     """Monta a instancia brasileira. Todos os parametros sao varridos nos experimentos."""
     g = GRAUS[grau]
     inicio = inicio or primeira_segunda()
     if inicio.weekday() != 0:
         raise ValueError("o horizonte comeca numa segunda-feira, para fechar 4 fins de semana")
-    perfil = perfil_continuo(porte_horas, dias)
+    perfil = perfil_continuo(porte_horas, dias, variacao, inicio)
     duracao = REGIMES[regime][0][2]
     janelas = reagregar(perfil, duracao, regra=regra)
     profs, _ = _profissionais(efetivo, g)
+    # o sufixo so aparece quando ha variacao, para os nomes ja publicados nao mudarem
+    sufixo = f"_v{variacao:g}".replace(".", "") if variacao else ""
     return Instancia(
-        id=f"br_{grau}_{regime}_{regra}_e{efetivo}",
+        id=f"br_{grau}_{regime}_{regra}_e{efetivo}{sufixo}",
         arquivo="",
         inicio=inicio,
         fim=inicio + timedelta(days=dias - 1),

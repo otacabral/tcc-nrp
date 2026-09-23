@@ -2,6 +2,7 @@
 
 Roda da raiz do repositorio, com a .venv ativa:
 
+    python src\\experimento_a.py --sensibilidade   # A VARREDURA QUE INTERESSA (ver abaixo)
     python src\\experimento_a.py --piloto        # 2 celulas, so para ver se anda
     python src\\experimento_a.py                 # as 4 celulas do grau intermediario
     python src\\experimento_a.py --todos         # os 5 graus x 2 regimes x 2 regras
@@ -15,16 +16,58 @@ As horas de assistencia sao a primitiva e nao mudam: 5.920 h em 28 dias, do Pare
 Mudando so o regime de jornada, **de quantas pessoas se precisa para cobrir a mesma
 assistencia sem violar a lei?**
 
-## Por que nao e capacidade dividida por demanda
+## O que a rodada de demanda PLANA respondeu, e o escopo dela
 
-Porque com os limites legais como restricoes RIGIDAS a resposta nao e uma divisao. O piso de
-capacidade — plantoes necessarios dividido pelo maximo de plantoes por pessoa — da **36 nos
-dois regimes, em todos os graus**, por construcao do gerador: e o mesmo total de horas. Se a
-resposta fosse divisao, o experimento nao teria o que medir.
+Vinte celulas, intervalo [36, 36] em todas, distancia 0,0%. **A leitura autorizada e estreita**
+(projeto de redacao, 23/09): *sob demanda uniforme, nenhuma restricao de escalonamento aperta
+alem do teto de horas, em nenhum dos dois regimes*. NAO e "o regime nao muda o efetivo".
 
-O que se mede e **a distancia entre esse piso e o menor efetivo que de fato fecha uma escala
-legal**. Essa distancia e o custo de encaixe: interjornada de 11 h, descanso semanal,
-alternancia do 12x36, e o fato de que as pessoas sao inteiras e os turnos tambem.
+O motivo do escopo estreito: com perfil uniforme **nenhuma restricao tinha como apertar**. A
+alternancia do 12x36 preenche janelas alternadas exatamente; a composicao por categoria fecha
+sozinha porque a proporcao e igual em toda janela; o piso de um enfermeiro por turno fica
+longe do limite. E as vinte celulas sao a mesma aritmetica replicada, nao vinte testes
+independentes.
+
+O que sobrevive como achado: as regras de descanso, **inclusive as 36 h apos o noturno**, nao
+forcam ociosidade no 12x36 — e a sonda provando 35 inviavel e afirmacao forte.
+
+## A varredura que interessa: `--sensibilidade`
+
+A hipotese do trabalho e sobre demanda que VARIA. Com demanda plana a rigidez do 12x36 sai de
+graca e a hipotese nao chega a ser testada. `--sensibilidade` varia a demanda entre dias
+mantendo o nivel: grau intermediario, dois regimes, regra de teto, variacao 0, 0,5 e 1.
+
+A forma da variacao e **medida no `long01`** — 29 atribuicoes por dia util contra 20 por dia
+de fim de semana —, nao arbitrada. E a mesma logica de "calibrado ao porte" que ja governa o
+nivel, estendida do nivel para a forma. Ver `instancia_br.fatores_por_dia`.
+
+## Os dois pisos
+
+- **piso de capacidade** = plantoes / teto de plantoes por pessoa. E o denominador da coluna
+  `distancia_do_piso`, nas rodadas antigas e nas novas;
+- **piso de alternancia** = o limite que vem de `max_consecutive_working_days`. No 12x36, onde
+  o limite e 1 dia, dois dias seguidos precisam de gente inteiramente diferente, entao o
+  efetivo tem de cobrir a SOMA de dois dias consecutivos. Com demanda plana nunca aperta; com
+  demanda variando, pode passar do piso de capacidade — e e exatamente a rigidez em questao.
+
+A varredura comeca no maior dos dois. Os dois sao limites inferiores validos, calculados sem
+resolver nada.
+
+## O que este script reporta, e o que nao reporta
+
+Reporta **intervalo**, nunca ponto (decisao de 21/09). Para cada celula:
+
+- `maior_inviavel` — o maior efetivo com INVIABILIDADE PROVADA pelo solver;
+- `menor_viavel` — o menor efetivo com escala exibida e conferida;
+- `indeterminados` — os efetivos em que o solver bateu no limite de tempo sem decidir;
+- `erros_do_solver` — os efetivos em que o solver nem chegou a responder.
+
+Se indeterminados e erros estiverem vazios, o intervalo e degenerado e o minimo e exato. Se
+nao, o minimo esta DENTRO do intervalo, e e o intervalo que vai para o texto. Um "nao decidiu"
+NUNCA e contado como inviavel: seria transformar limite de tempo em resultado.
+
+**Tempo de resolucao e afirmacao fraca** pelo criterio do projeto: cabe uma frase no capitulo
+de metodo, com escopo declarado, nunca um resultado.
 
 ## O que este script reporta, e o que nao reporta
 
@@ -51,6 +94,7 @@ e legal e a celula falha — a rigidez teria ficado so no modelo. Ver P7.3 e DEC
 from __future__ import annotations
 
 import argparse
+import csv
 import math
 import subprocess
 import sys
@@ -102,6 +146,36 @@ def piso_de_capacidade(inst, regime: str) -> int:
     return math.ceil(inst.demanda_total / br.MAX_ATRIBUICOES[regime])
 
 
+def piso_de_alternancia(inst) -> int:
+    """Segundo piso, que so aparece quando a demanda varia entre dias.
+
+    Se o contrato limita a `L` dias consecutivos de trabalho, entao em qualquer janela de
+    `L + 1` dias seguidos cada pessoa trabalha no maximo `L` deles. Logo
+    `N >= ceil(demanda da janela / L)`. E limite inferior valido, sem resolver nada.
+
+    No 12x36 `L = 1`, e o limite vira **a soma de dois dias consecutivos**: quem trabalha hoje
+    nao pode trabalhar amanha, entao os dois dias precisam de gente diferente. Com demanda
+    plana isso nunca aperta — dois dias iguais somam o dobro da media e sobra efetivo. Com
+    demanda variando, dois dias UTEIS seguidos somam muito mais que a media, e o limite pode
+    passar do piso de capacidade. E exatamente a rigidez que o Experimento A com demanda plana
+    nao tinha como medir.
+
+    Devolve 0 quando o contrato nao limita dias consecutivos.
+    """
+    c = inst.contratos["0"].max_consecutive_working_days
+    if not c.ativa or c.valor < 1:
+        return 0
+    L = c.valor
+    dias = inst.dias
+    por_dia = {d: 0 for d in dias}
+    for (d, _), q in inst.demanda.items():
+        por_dia[d] = por_dia.get(d, 0) + q
+    if L >= len(dias):
+        return 0
+    return max(math.ceil(sum(por_dia[d] for d in dias[i:i + L + 1]) / L)
+               for i in range(len(dias) - L))
+
+
 def conferir_no_avaliador(inst, escala, arquivo: Path) -> list[str]:
     """Roda o avaliador oficial e exige zero nas tres familias rigidas.
 
@@ -126,7 +200,7 @@ def conferir_no_avaliador(inst, escala, arquivo: Path) -> list[str]:
 
 
 def tentar(grau: str, regime: str, regra: str, efetivo: int, solver: str,
-           tempo: int | None) -> tuple[str, object, object]:
+           tempo: int | None, variacao: float = 0.0) -> tuple[str, object, object]:
     """Uma resolucao de viabilidade. NUNCA levanta: a resposta pode ser "inviavel".
 
     Resolve com `carregar=False` porque aqui a inviabilidade e resposta esperada, e o
@@ -138,7 +212,8 @@ def tentar(grau: str, regime: str, regra: str, efetivo: int, solver: str,
     so o CSV. E ERRO em vez de INDETERMINADO porque as duas coisas pedem providencias
     diferentes — mais tempo contra conserto de codigo.
     """
-    inst = br.construir(grau=grau, regime=regime, regra=regra, efetivo=efetivo)
+    inst = br.construir(grau=grau, regime=regime, regra=regra, efetivo=efetivo,
+                        variacao=variacao)
     m = modelo.construir(inst, flexiveis=True, habilidade_rigida=True,
                          noite_antes_de_fds_livre=True,
                          rigidas_legais=modelo.RIGIDAS_LEGAIS_BR)
@@ -157,7 +232,7 @@ def tentar(grau: str, regime: str, regra: str, efetivo: int, solver: str,
 
 
 def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
-           margem: int, verboso: bool = True) -> dict:
+           margem: int, verboso: bool = True, variacao: float = 0.0) -> dict:
     """Varre o efetivo para cima a partir do piso de capacidade, e para no primeiro viavel.
 
     Varredura linear, nao busca binaria, de proposito: a busca binaria precisa que cada
@@ -165,12 +240,19 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
     uma binaria contamina metade do intervalo em silencio. Linear a partir do piso tambem e
     barata quando a resposta esta perto dele, que e a expectativa.
     """
-    base = br.construir(grau=grau, regime=regime, regra=regra, efetivo=36)
-    piso = piso_de_capacidade(base, regime)
-    rotulo = f"{grau}/{regime}/{regra}"
+    base = br.construir(grau=grau, regime=regime, regra=regra, efetivo=36, variacao=variacao)
+    piso_cap = piso_de_capacidade(base, regime)
+    piso_alt = piso_de_alternancia(base)
+    # A varredura comeca no MAIOR dos dois limites conhecidos. Comecar abaixo dele seria
+    # gastar resolucoes provando de novo, com solver, o que a aritmetica ja diz.
+    piso = max(piso_cap, piso_alt)
+    rotulo = f"{grau}/{regime}/{regra}/v{variacao:g}"
     if verboso:
+        extra = (f", piso de alternancia {piso_alt}" + ("  <-- e ele que manda"
+                 if piso_alt > piso_cap else "")) if piso_alt else ""
         print(f"\n{rotulo}: demanda {base.demanda_total} plantoes, "
-              f"teto {br.MAX_ATRIBUICOES[regime]} por pessoa, piso de capacidade {piso}")
+              f"teto {br.MAX_ATRIBUICOES[regime]} por pessoa, "
+              f"piso de capacidade {piso_cap}{extra}")
 
     maior_inviavel, menor_viavel, indeterminados, problemas = None, None, [], []
     t0 = time.process_time()
@@ -185,7 +267,8 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
     # linear ja e inviavel, entao o solver decide em instantes. Se demorar, e sinal de que o
     # modelo nao e o que eu penso, e nao vale gastar o limite inteiro vinte vezes.
     erros = []
-    veredito, _, _ = tentar(grau, regime, regra, piso - 1, solver, min(tempo or 120, 120))
+    veredito, _, _ = tentar(grau, regime, regra, piso - 1, solver, min(tempo or 120, 120),
+                            variacao)
     if verboso:
         print(f"   efetivo {piso - 1:3d}: {veredito:14s} (sonda abaixo do piso)", flush=True)
     if veredito == INVIAVEL:
@@ -202,7 +285,7 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
 
     for efetivo in range(piso, piso + margem + 1):
         c0 = time.process_time()
-        veredito, inst, escala = tentar(grau, regime, regra, efetivo, solver, tempo)
+        veredito, inst, escala = tentar(grau, regime, regra, efetivo, solver, tempo, variacao)
         seg = time.process_time() - c0
         if verboso:
             print(f"   efetivo {efetivo:3d}: {veredito:14s} ({seg:6.1f}s de CPU)", flush=True)
@@ -224,10 +307,12 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
             break
 
     return {
-        "grau": grau, "regime": regime, "regra": regra,
+        "grau": grau, "regime": regime, "regra": regra, "variacao": variacao,
         "demanda_plantoes": base.demanda_total,
         "teto_por_pessoa": br.MAX_ATRIBUICOES[regime],
-        "piso_de_capacidade": piso,
+        "piso_de_capacidade": piso_cap,
+        "piso_de_alternancia": piso_alt,
+        "piso_usado": piso,
         "quadro_referencia": round(br.quadro_referencia(), 2),
         "maior_inviavel": maior_inviavel if maior_inviavel is not None else "",
         "menor_viavel": menor_viavel if menor_viavel is not None else "",
@@ -236,7 +321,9 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
         "intervalo": (f"[{maior_inviavel + 1}, {menor_viavel}]"
                       if maior_inviavel is not None and menor_viavel is not None
                       else f"[?, {menor_viavel}]" if menor_viavel is not None else "[?, ?]"),
-        "distancia_do_piso": (f"{(menor_viavel - piso) / piso:.1%}"
+        # o denominador continua sendo o piso de CAPACIDADE, para a coluna significar a
+        # mesma coisa nas rodadas antigas e nas novas. O piso de alternancia vai ao lado.
+        "distancia_do_piso": (f"{(menor_viavel - piso_cap) / piso_cap:.1%}"
                               if menor_viavel is not None else ""),
         "conferencia": "ok" if menor_viavel is not None and not problemas
                        else ("; ".join(problemas) if problemas else "sem viavel na faixa"),
@@ -245,9 +332,44 @@ def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,
     }
 
 
+CHAVE = ("grau", "regime", "regra", "variacao")
+
+
+def _migrar_variacao() -> None:
+    """As rodadas ate 23/09 nao tinham a coluna `variacao`, e ela entrou na CHAVE.
+
+    Sem isto as vinte linhas antigas seriam descartadas na mesclagem, porque nao tem valor
+    para uma coluna da chave — a mesma perda de linhas de 22/09, entrando por outra porta.
+    Todas elas foram rodadas com demanda plana, entao a migracao e escrever `0.0` onde falta.
+    Idempotente: depois da primeira vez nao acha mais nada para mexer.
+    """
+    if not SAIDA.exists():
+        return
+    with SAIDA.open(newline="", encoding="utf-8-sig") as f:
+        leitor = csv.DictReader(f, delimiter=";")
+        colunas = list(leitor.fieldnames or [])
+        if "variacao" in colunas:
+            return
+        linhas = [dict(l, variacao="0.0") for l in leitor]
+    if not linhas:
+        return
+    colunas.insert(colunas.index("regra") + 1 if "regra" in colunas else len(colunas),
+                   "variacao")
+    with SAIDA.open("w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=colunas, delimiter=";", extrasaction="ignore")
+        w.writeheader()
+        w.writerows(linhas)
+    print(f"   [migracao] {len(linhas)} linhas antigas marcadas com variacao = 0.0")
+
+
 def gravar(linhas: list[dict]) -> None:
-    """Mescla por (grau, regime, regra). A regra esta em `src/tabela.py`, com os testes."""
-    mesclar_csv(SAIDA, linhas, ("grau", "regime", "regra"))
+    """Mescla por (grau, regime, regra, variacao).
+
+    A variacao entra na chave: sem ela, uma rodada de sensibilidade sobrescreveria a celula
+    de demanda plana, que e o ponto de comparacao.
+    """
+    _migrar_variacao()
+    mesclar_csv(SAIDA, linhas, CHAVE)
 
 
 def main() -> int:
@@ -262,13 +384,24 @@ def main() -> int:
     ap.add_argument("--margem", type=int, default=12,
                     help="quantos efetivos acima do piso tentar antes de desistir")
     ap.add_argument("--quieto", action="store_true")
+    ap.add_argument("--sensibilidade", action="store_true",
+                    help="a varredura de variacao de demanda entre dias: grau intermediario,"
+                         " dois regimes, regra de teto, variacao 0, 0,5 e 1. Prioridade 1 do"
+                         " projeto de redacao, 23/09")
+    ap.add_argument("--variacao", action="append", type=float,
+                    help="nivel de variacao de demanda entre dias; pode repetir. 0 = plano,"
+                         " 1 = a forma medida no long01 (29 uteis contra 20 no fim de semana)")
     a = ap.parse_args()
 
     graus = a.grau or (sorted(br.GRAUS) if a.todos else ["intermediario"])
-    celulas = [(g, r, x) for g in graus for r in ("12x36", "8h")
-               for x in ("teto", "maior_resto")]
+    variacoes = a.variacao or [0.0]
+    celulas = [(g, r, x, v) for g in graus for r in ("12x36", "8h")
+               for x in ("teto", "maior_resto") for v in variacoes]
     if a.piloto:
-        celulas = [("intermediario", "12x36", "teto"), ("intermediario", "8h", "teto")]
+        celulas = [("intermediario", "12x36", "teto", 0.0), ("intermediario", "8h", "teto", 0.0)]
+    if a.sensibilidade:
+        celulas = [("intermediario", r, "teto", v)
+                   for v in (a.variacao or [0.0, 0.5, 1.0]) for r in ("12x36", "8h")]
 
     print(f"Experimento A: {len(celulas)} celulas, solver {a.solver}, "
           f"limite {a.tempo}s por resolucao")
@@ -276,18 +409,20 @@ def main() -> int:
     print("36 nos dois regimes por construcao — o que se mede e a distancia ate ele.")
 
     linhas = []
-    for grau, regime, regra in celulas:
-        linhas.append(celula(grau, regime, regra, a.solver, a.tempo, a.margem, not a.quieto))
+    for grau, regime, regra, variacao in celulas:
+        linhas.append(celula(grau, regime, regra, a.solver, a.tempo, a.margem,
+                             not a.quieto, variacao))
         gravar(linhas)
 
-    print(f"\n{'celula':36s}{'piso':>6s}{'intervalo':>12s}{'distancia':>11s}"
-          f"{'indet.':>8s}{'erros':>8s}{'conferencia':>14s}")
+    print(f"\n{'celula':38s}{'var':>5s}{'p.cap':>7s}{'p.alt':>7s}{'intervalo':>12s}"
+          f"{'dist':>8s}{'indet.':>8s}{'erros':>7s}{'conf':>6s}")
     for r in linhas:
         conf = str(r["conferencia"])
-        print(f"  {r['grau']:15s}{r['regime']:7s}{r['regra']:12s}{r['piso_de_capacidade']:6d}"
-              f"{r['intervalo']:>12s}{str(r['distancia_do_piso']):>11s}"
-              f"{str(r['indeterminados']):>8s}{str(r['erros_do_solver']):>8s}"
-              f"{(conf if len(conf) <= 13 else conf[:10] + '...'):>14s}")
+        print(f"  {r['grau']:15s}{r['regime']:7s}{r['regra']:12s}{r['variacao']:5.1f}"
+              f"{r['piso_de_capacidade']:7d}{r['piso_de_alternancia']:7d}"
+              f"{r['intervalo']:>12s}{str(r['distancia_do_piso']):>8s}"
+              f"{str(r['indeterminados']):>8s}{str(r['erros_do_solver']):>7s}"
+              f"{('ok' if conf == 'ok' else 'FALHA'):>6s}")
     print(f"\nresultado: {SAIDA}")
     print("escalas e saidas do avaliador: resultados/experimento_a/")
 
