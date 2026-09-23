@@ -1243,3 +1243,45 @@ certo e a ressalva vai no texto.
 O resto da rodada de sensibilidade **não depende disto**: as quatro células de 8 h e de
 variação zero passaram com `conferencia = ok`. O que fica suspenso é o par de células de
 12×36 com variação — e com ele o número 40 e a comparação entre regimes.
+
+### 23/09, mais tarde: um erro MEU, maior que a P13, achado ao tentar contornar a P13
+
+Fui medir o descanso real das escalas suspensas, para dar à decisão da P13 uma alternativa
+concreta. A medição reprovou **as escalas de 8 h também** — as que tinham passado no avaliador.
+
+| escala | interjornada mínima | após o noturno | pior caso |
+|---|---|---|---|
+| 12x36, variação 1, efetivo 40 | 24 h | **24 h** | `N` dia 12 → `DE` dia 14 |
+| 12x36, variação 0,5, efetivo 40 | 24 h | **24 h** | `N` dia 6 → `DE` dia 8 |
+| 8 h, variação 1, efetivo 37 | **0 h** | **0 h** | `NE` dia 20 → `M` dia 21 |
+
+**Zero hora de interjornada.** Alguém termina `NE` às 07:00 e começa `M` às 07:00 do mesmo
+dia.
+
+**A causa.** Os padrões da CLT nomeavam só os turnos-base — `N`, `D`, `M`, `T` — e deixavam de
+fora as variantes de enfermeiro `NE`, `DE`, `ME`, `TE`, que têm **os mesmos horários**. O
+solver usou exatamente esse furo. A regra estava validada (P7.1 a P7.3); quem falhou foi a
+codificação dela, e a codificação é minha.
+
+**Por que a conferência não pegou.** `conferir_descanso` enumerava a mesma lista incompleta
+que o gerador usava para emitir os padrões. Eram duas cópias da mesma premissa errada, escritas
+em lugares diferentes — então uma não podia denunciar a outra. Quem pegou foi a medição na
+escala pronta, que lê os horários do arquivo em vez de confiar numa lista.
+
+**Corrigido** (execução de regra já validada, não proposta): os pares proibidos passaram a ter
+fonte única, `_pares_proibidos`, e tanto os padrões emitidos quanto a conferência se expandem
+sobre todas as variantes. O 12×36 passou de 1 para 4 padrões e o de 8 h de 3 para 12; os XML
+seguem validando contra o esquema. Entrou também
+`docs/conferencia_descanso_escala.py`, que mede o relógio na escala pronta e não compartilha
+premissa com ninguém.
+
+**Consequência, e é séria: todo o Experimento A precisa ser refeito.** Os números de 36, 37,
+38 e 40 saíram de um modelo que não impunha as regras de descanso às variantes de enfermeiro.
+Os mínimos verdadeiros só podem subir. Isso inclui as vinte células de demanda plana, e
+portanto a leitura registrada no `DECISOES.md` em 23/09 — que **fica suspensa até a nova
+rodada**, embora o argumento do teto de 42 h não dependa dela.
+
+**A P13 continua de pé e ficou maior:** com a correção, os quatro padrões do 12×36 têm `None`
+no meio, e o avaliador lê todos errado. Os doze padrões do de 8 h são pares simples, sem
+`None` — esses o avaliador lê corretamente, então a conferência do braço de 8 h volta a ter
+valor, e agora com as variantes cobertas.

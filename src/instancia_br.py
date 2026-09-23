@@ -278,7 +278,8 @@ def conferir_par(perfil: dict[int, float], duracao: int,
     return erros
 
 
-def conferir_descanso(regime: str, descanso_clt: bool = True) -> tuple[float, list[str]]:
+def conferir_descanso(regime: str, descanso_clt: bool = True,
+                      variantes: bool = True) -> tuple[float, list[str]]:
     """Menor intervalo entre o fim de um turno e o inicio do proximo, entre as sequencias
     que o contrato admite. Confere que as regras de descanso codificadas de fato valem.
 
@@ -287,13 +288,21 @@ def conferir_descanso(regime: str, descanso_clt: bool = True) -> tuple[float, li
     O k = 2 com o dia do meio livre e o caso do descanso semanal: no regime de 8 h e ele que
     tem de dar pelo menos 24 h (CLT art. 67), aproximado por no maximo 6 dias seguidos.
     """
-    turnos = {tid: (ini, ini + dur) for tid, ini, dur, _ in REGIMES[regime]}
+    # As variantes de enfermeiro entram aqui tambem. Ate 23/09 esta conferencia enumerava so
+    # os turnos-base, exatamente como o gerador de padroes — as duas listas eram a mesma lista
+    # incompleta, escrita duas vezes, e por isso a conferencia nao tinha como pegar o furo.
+    # Quem pegou foi a medicao do descanso na ESCALA pronta
+    # (`docs/conferencia_descanso_escala.py`), que le os horarios do arquivo em vez de confiar
+    # numa lista. Licao: conferencia que compartilha a premissa do que confere nao confere.
+    turnos = {}
+    for tid, ini, dur, _ in REGIMES[regime]:
+        for v in _variantes(tid, variantes):
+            turnos[v] = (ini, ini + dur)
     max_consec = 1 if regime == "12x36" else 6
-    proibidos = set()
-    if regime == "12x36":
-        proibidos.add(("N", 2, "D"))
-    elif descanso_clt:
-        proibidos |= {("N", 1, "M"), ("N", 1, "T"), ("T", 1, "M")}
+    proibidos = {(va, k, vb)
+                 for a, k, b in _pares_proibidos(regime, descanso_clt)
+                 for va in _variantes(a, variantes)
+                 for vb in _variantes(b, variantes)}
 
     menor, linhas = float("inf"), []
     for k in (1, 2):
@@ -369,7 +378,7 @@ def _contrato(regime: str, descanso_clt: bool) -> Contrato:
     )
 
 
-def _padroes(regime: str, descanso_clt: bool) -> dict[str, Padrao]:
+def _padroes(regime: str, descanso_clt: bool, variantes: bool) -> dict[str, Padrao]:
     """Sequencias proibidas pelas regras de descanso.
 
     Janelas 07-15 (M), 15-23 (T) e 23-07 (N). Os tres pares com menos de 11 h de intervalo:
@@ -388,23 +397,48 @@ def _padroes(regime: str, descanso_clt: bool) -> dict[str, Padrao]:
     fim de um turno e o inicio do proximo, em qualquer combinacao admitida acima. E
     aproximacao declarada, nao equivalencia.
     """
+    proibidos = _pares_proibidos(regime, descanso_clt)
+    padroes = {}
+    for a, salto, b in proibidos:
+        # ERRO CORRIGIDO EM 23/09: os padroes nomeavam so os turnos-base (N, D, M, T) e
+        # deixavam de fora as variantes de enfermeiro (NE, DE, ME, TE), que tem os MESMOS
+        # horarios. O solver usou exatamente esse furo: na escala de 8 h apareceu NE as 23:00
+        # seguido de M as 07:00 do dia seguinte — ZERO hora de interjornada. A regra estava
+        # validada (P7.1 a P7.3); quem falhou foi a codificacao dela. Agora o par proibido se
+        # expande sobre todas as variantes de cada turno-base.
+        for va in _variantes(a, variantes):
+            for vb in _variantes(b, variantes):
+                entradas = [EntradaPadrao(va, "Any")]
+                if salto == 2:
+                    entradas.append(EntradaPadrao("None", "Any"))
+                entradas.append(EntradaPadrao(vb, "Any"))
+                pid = f"clt_{'36h_' if salto == 2 else ''}{va}_{vb}"
+                padroes[pid] = Padrao(id=pid, peso=1, entradas=tuple(entradas))
+    return padroes
+
+
+def _pares_proibidos(regime: str, descanso_clt: bool) -> tuple[tuple[str, int, str], ...]:
+    """As sequencias proibidas, em turnos-base: (turno no dia d, salto, turno no dia d+salto).
+
+    FONTE UNICA: tanto os padroes emitidos no XML quanto a conferencia de descanso saem
+    daqui. Antes eram duas listas escritas em separado, e foi por isso que a conferencia
+    nao pegou o furo das variantes de enfermeiro — ela enumerava a mesma lista incompleta
+    que o gerador usava.
+    """
     if regime == "12x36":
         # As 36 h do art. 59-A nao sao garantidas por MaxConsecutiveWorkingDays = 1. O
         # plantao noturno termina as 07:00 do dia seguinte; com o dia do meio livre, o
         # plantao diurno de dois dias depois comeca as 07:00 — sao 24 h, nao 36. Unica
         # combinacao com o furo; diurno->diurno da 36 h e noturno->noturno da 60 h. P7.2.
-        return {"clt_36h_N_D": Padrao(
-            id="clt_36h_N_D", peso=1,
-            entradas=(EntradaPadrao("N", "Any"), EntradaPadrao("None", "Any"),
-                      EntradaPadrao("D", "Any")))}
+        return (("N", 2, "D"),)
     if not descanso_clt:
-        return {}
-    pares = (("N", "M"), ("N", "T"), ("T", "M"))
-    return {
-        f"clt_{a}_{b}": Padrao(id=f"clt_{a}_{b}", peso=1,
-                               entradas=(EntradaPadrao(a, "Any"), EntradaPadrao(b, "Any")))
-        for a, b in pares
-    }
+        return ()
+    return (("N", 1, "M"), ("N", 1, "T"), ("T", 1, "M"))
+
+
+def _variantes(base: str, variantes: bool) -> tuple[str, ...]:
+    """O turno-base e, quando o grau exige enfermeiro por janela, a variante de mesmo horario."""
+    return (base, f"{base}E") if variantes else (base,)
 
 
 def _profissionais(efetivo: int, grau: Grau) -> tuple[dict[str, Profissional], int]:
@@ -464,7 +498,7 @@ def construir(grau: str = "intermediario", efetivo: int = 36, regime: str = "12x
         fim=inicio + timedelta(days=dias - 1),
         habilidades=(HABILIDADE_BASE, HABILIDADE_ENF),
         turnos=_turnos(regime, g),
-        padroes=_padroes(regime, descanso_clt),
+        padroes=_padroes(regime, descanso_clt, bool(g.piso_enfermeiro_por_janela)),
         contratos={"0": _contrato(regime, descanso_clt)},
         profissionais=profs,
         demanda=_demanda(janelas, regime, g, inicio, dias),
