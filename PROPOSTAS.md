@@ -1161,3 +1161,85 @@ por um motivo que não existia então: A voltou nulo.
 **Não implemento.** É mudança de escopo do Experimento B e precisa de validação. Se for
 aprovada, o custo é da ordem do Experimento B numa instância de 36 pessoas — as sprints, com
 10, levaram 6 minutos; com 36 deve ficar em dezenas de minutos por regime.
+
+---
+
+## 2026-09-23 — P13: o avaliador oficial não lê o padrão das 36 h como nós o escrevemos
+
+**Status: aguardando validação. Não implementei nada.** O que existe é a evidência, em
+`docs/conferencia_padrao_avaliador.py`, que reproduz tudo abaixo em três comandos de Java.
+
+### O que apareceu
+
+Duas células da varredura de sensibilidade reprovaram na conferência: o avaliador cobrou
+`Unwanted pattern` numa escala em que o padrão proibido **não ocorre nenhuma vez**.
+
+Na escala do 12×36 com variação 1 e efetivo 40:
+
+| | |
+|---|---|
+| ocorrências de N-livre-**D** (o que o padrão proíbe) | **0** |
+| ocorrências de N-livre-**LIVRE** (descanso de 60 h) | **49** |
+| cobrado pelo avaliador oficial | **49** |
+
+### Dois testes que separam as hipóteses
+
+**Teste 1.** Criar uma ocorrência de N-livre-D preservando a cobertura — um turno D trocado
+entre dois profissionais. A conta **cai de 49 para 48**. Criar a sequência proibida não
+aumenta a penalidade; o que mudou foi destruir uma ocorrência de N-livre-livre.
+
+**Teste 2.** Trocar a terceira entrada do padrão de `D` para `N` no XML da instância.
+A conta **não muda**: 49 nos dois casos.
+
+### A regra, então
+
+**Depois de uma entrada `None` em posição não inicial, o avaliador ignora o tipo de turno das
+entradas seguintes e as trata como folga.** O nosso `clt_36h_N_D` = (N, None, D) é pontuado
+como (N, folga, folga) — ou seja, **ele penaliza mais descanso**, o oposto da intenção.
+
+O modelo está certo: ele proíbe N-livre-D, e por isso a escala tem zero ocorrências. Quem
+diverge é a leitura do avaliador.
+
+### O que isto NÃO contamina
+
+Varri os 59 arquivos do INRC: **304 padrões, nenhum com `None` em posição não inicial.** As
+formas usadas são (L,D), (D,E,D), (None,Any,Any) e pares simples. A concordância das 207
+escalas com o avaliador e os quatro ótimos da Tabela 6 seguem valendo sem ressalva. A
+divergência é específica da forma que o nosso gerador inventou.
+
+### O problema que isso cria
+
+A regra do projeto é que nenhum resultado numérico vale sem conferência no avaliador oficial.
+Para a família `unwanted_patterns` na instância brasileira de 12×36, **essa conferência é
+impossível**: o avaliador não pontua o que queremos proibir. Enquanto não houver decisão, as
+duas células de 12×36 com variação ficam com `conferencia = FALHA` e **não valem como
+resultado** — inclusive o número 40, que é o mais interessante da rodada.
+
+### As saídas, e não escolho nenhuma
+
+**(a) Manter o padrão no XML e declarar a divergência.** A conferência do 12×36 passa a ser
+feita nas outras duas famílias rígidas mais uma checagem independente nossa — a enumeração de
+descanso que já existe em `instancia_br.conferir_descanso`. Custo: publicamos uma instância
+cujo padrão o avaliador oficial pontua errado, e qualquer leitor que a rode terá um número
+diferente do nosso.
+
+**(b) Tirar o padrão do XML e deixar a regra das 36 h só no modelo.** A instância emitida
+volta a ser pontuada corretamente pelo avaliador, porque não carrega mais o padrão que ele
+lê errado. Custo: a instância deixa de ser autodescritiva — a regra das 36 h passa a existir
+só no nosso código e no texto, e quem pegar o XML não a reproduz.
+
+**(c) Procurar uma codificação equivalente sem `None` no meio.** Não achei. Sob
+`MaxConsecutiveWorkingDays = 1`, que é rígida, trabalhar em `d` e `d+2` já implica folga em
+`d+1`, então a regra é "N em `d` proíbe D em `d+2`" — um salto de dois dias que o formato de
+padrões, que é de dias consecutivos, não expressa sem a entrada do meio.
+
+**Minha leitura**, para o que vale: (a) é mais honesta e (b) é mais limpa, e a escolha depende
+de para quem a instância é publicada. Se ela vai ao apêndice como artefato reproduzível, (b)
+gera menos confusão. Se ela é descrição do problema brasileiro, (a) preserva a regra no lugar
+certo e a ressalva vai no texto.
+
+### Enquanto não decidem
+
+O resto da rodada de sensibilidade **não depende disto**: as quatro células de 8 h e de
+variação zero passaram com `conferencia = ok`. O que fica suspenso é o par de células de
+12×36 com variação — e com ele o número 40 e a comparação entre regimes.
