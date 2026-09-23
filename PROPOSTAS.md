@@ -1312,3 +1312,42 @@ reintroduzindo o erro de propósito: ela pega.
 
 **O Experimento A continua por refazer** — desta vez de verdade. Os números de 36 e 40 que
 estão no CSV ainda são os do modelo sem descanso nas variantes.
+
+### 23/09, depois do conserto: o modelo está certo, e a P13 ficou quantificada
+
+Com o contrato apontando para os padrões certos, a medição de descanso na escala pronta dá:
+
+| escala | regime | descanso mínimo | exigido | veredito |
+|---|---|---|---|---|
+| 12x36, variação 0 / 0,5 / 1 | 12x36 | **36 h** | 36 h | ok |
+| 8 h, variação 0 / 1 | 8 h | **16 h** | 11 h | ok |
+
+**As escalas são legais**, medidas no relógio, sem depender do avaliador.
+
+**Um erro meu a menos, declarado:** a primeira versão desta conferência exigia 36 h depois de
+qualquer turno que atravessasse a meia-noite, inclusive no regime de 8 h, onde o turno N vai
+de 23:00 às 07:00. As 36 h são do art. 59-A, contrapartida da jornada de 12 h, e não existem
+no regime de 8 h — lá vale a interjornada de 11 h do art. 66. Ela estava **reprovando escala
+legal**. O limite agora vem de `instancia_br.DESCANSO_EXIGIDO`, a mesma tabela que a
+conferência das sequências admitidas usa, e o regime é deduzido da duração do turno lida no
+arquivo.
+
+**E a P13 ficou pior, de um jeito que ajuda a decidir.** Antes da correção era um padrão com
+`None` no meio; agora são quatro, e o avaliador lê todos errado. Na escala de 12×36 com
+variação 1:
+
+| | |
+|---|---|
+| ocorrências REAIS da sequência proibida | **0** |
+| cobrado pelo avaliador oficial | **116** |
+| previsto pela regra medida (entradas após `None` viram folga) | **116** |
+
+A previsão bate exatamente, o que fecha a caracterização da regra. E o número mostra que a
+divergência **escala com a quantidade de padrões**: 116 cobranças fantasma numa escala que a
+medição direta aprova.
+
+Isso desloca o peso entre as saídas da P13. A **(b)** — tirar os padrões do XML e deixar a
+regra das 36 h só no modelo — deixa de ser "mais limpa" e passa a ser a que evita publicar
+uma instância que o avaliador oficial pontua com 116 violações inexistentes. A **(a)** agora
+exige explicar, no texto, por que o número do avaliador deve ser ignorado. Continua sendo
+decisão de vocês.

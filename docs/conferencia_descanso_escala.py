@@ -14,9 +14,11 @@ esta escrito.
 
 O que confere, por escala:
 
-- **interjornada (CLT art. 66)**: menor intervalo entre turnos consecutivos, minimo 11 h;
-- **36 h apos o noturno (CLT art. 59-A)**: menor intervalo quando o turno anterior atravessa
-  a meia-noite. E a regra que o padrao das 36 h existe para garantir;
+- **descanso entre turnos**: menor intervalo entre dois turnos consecutivos, contra o minimo
+  do regime — 36 h no 12x36 (art. 59-A, contrapartida da jornada de 12 h) e 11 h no de 8 h
+  (interjornada do art. 66). O limite vem de `instancia_br.DESCANSO_EXIGIDO`, a mesma tabela
+  que a conferencia das sequencias admitidas usa;
+- **apos turno que atravessa a meia-noite**: informativo, para ver o pior caso do noturno;
 - **dias consecutivos**: maior sequencia de dias trabalhados, contra o limite do contrato;
 - **descanso semanal (art. 67)**: maior intervalo sem trabalhar em cada semana, minimo 24 h.
 
@@ -27,12 +29,13 @@ sequencias que o CONTRATO admite. Esta aqui mede o que a escala de fato entregou
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "src"))
 
+from instancia_br import DESCANSO_EXIGIDO  # noqa: E402
 from parser import ler_instancia  # noqa: E402
 from solucao import ler_xml  # noqa: E402
 
@@ -45,9 +48,30 @@ CASOS = [
 ]
 PASTA = RAIZ / "resultados" / "experimento_a"
 
-MIN_INTERJORNADA = 11
-MIN_POS_NOTURNO = 36
 MIN_SEMANAL = 24
+
+# ERRO CORRIGIDO EM 23/09: esta conferencia exigia 36 h depois de QUALQUER turno que
+# atravessasse a meia-noite, inclusive no regime de 8 h, onde o turno N vai de 23:00 as 07:00.
+# As 36 h sao do art. 59-A, que e a contrapartida da jornada de 12 h e nao existe no de 8 h.
+# Com isso ela reprovava escala legal — o 8 h aparecia com 16 h de intervalo, que cumpre o
+# art. 66 com folga. O limite agora vem do regime, e o regime sai da duracao do turno.
+
+
+def regime_da_instancia(inst) -> str:
+    """Deduz o regime pela duracao do turno: 12 h e o 12x36, 8 h e o de tres turnos.
+
+    Deduzir em vez de receber por parametro e de proposito: assim a conferencia le o que o
+    ARQUIVO diz, e nao o que quem chamou acha que ele diz.
+    """
+    duracoes = set()
+    for t in inst.turnos.values():
+        h = (datetime.combine(date.min, t.fim) - datetime.combine(date.min, t.inicio))
+        duracoes.add(round(h.total_seconds() / 3600) % 24 or 24)
+    if duracoes == {12}:
+        return "12x36"
+    if duracoes == {8}:
+        return "8h"
+    raise ValueError(f"nao reconheci o regime: duracoes de turno {sorted(duracoes)}")
 
 
 def _inicio_fim(inst, dia, turno_id) -> tuple[datetime, datetime]:
@@ -103,8 +127,8 @@ def medir(inst, escala) -> dict:
 
 
 def main() -> int:
-    print(f"{'escala':18s}{'N':>4s}{'interjornada':>14s}{'apos noturno':>14s}"
-          f"{'dias seguidos':>15s}{'veredito':>12s}")
+    print(f"{'escala':18s}{'N':>4s}{'regime':>8s}{'descanso min':>14s}{'exigido':>9s}"
+          f"{'apos noturno':>14s}{'dias seguidos':>15s}{'veredito':>10s}")
     faltando, reprovadas = [], []
     for rotulo, nome in CASOS:
         inst_arq, sol_arq = PASTA / f"{nome}_instancia.xml", PASTA / f"{nome}.xml"
@@ -116,20 +140,20 @@ def main() -> int:
         r = medir(inst, escala)
         limite = inst.contratos["0"].max_consecutive_working_days
         teto_consec = limite.valor if limite.ativa else inst.n_dias
-        ok = (r["menor_geral"] >= MIN_INTERJORNADA
-              and (r["menor_pos_noturno"] == float("inf")
-                   or r["menor_pos_noturno"] >= MIN_POS_NOTURNO)
-              and r["max_consec"] <= teto_consec)
+        regime = regime_da_instancia(inst)
+        exigido = DESCANSO_EXIGIDO[regime]
+        ok = r["menor_geral"] >= exigido and r["max_consec"] <= teto_consec
         pn = ("-" if r["menor_pos_noturno"] == float("inf")
               else f"{r['menor_pos_noturno']:.0f} h")
-        print(f"{rotulo:18s}{r['profissionais']:4d}{r['menor_geral']:12.0f} h{pn:>14s}"
-              f"{r['max_consec']:10d} / {teto_consec:<2d}{'ok' if ok else 'REPROVA':>12s}")
+        print(f"{rotulo:18s}{r['profissionais']:4d}{regime:>8s}{r['menor_geral']:12.0f} h"
+              f"{exigido:7d} h{pn:>14s}"
+              f"{r['max_consec']:10d} / {teto_consec:<2d}{'ok' if ok else 'REPROVA':>10s}")
         if not ok:
             reprovadas.append((rotulo, r))
-    print(f"\nexigido: interjornada >= {MIN_INTERJORNADA} h (art. 66); apos turno que atravessa"
-          f" a meia-noite >= {MIN_POS_NOTURNO} h (art. 59-A);")
-    print("dias seguidos dentro do limite do contrato, que aproxima o descanso semanal do"
-          " art. 67.")
+    print(f"\nexigido, por regime: {DESCANSO_EXIGIDO['12x36']} h no 12x36 (art. 59-A, a"
+          f" contrapartida da jornada de 12 h) e {DESCANSO_EXIGIDO['8h']} h no de 8 h")
+    print("(interjornada do art. 66). Mais os dias seguidos dentro do limite do contrato, que")
+    print("aproxima o descanso semanal do art. 67. 'apos noturno' e informativo.")
     for rotulo, r in reprovadas:
         print(f"\n{rotulo}: pior caso geral {r['pior_geral']}, pior apos noturno "
               f"{r['pior_noturno']}")
@@ -138,7 +162,7 @@ def main() -> int:
               + ", ".join(faltando))
         print("gerar com: python src\\experimento_a.py --sensibilidade")
     if not reprovadas and not faltando:
-        print("\nTodas as escalas respeitam as tres regras, medidas direto no relogio.")
+        print("\nTodas as escalas respeitam as regras do proprio regime, medidas no relogio.")
     return 1 if reprovadas else 0
 
 

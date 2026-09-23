@@ -105,6 +105,13 @@ REGIMES = {
 # Maximo de plantoes em 28 dias que respeita 42 h/semana (item 4 da decisao de 21/09)
 MAX_ATRIBUICOES = {"8h": 21, "12x36": 14}
 
+# Descanso minimo exigido entre dois turnos consecutivos, por regime. FONTE UNICA: usada pela
+# conferencia das sequencias admitidas pelo contrato e pela medicao na escala pronta.
+# No 12x36 sao as 36 h do art. 59-A, que e a contrapartida da jornada de 12 h; no regime de
+# 8 h nao ha art. 59-A, e vale a interjornada de 11 h do art. 66. Escrever 36 h para o de 8 h
+# reprova escala legal — foi o que a minha conferencia fez em 23/09.
+DESCANSO_EXIGIDO = {"8h": 11, "12x36": 36}
+
 
 # --- o primitivo ----------------------------------------------------------------------
 
@@ -712,7 +719,7 @@ def relatorio_conferencias() -> int:
     print("descanso minimo admitido pelo contrato:")
     for regime in sorted(REGIMES):
         menor, linhas = conferir_descanso(regime)
-        exigido = 36 if regime == "12x36" else 11
+        exigido = DESCANSO_EXIGIDO[regime]
         marca = "OK" if menor >= exigido - 1e-9 else "REPROVOU"
         print(f"   {regime:6s} menor intervalo {menor:.0f} h | exigido {exigido} h | {marca}")
         for l in linhas:
