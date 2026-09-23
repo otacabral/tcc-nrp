@@ -1285,3 +1285,30 @@ rodada**, embora o argumento do teto de 42 h não dependa dela.
 no meio, e o avaliador lê todos errado. Os doze padrões do de 8 h são pares simples, sem
 `None` — esses o avaliador lê corretamente, então a conferência do braço de 8 h volta a ter
 valor, e agora com as variantes cobertas.
+
+### 23/09, fim do dia: a correção não tinha chegado ao modelo — havia uma TERCEIRA cópia
+
+Rodei tudo de novo depois da correção e os números saíram **idênticos**, até o tempo de CPU.
+A `--conferencia` mostrava os padrões novos, com as variantes de enfermeiro, e a medição de
+descanso na escala continuava reprovando com o mesmo `NE` → `M` de zero hora.
+
+**Causa: `_contrato` tinha a lista de ids dos padrões escrita à mão.** Corrigi o gerador de
+padrões, os quatro (ou doze) padrões passaram a ser emitidos no `<Patterns>` do XML, e o
+contrato continuou apontando só para os três ids antigos. **Padrão que o contrato não
+referencia não é imposto pelo modelo nem cobrado pelo avaliador: existe no arquivo e não vale
+nada.**
+
+Era a terceira cópia da mesma lista. Eu tinha criado a fonte única para os pares proibidos e
+não percebi que havia mais uma, num arquivo que eu não estava olhando. Agora `_padroes` é
+chamado uma vez em `construir` e o contrato recebe os ids dele.
+
+**E entrou uma conferência de natureza diferente: `conferir_amarracao`.** As que existiam
+perguntavam *"o valor está certo?"* e enumeravam as mesmas listas que geravam o arquivo — por
+isso nenhuma podia pegar nenhum dos dois erros. Esta pergunta é outra: *"o que está escrito
+chega a valer?"* Ela confere, nas 20 combinações, que todo padrão emitido é referenciado pelo
+contrato, que o contrato não aponta para padrão inexistente, que nenhum padrão cita turno que
+não existe, e que **todo turno com demanda aparece em alguma regra de descanso**. Testei
+reintroduzindo o erro de propósito: ela pega.
+
+**O Experimento A continua por refazer** — desta vez de verdade. Os números de 36 e 40 que
+estão no CSV ainda são os do modelo sem descanso nas variantes.

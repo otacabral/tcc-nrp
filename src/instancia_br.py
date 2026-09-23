@@ -252,6 +252,42 @@ def conferir_perfil(perfil: dict[int, float]) -> list[str]:
     return erros
 
 
+def conferir_amarracao(inst: Instancia) -> list[str]:
+    """Tudo o que a instancia declara esta de fato amarrado ao contrato e aos turnos?
+
+    Nasceu de dois erros em sequencia, no mesmo dia, ambos por lista duplicada:
+
+    1. os padroes da CLT nomeavam so os turnos-base e deixavam as variantes de enfermeiro sem
+       regra de descanso — o solver marcou `NE` as 23:00 e `M` as 07:00, zero hora de
+       intervalo;
+    2. corrigido o gerador de padroes, o resultado nao mudou NADA, porque o contrato apontava
+       para os tres ids antigos. Padrao que o contrato nao referencia nao e imposto pelo
+       modelo nem cobrado pelo avaliador: existe no arquivo e nao vale nada.
+
+    As conferencias que existiam nao tinham como pegar nenhum dos dois, porque enumeravam as
+    mesmas listas. Esta aqui confere a AMARRACAO — se o que esta escrito chega a valer —, que
+    e uma pergunta diferente de "o valor esta certo".
+    """
+    erros = []
+    c = inst.contratos["0"]
+    emitidos, referenciados = set(inst.padroes), set(c.padroes_indesejados)
+    if emitidos - referenciados:
+        erros.append(f"padroes emitidos que o contrato NAO referencia, logo inertes: "
+                     f"{sorted(emitidos - referenciados)}")
+    if referenciados - emitidos:
+        erros.append(f"contrato referencia padrao inexistente: "
+                     f"{sorted(referenciados - emitidos)}")
+    nos_padroes = {e.turno for p in inst.padroes.values() for e in p.entradas} - {"None", "Any"}
+    if desconhecidos := nos_padroes - set(inst.turnos):
+        erros.append(f"padrao cita turno que nao existe: {sorted(desconhecidos)}")
+    # todo turno com demanda precisa aparecer em algum padrao de descanso, senao ele fica
+    # fora das regras — foi exatamente o caso das variantes de enfermeiro
+    com_demanda = {s for (_, s), q in inst.demanda.items() if q > 0}
+    if de_fora := com_demanda - nos_padroes:
+        erros.append(f"turnos com demanda e sem NENHUMA regra de descanso: {sorted(de_fora)}")
+    return erros
+
+
 def conferir_porte(perfil: dict[int, float], porte_horas: float = PORTE_HORAS) -> list[str]:
     """O perfil entrega o porte declarado?"""
     entregue = sum(perfil.values())
@@ -344,17 +380,21 @@ def _turnos(regime: str, grau: Grau) -> dict[str, Turno]:
     return turnos
 
 
-def _contrato(regime: str, descanso_clt: bool) -> Contrato:
+def _contrato(regime: str, descanso_clt: bool, padroes: tuple[str, ...]) -> Contrato:
     """Contrato unico do regime. Os limites legais entram como flexiveis do esquema.
 
     ATENCAO: no formato do INRC toda restricao de contrato e flexivel. Para o Experimento A,
     o teto de 42 h/semana e o descanso precisam BINDAR, senao "minimo viavel" vira divisao.
     A rigidez e opcao do modelo (`modelo.py`), nao do arquivo — assim a instancia emitida
     continua sendo uma instancia normal do INRC, reutilizavel por terceiros. Ver P7.
+
+    `padroes` vem de fora, de `_padroes`, e NAO e montado aqui. Em 23/09 esta funcao tinha a
+    lista de ids escrita a mao: corrigi o gerador de padroes para cobrir as variantes de
+    enfermeiro, os padroes novos passaram a ser emitidos no XML, e **nada mudou no resultado**,
+    porque o contrato continuou apontando so para os tres ids antigos. Padrao que o contrato
+    nao referencia nao e imposto pelo modelo nem cobrado pelo avaliador: existe no arquivo e
+    nao vale nada. Era a terceira copia da mesma lista; agora e uma so.
     """
-    padroes = ("clt_36h_N_D",) if regime == "12x36" else ()
-    if regime == "8h" and descanso_clt:
-        padroes = ("clt_N_M", "clt_N_T", "clt_T_M")
     return Contrato(
         id="0",
         descricao=f"regime {regime}, 42h/semana",
@@ -489,6 +529,8 @@ def construir(grau: str = "intermediario", efetivo: int = 36, regime: str = "12x
     duracao = REGIMES[regime][0][2]
     janelas = reagregar(perfil, duracao, regra=regra)
     profs, _ = _profissionais(efetivo, g)
+    # os padroes sao montados UMA vez e o contrato recebe os ids deles. Nao repetir a lista.
+    padroes = _padroes(regime, descanso_clt, bool(g.piso_enfermeiro_por_janela))
     # o sufixo so aparece quando ha variacao, para os nomes ja publicados nao mudarem
     sufixo = f"_v{variacao:g}".replace(".", "") if variacao else ""
     return Instancia(
@@ -498,8 +540,8 @@ def construir(grau: str = "intermediario", efetivo: int = 36, regime: str = "12x
         fim=inicio + timedelta(days=dias - 1),
         habilidades=(HABILIDADE_BASE, HABILIDADE_ENF),
         turnos=_turnos(regime, g),
-        padroes=_padroes(regime, descanso_clt, bool(g.piso_enfermeiro_por_janela)),
-        contratos={"0": _contrato(regime, descanso_clt)},
+        padroes=padroes,
+        contratos={"0": _contrato(regime, descanso_clt, tuple(padroes))},
         profissionais=profs,
         demanda=_demanda(janelas, regime, g, inicio, dias),
         pedidos=(),
@@ -683,13 +725,29 @@ def relatorio_conferencias() -> int:
         print(f"   {nome:15s} {pacientes(g):5.1f} pacientes | "
               f"enfermeiros >= {g.pct_enfermeiros:.0%} = {math.ceil(g.pct_enfermeiros * 36):2d}"
               f" | piso por janela {g.piso_enfermeiro_por_janela}")
+    # amarracao: o que a instancia declara chega a valer? Nas 20 combinacoes, porque o furo
+    # das variantes de enfermeiro so aparecia nos graus com piso de enfermeiro por janela.
+    print()
+    print("amarracao (padrao emitido x referenciado pelo contrato x turno com demanda):")
+    reprovadas = 0
+    for nome_grau in sorted(GRAUS):
+        for reg in ("12x36", "8h"):
+            for rg in ("teto", "maior_resto"):
+                problemas = conferir_amarracao(
+                    construir(grau=nome_grau, regime=reg, regra=rg, efetivo=36, variacao=1.0))
+                if problemas:
+                    reprovadas += 1
+                    erros += [f"{nome_grau}/{reg}/{rg}: {p}" for p in problemas]
+    print(f"   {20 - reprovadas} de 20 combinacoes ok")
+
     print()
     if erros:
         print("CONFERENCIAS REPROVARAM:")
         for e in erros:
             print(f"   {e}")
         return 1
-    print("conferencias OK: porte, anti-tautologia e tolerancia de um bloco")
+    print("conferencias OK: porte, anti-tautologia, tolerancia de um bloco, descanso e"
+          " amarracao")
     return 0
 
 
