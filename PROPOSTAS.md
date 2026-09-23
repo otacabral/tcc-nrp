@@ -1351,3 +1351,18 @@ regra das 36 h só no modelo — deixa de ser "mais limpa" e passa a ser a que e
 uma instância que o avaliador oficial pontua com 116 violações inexistentes. A **(a)** agora
 exige explicar, no texto, por que o número do avaliador deve ser ignorado. Continua sendo
 decisão de vocês.
+
+### 23/09, fechamento do dia: tudo passou
+
+Rodada final, com o código corrigido e os arquivos conferidos por checksum nos dois lados:
+
+- **descanso medido na escala: `ok` nas cinco** — 36 h no 12×36 e 16 h no de 8 h, contra 36 h
+  e 11 h exigidos;
+- **`--todos`: 20 de 20 células** com intervalo `[36, 36]` fechado dos dois lados e conferência
+  do avaliador `ok`;
+- **sensibilidade: a hipótese apareceu.** 12×36 precisa de 40 pessoas nas variações 0,5 e 1,
+  contra 38 e 37 do de 8 h — +5,3% e +8,1%. As duas células de 12×36 com variação continuam
+  com `conferencia = FALHA` por causa da P13, e estão validadas pela medição direta de
+  descanso.
+
+Resumo para a orientação em `docs/para_orientacao_2026-09-23.md`.
