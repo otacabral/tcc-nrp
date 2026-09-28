@@ -1,0 +1,95 @@
+# Como trabalhar neste repositório
+
+Instruções para o Claude Code. Isto é **protocolo de trabalho** — como agir. O **conteúdo**
+— escopo, decisões, parâmetros normativos, resultados — está em
+`VIRADA_ESCOPO_2026-09-24.md`. Leia esse arquivo antes de qualquer coisa.
+
+O inventário do código, arquivo por arquivo, está em `MAPA_CODIGO.md`.
+
+---
+
+## O que é o trabalho
+
+TCC de Engenharia de Produção (CEFET-RJ, entrega 04/11/2026). Uma **ferramenta de apoio à
+decisão** que gera escalas de enfermagem a partir dos parâmetros de dimensionamento do COFEN
+e da legislação trabalhista brasileira, com o motor de otimização validado contra o benchmark
+INRC-2010, que tem ótimos publicados.
+
+Escopo mudou em 24/09: antes era comparar regimes de jornada. Os experimentos daquele escopo
+passam a ser validação e demonstração de uso. Os documentos antigos estão em
+`historico/escopo-comparacao-regimes/` — consulta, não referência ativa.
+
+**Congelamento de resultado numérico: 14/10/2026.**
+
+## Stack
+
+Python, Pyomo, HiGHS. Avaliador oficial em Java (`avaliador/`, não versionado). A `.venv`
+precisa estar ativa: `.\.venv\Scripts\Activate.ps1`.
+
+O solver é parâmetro da chamada, não do modelo.
+
+Heurística de warm start passou a ser admitida em 25/09, revertendo em parte a exclusão
+anterior — mas **só como partida** (solução inicial e corte superior), nunca substituindo a
+prova de otimalidade, e só se a curva de escalabilidade mostrar faixa em que a prova não
+fecha. Fora isso: sem metaheurística, sem geração de colunas. O objeto é o modelo.
+
+## Regras de trabalho
+
+**Melhorias de implementação** — estrutura, forma de escrever restrições, organização dos
+experimentos, ordem das tarefas: aplicar direto, sem perguntar.
+
+**Mudanças de formulação, desenho experimental ou escopo**: registrar em `PROPOSTAS.md` com o
+raciocínio completo e **não implementar**. O Otávio leva para validação no projeto de
+redação. (O `PROPOSTAS.md` do escopo anterior está no histórico; um novo se recria quando a
+primeira proposta do escopo atual aparecer.)
+
+**Nenhum resultado numérico vale** sem conferência no avaliador oficial ou contra a Tabela 6
+de Santos et al. (2016). `python src\regressao.py` é o portão: roda antes de qualquer
+alteração no modelo entrar.
+
+**Reescrita de arquivo de contexto está congelada** até a especificação da ferramenta sair do
+projeto de redação. Notas novas, sim; reescrita de contexto, não.
+
+**Git**: o Otávio é iniciante. Dar o comando exato e dizer o que ele faz. Nunca `rebase` nem
+`amend` em commit antigo — o registro de que as decisões tiveram data e motivo é evidência do
+trabalho.
+
+**Decisão de modelagem não óbvia**: lembrar de registrar, com data.
+
+## Formato das respostas
+
+Começar com uma seção curta **"Para o Otávio"**: o que mudou, o que ele precisa executar, o
+que precisa de decisão. Máximo cinco linhas, sem jargão.
+
+Terminar com um bloco separado, título **"LEVAR PARA O PROJETO DE REDACAO"**, listando todo
+arquivo de decisão ou proposta editado na sessão, com uma linha sobre o que mudou em cada.
+Se nenhum, escrever "LEVAR PARA O PROJETO DE REDACAO: nada". **Não omitir.**
+
+O projeto de redação roda separado e não tem acesso a esta pasta. Decisão registrada aqui que
+não chega lá vira capítulo escrito com decisão superada.
+
+## O que este repositório aprendeu errando
+
+Três erros de codificação num único dia (23/09) passaram por todas as conferências existentes.
+O padrão é sempre o mesmo, e vale como critério:
+
+**Conferência que compartilha premissa com o que confere não confere nada.** As regras de
+descanso da CLT não cobriam metade dos tipos de turno, e a conferência que deveria pegar isso
+enumerava a mesma lista incompleta. Quem pegou foi uma medição feita a partir dos horários no
+arquivo, sem usar nenhuma lista.
+
+**Lista duplicada é o defeito.** O mesmo conjunto de pares proibidos existia em três lugares.
+Corrigir dois não mudou nada, porque o terceiro — o contrato — continuava apontando para os
+ids antigos, e padrão que o contrato não referencia não vale nada.
+
+**Resultado idêntico depois de uma correção é sinal de alarme**, não de estabilidade. Duas
+vezes num dia isso significou que a correção não tinha chegado ao código que rodava.
+
+Daí as conferências existentes: `conferir_amarracao` (o que está escrito chega a valer?),
+`docs/conferencia_descanso_escala.py` (mede o relógio, não confia em lista) e o portão da
+regressão.
+
+## Afirmações fracas
+
+Tempo de resolução **nunca** vai ao texto como resultado — só como limite operacional, com
+máquina e solver nomeados. O mesmo vale para qualquer coisa medida numa configuração só.
