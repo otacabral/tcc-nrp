@@ -200,7 +200,7 @@ def conferir_no_avaliador(inst, escala, arquivo: Path) -> list[str]:
 
 
 def tentar(grau: str, regime: str, regra: str, efetivo: int, solver: str,
-           tempo: int | None, variacao: float = 0.0) -> tuple[str, object, object]:
+           tempo: int | None, variacao: float = 0.0, **entrada) -> tuple[str, object, object]:
     """Uma resolucao de viabilidade. NUNCA levanta: a resposta pode ser "inviavel".
 
     Resolve com `carregar=False` porque aqui a inviabilidade e resposta esperada, e o
@@ -211,9 +211,12 @@ def tentar(grau: str, regime: str, regra: str, efetivo: int, solver: str,
     "nao existe escala legal" produziria um efetivo minimo inflado, e ninguem notaria olhando
     so o CSV. E ERRO em vez de INDETERMINADO porque as duas coisas pedem providencias
     diferentes — mais tempo contra conserto de codigo.
+
+    `entrada` vai direto para `instancia_br.construir` (razao_fds, indisponibilidades...),
+    para os testes da ferramenta resolverem com as MESMAS opcoes de modelo daqui, sem copia.
     """
     inst = br.construir(grau=grau, regime=regime, regra=regra, efetivo=efetivo,
-                        variacao=variacao)
+                        variacao=variacao, **entrada)
     m = modelo.construir(inst, flexiveis=True, habilidade_rigida=True,
                          noite_antes_de_fds_livre=True,
                          rigidas_legais=modelo.RIGIDAS_LEGAIS_BR)

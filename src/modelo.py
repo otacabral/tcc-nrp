@@ -118,6 +118,15 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
 
     m.definicao_y = pyo.Constraint(tuple(inst.profissionais), dias, rule=_liga_y)
 
+    # (III) indisponibilidade: ferias e licencas, RIGIDAS (DECISOES.md, 29/09). Fixa em zero
+    # as variaveis da pessoa no dia; `definicao_y` leva o y junto. Vazio nas instancias do
+    # INRC, entao o modelo delas nao muda.
+    for n, d in inst.indisponiveis:
+        for s in turnos:
+            if (n, s, d) in m.X:
+                m.x[n, s, d].fix(0)
+        m.y[n, d].fix(0)
+
     if flexiveis:
         _adicionar_flexiveis(m, inst, elegiveis, habilidade_rigida,
                              noite_antes_de_fds_livre, rigidas_legais)

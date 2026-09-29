@@ -20,6 +20,7 @@ da ferramenta**, só que sem interface. Estão marcadas com ⭐ abaixo.
 | `src/instancia_br.py` | **A tradução da norma.** Parecer COFEN + CLT → instância resolvível. Recebe grau de dependência, porte, regime, efetivo e devolve o problema montado. Na ferramenta, isto é a camada que fica atrás do formulário. |
 | `src/solucao.py` | Escreve a escala produzida e valida contra o esquema. É a saída. |
 | `src/tabela.py` | Gravação de CSV por mesclagem, com testes próprios. Utilitário. |
+| `src/testes_entrada.py` | Testes das entradas da ferramenta (29/09): pacientes, QP em duas parcelas, razão fim de semana/dia útil, equipe por quantidade, indisponibilidade. Reproduz 40 e 37 do Experimento A pela razão 20/29. `--rapido` pula o solver. |
 
 ## Já são funções da ferramenta, sem interface
 

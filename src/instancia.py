@@ -185,6 +185,9 @@ class Instancia:
     profissionais: dict[str, Profissional]
     demanda: dict[tuple[date, str], int]   # (data, turno) -> quantidade exigida
     pedidos: tuple[Pedido, ...]
+    # (profissional, dia) em que a pessoa nao pode ser escalada: ferias, licenca. RIGIDO, e
+    # fora do formato do INRC — o parser nunca preenche, so a instancia brasileira.
+    indisponiveis: frozenset[tuple[str, date]] = frozenset()
 
     # --- horizonte
 

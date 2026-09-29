@@ -36,6 +36,8 @@ Uso:
 
     python src\\instancia_br.py --grau intermediario --efetivo 36
     python src\\instancia_br.py --conferencia          # so as conferencias, sem emitir
+    python src\\instancia_br.py --pacientes intermediario=30 --enfermeiros 13 --tecnicos 25 \\
+        --razao-fds 0.7                               # as entradas da ferramenta
 
 Fora de escopo, declarado (item 9 da decisao de 21/09): IST de 15%, 5% de educacao
 permanente, enfermeiros para atividades gerenciais e acrescimo de 10% por restricao de
@@ -138,8 +140,30 @@ def fatores_por_dia(dias: int, inicio: date, variacao: float) -> list[float]:
             for d in range(dias)]
 
 
+def fatores_por_razao(dias: int, inicio: date, razao_fds: float) -> list[float]:
+    """Multiplicador de cada dia, dada a razao demanda do fim de semana / demanda do dia util.
+
+    E a entrada da ferramenta (DECISOES.md, 29/09): `razao_fds` vai de 0 a 1 — 1 e demanda
+    igual em todos os dias, 0 e fim de semana sem demanda. Media ponderada exatamente 1, pela
+    mesma razao de `fatores_por_dia`: o total de horas e preservado e so a forma muda.
+
+    `razao_fds = 20/29` e a forma do `long01`, a mesma que `fatores_por_dia` com
+    `variacao = 1`. Valores intermediarios NAO coincidem com `variacao` intermediaria: aqui a
+    razao e o parametro, la e a interpolacao entre plano e `long01`. `variacao` fica porque
+    e com ela que as rodadas do Experimento A foram feitas e se reproduzem.
+    """
+    if not 0 <= razao_fds <= 1:
+        raise ValueError(f"razao fim de semana / dia util fora de [0, 1]: {razao_fds}")
+    du = sum(1 for d in range(dias) if (inicio + timedelta(days=d)).weekday() < 5)
+    df = dias - du
+    util = dias / (du + razao_fds * df)
+    return [util if (inicio + timedelta(days=d)).weekday() < 5 else razao_fds * util
+            for d in range(dias)]
+
+
 def perfil_continuo(porte_horas: float = PORTE_HORAS, dias: int = DIAS_HORIZONTE,
-                    variacao: float = 0.0, inicio: date | None = None) -> dict[int, float]:
+                    variacao: float = 0.0, inicio: date | None = None,
+                    razao_fds: float | None = None) -> dict[int, float]:
     """Profissionais presentes em cada hora do horizonte.
 
     A hora 0 e o CORTE do primeiro dia, nao a meia-noite: o horizonte comeca as 07:00 e
@@ -156,8 +180,16 @@ def perfil_continuo(porte_horas: float = PORTE_HORAS, dias: int = DIAS_HORIZONTE
     igual em toda janela, e o piso de um enfermeiro por turno fica longe do limite. O
     Experimento A com `variacao=0` mede aritmetica de capacidade, nao rigidez de regime.
     Decisao do projeto de redacao, 23/09.
+
+    `razao_fds` e a outra forma de dizer a mesma coisa, que e a da ferramenta: ver
+    `fatores_por_razao`. As duas nao podem vir juntas.
     """
+    if razao_fds is not None and variacao:
+        raise ValueError("variacao e razao_fds sao duas formas da mesma entrada; use uma so")
     por_hora = porte_horas / dias / 24
+    if razao_fds is not None and razao_fds != 1:
+        fatores = fatores_por_razao(dias, inicio or primeira_segunda(), razao_fds)
+        return {h: por_hora * fatores[h // 24] for h in range(dias * 24)}
     if not variacao:
         return {h: por_hora for h in range(dias * 24)}
     fatores = fatores_por_dia(dias, inicio or primeira_segunda(), variacao)
@@ -174,6 +206,54 @@ def pacientes(grau: Grau, porte_horas: float = PORTE_HORAS,
     mas precisa ser declarado no texto para o leitor saber o que a instancia representa.
     """
     return porte_horas / dias / grau.horas_paciente_24h
+
+
+# --- entrada por pacientes e quadro de pessoal ------------------------------------------
+
+IST = 0.15   # indice de seguranca tecnica do Parecer: cobre ausencias que a escala nao modela
+
+
+def horas_por_dia(pacientes_por_grau: dict[str, float]) -> float:
+    """Horas de enfermagem por dia = soma de pacientes x horas por paciente do grau.
+
+    E a entrada da ferramenta (DECISOES.md, 29/09). O caminho por `PORTE_HORAS` continua
+    existindo, porque e por ele que os experimentos se reproduzem.
+    """
+    desconhecidos = set(pacientes_por_grau) - set(GRAUS)
+    if desconhecidos:
+        raise ValueError(f"grau desconhecido: {sorted(desconhecidos)}; use {sorted(GRAUS)}")
+    if any(p < 0 for p in pacientes_por_grau.values()):
+        raise ValueError("numero de pacientes negativo")
+    total = sum(p * GRAUS[g].horas_paciente_24h for g, p in pacientes_por_grau.items())
+    if total <= 0:
+        raise ValueError("nenhum paciente informado")
+    return total
+
+
+def grau_de_maior_carga(pacientes_por_grau: dict[str, float]) -> str:
+    """O grau que governa a composicao quando a unidade mistura graus (Parecer).
+
+    "Maior carga" segue a ordem da tabela do Parecer, a mesma de `GRAUS`: minimo,
+    intermediario, alta dependencia, semi-intensivo, intensivo. A ordem importa num caso so:
+    alta dependencia e semi-intensivo tem as mesmas 10 h por paciente e percentuais diferentes
+    (36% e 42%), e pela ordem da tabela vale o semi-intensivo.
+    """
+    ordem = list(GRAUS)
+    presentes = [g for g, p in pacientes_por_grau.items() if p > 0]
+    if not presentes:
+        raise ValueError("nenhum paciente informado")
+    return max(presentes, key=ordem.index)
+
+
+def quadro_pessoal(horas_dia: float, carga_semanal: float = CARGA_SEMANAL,
+                   ist: float = IST) -> tuple[float, float]:
+    """QP do Parecer em duas parcelas: (nucleo assistencial, quadro completo).
+
+    nucleo = horas por dia x 7 / CHS; completo = nucleo x (1 + IST). A escala e comparada
+    ao NUCLEO, porque o IST cobre ferias e ausencias que a escala de 28 dias nao modela.
+    """
+    nucleo = horas_dia * 7 / carga_semanal
+    return nucleo, nucleo * (1 + ist)
 
 
 # --- reagregacao ----------------------------------------------------------------------
@@ -500,6 +580,80 @@ def _profissionais(efetivo: int, grau: Grau) -> tuple[dict[str, Profissional], i
     return profs, n_enf
 
 
+def _equipe(n_enfermeiros: int, n_tecnicos: int, nomes_enfermeiros=None,
+            nomes_tecnicos=None) -> dict[str, Profissional]:
+    """Equipe informada por quantidade, que e a entrada da ferramenta (DECISOES.md, 29/09).
+
+    Nomes padrao "Enf 1...", "Tec 1..."; listas de nomes opcionais, uma por categoria, do
+    tamanho da categoria. Os ids continuam numericos, enfermeiros primeiro, como em
+    `_profissionais`.
+    """
+    if n_enfermeiros < 0 or n_tecnicos < 0 or n_enfermeiros + n_tecnicos == 0:
+        raise ValueError("equipe vazia ou com quantidade negativa")
+    nomes = []
+    for n, lista, padrao in ((n_enfermeiros, nomes_enfermeiros, "Enf"),
+                             (n_tecnicos, nomes_tecnicos, "Téc")):
+        if lista is None:
+            nomes.append([f"{padrao} {i + 1}" for i in range(n)])
+        elif len(lista) != n:
+            raise ValueError(f"{len(lista)} nomes para {n} profissionais ({padrao})")
+        else:
+            nomes.append(list(lista))
+    todos = nomes[0] + nomes[1]
+    if len(set(todos)) != len(todos):
+        raise ValueError("nomes repetidos na equipe")
+    profs = {}
+    for i, nome in enumerate(todos):
+        enfermeiro = i < n_enfermeiros
+        habs = {HABILIDADE_BASE} | ({HABILIDADE_ENF} if enfermeiro else set())
+        profs[str(i)] = Profissional(id=str(i), nome=nome, contrato="0",
+                                     habilidades=frozenset(habs))
+    return profs
+
+
+def conferir_composicao(inst: Instancia, grau: str) -> list[str]:
+    """A equipe cumpre a proporcao de enfermeiros do Parecer no QUADRO?
+
+    Com a equipe dada por quantidade, a proporcao deixa de sair por construcao e passa a ser
+    conferida. Lista vazia = cumpre. Nao impede resolver: o relatorio diz, o gestor decide.
+    O piso de 1 enfermeiro por turno esta na cobertura; se faltar enfermeiro para ele, quem
+    responde e o solver, com inviabilidade.
+    """
+    g = GRAUS[grau]
+    total = len(inst.profissionais)
+    n_enf = sum(1 for p in inst.profissionais.values() if HABILIDADE_ENF in p.habilidades)
+    exigido = math.ceil(g.pct_enfermeiros * total - 1e-9)
+    if n_enf < exigido:
+        return [f"{n_enf} enfermeiros em {total} profissionais; o Parecer pede ao menos "
+                f"{g.pct_enfermeiros:.0%} no grau {grau}, isto e, {exigido}"]
+    return []
+
+
+def _indisponiveis(profs: dict[str, Profissional], periodos, inicio: date,
+                   fim: date) -> frozenset[tuple[str, date]]:
+    """(profissional, data inicial, data final) -> pares (id, dia) indisponiveis.
+
+    O profissional pode vir pelo id ou pelo nome. Periodo que sai do horizonte e recortado;
+    periodo inteiramente fora dele e erro, porque quase certamente e data digitada errada.
+    """
+    por_nome = {p.nome: p.id for p in profs.values()}
+    pares = set()
+    for quem, de, ate in periodos:
+        pid = quem if quem in profs else por_nome.get(quem)
+        if pid is None:
+            raise ValueError(f"indisponibilidade de profissional inexistente: {quem}")
+        if ate < de:
+            raise ValueError(f"indisponibilidade de {quem}: fim {ate} antes do inicio {de}")
+        if ate < inicio or de > fim:
+            raise ValueError(f"indisponibilidade de {quem} ({de} a {ate}) fora do horizonte "
+                             f"{inicio} a {fim}")
+        d = max(de, inicio)
+        while d <= min(ate, fim):
+            pares.add((pid, d))
+            d += timedelta(days=1)
+    return frozenset(pares)
+
+
 def _demanda(janelas: dict[int, int], regime: str, grau: Grau,
              inicio: date, dias: int) -> dict[tuple[date, str], int]:
     """Cobertura por (dia, turno), a partir das janelas reagregadas.
@@ -523,28 +677,68 @@ def _demanda(janelas: dict[int, int], regime: str, grau: Grau,
     return demanda
 
 
-def construir(grau: str = "intermediario", efetivo: int = 36, regime: str = "12x36",
-              regra: str = "teto", porte_horas: float = PORTE_HORAS,
+def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
+              regra: str = "teto", porte_horas: float | None = None,
               dias: int = DIAS_HORIZONTE, inicio: date | None = None,
-              descanso_clt: bool = True, variacao: float = 0.0) -> Instancia:
-    """Monta a instancia brasileira. Todos os parametros sao varridos nos experimentos."""
+              descanso_clt: bool = True, variacao: float = 0.0, *,
+              pacientes: dict[str, float] | None = None,
+              razao_fds: float | None = None,
+              n_enfermeiros: int | None = None, n_tecnicos: int | None = None,
+              nomes_enfermeiros=None, nomes_tecnicos=None,
+              indisponibilidades=()) -> Instancia:
+    """Monta a instancia brasileira.
+
+    Dois caminhos, que nao se misturam:
+
+    - o dos EXPERIMENTOS, que e o de sempre e continua reproduzindo: `grau`, `porte_horas`
+      (padrao `PORTE_HORAS`), `efetivo`, `variacao`;
+    - o da FERRAMENTA (DECISOES.md, 29/09): `pacientes` por grau (o porte e o grau saem
+      deles), `razao_fds`, `n_enfermeiros` + `n_tecnicos` com nomes opcionais.
+
+    Os dois aceitam `indisponibilidades`: lista de (profissional, data inicial, data final),
+    com o profissional pelo id ou pelo nome. E restricao RIGIDA — ferias e licencas —, e o
+    modelo fixa em zero as atribuicoes da pessoa nesses dias. O XML do INRC nao tem como
+    representa-la: `escrever_xml` a deixa de fora, e o arquivo sozinho nao a reproduz.
+    """
+    if pacientes is not None:
+        if porte_horas is not None:
+            raise ValueError("pacientes e porte_horas sao duas formas do porte; use uma so")
+        derivado = grau_de_maior_carga(pacientes)
+        if grau is not None and grau != derivado:
+            raise ValueError(f"grau {grau} informado, mas o de maior carga nos pacientes e "
+                             f"{derivado}")
+        grau = derivado
+        porte_horas = horas_por_dia(pacientes) * dias
+    grau = grau or "intermediario"
+    porte_horas = PORTE_HORAS if porte_horas is None else porte_horas
     g = GRAUS[grau]
     inicio = inicio or primeira_segunda()
     if inicio.weekday() != 0:
         raise ValueError("o horizonte comeca numa segunda-feira, para fechar 4 fins de semana")
-    perfil = perfil_continuo(porte_horas, dias, variacao, inicio)
+    perfil = perfil_continuo(porte_horas, dias, variacao, inicio, razao_fds=razao_fds)
     duracao = REGIMES[regime][0][2]
     janelas = reagregar(perfil, duracao, regra=regra)
-    profs, _ = _profissionais(efetivo, g)
+    if (n_enfermeiros is None) != (n_tecnicos is None):
+        raise ValueError("informe n_enfermeiros e n_tecnicos juntos")
+    if n_enfermeiros is not None:
+        profs = _equipe(n_enfermeiros, n_tecnicos, nomes_enfermeiros, nomes_tecnicos)
+        efetivo = len(profs)
+    else:
+        profs, _ = _profissionais(efetivo, g)
+    fim = inicio + timedelta(days=dias - 1)
     # os padroes sao montados UMA vez e o contrato recebe os ids deles. Nao repetir a lista.
     padroes = _padroes(regime, descanso_clt, bool(g.piso_enfermeiro_por_janela))
-    # o sufixo so aparece quando ha variacao, para os nomes ja publicados nao mudarem
+    # os sufixos so aparecem quando o parametro e usado, para os nomes ja publicados nao mudarem
     sufixo = f"_v{variacao:g}".replace(".", "") if variacao else ""
+    if razao_fds is not None and razao_fds != 1:
+        sufixo += f"_r{razao_fds:.4g}".replace(".", "")
+    if pacientes is not None:
+        sufixo += f"_h{porte_horas / dias:.4g}".replace(".", "")
     return Instancia(
         id=f"br_{grau}_{regime}_{regra}_e{efetivo}{sufixo}",
         arquivo="",
         inicio=inicio,
-        fim=inicio + timedelta(days=dias - 1),
+        fim=fim,
         habilidades=(HABILIDADE_BASE, HABILIDADE_ENF),
         turnos=_turnos(regime, g),
         padroes=padroes,
@@ -552,6 +746,7 @@ def construir(grau: str = "intermediario", efetivo: int = 36, regime: str = "12x
         profissionais=profs,
         demanda=_demanda(janelas, regime, g, inicio, dias),
         pedidos=(),
+        indisponiveis=_indisponiveis(profs, indisponibilidades, inicio, fim),
     )
 
 
@@ -562,8 +757,9 @@ def primeira_segunda(ano: int = 2027) -> date:
 
 def quadro_referencia(porte_horas: float = PORTE_HORAS, dias: int = DIAS_HORIZONTE,
                       carga_semanal: float = CARGA_SEMANAL) -> float:
-    """QP_ref do Parecer, sem IST. E o denominador do Experimento A."""
-    return porte_horas / dias * 7 / carga_semanal
+    """QP_ref do Parecer, sem IST. E o denominador do Experimento A — o nucleo de
+    `quadro_pessoal`, com o porte do experimento. Uma formula so, nos dois caminhos."""
+    return quadro_pessoal(porte_horas / dias, carga_semanal)[0]
 
 
 # --- serializacao ---------------------------------------------------------------------
@@ -700,6 +896,8 @@ def relatorio_conferencias() -> int:
     print(f"perfil uniforme {perfil[0]:.4f} profissionais presentes em qualquer hora")
     print(f"QP_ref          {quadro_referencia():.2f} profissionais "
           f"(Parecer, sem IST, {CARGA_SEMANAL:.0f} h/semana)")
+    print(f"QP completo     {quadro_pessoal(PORTE_HORAS / DIAS_HORIZONTE)[1]:.2f} "
+          f"profissionais (com IST de {IST:.0%})")
     print()
     erros = conferir_porte(perfil) + conferir_perfil(perfil)
     for duracao in (8, 12):
@@ -769,13 +967,37 @@ def main() -> int:
     ap.add_argument("--saida", default="instancias/br")
     ap.add_argument("--conferencia", action="store_true",
                     help="so roda as conferencias do perfil e sai")
+    ap.add_argument("--pacientes", nargs="+", metavar="GRAU=N",
+                    help="pacientes por grau, ex.: intermediario=30 intensivo=4. Substitui o"
+                         " --grau e o porte fixo")
+    ap.add_argument("--razao-fds", type=float, default=None,
+                    help="demanda do fim de semana / demanda do dia util, de 0 a 1 (1 = igual)")
+    ap.add_argument("--enfermeiros", type=int, default=None)
+    ap.add_argument("--tecnicos", type=int, default=None)
     a = ap.parse_args()
 
     if a.conferencia:
         return relatorio_conferencias()
 
-    inst = construir(grau=a.grau, efetivo=a.efetivo, regime=a.regime, regra=a.regra,
-                     descanso_clt=not a.sem_descanso_clt)
+    pacientes = None
+    if a.pacientes:
+        pacientes = {}
+        for item in a.pacientes:
+            g, _, n = item.partition("=")
+            pacientes[g] = float(n)
+    grau = None if pacientes else a.grau
+    inst = construir(grau=grau, efetivo=a.efetivo, regime=a.regime, regra=a.regra,
+                     descanso_clt=not a.sem_descanso_clt, pacientes=pacientes,
+                     razao_fds=a.razao_fds, n_enfermeiros=a.enfermeiros,
+                     n_tecnicos=a.tecnicos)
+    grau = grau or grau_de_maior_carga(pacientes)
+    h_dia = horas_por_dia(pacientes) if pacientes else PORTE_HORAS / DIAS_HORIZONTE
+    nucleo, completo = quadro_pessoal(h_dia)
+    print(f"grau {grau} | {h_dia:.2f} h/dia | QP nucleo assistencial {nucleo:.2f} | "
+          f"QP completo (IST {IST:.0%}) {completo:.2f}")
+    print(f"a escala e comparada ao nucleo; equipe informada: {len(inst.profissionais)}")
+    for aviso in conferir_composicao(inst, grau):
+        print(f"AVISO: {aviso}")
     destino = Path(a.saida) / f"{inst.id}.xml"
     escrever_xml(inst, destino)
     erros = validar_xsd(destino)

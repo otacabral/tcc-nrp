@@ -65,6 +65,8 @@ def conferir_rigidas(inst: Instancia, escala: list[Atribuicao] | tuple[Atribuica
         if not (inst.inicio <= d <= inst.fim):
             problemas.append(f"atribuicao fora do horizonte: {d}")
             continue
+        if (n, d) in inst.indisponiveis:
+            problemas.append(f"{n} escalado em {d}, dia em que esta indisponivel")
         atribuido[(d, n)] = atribuido.get((d, n), 0) + 1
         cobertura[(d, s)] = cobertura.get((d, s), 0) + 1
         if habilidade_rigida and not inst.turnos[s].habilidades <= inst.profissionais[n].habilidades:
