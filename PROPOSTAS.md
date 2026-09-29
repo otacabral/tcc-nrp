@@ -11,7 +11,8 @@ escopo anterior, com as treze propostas P1–P13, está em
 
 ## 2026-09-28 — P1: a curva de escalabilidade mede um problema mais fácil do que o da ferramenta
 
-**Status: aguardando validação.** Nada implementado. O experimento rodou como combinado e o
+**Status: decidida em 29/09; executa na Etapa 4.** Registro anterior (28/09): aguardando
+validação. Nada implementado. O experimento rodou como combinado e o
 resultado está abaixo; o que proponho é sobre **como lê-lo**, e sobre uma rodada adicional.
 
 *Atualização de 29/09/2026:* desbloqueada: objetivo decidido (ver `DECISOES.md`,
@@ -91,7 +92,7 @@ A P1 está desbloqueada: objetivo decidido.
 
 ---
 
-## 2026-09-29 — P5: trabalhos futuros
+## 2026-09-29 — P3: trabalhos futuros
 
 **Status: só registro.** Nada a implementar no TCC.
 

@@ -87,18 +87,27 @@ formato legível por gestor, e o relatório de conformidade como saída de produ
 
 ### Bloqueia tudo
 
-**1. A especificação da ferramenta.** Está sendo escrita no projeto de redação. Sem ela não dá
+**1. ~~A especificação da ferramenta.~~ — RESOLVIDO em 29/09.** Decidida, ver
+`DECISOES.md`, "2026-09-29 — Especificação da ferramenta". Registro original, abaixo.
+
+Está sendo escrita no projeto de redação. Sem ela não dá
 para começar a interface, e a reescrita dos arquivos de contexto está congelada esperando por
 ela. **É o caminho crítico.** Enquanto ela não sai, o trabalho de código é organização e
 dívida.
 
 ### Esperando decisão
 
-**2. P1 — repetir a curva de escalabilidade com objetivo não trivial.** Registrado em
+**2. ~~P1 — repetir a curva de escalabilidade com objetivo não trivial.~~ — RESOLVIDO em
+29/09.** Desbloqueada; executa na Etapa 4. Registro original, abaixo.
+
+Registrado em
 `PROPOSTAS.md`, aguardando validação. Custo: ~20 min de máquina. Só faz sentido depois da
 especificação, porque é ela que define o objetivo.
 
-**3. Licença.** Uma ferramenta que se propõe gratuita e não declara licença é juridicamente
+**3. ~~Licença.~~ — RESOLVIDO em 29/09.** MIT; arquivo `LICENSE` na raiz. Registro
+original, abaixo.
+
+Uma ferramenta que se propõe gratuita e não declara licença é juridicamente
 inutilizável por quem a receber. Precisa de decisão — provavelmente MIT ou GPL. Questão para a
 orientação.
 

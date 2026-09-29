@@ -81,3 +81,7 @@ oficial ou contra a Tabela 6 de Santos et al. (2016).
 - `CONTEXTO_PROJETO.md` - escopo e pipeline
 - `DECISOES.md` - decisoes de modelagem tomadas
 - `PROPOSTAS.md` - sugestoes que aguardam validacao
+
+## Licenca
+
+MIT. Ver `LICENSE`.
