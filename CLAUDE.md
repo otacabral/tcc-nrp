@@ -1,10 +1,17 @@
 # Como trabalhar neste repositório
 
 Instruções para o Claude Code. Isto é **protocolo de trabalho** — como agir. O **conteúdo**
-— escopo, decisões, parâmetros normativos, resultados — está em
-`VIRADA_ESCOPO_2026-09-24.md`. Leia esse arquivo antes de qualquer coisa.
+— escopo, decisões, parâmetros normativos, resultados — está nos arquivos abaixo.
 
-O inventário do código, arquivo por arquivo, está em `MAPA_CODIGO.md`.
+**Leia primeiro `ESTADO_ATUAL.md`**, antes de qualquer coisa. É o arquivo curto que diz onde
+o trabalho está e aponta para os outros. Depois dele, conforme a tarefa:
+
+- `VIRADA_ESCOPO_2026-09-24.md` — escopo e parâmetros normativos.
+- `MAPA_CODIGO.md` — inventário do código, arquivo por arquivo.
+- `historico/escopo-comparacao-regimes/DECISOES.md` — decisões de modelagem. Está no
+  histórico por causa da virada de escopo de 24/09, mas **as decisões de modelagem nele
+  continuam valendo**. Estar em `historico/` não o torna só consulta, ao contrário dos
+  demais arquivos daquela pasta.
 
 ---
 
