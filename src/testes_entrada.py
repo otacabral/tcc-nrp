@@ -122,6 +122,42 @@ def teste_equipe() -> None:
         confere(br.validar_xsd(caminho) == [], "XML com nomes acentuados valido no esquema")
 
 
+def teste_descanso_semanal() -> None:
+    """A medicao do art. 67 contra escalas montadas a mao, com resposta conhecida de antemao.
+
+    Existe porque em 29/09 todas as escalas de 8 h deram EXATAMENTE 24 h — no limite. Valor
+    no limite em todas e o tipo de coisa que pode ser a medicao presa num numero, e nao a
+    escala; so caso com resposta sabida separa as duas coisas.
+    """
+    from conferencia_descanso_escala import _inicio_fim, descanso_semanal, medir
+    print("descanso semanal medido no relogio (escalas montadas a mao)")
+    inst = br.construir(regime="8h", efetivo=1)
+    dia = lambda k: inst.inicio + timedelta(days=k)  # noqa: E731
+    # M = 07-15, N = 23-07. Em cada caso, o maior descanso da semana 1 e conhecido.
+    casos = [
+        # entre manhas seguidas sobram 16 h; seg 00-07 = 7 h; dom 15:00 -> seg 00:00 = 9 h
+        ("7 manhas seguidas", [(dia(k), "M") for k in range(7)], 16.0),
+        # sab 15:00 -> seg 00:00
+        ("manha de seg a sab, domingo livre", [(dia(k), "M") for k in range(6)], 33.0),
+        # seg 00:00 -> seg 23:00 = 23 h e o maior: o recorte na semana nao ve o descanso
+        # anterior ao horizonte, e o domingo livre (dom 07:00 -> seg 00:00) da so 17 h
+        ("6 noites, de seg a sab", [(dia(k), "N") for k in range(6)], 23.0),
+        # noite na quarta termina qui 07:00; quinta livre; manha na sexta 07:00 = 24 h
+        ("noites seg-qua, quinta livre, manhas sex-dom",
+         [(dia(k), "N") for k in (0, 1, 2)] + [(dia(k), "M") for k in (4, 5, 6)], 24.0),
+    ]
+    for rotulo, turnos, esperado in casos:
+        blocos = [_inicio_fim(inst, d, t) for d, t in sorted(turnos)]
+        semana1 = descanso_semanal(inst, blocos)[0][1]
+        confere(abs(semana1 - esperado) < 1e-9,
+                f"{rotulo}: semana 1 = {semana1:.1f} h (esperado {esperado:.0f} h)")
+        # e o `medir`, que e o que as conferencias usam, tem de devolver o mesmo pior caso
+        r = medir(inst, [(d, "0", t) for d, t in turnos])
+        confere((r["menor_semanal"] < 24) == (esperado < 24),
+                f"{rotulo}: medir {'reprova' if r['menor_semanal'] < 24 else 'aprova'} "
+                f"({r['menor_semanal']:.1f} h)")
+
+
 def teste_reproducao_long01(tempo: int) -> None:
     """SE NAO REPRODUZIR, o resto nao vale: a instrucao e parar e relatar."""
     print("reproducao do long01 pela razao 20/29 (com solver)")
@@ -147,6 +183,9 @@ def _descanso(inst, escala, rotulo) -> None:
             f"{rotulo}: descanso minimo medido {r['menor_geral']:.0f} h >= {exigido} h")
     confere(r["max_consec"] <= limite,
             f"{rotulo}: dias seguidos {r['max_consec']} <= {limite}")
+    confere(r["menor_semanal"] >= 24,
+            f"{rotulo}: descanso semanal medido {r['menor_semanal']:.1f} h >= 24 h "
+            f"(pior: profissional, semana = {r['pior_semanal']})")
 
 
 def teste_indisponibilidade(tempo: int) -> None:
@@ -176,6 +215,7 @@ def main() -> int:
     teste_pacientes()
     teste_razao()
     teste_equipe()
+    teste_descanso_semanal()
     if not rapido:
         teste_reproducao_long01(tempo=600)
         if FALHAS:

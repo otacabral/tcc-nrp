@@ -233,16 +233,17 @@ def horas_por_dia(pacientes_por_grau: dict[str, float]) -> float:
 def grau_de_maior_carga(pacientes_por_grau: dict[str, float]) -> str:
     """O grau que governa a composicao quando a unidade mistura graus (Parecer).
 
-    "Maior carga" segue a ordem da tabela do Parecer, a mesma de `GRAUS`: minimo,
-    intermediario, alta dependencia, semi-intensivo, intensivo. A ordem importa num caso so:
-    alta dependencia e semi-intensivo tem as mesmas 10 h por paciente e percentuais diferentes
-    (36% e 42%), e pela ordem da tabela vale o semi-intensivo.
+    Regra (DECISOES.md, "2026-09-29 — Ajustes da Etapa 2"): vale o MAIOR PERCENTUAL DE
+    ENFERMEIROS entre os graus presentes. Equivale a "maior carga" do Parecer; no empate de
+    horas entre alta dependencia e semi-intensivo (10 h cada), vale o semi-intensivo, 42%.
+    Conservador por construcao. Entre graus de mesmo percentual (minimo e intermediario,
+    33%), desempata a ordem da tabela — sem efeito, porque os dois pedem a mesma composicao.
     """
     ordem = list(GRAUS)
     presentes = [g for g, p in pacientes_por_grau.items() if p > 0]
     if not presentes:
         raise ValueError("nenhum paciente informado")
-    return max(presentes, key=ordem.index)
+    return max(presentes, key=lambda g: (GRAUS[g].pct_enfermeiros, ordem.index(g)))
 
 
 def quadro_pessoal(horas_dia: float, carga_semanal: float = CARGA_SEMANAL,

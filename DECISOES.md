@@ -1052,6 +1052,51 @@ empatadas, a de menor penalidade individual máxima (mecanismo do Experimento B)
 
 ---
 
+## 2026-09-29 — Ajustes da Etapa 2
+
+**Status: vigente**
+
+Decididos pelo Otávio no projeto de redação, sobre as pendências da Parte A da Etapa 2.
+
+**Graus misturados.** A unidade segue o maior percentual de enfermeiros entre os graus
+presentes. Equivale a "maior carga"; no empate de horas entre alta dependência e
+semi-intensivo (10 h cada), vale o semi-intensivo, 42%. Conservador por construção.
+Implementado em `instancia_br.grau_de_maior_carga`.
+
+**Horário dos turnos fica fora das opções avançadas.** Três peças supõem os horários dos dois
+regimes (07–15–23 no de 8 h, 07–19 no 12×36): a regra `clt_36h_N_D`, escrita à mão em
+`_pares_proibidos`; o `reagregar()`, que usa uma duração única e janelas sem sobreposição; e o
+`regime_da_instancia` da conferência de descanso, que só reconhece turnos todos de 8 h ou
+todos de 12 h. Limitação declarada.
+
+**Arquivo de configuração = pacote** com o XML do INRC e um complemento com o que o formato
+não representa — indisponibilidades, para começar. A implementar junto com o arquivo de
+configuração, não agora.
+
+**Interface em Streamlit.** Resolução atrás de botão, resultado em `st.session_state`, barra
+de progresso.
+
+**Defeito encontrado e corrigido: o descanso semanal não era medido.** Em
+`docs/conferencia_descanso_escala.py`, a linha que deveria guardar o descanso semanal era
+`menor_semanal = min(menor_semanal, menor_semanal)`, que não faz nada, e o valor não era
+devolvido; só o limite de dias seguidos era conferido. Agora, em cada semana do horizonte
+(segunda 00:00 a segunda 00:00), mede-se no relógio o maior descanso contínuo, e a escala
+reprova abaixo de 24 h (CLT art. 67). Recortar na semana é a leitura estrita: um descanso que
+atravessa a virada de domingo para segunda conta, em cada semana, só a parte que cai nela.
+
+*Reconferência:* as 24 escalas guardadas do Experimento A (12 de 8 h, 12 de 12×36) e as
+escalas geradas por `src/testes_entrada.py` passam. Nas de 8 h o maior descanso semanal é
+**exatamente 24 h** em todas — no limite, pela sequência noturno → folga → manhã, a mesma do
+caso mais apertado da conferência de 21/09. Por ser valor no limite em todas, a medição foi
+posta à prova com escalas montadas à mão de resposta conhecida (16 h e 23 h reprovam; 24 h e
+33 h aprovam), e acerta as quatro.
+
+*Ressalva:* o modelo não impõe o art. 67 por semana; ele o aproxima por no máximo 6 dias
+seguidos (decisão de 21/09). As escalas atuais cumprem, mas nada no modelo garante que toda
+escala futura cumpra. A conferência agora mede e reprova.
+
+---
+
 ## Modelo de entrada
 
 ```
