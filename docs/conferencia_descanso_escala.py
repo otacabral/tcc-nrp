@@ -15,10 +15,11 @@ esta escrito.
 
 O que confere, por escala:
 
-- **descanso entre turnos**: menor intervalo entre dois turnos consecutivos, contra o minimo
-  do regime — 36 h no 12x36 (art. 59-A, contrapartida da jornada de 12 h) e 11 h no de 8 h
-  (interjornada do art. 66). O limite vem de `instancia_br.DESCANSO_EXIGIDO`, a mesma tabela
-  que a conferencia das sequencias admitidas usa;
+- **descanso entre turnos**: cada intervalo entre dois turnos consecutivos, contra o minimo
+  exigido depois do turno que termina — 36 h depois de turno de 12 h ou mais (art. 59-A) e
+  11 h depois dos demais (art. 66). A regra vem de `instancia_br.descanso_exigido`, a mesma
+  que gera os pares proibidos. Desde 29/09 vale para qualquer horario de turno, nao so para
+  os dois regimes;
 - **apos turno que atravessa a meia-noite**: informativo, para ver o pior caso do noturno;
 - **dias consecutivos**: maior sequencia de dias trabalhados, contra o limite do contrato;
 - **descanso semanal (art. 67)**: em cada semana (segunda a domingo), o maior descanso
@@ -32,13 +33,14 @@ sequencias que o CONTRATO admite. Esta aqui mede o que a escala de fato entregou
 from __future__ import annotations
 
 import sys
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "src"))
 
-from instancia_br import DESCANSO_EXIGIDO  # noqa: E402
+from instancia_br import (INTERJORNADA, POS_TURNO_LONGO, TURNO_LONGO,  # noqa: E402
+                          descanso_exigido)
 from parser import ler_instancia  # noqa: E402
 from solucao import ler_xml  # noqa: E402
 
@@ -57,24 +59,28 @@ MIN_SEMANAL = 24
 # atravessasse a meia-noite, inclusive no regime de 8 h, onde o turno N vai de 23:00 as 07:00.
 # As 36 h sao do art. 59-A, que e a contrapartida da jornada de 12 h e nao existe no de 8 h.
 # Com isso ela reprovava escala legal — o 8 h aparecia com 16 h de intervalo, que cumpre o
-# art. 66 com folga. O limite agora vem do regime, e o regime sai da duracao do turno.
+# art. 66 com folga. O limite passou a vir do regime em 23/09, e desde 29/09 vem da duracao do
+# turno que termina — o que da o mesmo resultado nos dois regimes e vale para turno qualquer.
+
+
+def duracao_h(turno) -> float:
+    """Duracao do turno em horas, lida dos horarios do arquivo. Ver `Turno.duracao_h`."""
+    return turno.duracao_h
 
 
 def regime_da_instancia(inst) -> str:
-    """Deduz o regime pela duracao do turno: 12 h e o 12x36, 8 h e o de tres turnos.
+    """Rotulo do regime, so para exibir: 12x36, 8h, ou as duracoes dos turnos.
 
-    Deduzir em vez de receber por parametro e de proposito: assim a conferencia le o que o
-    ARQUIVO diz, e nao o que quem chamou acha que ele diz.
+    Ate 29/09 exigia turnos todos de 8 h ou todos de 12 h, e levantava erro fora disso, porque
+    o descanso exigido saia do regime. Agora o exigido sai do turno (`descanso_exigido`), e
+    este rotulo nao decide nada.
     """
-    duracoes = set()
-    for t in inst.turnos.values():
-        h = (datetime.combine(date.min, t.fim) - datetime.combine(date.min, t.inicio))
-        duracoes.add(round(h.total_seconds() / 3600) % 24 or 24)
+    duracoes = {round(duracao_h(t)) for t in inst.turnos.values()}
     if duracoes == {12}:
         return "12x36"
     if duracoes == {8}:
         return "8h"
-    raise ValueError(f"nao reconheci o regime: duracoes de turno {sorted(duracoes)}")
+    return "+".join(f"{d}h" for d in sorted(duracoes))
 
 
 def _inicio_fim(inst, dia, turno_id) -> tuple[datetime, datetime]:
@@ -142,8 +148,9 @@ def medir(inst, escala) -> dict:
     for (dia, n, turno) in escala:
         por_prof.setdefault(n, []).append((dia, turno))
 
-    menor_geral = menor_pos_noturno = float("inf")
-    pior_geral = pior_noturno = None
+    menor_geral = menor_pos_noturno = menor_folga = float("inf")
+    pior_geral = pior_noturno = pior_folga = None
+    exigido_no_pior = None
     max_consec = 0
     menor_semanal, pior_semanal = float("inf"), None
     for n, turnos in por_prof.items():
@@ -155,6 +162,12 @@ def medir(inst, escala) -> dict:
             intervalo = (proximo - fim).total_seconds() / 3600
             if intervalo < menor_geral:
                 menor_geral, pior_geral = intervalo, (n, turnos[k], turnos[k + 1])
+            # o exigido depende do turno que TERMINA: 36 h depois de turno de 12 h ou mais,
+            # 11 h depois dos demais. Vem dos horarios, nao de uma lista de regimes.
+            exigido = descanso_exigido(duracao_h(inst.turnos[turnos[k][1]]))
+            if intervalo - exigido < menor_folga:
+                menor_folga, exigido_no_pior = intervalo - exigido, exigido
+                pior_folga = (n, turnos[k], turnos[k + 1], intervalo)
             if inst.turnos[turnos[k][1]].noturno and intervalo < menor_pos_noturno:
                 menor_pos_noturno, pior_noturno = intervalo, (n, turnos[k], turnos[k + 1])
         for semana, horas in descanso_semanal(inst, blocos):
@@ -169,6 +182,8 @@ def medir(inst, escala) -> dict:
             anterior = d
         max_consec = max(max_consec, melhor)
     return {"menor_geral": menor_geral, "pior_geral": pior_geral,
+            "menor_folga": menor_folga, "pior_folga": pior_folga,
+            "exigido_no_pior": exigido_no_pior,
             "menor_pos_noturno": menor_pos_noturno, "pior_noturno": pior_noturno,
             "menor_semanal": menor_semanal, "pior_semanal": pior_semanal,
             "max_consec": max_consec, "profissionais": len(por_prof)}
@@ -183,8 +198,7 @@ def cumpre(inst, r) -> bool:
     """Veredito de uma escala: descanso entre turnos, dias seguidos e descanso semanal."""
     limite = inst.contratos["0"].max_consecutive_working_days
     teto_consec = limite.valor if limite.ativa else inst.n_dias
-    exigido = DESCANSO_EXIGIDO[regime_da_instancia(inst)]
-    return (r["menor_geral"] >= exigido and r["max_consec"] <= teto_consec
+    return (r["menor_folga"] >= 0 and r["max_consec"] <= teto_consec
             and r["menor_semanal"] >= MIN_SEMANAL)
 
 
@@ -209,7 +223,7 @@ def main() -> int:
         limite = inst.contratos["0"].max_consecutive_working_days
         teto_consec = limite.valor if limite.ativa else inst.n_dias
         regime = regime_da_instancia(inst)
-        exigido = DESCANSO_EXIGIDO[regime]
+        exigido = r["exigido_no_pior"] or 0
         ok = cumpre(inst, r)
         pn = ("-" if r["menor_pos_noturno"] == float("inf")
               else f"{r['menor_pos_noturno']:.0f} h")
@@ -219,16 +233,19 @@ def main() -> int:
               f"{'ok' if ok else 'REPROVA':>10s}")
         if not ok:
             reprovadas.append((rotulo, r))
-    print(f"\nexigido, por regime: {DESCANSO_EXIGIDO['12x36']} h no 12x36 (art. 59-A, a"
-          f" contrapartida da jornada de 12 h) e {DESCANSO_EXIGIDO['8h']} h no de 8 h")
-    print("(interjornada do art. 66). Mais os dias seguidos dentro do limite do contrato, e o")
+    print(f"\nexigido, pelo turno que termina: {POS_TURNO_LONGO} h depois de turno de "
+          f"{TURNO_LONGO} h ou mais (art. 59-A)")
+    print(f"e {INTERJORNADA} h depois dos demais (interjornada do art. 66). 'exigido' e o do par "
+          "mais apertado.")
+    print("Mais os dias seguidos dentro do limite do contrato, e o")
     print("descanso semanal: em cada semana (segunda a domingo), o maior descanso continuo que")
     print(f"contem um dia sem turno, medido inteiro no relogio, de ao menos {MIN_SEMANAL} h "
           "(art. 67).")
     print("O descanso que chega ao fim do horizonte conta como cumprido (borda aberta): a")
     print("continuidade com o periodo seguinte nao e conferida. 'apos noturno' e informativo.")
     for rotulo, r in reprovadas:
-        print(f"\n{rotulo}: pior caso geral {r['pior_geral']}, pior apos noturno "
+        print(f"\n{rotulo}: par mais apertado {r['pior_folga']} (exigido "
+              f"{r['exigido_no_pior']} h), pior caso geral {r['pior_geral']}, pior apos noturno "
               f"{r['pior_noturno']}, pior semanal {fmt_semanal(r['menor_semanal'])} "
               f"(profissional, semana) = {r['pior_semanal']}")
     if faltando:

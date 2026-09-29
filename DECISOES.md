@@ -1123,6 +1123,54 @@ dias do período anterior como entrada (P3 do `PROPOSTAS.md`).
 
 ---
 
+## 2026-09-29 — Redesenho da ferramenta
+
+**Status: vigente**
+
+Decidido pelo Otávio no projeto de redação. Especificação completa no link registrado na P2
+e na entrada "2026-09-29 — Especificação da ferramenta". **Regra central: a CLT é restrição —
+trava a escala; o COFEN é alerta — nunca trava.**
+
+**Configuração com turnos editáveis.** O usuário define os turnos por hora de início e
+duração. Novo caminho de `instancia_br.construir(turnos=...)`; o caminho por pacientes
+continua igual, e o Experimento A segue reproduzível.
+
+**Demanda informada pelo usuário.** Generalista: enfermeiros e técnicos por turno, com
+valores opcionais diferentes para o fim de semana. Específica: por data × turno × categoria,
+partindo da generalista (um feriado, por exemplo). *Implementado, a confirmar:* o posto de
+técnico pode ser coberto por enfermeiro, como no caminho por pacientes; o de enfermeiro, só
+por enfermeiro.
+
+**CLT como trava, com diagnóstico do motivo.** *O diagnóstico do motivo — qual regra trava
+quando não há escala — ainda não está implementado; hoje a ferramenta diz só "faltam N".* As regras de descanso deixam de ser escritas
+à mão e passam a ser **geradas dos horários** (`pares_proibidos_por_horario`): para cada par
+de turnos, o descanso medido no relógio é proibido abaixo de 11 h (art. 66), e abaixo de
+36 h depois de turno de 12 h ou mais (art. 59-A). O gerador é a **fonte única** das regras de
+descanso — padrões do XML e conferência das sequências saem dele. **Pares já proibidos pelo
+limite de dias seguidos do contrato não são emitidos** (opção 1, decisão do Otávio): com o
+descarte, a lista gerada é idêntica à escrita à mão nos dois regimes, e o modelo e o XML do
+Experimento A não mudam — conferido em 361 XML, byte a byte. **A equivalência é garantida
+por teste permanente** (`src/testes_entrada.py`): pares gerados sem descarte = pares com
+descarte ∪ pares proibidos pelo limite de dias seguidos. Sem isso, o descarte poderia
+esconder uma proibição. A conferência de descanso na escala também passa a tirar o exigido
+do turno que termina, e vale para qualquer horário.
+
+No caminho novo, o teto de 42 h/semana é **em horas**, rígido no modelo
+(`Instancia.carga_maxima_h`), porque com turnos de durações diferentes contar turnos não
+limita horas; e o limite de dias seguidos é 6 (art. 67, aproximado como no regime de 8 h) —
+a alternância de quem faz turno de 12 h sai sozinha da regra das 36 h.
+
+**COFEN como alerta** (`instancia_br.alertas_cofen`, que não mexe no modelo): proporção de
+enfermeiros no quadro pelo grau predominante informado; turnos sem enfermeiro na demanda;
+com pacientes informados, quadro abaixo do QP completo, mostrando também o núcleo. **No
+caminho novo, o piso de 1 enfermeiro por turno deixa de ser cobertura rígida** — quem define
+a demanda é o usuário — e vira alerta.
+
+**Funcionalidades congeladas em 10/10.** **A Etapa 4 (P1, curva de escalabilidade com
+objetivo não trivial) passa para depois da Etapa 7.**
+
+---
+
 ## Modelo de entrada
 
 ```

@@ -17,7 +17,7 @@ da ferramenta**, só que sem interface. Estão marcadas com ⭐ abaixo.
 |---|---|
 | `src/instancia.py` | As estruturas de dados: turno, contrato, profissional, padrão, demanda. Sem Pyomo, sem XML. É a fronteira que permite a instância brasileira entrar sem tocar no modelo. |
 | `src/modelo.py` | **O motor.** Monta o problema de programação inteira: 2 restrições rígidas, 13 flexíveis, limites legais endurecíveis por flag. É o que a interface vai chamar. |
-| `src/instancia_br.py` | **A tradução da norma.** Parecer COFEN + CLT → instância resolvível. Recebe grau de dependência, porte, regime, efetivo e devolve o problema montado. Na ferramenta, isto é a camada que fica atrás do formulário. |
+| `src/instancia_br.py` | **A tradução da norma.** Parecer COFEN + CLT → instância resolvível. Recebe grau de dependência, porte, regime, efetivo e devolve o problema montado. Na ferramenta, isto é a camada que fica atrás do formulário. Desde 29/09: caminho por turnos configurados e demanda informada; `pares_proibidos_por_horario`, fonte única das regras de descanso; `alertas_cofen`, que não trava. |
 | `src/solucao.py` | Escreve a escala produzida e valida contra o esquema. É a saída. |
 | `src/tabela.py` | Gravação de CSV por mesclagem, com testes próprios. Utilitário. |
 | `src/ferramenta.py` | **A ferramenta sem tela** (29/09): entrada do formulário → veredito do quadro ("admite escala legal" / "faltam N; o menor quadro viável é X"), QP em duas parcelas, escala conferida e planilha `.xlsx`. Resolve pelo `experimento_a.tentar`, sem copiar a configuração do modelo. |

@@ -133,7 +133,7 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int = TEMPO,
     base = montar(e)                          # valida a entrada antes de gastar solver
     h_dia = br.horas_por_dia(e.pacientes)
     nucleo, completo = br.quadro_pessoal(h_dia)
-    avisos = br.conferir_composicao(base, e.grau)
+    avisos = br.alertas_cofen(base, e.grau, e.pacientes)
     piso = max(ea.piso_de_capacidade(base, e.regime), ea.piso_de_alternancia(base))
     tentativas: list[tuple[int, str]] = []
     r = Resultado(veredito=NAO_DECIDIDO, quadro_informado=e.quadro, menor_viavel=None,

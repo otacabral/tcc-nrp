@@ -87,6 +87,13 @@ class Turno:
         """Atravessa a meia-noite. No INRC, o turno N vai de 22:30 a 06:30."""
         return self.fim <= self.inicio
 
+    @property
+    def duracao_h(self) -> float:
+        """Duracao em horas, dos horarios. Turno com fim igual ao inicio dura 24 h."""
+        ini = self.inicio.hour + self.inicio.minute / 60
+        fim = self.fim.hour + self.fim.minute / 60
+        return (fim - ini) % 24 or 24.0
+
 
 @dataclass(frozen=True)
 class EntradaPadrao:
@@ -188,6 +195,11 @@ class Instancia:
     # (profissional, dia) em que a pessoa nao pode ser escalada: ferias, licenca. RIGIDO, e
     # fora do formato do INRC — o parser nunca preenche, so a instancia brasileira.
     indisponiveis: frozenset[tuple[str, date]] = frozenset()
+    # Teto de horas por profissional no horizonte (42 h/semana x semanas). RIGIDO, e fora do
+    # formato do INRC, que so conta turnos (MaxNumAssignments). So a instancia brasileira com
+    # turnos configurados preenche: com turnos de duracoes diferentes, contar turnos nao
+    # limita horas. None = nao ha teto de horas alem do do contrato.
+    carga_maxima_h: float | None = None
 
     # --- horizonte
 

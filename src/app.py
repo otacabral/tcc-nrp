@@ -129,7 +129,7 @@ if "resultado" in st.session_state:
               help="Núcleo × 1,15. O IST cobre férias e ausências que a escala não modela.")
     q3.metric("Quadro informado", r.quadro_informado)
     for aviso in r.avisos:
-        st.warning(f"Composição: {aviso}")
+        st.warning(f"Alerta COFEN (não impede a escala): {aviso}")
     with st.expander("Como o veredito foi obtido"):
         explica = {"piso": "inviável pela aritmética — a capacidade ou a alternância de "
                            "plantões não cobre a demanda",

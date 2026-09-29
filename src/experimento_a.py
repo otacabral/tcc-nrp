@@ -217,6 +217,12 @@ def tentar(grau: str, regime: str, regra: str, efetivo: int, solver: str,
     """
     inst = br.construir(grau=grau, regime=regime, regra=regra, efetivo=efetivo,
                         variacao=variacao, **entrada)
+    return resolver_instancia(inst, solver, tempo)
+
+
+def resolver_instancia(inst, solver: str, tempo: int | None) -> tuple[str, object, object]:
+    """O miolo de `tentar`, para uma instancia ja montada — a de turnos configurados, por
+    exemplo. As opcoes de modelo moram SO aqui: limites legais rigidos, habilidade rigida."""
     m = modelo.construir(inst, flexiveis=True, habilidade_rigida=True,
                          noite_antes_de_fds_livre=True,
                          rigidas_legais=modelo.RIGIDAS_LEGAIS_BR)

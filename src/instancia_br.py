@@ -107,12 +107,26 @@ REGIMES = {
 # Maximo de plantoes em 28 dias que respeita 42 h/semana (item 4 da decisao de 21/09)
 MAX_ATRIBUICOES = {"8h": 21, "12x36": 14}
 
-# Descanso minimo exigido entre dois turnos consecutivos, por regime. FONTE UNICA: usada pela
-# conferencia das sequencias admitidas pelo contrato e pela medicao na escala pronta.
-# No 12x36 sao as 36 h do art. 59-A, que e a contrapartida da jornada de 12 h; no regime de
-# 8 h nao ha art. 59-A, e vale a interjornada de 11 h do art. 66. Escrever 36 h para o de 8 h
-# reprova escala legal — foi o que a minha conferencia fez em 23/09.
-DESCANSO_EXIGIDO = {"8h": 11, "12x36": 36}
+# Maximo de dias seguidos de trabalho, por regime: a alternancia do 12x36 e o descanso semanal
+# (art. 67, aproximado por 6 dias) no de 8 h. FONTE UNICA para o contrato, para o gerador de
+# regras de descanso e para a conferencia das sequencias.
+MAX_CONSECUTIVOS = {"8h": 6, "12x36": 1}
+
+# Regras de descanso da CLT, em horas. FONTE UNICA: o gerador de pares proibidos, a conferencia
+# das sequencias e a medicao na escala pronta saem daqui.
+INTERJORNADA = 11      # art. 66
+POS_TURNO_LONGO = 36   # art. 59-A: doze horas seguidas por trinta e seis de descanso
+TURNO_LONGO = 12       # a partir de quantas horas de turno vale o descanso de 36 h
+
+
+def descanso_exigido(duracao_h: float) -> int:
+    """Descanso minimo depois de um turno desta duracao. Escrever 36 h para turno de 8 h
+    reprova escala legal — foi o que a conferencia fez em 23/09."""
+    return POS_TURNO_LONGO if duracao_h >= TURNO_LONGO else INTERJORNADA
+
+
+# Descanso minimo por regime, derivado da regra acima (nao e segunda lista).
+DESCANSO_EXIGIDO = {r: descanso_exigido(REGIMES[r][0][2]) for r in REGIMES}
 
 
 # --- o primitivo ----------------------------------------------------------------------
@@ -422,7 +436,7 @@ def conferir_descanso(regime: str, descanso_clt: bool = True,
     for tid, ini, dur, _ in REGIMES[regime]:
         for v in _variantes(tid, variantes):
             turnos[v] = (ini, ini + dur)
-    max_consec = 1 if regime == "12x36" else 6
+    max_consec = MAX_CONSECUTIVOS[regime]
     proibidos = {(va, k, vb)
                  for a, k, b in _pares_proibidos(regime, descanso_clt)
                  for va in _variantes(a, variantes)
@@ -468,7 +482,9 @@ def _turnos(regime: str, grau: Grau) -> dict[str, Turno]:
     return turnos
 
 
-def _contrato(regime: str, descanso_clt: bool, padroes: tuple[str, ...]) -> Contrato:
+def _contrato(regime: str | None, descanso_clt: bool, padroes: tuple[str, ...], *,
+              max_atribuicoes: int | None = None, max_consecutivos: int | None = None,
+              descricao: str | None = None) -> Contrato:
     """Contrato unico do regime. Os limites legais entram como flexiveis do esquema.
 
     ATENCAO: no formato do INRC toda restricao de contrato e flexivel. Para o Experimento A,
@@ -485,13 +501,13 @@ def _contrato(regime: str, descanso_clt: bool, padroes: tuple[str, ...]) -> Cont
     """
     return Contrato(
         id="0",
-        descricao=f"regime {regime}, 42h/semana",
+        descricao=descricao or f"regime {regime}, 42h/semana",
         weekend_definition="SaturdaySunday",
         padroes_indesejados=padroes,
         single_assignment_per_day=_flex(),
-        max_num_assignments=_flex(MAX_ATRIBUICOES[regime]),
+        max_num_assignments=_flex(max_atribuicoes or MAX_ATRIBUICOES[regime]),
         min_num_assignments=_flex(0, ligada=False, peso=0),
-        max_consecutive_working_days=_flex(1 if regime == "12x36" else 6),
+        max_consecutive_working_days=_flex(max_consecutivos or MAX_CONSECUTIVOS[regime]),
         min_consecutive_working_days=_flex(1),
         max_consecutive_free_days=_flex(DIAS_HORIZONTE, ligada=False, peso=0),
         min_consecutive_free_days=_flex(1),
@@ -525,7 +541,11 @@ def _padroes(regime: str, descanso_clt: bool, variantes: bool) -> dict[str, Padr
     fim de um turno e o inicio do proximo, em qualquer combinacao admitida acima. E
     aproximacao declarada, nao equivalencia.
     """
-    proibidos = _pares_proibidos(regime, descanso_clt)
+    return _padroes_de(_pares_proibidos(regime, descanso_clt), variantes)
+
+
+def _padroes_de(proibidos, variantes: bool) -> dict[str, Padrao]:
+    """Pares proibidos -> padroes indesejados do INRC: s, (salto - 1) folgas, t."""
     padroes = {}
     for a, salto, b in proibidos:
         # ERRO CORRIGIDO EM 23/09: os padroes nomeavam so os turnos-base (N, D, M, T) e
@@ -537,31 +557,67 @@ def _padroes(regime: str, descanso_clt: bool, variantes: bool) -> dict[str, Padr
         for va in _variantes(a, variantes):
             for vb in _variantes(b, variantes):
                 entradas = [EntradaPadrao(va, "Any")]
-                if salto == 2:
-                    entradas.append(EntradaPadrao("None", "Any"))
+                entradas += [EntradaPadrao("None", "Any")] * (salto - 1)
                 entradas.append(EntradaPadrao(vb, "Any"))
-                pid = f"clt_{'36h_' if salto == 2 else ''}{va}_{vb}"
+                # ids de salto 1 e 2 mantidos como eram, para o XML do Experimento A nao mudar
+                prefixo = {1: "", 2: "36h_"}.get(salto, f"d{salto}_")
+                pid = f"clt_{prefixo}{va}_{vb}"
                 padroes[pid] = Padrao(id=pid, peso=1, entradas=tuple(entradas))
     return padroes
 
 
-def _pares_proibidos(regime: str, descanso_clt: bool) -> tuple[tuple[str, int, str], ...]:
-    """As sequencias proibidas, em turnos-base: (turno no dia d, salto, turno no dia d+salto).
+def pares_proibidos_por_horario(turnos, max_consecutivos: int | None,
+                                interjornada: bool = True,
+                                descartar: bool = True) -> tuple[tuple[str, int, str], ...]:
+    """Sequencias proibidas pelos HORARIOS: (turno s no dia d, salto k, turno t no dia d+k).
 
-    FONTE UNICA: tanto os padroes emitidos no XML quanto a conferencia de descanso saem
-    daqui. Antes eram duas listas escritas em separado, e foi por isso que a conferencia
-    nao pegou o furo das variantes de enfermeiro — ela enumerava a mesma lista incompleta
-    que o gerador usava.
+    `turnos`: [(id, hora de inicio, duracao em horas)]. O descanso entre s no dia d e t no
+    dia d+k, com os dias do meio livres, e (24k + inicio de t) - (inicio de s + duracao de s),
+    medido no relogio. O par e proibido se ficar abaixo do exigido depois de s:
+    `descanso_exigido` — 36 h depois de turno de 12 h ou mais (art. 59-A), 11 h nos demais
+    (art. 66). `interjornada=False` desliga so a regra das 11 h (e o `--sem-descanso-clt`).
+
+    Com o dia do meio TRABALHADO, o descanso que conta e o do par (s, meio), que ja e um par
+    de salto 1 — por isso os saltos maiores so precisam do caso com o meio livre. k vai ate 4,
+    que cobre qualquer turno de ate 24 h com 36 h de descanso.
+
+    `descartar`: pares de salto 1 sao dois dias seguidos de trabalho, que o contrato ja proibe
+    quando `max_consecutivos` < 2. Nao sao emitidos (decisao do Otavio, 29/09: opcao 1) — a
+    lista fica identica a escrita a mao antes, e o modelo e o XML do Experimento A nao mudam.
+    A equivalencia (sem descarte = com descarte + o que o limite proibe) e teste permanente
+    em `src/testes_entrada.py`, para o descarte nunca esconder uma proibicao.
+
+    Substitui a lista escrita a mao, que supunha os horarios 07-19 e 07-15-23 (DECISOES.md,
+    "2026-09-29 — Ajustes da Etapa 2"). E a FONTE UNICA das regras de descanso: os padroes
+    do XML e a conferencia das sequencias saem daqui.
     """
-    if regime == "12x36":
-        # As 36 h do art. 59-A nao sao garantidas por MaxConsecutiveWorkingDays = 1. O
-        # plantao noturno termina as 07:00 do dia seguinte; com o dia do meio livre, o
-        # plantao diurno de dois dias depois comeca as 07:00 — sao 24 h, nao 36. Unica
-        # combinacao com o furo; diurno->diurno da 36 h e noturno->noturno da 60 h. P7.2.
-        return (("N", 2, "D"),)
-    if not descanso_clt:
-        return ()
-    return (("N", 1, "M"), ("N", 1, "T"), ("T", 1, "M"))
+    proibidos = set()
+    for s, ini_s, dur_s in turnos:
+        exigido = descanso_exigido(dur_s)
+        if exigido == INTERJORNADA and not interjornada:
+            continue
+        for k in (1, 2, 3, 4):
+            if descartar and k == 1 and max_consecutivos is not None and max_consecutivos < 2:
+                continue
+            for t, ini_t, _ in turnos:
+                if 24 * k + ini_t - (ini_s + dur_s) < exigido:
+                    proibidos.add((s, k, t))
+    return tuple(sorted(proibidos))
+
+
+def _turnos_base(regime: str) -> list[tuple[str, int, int]]:
+    return [(tid, ini, dur) for tid, ini, dur, _ in REGIMES[regime]]
+
+
+def _pares_proibidos(regime: str, descanso_clt: bool) -> tuple[tuple[str, int, str], ...]:
+    """As sequencias proibidas de um regime, GERADAS dos horarios. Ver
+    `pares_proibidos_por_horario`. Ate 29/09 esta funcao devolvia uma lista escrita a mao:
+    (N, 2, D) no 12x36 — o furo do P7.2, noturno termina 07:00 e diurno de dois dias depois
+    comeca 07:00, 24 h — e (N,1,M), (N,1,T), (T,1,M) no de 8 h. O gerador reproduz as duas,
+    e o teste de `src/testes_entrada.py` guarda a lista antiga para conferir.
+    """
+    return pares_proibidos_por_horario(_turnos_base(regime), MAX_CONSECUTIVOS[regime],
+                                       interjornada=descanso_clt)
 
 
 def _variantes(base: str, variantes: bool) -> tuple[str, ...]:
@@ -630,6 +686,41 @@ def conferir_composicao(inst: Instancia, grau: str) -> list[str]:
     return []
 
 
+def alertas_cofen(inst: Instancia, grau: str | None = None,
+                  pacientes: dict[str, float] | None = None) -> list[str]:
+    """Alertas do COFEN. NUNCA travam: nao mexem no modelo, so informam (DECISOES.md,
+    "2026-09-29 — Redesenho da ferramenta" — a CLT e restricao, o COFEN e alerta).
+
+    - proporcao de enfermeiros no quadro, pelo grau predominante informado;
+    - turnos em que a demanda nao pede nenhum enfermeiro;
+    - com pacientes informados: quadro abaixo do QP completo, mostrando tambem o nucleo.
+    """
+    alertas = []
+    if grau is not None:
+        alertas += conferir_composicao(inst, grau)
+    sem_enf = []
+    for d in inst.dias:
+        for tid, t in inst.turnos.items():
+            if HABILIDADE_ENF in t.habilidades:
+                continue                      # a variante de enfermeiro e o proprio posto
+            total = inst.demanda_de(d, tid) + inst.demanda_de(d, f"{tid}E")
+            if total > 0 and inst.demanda_de(d, f"{tid}E") == 0:
+                sem_enf.append((d, tid))
+    if sem_enf:
+        exemplos = ", ".join(f"{d:%d/%m} {tid}" for d, tid in sem_enf[:3])
+        alertas.append(f"{len(sem_enf)} turno(s) sem enfermeiro na demanda "
+                       f"(ex.: {exemplos}{', ...' if len(sem_enf) > 3 else ''})")
+    if pacientes:
+        nucleo, completo = quadro_pessoal(horas_por_dia(pacientes))
+        quadro = len(inst.profissionais)
+        if quadro < completo:
+            virgula = lambda x: f"{x:.2f}".replace(".", ",")  # noqa: E731
+            alertas.append(f"quadro de {quadro} abaixo do QP completo do Parecer "
+                           f"({virgula(completo)}, com IST de {IST:.0%}); o núcleo "
+                           f"assistencial, sem IST, é {virgula(nucleo)}")
+    return alertas
+
+
 def _indisponiveis(profs: dict[str, Profissional], periodos, inicio: date,
                    fim: date) -> frozenset[tuple[str, date]]:
     """(profissional, data inicial, data final) -> pares (id, dia) indisponiveis.
@@ -678,6 +769,123 @@ def _demanda(janelas: dict[int, int], regime: str, grau: Grau,
     return demanda
 
 
+# --- caminho por turnos configurados e demanda informada (DECISOES.md, 29/09) ------------
+
+MAX_CONSECUTIVOS_GENERICO = 6   # descanso semanal (art. 67), aproximado como no regime de 8 h
+CATEGORIAS = ("enf", "tec")
+
+
+def _validar_turnos(turnos) -> list[tuple[str, int, int, str]]:
+    """[(id, hora de inicio, duracao em horas, descricao)], conferido."""
+    vistos = []
+    for item in turnos:
+        tid, ini, dur = item[0], item[1], item[2]
+        desc = item[3] if len(item) > 3 else tid
+        if not tid or not str(tid).isalnum():
+            raise ValueError(f"id de turno invalido: {tid!r} (letras e numeros apenas)")
+        if not (0 <= ini <= 23) or not (1 <= dur <= 24):
+            raise ValueError(f"turno {tid}: inicio {ini} h ou duracao {dur} h fora do intervalo")
+        vistos.append((str(tid), int(ini), int(dur), str(desc)))
+    ids = [t[0] for t in vistos]
+    if len(set(ids)) != len(ids):
+        raise ValueError(f"ids de turno repetidos: {ids}")
+    # a variante de enfermeiro de "M" e "ME": um turno do usuario com esse id colidiria
+    if colisao := {i for i in ids if i.endswith("E") and i[:-1] in ids}:
+        raise ValueError(f"id de turno colide com a variante de enfermeiro: {sorted(colisao)}")
+    return vistos
+
+
+def demanda_por_turno(turnos, inicio: date, dias: int, demanda_turno,
+                      demanda_fds=None, demanda_data=None) -> dict[tuple[date, str], int]:
+    """Demanda informada pelo usuario -> cobertura por (dia, turno), com a variante de
+    enfermeiro. Generalista: `demanda_turno[id] = (enfermeiros, tecnicos)`, com
+    `demanda_fds[id]` opcional para sabado e domingo. Especifica, por cima da generalista:
+    `demanda_data[(data, id, "enf" | "tec")] = n` — um feriado, por exemplo.
+
+    O posto de tecnico (turno-base, habilidade "Enfermagem") pode ser coberto por enfermeiro,
+    como no caminho por pacientes; o de enfermeiro (variante "E") so por enfermeiro.
+    """
+    ids = [t[0] for t in turnos]
+    demanda_fds = demanda_fds or {}
+    demanda_data = demanda_data or {}
+    for chave in (set(demanda_turno) | set(demanda_fds)) - set(ids):
+        raise ValueError(f"demanda para turno inexistente: {chave}")
+    if falta := set(ids) - set(demanda_turno):
+        raise ValueError(f"turnos sem demanda informada: {sorted(falta)}")
+    fim = inicio + timedelta(days=dias - 1)
+    for (d, tid, cat), n in demanda_data.items():
+        if tid not in ids or cat not in CATEGORIAS or not (inicio <= d <= fim) or n < 0:
+            raise ValueError(f"demanda especifica invalida: {(d, tid, cat)} = {n}")
+    demanda: dict[tuple[date, str], int] = {}
+    for k in range(dias):
+        d = inicio + timedelta(days=k)
+        for tid in ids:
+            base = demanda_fds.get(tid, demanda_turno[tid]) if d.weekday() >= 5 \
+                else demanda_turno[tid]
+            enf = demanda_data.get((d, tid, "enf"), base[0])
+            tec = demanda_data.get((d, tid, "tec"), base[1])
+            if enf < 0 or tec < 0:
+                raise ValueError(f"demanda negativa no turno {tid}")
+            demanda[(d, f"{tid}E")] = enf
+            demanda[(d, tid)] = tec
+    return demanda
+
+
+def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
+                          n_enfermeiros, n_tecnicos, nomes_enfermeiros, nomes_tecnicos,
+                          dias: int, inicio: date, descanso_clt: bool,
+                          indisponibilidades) -> Instancia:
+    """Instancia com turnos e demanda do usuario. A CLT trava; o COFEN nao entra aqui.
+
+    - regras de descanso GERADAS dos horarios (`pares_proibidos_por_horario`);
+    - no maximo 6 dias seguidos (art. 67, aproximado); a alternancia de quem faz so 12 h sai
+      sozinha da regra das 36 h;
+    - teto de 42 h/semana em HORAS (`carga_maxima_h`), rigido no modelo, porque com turnos de
+      duracoes diferentes contar turnos nao limita horas. O `MaxNumAssignments` do XML fica
+      com o teto em turnos do turno mais curto, que nunca e mais apertado que as horas;
+    - o piso de 1 enfermeiro por turno NAO e cobertura: quem define a demanda e o usuario, e
+      a falta de enfermeiro vira alerta (`alertas_cofen`).
+    """
+    if n_enfermeiros is None or n_tecnicos is None:
+        raise ValueError("com turnos configurados, informe n_enfermeiros e n_tecnicos")
+    turnos = _validar_turnos(turnos)
+    base = [(tid, ini, dur) for tid, ini, dur, _ in turnos]
+    carga = CARGA_SEMANAL * dias / 7
+    fim = inicio + timedelta(days=dias - 1)
+    profs = _equipe(n_enfermeiros, n_tecnicos, nomes_enfermeiros, nomes_tecnicos)
+    pares = pares_proibidos_por_horario(base, MAX_CONSECUTIVOS_GENERICO,
+                                        interjornada=descanso_clt)
+    padroes = _padroes_de(pares, variantes=True)
+    objetos = {}
+    for tid, ini, dur, desc in turnos:
+        t_fim = time((ini + dur) % 24)
+        objetos[tid] = Turno(id=tid, inicio=time(ini), fim=t_fim, descricao=desc,
+                             habilidades=frozenset({HABILIDADE_BASE}))
+        objetos[f"{tid}E"] = Turno(id=f"{tid}E", inicio=time(ini), fim=t_fim,
+                                   descricao=f"{desc} (enfermeiro)",
+                                   habilidades=frozenset({HABILIDADE_ENF}))
+    contrato = _contrato(None, descanso_clt, tuple(padroes),
+                         max_atribuicoes=math.floor(carga / min(d for _, _, d in base)),
+                         max_consecutivos=MAX_CONSECUTIVOS_GENERICO,
+                         descricao="turnos configurados, 42h/semana")
+    return Instancia(
+        id=f"br_turnos_e{len(profs)}",
+        arquivo="",
+        inicio=inicio,
+        fim=fim,
+        habilidades=(HABILIDADE_BASE, HABILIDADE_ENF),
+        turnos=objetos,
+        padroes=padroes,
+        contratos={"0": contrato},
+        profissionais=profs,
+        demanda=demanda_por_turno(turnos, inicio, dias, demanda_turno, demanda_fds,
+                                  demanda_data),
+        pedidos=(),
+        indisponiveis=_indisponiveis(profs, indisponibilidades, inicio, fim),
+        carga_maxima_h=carga,
+    )
+
+
 def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
               regra: str = "teto", porte_horas: float | None = None,
               dias: int = DIAS_HORIZONTE, inicio: date | None = None,
@@ -686,10 +894,16 @@ def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
               razao_fds: float | None = None,
               n_enfermeiros: int | None = None, n_tecnicos: int | None = None,
               nomes_enfermeiros=None, nomes_tecnicos=None,
-              indisponibilidades=()) -> Instancia:
+              indisponibilidades=(), turnos=None, demanda_turno=None, demanda_fds=None,
+              demanda_data=None) -> Instancia:
     """Monta a instancia brasileira.
 
-    Dois caminhos, que nao se misturam:
+    Tres caminhos, que nao se misturam:
+
+    - o de TURNOS CONFIGURADOS (DECISOES.md, "2026-09-29 — Redesenho da ferramenta"):
+      `turnos` = [(id, inicio, duracao, descricao)] e a demanda informada por turno —
+      `demanda_turno`, `demanda_fds`, `demanda_data`. Ver `_construir_por_turnos`. Nao usa
+      regime, grau, porte, pacientes, razao nem variacao;
 
     - o dos EXPERIMENTOS, que e o de sempre e continua reproduzindo: `grau`, `porte_horas`
       (padrao `PORTE_HORAS`), `efetivo`, `variacao`;
@@ -701,6 +915,26 @@ def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
     modelo fixa em zero as atribuicoes da pessoa nesses dias. O XML do INRC nao tem como
     representa-la: `escrever_xml` a deixa de fora, e o arquivo sozinho nao a reproduz.
     """
+    if turnos is not None:
+        outros = (("pacientes", pacientes), ("porte_horas", porte_horas),
+                  ("razao_fds", razao_fds))
+        misturados = ([nome for nome, valor in outros if valor is not None]
+                      + (["variacao"] if variacao else []))
+        if misturados:
+            raise ValueError(f"com turnos configurados a demanda e informada por turno; "
+                             f"nao use {misturados}")
+        if demanda_turno is None:
+            raise ValueError("com turnos configurados, informe demanda_turno")
+        inicio = inicio or primeira_segunda()
+        if inicio.weekday() != 0:
+            raise ValueError("o horizonte comeca numa segunda-feira, para fechar 4 fins de semana")
+        return _construir_por_turnos(
+            turnos, demanda_turno, demanda_fds, demanda_data, n_enfermeiros=n_enfermeiros,
+            n_tecnicos=n_tecnicos, nomes_enfermeiros=nomes_enfermeiros,
+            nomes_tecnicos=nomes_tecnicos, dias=dias, inicio=inicio,
+            descanso_clt=descanso_clt, indisponibilidades=indisponibilidades)
+    if demanda_turno is not None or demanda_fds is not None or demanda_data is not None:
+        raise ValueError("demanda por turno so vale com turnos configurados (turnos=...)")
     if pacientes is not None:
         if porte_horas is not None:
             raise ValueError("pacientes e porte_horas sao duas formas do porte; use uma so")

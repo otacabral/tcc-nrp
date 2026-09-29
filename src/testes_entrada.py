@@ -170,6 +170,93 @@ def teste_descanso_semanal() -> None:
             f"folga no ultimo domingo: semana 4 = {semana4} (esperado inf, borda aberta)")
 
 
+# A lista escrita a mao ate 29/09, guardada aqui como referencia fixa do gerador.
+PARES_A_MAO = {"12x36": {("N", 2, "D")},
+               "8h": {("N", 1, "M"), ("N", 1, "T"), ("T", 1, "M")}}
+
+
+def teste_gerador_descanso() -> None:
+    """O gerador de regras de descanso a partir dos horarios (DECISOES.md, 29/09)."""
+    print("regras de descanso geradas dos horarios")
+    for regime, esperado in PARES_A_MAO.items():
+        base = br._turnos_base(regime)
+        L = br.MAX_CONSECUTIVOS[regime]
+        com = set(br.pares_proibidos_por_horario(base, L))
+        confere(com == esperado, f"{regime}: gerado = lista escrita a mao {sorted(esperado)}")
+        # o descarte nunca esconde proibicao: sem descarte = com descarte + o que o limite
+        # de dias seguidos ja proibe (dois dias seguidos, quando L < 2)
+        sem = set(br.pares_proibidos_por_horario(base, L, descartar=False))
+        pelo_limite = ({(s, 1, t) for s, _, _ in base for t, _, _ in base} if L < 2 else set())
+        confere(sem == com | pelo_limite,
+                f"{regime}: sem descarte ({len(sem)}) = com descarte ({len(com)}) + limite de "
+                f"{L} dia(s) seguido(s) ({len(pelo_limite)})")
+    confere(set(br.pares_proibidos_por_horario(br._turnos_base("8h"), 6, interjornada=False))
+            == set(), "8h sem interjornada (--sem-descanso-clt): nenhum par")
+    mistos = [("M", 7, 6), ("T", 13, 6), ("N", 19, 12)]
+    esperado = {("N", 1, "M"), ("N", 1, "N"), ("N", 1, "T"), ("N", 2, "M"), ("N", 2, "T")}
+    gerado = set(br.pares_proibidos_por_horario(mistos, 6))
+    confere(gerado == esperado, f"turnos 6 h + 6 h + 12 h: {sorted(gerado)}")
+
+
+TURNOS_MISTOS = [("M", 7, 6, "Manha"), ("T", 13, 6, "Tarde"), ("N", 19, 12, "Noite")]
+
+
+def _instancia_mista(feriado):
+    return br.construir(
+        turnos=TURNOS_MISTOS,
+        demanda_turno={"M": (1, 3), "T": (1, 3), "N": (1, 2)},
+        demanda_fds={"M": (1, 2), "T": (1, 2)},
+        demanda_data={(feriado, "M", "tec"): 1, (feriado, "T", "tec"): 1,
+                      (feriado, "N", "tec"): 1, (feriado, "N", "enf"): 0},
+        n_enfermeiros=7, n_tecnicos=12)
+
+
+def teste_turnos_configurados() -> None:
+    print("turnos configurados e demanda informada (sem solver)")
+    feriado = br.primeira_segunda() + timedelta(days=10)
+    inst = _instancia_mista(feriado)
+    dia_util = br.primeira_segunda() + timedelta(days=1)
+    sabado = br.primeira_segunda() + timedelta(days=5)
+    confere([inst.demanda_de(dia_util, s) for s in ("M", "ME", "N", "NE")] == [3, 1, 2, 1],
+            "dia util: generalista (M 3 tec + 1 enf; N 2 tec + 1 enf)")
+    confere([inst.demanda_de(sabado, s) for s in ("M", "ME", "N")] == [2, 1, 2],
+            "sabado: M do fim de semana (2 tec), N sem valor de fim de semana (2 tec)")
+    confere([inst.demanda_de(feriado, s) for s in ("M", "ME", "T", "TE", "N", "NE")]
+            == [1, 1, 1, 1, 1, 0], f"feriado {feriado:%d/%m}: demanda especifica por categoria")
+    confere(inst.carga_maxima_h == 168, f"teto de horas = {inst.carga_maxima_h} h em 28 dias")
+    confere(inst.contratos["0"].max_num_assignments.valor == 28,
+            "MaxNumAssignments = 168 / 6 h (turno mais curto), nunca mais apertado que as horas")
+    alertas = br.alertas_cofen(inst, "intermediario")
+    confere(len(alertas) == 1 and "1 turno(s) sem enfermeiro" in alertas[0],
+            f"alertas COFEN: {alertas}")
+    try:
+        br.construir(turnos=TURNOS_MISTOS, demanda_turno={"M": (1, 3)}, n_enfermeiros=1,
+                     n_tecnicos=1)
+        confere(False, "turno sem demanda deveria ser recusado")
+    except ValueError as e:
+        confere("sem demanda" in str(e), f"turno sem demanda recusado: {e}")
+
+
+def teste_turnos_configurados_solver(tempo: int) -> None:
+    print("turnos de 6 h de dia e 12 h a noite, com feriado (com solver)")
+    feriado = br.primeira_segunda() + timedelta(days=10)
+    inst = _instancia_mista(feriado)
+    veredito, inst, escala = ea.resolver_instancia(inst, modelo.SOLVER_PADRAO, tempo)
+    confere(veredito == ea.VIAVEL, f"7 enf + 12 tec: {veredito}")
+    if not escala:
+        return
+    confere(conferir_rigidas(inst, escala) == [],
+            "rigidas ok: cobertura (inclusive no feriado), um turno por dia, teto de horas")
+    horas = {}
+    for _, n, s in escala:
+        horas[n] = horas.get(n, 0) + inst.turnos[s].duracao_h
+    confere(max(horas.values()) <= 168, f"maior carga individual {max(horas.values()):g} h "
+                                        f"<= 168 h")
+    confere(sum(1 for d, _, s in escala if d == feriado and s == "NE") == 0,
+            "feriado: ninguem no posto de enfermeiro da noite, como pedido")
+    _descanso(inst, escala, "turnos mistos")
+
+
 def teste_reproducao_long01(tempo: int) -> None:
     """SE NAO REPRODUZIR, o resto nao vale: a instrucao e parar e relatar."""
     print("reproducao do long01 pela razao 20/29 (com solver)")
@@ -187,12 +274,12 @@ def teste_reproducao_long01(tempo: int) -> None:
 
 
 def _descanso(inst, escala, rotulo) -> None:
-    from conferencia_descanso_escala import medir, regime_da_instancia
+    from conferencia_descanso_escala import medir
     r = medir(inst, escala)
-    exigido = br.DESCANSO_EXIGIDO[regime_da_instancia(inst)]
     limite = inst.contratos["0"].max_consecutive_working_days.valor
-    confere(r["menor_geral"] >= exigido,
-            f"{rotulo}: descanso minimo medido {r['menor_geral']:.0f} h >= {exigido} h")
+    confere(r["menor_folga"] >= 0,
+            f"{rotulo}: descanso entre turnos medido; par mais apertado "
+            f"{r['menor_folga'] + r['exigido_no_pior']:.0f} h >= {r['exigido_no_pior']} h")
     confere(r["max_consec"] <= limite,
             f"{rotulo}: dias seguidos {r['max_consec']} <= {limite}")
     from conferencia_descanso_escala import fmt_semanal
@@ -229,12 +316,15 @@ def main() -> int:
     teste_razao()
     teste_equipe()
     teste_descanso_semanal()
+    teste_gerador_descanso()
+    teste_turnos_configurados()
     if not rapido:
         teste_reproducao_long01(tempo=600)
         if FALHAS:
             print("\nA REPRODUCAO FALHOU OU HA FALHA ANTERIOR: parando antes da indisponibilidade.")
         else:
             teste_indisponibilidade(tempo=600)
+            teste_turnos_configurados_solver(tempo=600)
     print()
     if FALHAS:
         print(f"{len(FALHAS)} FALHA(S):")
