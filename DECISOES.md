@@ -1013,6 +1013,42 @@ Tempos de resolução — inclusive a assimetria medida entre 12×36 e 8 h — e
 frase no capítulo de método, com escopo declarado**, nunca como resultado. Critério do projeto
 de redação, reafirmado em 23/09.
 
+---
+
+## 2026-09-29 — Especificação da ferramenta
+
+**Status: vigente**
+
+Especificação completa:
+<https://claude.ai/code/artifact/ebfaeed9-a670-49d7-8f24-0067a43f2f04>. Decidida pelo
+Otávio no projeto de redação; o orientador é informado na reunião. Fecha a P2.
+
+**Título.** "Ferramenta de apoio à decisão para escalas de enfermagem baseada em Programação
+Inteira: conformidade com o dimensionamento do COFEN e a legislação trabalhista".
+
+**Objetivo.** Minimizar a penalidade total, que inclui os pedidos. Entre as escalas
+empatadas, a de menor penalidade individual máxima (mecanismo do Experimento B).
+
+**Entradas.**
+- Pacientes por grau de dependência. O percentual de enfermeiros vem do grau de maior carga.
+- Quadro por quantidade de enfermeiros e de técnicos; nomes opcionais.
+- QP em duas parcelas; a escala é comparada ao núcleo sem IST, porque o IST cobre ausências
+  que a escala não modela.
+- Variação de demanda como razão fim de semana / dia útil, com o total de horas preservado.
+
+**Regras.**
+- Proporção de enfermeiros no quadro, com piso de 1 enfermeiro por turno.
+- Carga de 42 h semanais.
+- Início numa segunda-feira, horizonte de 28 dias.
+- Indisponibilidade rígida para férias e licenças; pedidos continuam flexíveis.
+
+**Configuração.**
+- Opções avançadas recolhidas, e só depois de o formulário básico funcionar. Critério para
+  uma opção entrar: o motor já suporta, não mexe na garantia legal, custa no máximo meio dia.
+- Arquivo de configuração no formato INRC, para baixar e carregar, com validação (esquema e
+  conferência de descanso) e resumo em português antes de resolver.
+
+**Licença.** MIT.
 
 ---
 

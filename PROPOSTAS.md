@@ -14,7 +14,8 @@ escopo anterior, com as treze propostas P1–P13, está em
 **Status: aguardando validação.** Nada implementado. O experimento rodou como combinado e o
 resultado está abaixo; o que proponho é sobre **como lê-lo**, e sobre uma rodada adicional.
 
-*Atualização de 29/09/2026:* continua esperando a definição do objetivo, que está na P2.
+*Atualização de 29/09/2026:* desbloqueada: objetivo decidido (ver `DECISOES.md`,
+"2026-09-29 — Especificação da ferramenta").
 
 ### O que saiu
 
@@ -71,7 +72,8 @@ lado.
 
 ## 2026-09-29 — P2: especificação da ferramenta
 
-**Status: rascunho, aguardando o orientador.** Nada implementado. Documento completo:
+**Status: decidida em 29/09, ver `DECISOES.md`** ("2026-09-29 — Especificação da
+ferramenta"). Registro anterior: rascunho, aguardando o orientador. Documento completo:
 <https://claude.ai/code/artifact/ebfaeed9-a670-49d7-8f24-0067a43f2f04>
 
 - **Quadro como entrada**: o usuário informa o efetivo; a fórmula do Parecer aparece ao lado
@@ -85,4 +87,15 @@ lado.
   profissionais.
 - **Licença MIT** (proposta).
 
-A P1 continua esperando a definição do objetivo.
+A P1 está desbloqueada: objetivo decidido.
+
+---
+
+## 2026-09-29 — P5: trabalhos futuros
+
+**Status: só registro.** Nada a implementar no TCC.
+
+- **Diagnóstico de turnos descobertos** quando o quadro não basta. Exige cobertura flexível,
+  o que muda a definição de viável.
+- **Habilidades além de enfermeiro e técnico.**
+- **Integração com IA** para converter descrição livre em configuração.

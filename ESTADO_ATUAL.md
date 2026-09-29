@@ -143,6 +143,10 @@ arquivos. Lê estes arquivos sozinho — não precisa que nada seja colado.
 **Chat de orientação / redação**: escopo, decisões, especificação da ferramenta, texto do TCC.
 Não tem acesso a esta pasta. Recebe os arquivos por upload.
 
+**Quem decide (regra de 29/09/2026).** Decisões de escopo e de formulação são tomadas pelo
+Otávio no projeto de redação e registradas como decisões no `DECISOES.md`. Não esperam
+validação do orientador; ele é informado na reunião.
+
 **A ponte são quatro arquivos**: este, `VIRADA_ESCOPO_2026-09-24.md`, `PROPOSTAS.md` e
 `DECISOES.md`. Decisão registrada de um lado que não chega ao outro vira capítulo escrito com
 decisão superada.
