@@ -14,6 +14,8 @@ escopo anterior, com as treze propostas P1–P13, está em
 **Status: aguardando validação.** Nada implementado. O experimento rodou como combinado e o
 resultado está abaixo; o que proponho é sobre **como lê-lo**, e sobre uma rodada adicional.
 
+*Atualização de 29/09/2026:* continua esperando a definição do objetivo, que está na P2.
+
 ### O que saiu
 
 | N | demanda | variáveis | restrições | veredito | CPU (s) |
@@ -64,3 +66,23 @@ profissionais esperando nove minutos por uma escala é uma decisão de projeto d
 processamento assíncrono, resultado por e-mail, barra de progresso — e não uma limitação do
 método. Vale entrar na especificação como requisito não funcional, com o número medido ao
 lado.
+
+---
+
+## 2026-09-29 — P2: especificação da ferramenta
+
+**Status: rascunho, aguardando o orientador.** Nada implementado. Documento completo:
+<https://claude.ai/code/artifact/ebfaeed9-a670-49d7-8f24-0067a43f2f04>
+
+- **Quadro como entrada**: o usuário informa o efetivo; a fórmula do Parecer aparece ao lado
+  só para comparação.
+- **Composição**: proporção de enfermeiros aplicada ao quadro, com piso de 1 enfermeiro por
+  turno.
+- **Carga semanal de 42 h.**
+- **Horizonte**: início numa segunda-feira, 28 dias.
+- **Variação de demanda por dia da semana**: entrada opcional.
+- **Objetivo em duas etapas** (proposta): primeiro pedidos, depois equilíbrio entre
+  profissionais.
+- **Licença MIT** (proposta).
+
+A P1 continua esperando a definição do objetivo.
