@@ -37,6 +37,13 @@ https://watt.cs.kuleuven.be/basic-page/first-international-nurse-rostering-compe
 Java: JDK 21 ou superior (testado com Temurin 25). Necessario apenas para
 executar o avaliador oficial.
 
+## Ferramenta (tela)
+
+    streamlit run src\app.py
+
+Abre no navegador. Esqueleto de 29/09: formulario basico, veredito do quadro,
+escala e planilha para baixar.
+
 ## Avaliador oficial
 
 O `evaluator.jar` distribuido pela competicao NAO declara `Main-Class` no
