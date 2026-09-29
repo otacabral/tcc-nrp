@@ -6,7 +6,7 @@ chat de orientação/redação — deve ler.
 
 Ele não substitui nada. O escopo está em `VIRADA_ESCOPO_2026-09-24.md`, o protocolo de
 trabalho em `CLAUDE.md`, o inventário de código em `MAPA_CODIGO.md`, as decisões de modelagem
-em `historico/escopo-comparacao-regimes/DECISOES.md`. Este arquivo diz **em que ponto
+em `DECISOES.md`. Este arquivo diz **em que ponto
 estamos** e **o que vem depois**.
 
 ---
@@ -107,7 +107,13 @@ orientação.
 `nota_piso_forcado_2026-09-22.md`, `para_orientacao_2026-09-23.md`. Vão para `historico/` ou
 ficam como metodologia ativa? Não decidido.
 
-**5. `DECISOES.md` está em `historico/`, e isso é um risco.** O arquivo foi para o histórico
+**5. ~~`DECISOES.md` está em `historico/`, e isso é um risco.~~ — RESOLVIDO em 29/09.** O
+arquivo voltou à raiz como ativo, com marca de status em cada entrada e em cada pergunta
+aberta. É **exceção declarada** à regra da VIRADA de não reescrever contexto antes da
+especificação: só movimentação e marcação, sem alteração do texto das entradas. Registro
+original do problema, abaixo.
+
+O arquivo foi para o histórico
 junto com o escopo anterior, mas boa parte do que está nele são **decisões de modelagem que
 sobrevivem à virada**: cobertura como igualdade, os limites legais rígidos, o piso aritmético,
 o achado do avaliador. Pelo `CLAUDE.md`, `historico/` é "consulta, não referência ativa" — ou

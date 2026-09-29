@@ -8,10 +8,9 @@ o trabalho está e aponta para os outros. Depois dele, conforme a tarefa:
 
 - `VIRADA_ESCOPO_2026-09-24.md` — escopo e parâmetros normativos.
 - `MAPA_CODIGO.md` — inventário do código, arquivo por arquivo.
-- `historico/escopo-comparacao-regimes/DECISOES.md` — decisões de modelagem. Está no
-  histórico por causa da virada de escopo de 24/09, mas **as decisões de modelagem nele
-  continuam valendo**. Estar em `historico/` não o torna só consulta, ao contrário dos
-  demais arquivos daquela pasta.
+- `DECISOES.md` — decisões de modelagem. Foi para `historico/` na virada de escopo de 24/09
+  e voltou à raiz como arquivo ativo em 29/09. Cada entrada traz marca de status (vigente,
+  superada, registro do escopo anterior); vale o que a marca diz.
 
 ---
 

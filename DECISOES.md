@@ -1,5 +1,8 @@
 # Diário de decisões — TCC NRP
 
+> **Arquivo ativo, reclassificado em 29/09/2026.** Cada entrada traz uma marca de status.
+> Entradas superadas permanecem como registro; não apagar.
+
 Registro datado de decisões de modelagem e implementação. Matéria-prima dos capítulos de
 formulação e de experimentos.
 
@@ -10,6 +13,8 @@ serem resolvidas — e então viram entrada datada.
 ---
 
 ## 2026-09-08 — Formulação: atribuição, não janelas
+
+**Status: vigente**
 
 Adotada codificação por atribuição (`x[n,s,d]`) com restrições explícitas de janela
 deslizante para dias consecutivos.
@@ -26,6 +31,8 @@ Semântica das restrições (2 rígidas, 13 flexíveis) tomada integralmente de 
 
 ## 2026-09-08 — Cobertura é restrição rígida de igualdade
 
+**Status: vigente**
+
 O elemento `<Preferred>` do XML **não** é preferência: é a demanda obrigatória.
 
 Fonte: Haspeslagh, De Causmaecker, Stølevik e Schaerf, *First International Nurse
@@ -38,6 +45,8 @@ Santos et al. (2016) modelam como igualdade (restrição 1). Consistente.
 ---
 
 ## 2026-09-08 — Atributo `on=` deve ser respeitado pelo parser
+
+**Status: vigente**
 
 Cada restrição flexível traz `on="0"` ou `on="1"` indicando se está ativa na instância.
 Restrição com `on="0"` não deve entrar no modelo.
@@ -57,6 +66,8 @@ Ver a entrada "Regra geral de ativação de restrição flexível".
 ---
 
 ## 2026-09-08 — Cobertura vem por dia da semana
+
+**Status: vigente**
 
 `CoverRequirements` traz `DayOfWeekCover` (7 blocos, um por dia da semana), não por data.
 O parser expande para os dias do horizonte.
@@ -79,6 +90,8 @@ já expande a cobertura com essa precedência; o parser da Sessão 2 deve fazer 
 ---
 
 ## 2026-09-08 — Desagregação por categoria: via tipo de turno
+
+**Status: vigente**
 
 O elemento `<Cover>` aceita apenas `<Shift>` e `<Preferred>` — não aceita `<Skill>`.
 A habilidade está pregada no **tipo de turno**.
@@ -106,6 +119,8 @@ ou trata as categorias como disjuntas. Fonte: `docs/inventario_instancias.csv`, 
 
 ## 2026-09-08 — 12×36 modelado como MaxConsecutiveWorkingDays = 1
 
+**Status: a decidir** — dúvida entre *vigente* (a restrição continua no modelo) e *superada por 2026-09-21 — Definição de viável, e limites legais como rígidos* (que mostrou que ela sozinha não basta e acrescentou `clt_36h_N_D`). Ver relatório da reclassificação de 29/09/2026.
+
 Alternância estrita (12h trabalho, 36h descanso) implica não trabalhar dois dias
 consecutivos, o que dá 14 plantões em 28 dias.
 
@@ -126,6 +141,8 @@ semanais. Citar com data de consulta.
 ---
 
 ## 2026-09-08 — 12×36 é inviável no efetivo original: vira Experimento A
+
+**Status: superada por 2026-09-18 — Invariante do Experimento A: horas de assistência** (declarado naquela entrada; o restante é desenho da comparação de regimes)
 
 Aritmética sobre `long01`:
 
@@ -154,6 +171,8 @@ Dado prático útil ao dimensionamento: no 12×36, 4 profissionais cobrem um pos
 
 ## 2026-09-08 — Convenção do turno noturno
 
+**Status: vigente**
+
 O turno `N` do INRC já atravessa a meia-noite (22:30 → 06:30) e a documentação oficial o
 trata como pertencente a um dia; as restrições de dias consecutivos operam em dias.
 
@@ -163,6 +182,8 @@ fonte. Não inventar convenção própria.
 ---
 
 ## 2026-09-08 — Limites do que as medições sustentam
+
+**Status: vigente**
 
 Custo computacional é propriedade da tripla (formulação, algoritmo, instância), não da
 instância. Um branch-and-price sobre formulação por padrões pode inverter o ranking.
@@ -183,6 +204,8 @@ normalizadas a totais absolutos.
 ---
 
 ## 2026-09-15 — Regra geral de ativação de restrição flexível
+
+**Status: vigente**
 
 Uma restrição flexível entra no modelo se, e somente se, estiver **ligada** e tiver **peso
 maior que zero**. "Ligada" significa `on="1"` nas restrições que têm esse atributo
@@ -250,6 +273,8 @@ Fonte dos dados: `docs/inventario_instancias.csv`, colunas `<Restricao>_on`,
 
 ## 2026-09-15 — Quinto alvo de validação: `medium_late05`
 
+**Status: vigente**
+
 Acrescentado `medium_late05` (ótimo 107, Tabela 6 de Santos et al., 2016) ao conjunto de
 validação, que passa a ser `sprint01` = 56, `sprint02` = 58, `long01` = 197, `long02` = 219
 e `medium_late05` = 107.
@@ -283,6 +308,8 @@ Proposta P1 do `PROPOSTAS.md`, validada em 2026-09-15.
 ---
 
 ## 2026-09-15 — Escopo: implementar as 13 flexíveis, inclusive as não exercitadas
+
+**Status: vigente**
 
 O modelo implementa as 13 restrições flexíveis da definição oficial, mais as metades "on"
 dos pedidos (`DayOnRequests` e `ShiftOnRequests`), mesmo que três desses itens não sejam
@@ -323,6 +350,8 @@ Proposta P2 do `PROPOSTAS.md`, alternativa A′, validada em 2026-09-15.
 
 ## 2026-09-15 — Cobertura: igualdade também onde a demanda não é declarada
 
+**Status: vigente**
+
 No modelo, para **todo** par (dia, tipo de turno) do horizonte, a soma das atribuições é
 igual à demanda. Quando o bloco de cobertura do dia da semana não lista um turno, a demanda
 daquele turno naquele dia é zero — e a igualdade proíbe qualquer atribuição a ele. Não é
@@ -345,6 +374,8 @@ Implementado em `src/modelo.py`, restrição `cobertura`.
 ---
 
 ## 2026-09-18 — Restrição não pontuada pelo avaliador fica fora da função objetivo
+
+**Status: vigente**
 
 `NoNightShiftBeforeFreeWeekend` **não entra na função objetivo nas instâncias do INRC**.
 Continua implementada e documentada em `src/avaliacao.py`, e volta a valer na instância
@@ -387,6 +418,8 @@ e nenhuma instância as exercita.
 ---
 
 ## 2026-09-18 — Semântica das flexíveis validada fora do modelo
+
+**Status: vigente**
 
 A penalidade de uma escala passou a ser calculada também em Python puro, em
 `src/avaliacao.py`, e conferida contra o avaliador oficial **antes** de a função objetivo
@@ -445,6 +478,8 @@ total.
 
 ## 2026-09-18 — Funcao objetivo: uma folga por violacao, nao por termo
 
+**Status: vigente**
+
 A funcao objetivo lineariza a semantica fixada em `src/avaliacao.py`. Duas convencoes de
 construcao, ambas com consequencia numerica:
 
@@ -485,6 +520,8 @@ a penalidade que conta e a calculada pelo `avaliacao.py` sobre a escala.
 
 ## 2026-09-18 — Habilidade é restrição flexível, não restrição de domínio
 
+**Status: vigente**
+
 O profissional pode ser atribuído a turno cuja habilidade ele não tem; a atribuição é
 **penalizada, não proibida**. A penalidade entra como coeficiente na própria variável de
 atribuição `x[n,s,d]`, quando a restrição está ativa no contrato.
@@ -518,6 +555,8 @@ Proposta P3 do `PROPOSTAS.md`, validada em 2026-09-18.
 ---
 
 ## 2026-09-18 — Invariante do Experimento A: horas de assistência
+
+**Status: a decidir** — dúvida entre *vigente; motivo original superado* (a demanda da instância brasileira continua definida em horas de assistência, como no Parecer) e *registro do escopo anterior* (o motivo e a consequência 3 só servem à comparação de regimes). Ver relatório da reclassificação de 29/09/2026.
 
 O Experimento A compara os dois regimes a **horas de assistência constantes**, não a
 atribuições constantes. A instância de 12×36 tem de entregar a mesma assistência em
@@ -553,6 +592,8 @@ por janela não satisfaz este invariante. Ver P5 no `PROPOSTAS.md`.
 
 ## 2026-09-18 — Composição da equipe e grau de dependência são parâmetros de entrada
 
+**Status: vigente; motivo original superado.** Motivo atual: numa ferramenta, composição e grau de dependência são dados que o usuário informa, não constantes do código (o motivo registrado era a análise de sensibilidade do objetivo específico 5).
+
 A instância brasileira é construída por `src/instancia_br.py` com **composição da equipe por
 categoria** (enfermeiro / técnico) e **grau de dependência assistencial** como parâmetros de
 entrada, variáveis, e não como valores fixados no código.
@@ -571,6 +612,8 @@ composição por categoria, cuja origem normativa é declarada mas cujo valor é
 ---
 
 ## 2026-09-18 — Experimento B: fixar o ótimo e reportar a amplitude da dispersão
+
+**Status: vigente**
 
 No Experimento B, a distribuição da penalidade entre profissionais é medida **com o valor
 ótimo Z\* fixado como restrição**, resolvendo duas vezes: uma minimizando a medida de
@@ -596,6 +639,8 @@ resultado negativo.
 ---
 
 ## 2026-09-21 — Instância brasileira: parâmetros do Parecer Normativo COFEN nº 1/2024
+
+**Status: vigente**
 
 A instância brasileira é construída a partir do Parecer Normativo COFEN nº 1/2024, calibrada
 ao porte do `long01`. Parâmetros extraídos e conferidos na fonte primária pelo projeto de
@@ -656,6 +701,8 @@ idêntico nos dois regimes.
 
 ## 2026-09-21 — Definição de viável, e limites legais como rígidos
 
+**Status: vigente; motivo original superado.** Motivo atual: a ferramenta promete escala em conformidade legal, então limite legal não pode ser trocado por penalidade (o motivo registrado era não esvaziar o Experimento A).
+
 **Viável = satisfaz a cobertura e todos os limites legais de jornada e descanso.** As demais
 restrições flexíveis entram apenas na penalidade, que é objeto do Experimento B.
 
@@ -700,6 +747,8 @@ de dia e de noite. Vale olhar isso nas escalas do Experimento B.
 ---
 
 ## 2026-09-21 — Experimento B: núcleo no INRC, e o que entra na penalidade comparada
+
+**Status: a decidir** — dúvida entre *vigente* (o núcleo no INRC, com a decomposição por profissional conferida, sustenta a função de escala mais equilibrada) e *registro do escopo anterior* (a regra de restrição estrutural, a família de fins de semana e a versão por regime só servem à comparação de regimes). Ver relatório da reclassificação de 29/09/2026.
 
 ### Restrição estrutural: a regra
 
@@ -769,6 +818,8 @@ havia o que herdar.
 
 ## 2026-09-22 — Medida de dispersão do Experimento B: penalidade individual máxima
 
+**Status: vigente**
+
 A dispersão comparada é a **penalidade individual máxima**, `max_n p_n`, com o total fixado
 em Z\*. O reportado é o **intervalo** entre o mínimo e o máximo que ela pode assumir entre as
 escalas ótimas. Resolve a proposta P9.
@@ -811,6 +862,8 @@ publicáveis; nenhum é resultado negativo.
 
 ### Fim de semana incompleto no horizonte
 
+**Status: a decidir** — dúvida entre *fechada* (`instancia_br.py` exige início numa segunda-feira, que é a saída proposta abaixo) e *aberta* (a ferramenta pode ter de aceitar horizonte arbitrário, o que depende da especificação). Ver relatório da reclassificação de 29/09/2026.
+
 O horizonte pode começar ou terminar no meio de um fim de semana, deixando um bloco parcial —
 um domingo solto no primeiro dia, por exemplo. As restrições de fim de semana (completos,
 turnos idênticos, consecutivos) precisam de uma convenção para esses blocos: ignorar,
@@ -824,6 +877,8 @@ simples: escolher início e fim que fechem fins de semana completos, e a pergunt
 `Instancia.fins_de_semana()` já marca cada bloco com `completo=True/False`.
 
 ### A habilidade é restrição rígida ou flexível?
+
+**Status: fechada** em 2026-09-18, pela entrada "Habilidade é restrição flexível, não restrição de domínio".
 
 `AlternativeSkillCategory` aparece ora com conteúdo `true`, ora `false`, e o peso nem
 sempre acompanha. A varredura de 2026-09-15 separou os casos em que isso importa dos casos
@@ -881,11 +936,15 @@ Report/2010/1, citado nos anais do PATAT 2010) traz a descrição formal das res
 
 ### ~~Grau de dependência assistencial da instância brasileira~~ — FECHADA em 18/09
 
+**Status: fechada** em 2026-09-18.
+
 Resolvida: entra como parâmetro de entrada em três níveis, junto com a composição por
 categoria. Ver a entrada "Composição da equipe e grau de dependência são parâmetros de
 entrada". Mantida aqui só para não parecer que a pergunta foi esquecida.
 
 ### Status jurídico do arcabouço normativo de dimensionamento
+
+**Status: aberta.** A verificação em fonte primária, com data de consulta, continua pendente para o capítulo de fundamentação.
 
 A Resolução COFEN 543/2017 foi revogada e há decisões judiciais que suspenderam resoluções
 sobre dimensionamento; o Parecer Normativo COFEN nº 1/2024 foi aprovado nos limites das
@@ -899,6 +958,8 @@ conclusões.
 ---
 
 ## 2026-09-23 — O efetivo é determinado pelo teto de 42 h semanais, não pelas regras de descanso
+
+**Status: vigente; motivo original superado.** Motivo atual: o efetivo 36 = teto de 35,24 serve como conferência independente de que a tradução da norma está correta (VIRADA, seção 3); a consequência sobre a hipótese do trabalho e a prioridade 1 eram do escopo anterior.
 
 O Experimento A, sob **demanda uniforme**, fecha em efetivo mínimo 36 nos dois regimes, nas
 vinte células. A leitura adotada é: **sob demanda uniforme, nenhuma restrição de escalonamento
@@ -928,6 +989,8 @@ semana) e o nível mantido em 211,4 h/dia. Ver P12 no `PROPOSTAS.md` e
 `docs/nota_experimento_a_2026-09-23.md`.
 
 ## 2026-09-23 — Tempo de resolução é afirmação fraca
+
+**Status: vigente**
 
 Tempos de resolução — inclusive a assimetria medida entre 12×36 e 8 h — entram como **uma
 frase no capítulo de método, com escopo declarado**, nunca como resultado. Critério do projeto

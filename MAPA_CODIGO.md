@@ -58,7 +58,8 @@ Ficam em `docs/`. Produziram achados que vão ao texto como metodologia.
 | `docs/conferencia_piso_forcado.py` | As duas declarações que sustentam o piso aritmético. |
 | `docs/medicao_conversao_12h.py`, `docs/medicao_sobreposicao.py` | A reagregação de turnos sobrepostos (P5). |
 
-Os documentos do escopo anterior estão em `historico/escopo-comparacao-regimes/`.
+Os documentos do escopo anterior estão em `historico/escopo-comparacao-regimes/`, exceto o
+`DECISOES.md`, que voltou à raiz como arquivo ativo em 29/09.
 
 ---
 
