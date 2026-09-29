@@ -1,8 +1,9 @@
 # VIRADA DE ESCOPO — 24/09/2026
 
 **Este arquivo substitui, no contexto ativo dos projetos, os seguintes documentos:**
-`CONTEXTO_PROJETO.md`, `DECISOES.md`, `PROPOSTAS.md`, `PLANO.md` e as notas de passagem de
-15/09, 18/09, 22/09 e 23/09.
+`CONTEXTO_PROJETO.md`, `PROPOSTAS.md`, `PLANO.md` e as notas de passagem de 15/09, 18/09,
+22/09 e 23/09. O `DECISOES.md` foi reclassificado como ativo, na raiz, em 29/09, com status
+por entrada — ver item 5 do `ESTADO_ATUAL.md`.
 
 Eles **não foram apagados** — continuam no repositório, em `historico/escopo-comparacao-regimes/`,
 e no histórico do Git. Saíram do contexto porque descrevem um trabalho que mudou de objeto.

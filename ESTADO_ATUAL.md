@@ -110,8 +110,9 @@ ficam como metodologia ativa? Não decidido.
 **5. ~~`DECISOES.md` está em `historico/`, e isso é um risco.~~ — RESOLVIDO em 29/09.** O
 arquivo voltou à raiz como ativo, com marca de status em cada entrada e em cada pergunta
 aberta. É **exceção declarada** à regra da VIRADA de não reescrever contexto antes da
-especificação: só movimentação e marcação, sem alteração do texto das entradas. Registro
-original do problema, abaixo.
+especificação: só movimentação e marcação, sem alteração do texto das entradas. A correção
+das linhas 3 e 4 da `VIRADA_ESCOPO_2026-09-24.md`, que apontavam o `DECISOES.md` como
+substituído, faz parte da mesma exceção. Registro original do problema, abaixo.
 
 O arquivo foi para o histórico
 junto com o escopo anterior, mas boa parte do que está nele são **decisões de modelagem que

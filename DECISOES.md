@@ -119,7 +119,7 @@ ou trata as categorias como disjuntas. Fonte: `docs/inventario_instancias.csv`, 
 
 ## 2026-09-08 — 12×36 modelado como MaxConsecutiveWorkingDays = 1
 
-**Status: a decidir** — dúvida entre *vigente* (a restrição continua no modelo) e *superada por 2026-09-21 — Definição de viável, e limites legais como rígidos* (que mostrou que ela sozinha não basta e acrescentou `clt_36h_N_D`). Ver relatório da reclassificação de 29/09/2026.
+**Status: vigente; complementada por 2026-09-21** (padrão noturno–folga–diurno, `clt_36h_N_D`).
 
 Alternância estrita (12h trabalho, 36h descanso) implica não trabalhar dois dias
 consecutivos, o que dá 14 plantões em 28 dias.
@@ -127,6 +127,9 @@ consecutivos, o que dá 14 plantões em 28 dias.
 Confere com a realidade legal: o art. 59-A da CLT permite o regime; a lei não fixa carga
 semanal, e a jurisprudência entende alternância entre semanas de 36h e 48h, média de ~42h
 semanais e ~15 plantões por mês.
+
+> *Nota de 29/09/2026:* a "média de ~42h" atribuída à jurisprudência é afirmação sem fonte;
+> não citar. As 42 h são aritmética (VIRADA, seção 2.3).
 
 Logo **não** é necessário um `MaxNumAssignments` reduzido em separado — a alternância já é
 a restrição correta.
@@ -556,7 +559,7 @@ Proposta P3 do `PROPOSTAS.md`, validada em 2026-09-18.
 
 ## 2026-09-18 — Invariante do Experimento A: horas de assistência
 
-**Status: a decidir** — dúvida entre *vigente; motivo original superado* (a demanda da instância brasileira continua definida em horas de assistência, como no Parecer) e *registro do escopo anterior* (o motivo e a consequência 3 só servem à comparação de regimes). Ver relatório da reclassificação de 29/09/2026.
+**Status: vigente; motivo original superado.** Motivo atual: a ferramenta converte o Parecer em horas de assistência e reagrega por regime. A consequência 3 é registro do escopo anterior.
 
 O Experimento A compara os dois regimes a **horas de assistência constantes**, não a
 atribuições constantes. A instância de 12×36 tem de entregar a mesma assistência em
@@ -579,6 +582,8 @@ regime se a assistência entregue for a mesma nos dois lados. Resolve a proposta
    mínimo viável**, em cada regime — não o número absoluto de profissionais. O piso vem da
    divisão horas/capacidade; o mínimo viável vem do modelo. A diferença entre os dois é o que
    as restrições custam, e é o que o modelo tem a dizer.
+
+   *Nota de 29/09/2026:* a consequência 3 é registro do escopo anterior.
 
 **Ressalva.** A entrada de 08/09 "12×36 é inviável no efetivo original: vira Experimento A"
 foi construída sobre o invariante de atribuições e **está superada** nessa parte: sob o
@@ -748,9 +753,13 @@ de dia e de noite. Vale olhar isso nas escalas do Experimento B.
 
 ## 2026-09-21 — Experimento B: núcleo no INRC, e o que entra na penalidade comparada
 
-**Status: a decidir** — dúvida entre *vigente* (o núcleo no INRC, com a decomposição por profissional conferida, sustenta a função de escala mais equilibrada) e *registro do escopo anterior* (a regra de restrição estrutural, a família de fins de semana e a versão por regime só servem à comparação de regimes). Ver relatório da reclassificação de 29/09/2026.
+**Status: vigente.** As subseções têm marca própria.
 
 ### Restrição estrutural: a regra
+
+**Status: registro do escopo anterior.** A função "escala mais equilibrada"
+(`src/experimentos.py`) não usa esta regra: fixa Z\* sobre o modelo completo, com todas as
+famílias que a instância liga.
 
 **Uma restrição é estrutural quando o regime determina se ela pode ser violada.** Três
 degraus:
@@ -770,6 +779,9 @@ dias e o de 8 h folga 7, então um pedido sorteado cai em folga com probabilidad
 
 ### A família de fins de semana não é ligada
 
+**Status: registro do escopo anterior.** A função "escala mais equilibrada" não usa esta
+regra: nas instâncias do INRC a família entra como o XML define.
+
 Dois motivos. **Quase estrutural no efetivo mínimo:** perto do máximo de 14 plantões o 12×36
 opera quase em alternância estrita, e alternância estrita numa semana de 7 dias cai em um dia
 de todo fim de semana — a família fica quase determinada pelo regime justamente onde o
@@ -778,6 +790,8 @@ uma das duas implementadas sem conferência possível; ligá-la com valores noss
 resultado em código nunca validado.
 
 ### O núcleo do Experimento B roda no INRC, com ótimo provado
+
+**Status: vigente.** É a base da função "escala mais equilibrada".
 
 A pergunta central — *entre as escalas de custo mínimo, quanto a distribuição da penalidade
 entre profissionais pode variar* — **não depende de regime**. Roda nas quatro instâncias com
@@ -805,6 +819,8 @@ profissionais das quatro instâncias. A coluna "max p_n" é de **um** ótimo arb
 experimento é justamente medir o intervalo em que ela pode variar.
 
 ### Versão por regime: extensão, só se sobrar tempo antes de 14/10
+
+**Status: registro do escopo anterior.**
 
 Instância brasileira, grau intermediário apenas, penalidade só de pedidos de folga gerados por
 regra declarada: mesma taxa por profissional que o `long01`, mesma divisão entre pedido de dia
@@ -862,7 +878,8 @@ publicáveis; nenhum é resultado negativo.
 
 ### Fim de semana incompleto no horizonte
 
-**Status: a decidir** — dúvida entre *fechada* (`instancia_br.py` exige início numa segunda-feira, que é a saída proposta abaixo) e *aberta* (a ferramenta pode ter de aceitar horizonte arbitrário, o que depende da especificação). Ver relatório da reclassificação de 29/09/2026.
+**Status: fechada** em 29/09/2026. A ferramenta exige início numa segunda-feira e horizonte
+de 28 dias; mês civil arbitrário é limitação declarada.
 
 O horizonte pode começar ou terminar no meio de um fim de semana, deixando um bloco parcial —
 um domingo solto no primeiro dia, por exemplo. As restrições de fim de semana (completos,
