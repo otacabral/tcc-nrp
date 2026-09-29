@@ -100,3 +100,6 @@ A P1 está desbloqueada: objetivo decidido.
   o que muda a definição de viável.
 - **Habilidades além de enfermeiro e técnico.**
 - **Integração com IA** para converter descrição livre em configuração.
+- **Continuidade entre períodos** (acrescentado em 29/09): receber os últimos dias do
+  período anterior como entrada, para conferir interjornada e descanso na virada entre uma
+  escala e a seguinte. Ver `DECISOES.md`, "2026-09-29 — Ajustes da Etapa 2".

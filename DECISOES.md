@@ -1091,9 +1091,35 @@ caso mais apertado da conferência de 21/09. Por ser valor no limite em todas, a
 posta à prova com escalas montadas à mão de resposta conhecida (16 h e 23 h reprovam; 24 h e
 33 h aprovam), e acerta as quatro.
 
-*Ressalva:* o modelo não impõe o art. 67 por semana; ele o aproxima por no máximo 6 dias
-seguidos (decisão de 21/09). As escalas atuais cumprem, mas nada no modelo garante que toda
-escala futura cumpra. A conferência agora mede e reprova.
+*Correção de 29/09, mesmo dia — a regra e o registro acima estão errados em dois pontos, e
+ficam como registro do erro.* **(1) O recorte na segunda 00:00 reprovava escala legal:** seis
+noites de segunda a sábado deixam 40 h de descanso de domingo a segunda, e o recorte só
+enxergava 17 h. Regra adotada (decisão do Otávio): para cada semana, contam os intervalos
+contínuos de descanso que contêm algum dia da semana sem turno; o maior deles, medido
+**inteiro**, sem recorte, precisa ter ao menos 24 h. No fim do horizonte a **borda é aberta**:
+o descanso que chega ao último instante conta como cumprido. **(2) "Exatamente 24 h em todas
+as escalas de 8 h" vale para 8 das 12.** Nas outras 4 (`intermediario_8h_teto_e36`,
+`intermediario_8h_teto_e37_v1`, `intermediario_8h_teto_e38_v05`, `minimo_8h_teto_e36`), a
+aprovação da medição antiga veio de um intervalo entre dois dias trabalhados — manhã de um
+dia à tarde do seguinte, 24 h —, que não é descanso semanal. Pela regra nova, sem a borda
+aberta, as quatro davam 17 h na semana 4: folga só no último domingo, depois de uma noite de
+sábado. Com a borda aberta, as 24 escalas e as dos testes passam; os casos montados à mão
+foram refeitos com o valor esperado registrado antes de rodar (0 h reprova; 24 h, 40 h, 40 h
+e borda aprovam), e acertam todos.
+
+*Argumento, que substitui a ressalva anterior:* `MaxConsecutiveWorkingDays = 6` implica ao
+menos um dia sem turno em cada semana segunda–domingo, que são 7 dias consecutivos. Cada dia
+sem turno gera ao menos 24 h de descanso contínuo: o pior caso é noite → folga → manhã, 24 h,
+medido. Logo, **dentro do horizonte**, o modelo garante o art. 67 por construção, sob o
+critério operacional "ao menos um dia sem turno por semana, com descanso contínuo de 24 h ou
+mais, medido inteiro". É critério operacional, sem verificação de jurisprudência sobre
+descanso que atravessa a virada da semana.
+
+*Limitação:* cada escala é gerada para um período isolado. A continuidade com os períodos
+anterior e seguinte — interjornada e descanso na virada — não é conferida. Observação, não
+garantia: com turnos fixos e início sempre numa segunda-feira, a folga no último domingo dura
+ao menos até 07:00 da segunda seguinte, ou seja, 24 h. Trabalho futuro: receber os últimos
+dias do período anterior como entrada (P3 do `PROPOSTAS.md`).
 
 ---
 

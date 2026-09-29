@@ -21,9 +21,9 @@ O que confere, por escala:
   que a conferencia das sequencias admitidas usa;
 - **apos turno que atravessa a meia-noite**: informativo, para ver o pior caso do noturno;
 - **dias consecutivos**: maior sequencia de dias trabalhados, contra o limite do contrato;
-- **descanso semanal (art. 67)**: maior intervalo continuo sem trabalhar em cada semana
-  (segunda 00:00 a segunda 00:00), minimo 24 h. Medido de fato so desde 29/09 — ver
-  `descanso_semanal`.
+- **descanso semanal (art. 67)**: em cada semana (segunda a domingo), o maior descanso
+  continuo que contem um dia sem turno, medido inteiro, minimo 24 h. Medido de fato so desde
+  29/09 — ver `descanso_semanal`.
 
 `conferir_descanso` no `instancia_br.py` faz coisa diferente e complementar: enumera as
 sequencias que o CONTRATO admite. Esta aqui mede o que a escala de fato entregou.
@@ -87,33 +87,52 @@ def _inicio_fim(inst, dia, turno_id) -> tuple[datetime, datetime]:
 
 
 def descanso_semanal(inst, blocos: list[tuple[datetime, datetime]]) -> list[tuple[int, float]]:
-    """Maior descanso continuo em cada semana do horizonte, medido no relogio (CLT art. 67).
+    """Maior descanso continuo de cada semana do horizonte, medido no relogio (CLT art. 67).
 
-    Semana = segunda 00:00 ate a segunda seguinte 00:00. Os turnos da pessoa sao recortados na
-    semana, e o descanso e o maior trecho da semana sem turno nenhum — contando o comeco e o
-    fim da semana. Recortar na semana e a leitura estrita: um descanso que atravessa a
-    virada de domingo para segunda conta, em cada semana, so a parte que cai nela.
+    Regra (DECISOES.md, "2026-09-29 — Ajustes da Etapa 2"): para cada semana, de segunda a
+    domingo, contam os intervalos continuos de descanso que contem algum dia DA SEMANA sem
+    turno atribuido a pessoa; o maior deles precisa ter ao menos 24 h. O intervalo e medido
+    INTEIRO, sem recorte na virada da semana — um descanso de sabado a segunda conta com o
+    tamanho que tem.
 
-    Devolve [(semana, horas)] para as semanas inteiras do horizonte. Semana sem turno da
-    pessoa vale 168 h.
+    Semana sem nenhum dia sem turno vale 0 h. No comeco do horizonte o descanso comeca no
+    inicio do primeiro dia. No FIM, a borda e aberta (decisao do Otavio, 29/09): o descanso
+    que chega ao fim do horizonte conta como cumprido e vale `inf`, porque o que vem depois
+    e outro periodo, fora do escopo da escala. A continuidade entre periodos nao e conferida
+    — limitacao declarada no DECISOES.md.
 
-    ERRO CORRIGIDO EM 29/09: ate aqui o descanso semanal nao era medido. A linha que deveria
-    guarda-lo era `menor_semanal = min(menor_semanal, menor_semanal)`, que nao faz nada, e o
-    valor nem era devolvido. O que se conferia era so o limite de dias seguidos.
+    Devolve [(semana, horas)] para as semanas inteiras do horizonte, contadas do primeiro dia.
+
+    HISTORICO. Ate 29/09 o descanso semanal nao era medido: a linha que deveria guarda-lo era
+    `menor_semanal = min(menor_semanal, menor_semanal)`, que nao faz nada. A primeira correcao
+    recortava o descanso na segunda 00:00, e reprovava escala legal — seis noites de segunda a
+    sabado deixam 40 h de descanso de domingo a segunda, e o recorte so enxergava 17 h. A
+    segunda versao media o descanso inteiro mas cortava no fim do horizonte, e reprovava a
+    folga no ultimo domingo (17 h, da noite de sabado ate a meia-noite).
     """
-    segunda = inst.inicio - timedelta(days=inst.inicio.weekday())
+    ini_h = datetime.combine(inst.inicio, datetime.min.time())
+    fim_h = max([datetime.combine(inst.fim + timedelta(days=1), datetime.min.time())]
+                + [b for _, b in blocos])
+    descansos, cursor = [], ini_h
+    for a, b in sorted(blocos):
+        if a > cursor:
+            descansos.append((cursor, a))
+        cursor = max(cursor, b)
+    if fim_h > cursor:
+        descansos.append((cursor, fim_h))
+    com_turno = {a.date() for a, _ in blocos}   # o turno pertence ao dia em que comeca
+
     resultado = []
     for semana in range(inst.n_dias // 7):
-        ini_sem = datetime.combine(segunda + timedelta(days=7 * semana), datetime.min.time())
-        fim_sem = ini_sem + timedelta(days=7)
-        ocupados = sorted((max(a, ini_sem), min(b, fim_sem)) for a, b in blocos
-                          if a < fim_sem and b > ini_sem)
-        maior, cursor = timedelta(0), ini_sem
-        for a, b in ocupados:
-            maior = max(maior, a - cursor)
-            cursor = max(cursor, b)
-        maior = max(maior, fim_sem - cursor)
-        resultado.append((semana, maior.total_seconds() / 3600))
+        livres = [inst.inicio + timedelta(days=7 * semana + k) for k in range(7)]
+        livres = [d for d in livres if d not in com_turno]
+        maior = 0.0
+        for a, b in descansos:
+            if any(a < datetime.combine(d + timedelta(days=1), datetime.min.time())
+                   and b > datetime.combine(d, datetime.min.time()) for d in livres):
+                horas = float("inf") if b == fim_h else (b - a).total_seconds() / 3600
+                maior = max(maior, horas)
+        resultado.append((semana, maior))
     return resultado
 
 
@@ -155,6 +174,11 @@ def medir(inst, escala) -> dict:
             "max_consec": max_consec, "profissionais": len(por_prof)}
 
 
+def fmt_semanal(horas: float) -> str:
+    """`inf` e a borda aberta: o pior descanso da escala chega ao fim do horizonte."""
+    return "borda" if horas == float("inf") else f"{horas:.0f} h"
+
+
 def cumpre(inst, r) -> bool:
     """Veredito de uma escala: descanso entre turnos, dias seguidos e descanso semanal."""
     limite = inst.contratos["0"].max_consecutive_working_days
@@ -191,18 +215,21 @@ def main() -> int:
               else f"{r['menor_pos_noturno']:.0f} h")
         print(f"{rotulo:32s}{r['profissionais']:4d}{regime:>8s}{r['menor_geral']:12.0f} h"
               f"{exigido:7d} h{pn:>14s}"
-              f"{r['max_consec']:10d} / {teto_consec:<2d}{r['menor_semanal']:7.0f} h"
+              f"{r['max_consec']:10d} / {teto_consec:<2d}{fmt_semanal(r['menor_semanal']):>9s}"
               f"{'ok' if ok else 'REPROVA':>10s}")
         if not ok:
             reprovadas.append((rotulo, r))
     print(f"\nexigido, por regime: {DESCANSO_EXIGIDO['12x36']} h no 12x36 (art. 59-A, a"
           f" contrapartida da jornada de 12 h) e {DESCANSO_EXIGIDO['8h']} h no de 8 h")
     print("(interjornada do art. 66). Mais os dias seguidos dentro do limite do contrato, e o")
-    print(f"descanso semanal: maior descanso continuo de cada semana (segunda a domingo), medido")
-    print(f"no relogio, de ao menos {MIN_SEMANAL} h (art. 67). 'apos noturno' e informativo.")
+    print("descanso semanal: em cada semana (segunda a domingo), o maior descanso continuo que")
+    print(f"contem um dia sem turno, medido inteiro no relogio, de ao menos {MIN_SEMANAL} h "
+          "(art. 67).")
+    print("O descanso que chega ao fim do horizonte conta como cumprido (borda aberta): a")
+    print("continuidade com o periodo seguinte nao e conferida. 'apos noturno' e informativo.")
     for rotulo, r in reprovadas:
         print(f"\n{rotulo}: pior caso geral {r['pior_geral']}, pior apos noturno "
-              f"{r['pior_noturno']}, pior semanal {r['menor_semanal']:.1f} h "
+              f"{r['pior_noturno']}, pior semanal {fmt_semanal(r['menor_semanal'])} "
               f"(profissional, semana) = {r['pior_semanal']}")
     if faltando:
         print(f"\nescalas ausentes ({len(faltando)}): "

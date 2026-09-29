@@ -133,18 +133,22 @@ def teste_descanso_semanal() -> None:
     print("descanso semanal medido no relogio (escalas montadas a mao)")
     inst = br.construir(regime="8h", efetivo=1)
     dia = lambda k: inst.inicio + timedelta(days=k)  # noqa: E731
-    # M = 07-15, N = 23-07. Em cada caso, o maior descanso da semana 1 e conhecido.
+    # M = 07-15, N = 23-07. Em cada caso, o maior descanso da semana 1 foi calculado a mao e
+    # registrado ANTES de rodar (29/09, regra do descanso medido inteiro). O turno da segunda
+    # da semana 2 (dia 7) fecha o descanso, para ele nao correr ate o fim do horizonte.
     casos = [
-        # entre manhas seguidas sobram 16 h; seg 00-07 = 7 h; dom 15:00 -> seg 00:00 = 9 h
-        ("7 manhas seguidas", [(dia(k), "M") for k in range(7)], 16.0),
-        # sab 15:00 -> seg 00:00
-        ("manha de seg a sab, domingo livre", [(dia(k), "M") for k in range(6)], 33.0),
-        # seg 00:00 -> seg 23:00 = 23 h e o maior: o recorte na semana nao ve o descanso
-        # anterior ao horizonte, e o domingo livre (dom 07:00 -> seg 00:00) da so 17 h
-        ("6 noites, de seg a sab", [(dia(k), "N") for k in range(6)], 23.0),
-        # noite na quarta termina qui 07:00; quinta livre; manha na sexta 07:00 = 24 h
-        ("noites seg-qua, quinta livre, manhas sex-dom",
-         [(dia(k), "N") for k in (0, 1, 2)] + [(dia(k), "M") for k in (4, 5, 6)], 24.0),
+        # nenhum dia sem turno na semana: nao ha descanso que conte -> 0 h, reprova
+        ("7 manhas seguidas", [(dia(k), "M") for k in range(8)], 0.0),
+        # sab 15:00 -> seg (semana 2) 07:00 = 40 h
+        ("manha de seg a sab, domingo livre, manha na seg seguinte",
+         [(dia(k), "M") for k in range(6)] + [(dia(7), "M")], 40.0),
+        # a noite de sabado termina dom 07:00; a da segunda seguinte comeca 23:00 = 40 h.
+        # Com o recorte na segunda 00:00 (regra anterior) dava 23 h e reprovava escala legal.
+        ("6 noites de seg a sab, noite na seg seguinte",
+         [(dia(k), "N") for k in range(6)] + [(dia(7), "N")], 40.0),
+        # a noite de quarta termina qui 07:00; quinta livre; manha de sexta 07:00 = 24 h
+        ("noites seg-qua, quinta livre, manhas sex-seg",
+         [(dia(k), "N") for k in (0, 1, 2)] + [(dia(k), "M") for k in (4, 5, 6, 7)], 24.0),
     ]
     for rotulo, turnos, esperado in casos:
         blocos = [_inicio_fim(inst, d, t) for d, t in sorted(turnos)]
@@ -156,6 +160,14 @@ def teste_descanso_semanal() -> None:
         confere((r["menor_semanal"] < 24) == (esperado < 24),
                 f"{rotulo}: medir {'reprova' if r['menor_semanal'] < 24 else 'aprova'} "
                 f"({r['menor_semanal']:.1f} h)")
+    # borda aberta (29/09): folga no ULTIMO domingo, depois de noites de segunda a sabado. O
+    # descanso vai de dom 07:00 ao fim do horizonte (17 h) e continua no periodo seguinte;
+    # conta como cumprido. Esperado registrado antes de rodar: semana 4 = inf, aprova.
+    turnos = [(dia(k), "N") for k in range(21, 27)]
+    blocos = [_inicio_fim(inst, d, t) for d, t in turnos]
+    semana4 = descanso_semanal(inst, blocos)[3][1]
+    confere(semana4 == float("inf"),
+            f"folga no ultimo domingo: semana 4 = {semana4} (esperado inf, borda aberta)")
 
 
 def teste_reproducao_long01(tempo: int) -> None:
@@ -183,8 +195,9 @@ def _descanso(inst, escala, rotulo) -> None:
             f"{rotulo}: descanso minimo medido {r['menor_geral']:.0f} h >= {exigido} h")
     confere(r["max_consec"] <= limite,
             f"{rotulo}: dias seguidos {r['max_consec']} <= {limite}")
+    from conferencia_descanso_escala import fmt_semanal
     confere(r["menor_semanal"] >= 24,
-            f"{rotulo}: descanso semanal medido {r['menor_semanal']:.1f} h >= 24 h "
+            f"{rotulo}: descanso semanal medido {fmt_semanal(r['menor_semanal'])} >= 24 h "
             f"(pior: profissional, semana = {r['pior_semanal']})")
 
 
