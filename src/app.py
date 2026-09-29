@@ -151,5 +151,6 @@ if "resultado" in st.session_state:
                            file_name=f"escala_{r.inst.inicio:%Y-%m-%d}.xlsx",
                            mime="application/vnd.openxmlformats-officedocument."
                                 "spreadsheetml.sheet")
-        st.dataframe(pd.read_excel(io.BytesIO(dados), sheet_name="Escala", index_col=0),
-                     width="stretch")
+        grade = pd.read_excel(io.BytesIO(dados), sheet_name="Escala", index_col=0)
+        # celula vazia = folga; sem o fillna a tela mostraria "None"
+        st.dataframe(grade.fillna(""), width="stretch")
