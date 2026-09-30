@@ -11,7 +11,8 @@ escopo anterior, com as treze propostas P1–P13, está em
 
 ## 2026-09-28 — P1: a curva de escalabilidade mede um problema mais fácil do que o da ferramenta
 
-**Status: decidida em 29/09; executa na Etapa 4.** Registro anterior (28/09): aguardando
+**Status: decidida em 29/09; executa depois da Etapa 7 (ver DECISOES 2026-09-29,
+Redesenho).** Registro anterior (28/09): aguardando
 validação. Nada implementado. O experimento rodou como combinado e o
 resultado está abaixo; o que proponho é sobre **como lê-lo**, e sobre uma rodada adicional.
 

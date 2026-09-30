@@ -1137,9 +1137,10 @@ continua igual, e o Experimento A segue reproduzível.
 
 **Demanda informada pelo usuário.** Generalista: enfermeiros e técnicos por turno, com
 valores opcionais diferentes para o fim de semana. Específica: por data × turno × categoria,
-partindo da generalista (um feriado, por exemplo). *Implementado, a confirmar:* o posto de
-técnico pode ser coberto por enfermeiro, como no caminho por pacientes; o de enfermeiro, só
-por enfermeiro.
+partindo da generalista (um feriado, por exemplo). **Cobertura entre categorias (decidido em
+29/09; antes "a confirmar"):** enfermeiro pode cobrir posto de técnico, como no caminho por
+pacientes; técnico nunca cobre posto de enfermeiro. A saída informa quantos turnos de
+enfermeiro foram usados em posto de técnico.
 
 **CLT como trava, com diagnóstico do motivo.** *O diagnóstico do motivo — qual regra trava
 quando não há escala — ainda não está implementado; hoje a ferramenta diz só "faltam N".* As regras de descanso deixam de ser escritas

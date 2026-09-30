@@ -98,7 +98,7 @@ dívida.
 ### Esperando decisão
 
 **2. ~~P1 — repetir a curva de escalabilidade com objetivo não trivial.~~ — RESOLVIDO em
-29/09.** Desbloqueada; executa na Etapa 4. Registro original, abaixo.
+29/09.** Desbloqueada; executa depois da Etapa 7 (ver DECISOES 2026-09-29, Redesenho). Registro original, abaixo.
 
 Registrado em
 `PROPOSTAS.md`, aguardando validação. Custo: ~20 min de máquina. Só faz sentido depois da
