@@ -42,7 +42,8 @@ RIGIDAS_LEGAIS_BR = frozenset({
 
 def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool = False,
               noite_antes_de_fds_livre: bool = False,
-              rigidas_legais: frozenset[str] = frozenset()) -> pyo.ConcreteModel:
+              rigidas_legais: frozenset[str] = frozenset(),
+              custo_atribuicao: dict[tuple[str, str], int] | None = None) -> pyo.ConcreteModel:
     """Monta o modelo.
 
     `flexiveis=False` da o modelo minimo, so com as duas rigidas e funcao objetivo nula —
@@ -67,6 +68,10 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
     limites de jornada e descanso vem de lei e nao sao negociaveis contra penalidade. Sem
     isso, "efetivo minimo viavel" do Experimento A viraria capacidade dividida por demanda:
     qualquer efetivo seria viavel, bastando pagar a penalidade. Use `RIGIDAS_LEGAIS_BR`.
+
+    `custo_atribuicao[(profissional, turno)] = c` cobra `c` por dia em que o profissional
+    faz aquele turno — familia `custo_atribuicao`. So a ferramenta usa (enfermeiro em posto de
+    tecnico); vazio, o modelo e o de sempre.
 
     **O padrao e vazio**, que preserva o comportamento do INRC — e o que mantem os quatro
     otimos publicados reproduzindo. A rigidez e opcao de quem resolve, nao propriedade do
@@ -143,7 +148,7 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
 
     if flexiveis:
         _adicionar_flexiveis(m, inst, elegiveis, habilidade_rigida,
-                             noite_antes_de_fds_livre, rigidas_legais)
+                             noite_antes_de_fds_livre, rigidas_legais, custo_atribuicao)
     else:
         m.objetivo = pyo.Objective(expr=0, sense=pyo.minimize)
     return m
@@ -154,7 +159,8 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
 # ---------------------------------------------------------------------------
 
 def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
-                         com_noite_antes_de_fds, rigidas_legais=frozenset()) -> None:
+                         com_noite_antes_de_fds, rigidas_legais=frozenset(),
+                         custo_atribuicao=None) -> None:
     dias = inst.dias
     nd = len(dias)
     profissionais = tuple(inst.profissionais)
@@ -403,6 +409,14 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
         elif p.tipo == "trabalho_turno" and p.profissional in elegiveis.get(p.turno, ()):
             somar("shift_on_requests", p.peso * (1 - m.x[p.profissional, p.turno, p.data]),
                   quem=p.profissional)
+
+    # --- custo por atribuicao (so a ferramenta usa; vazio no INRC)
+    # Enfermeiro em posto de tecnico, na ferramenta (DECISOES.md, "Redesenho", 29/09): cada
+    # atribuicao custa `c`, entra como familia propria e na penalidade de quem a recebe.
+    for (n, s), c in (custo_atribuicao or {}).items():
+        for d in dias:
+            if (n, s, d) in m.X:
+                somar("custo_atribuicao", c * m.x[n, s, d], quem=n)
 
     # --- materializa folgas e restricoes
     # Familias em `rigidas_legais` nao ganham folga: o proprio limite vira restricao rigida.

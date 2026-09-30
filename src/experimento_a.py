@@ -226,24 +226,38 @@ def tentar(grau: str, regime: str, regra: str, efetivo: int, solver: str,
     return resolver_instancia(inst, solver, tempo)
 
 
-def resolver_instancia(inst, solver: str, tempo: int | None) -> tuple[str, object, object]:
+def modelo_br(inst, custo_atribuicao=None):
+    """O modelo com as opcoes da instancia brasileira. As opcoes moram SO aqui: limites
+    legais rigidos, habilidade rigida, noite antes de fim de semana livre ligada."""
+    return modelo.construir(inst, flexiveis=True, habilidade_rigida=True,
+                            noite_antes_de_fds_livre=True,
+                            rigidas_legais=modelo.RIGIDAS_LEGAIS_BR,
+                            custo_atribuicao=custo_atribuicao)
+
+
+def resolver_instancia(inst, solver: str, tempo: int | None,
+                       custo_atribuicao=None) -> tuple[str, object, object]:
     """O miolo de `tentar`, para uma instancia ja montada — a de turnos configurados, por
-    exemplo. As opcoes de modelo moram SO aqui: limites legais rigidos, habilidade rigida."""
-    m = modelo.construir(inst, flexiveis=True, habilidade_rigida=True,
-                         noite_antes_de_fds_livre=True,
-                         rigidas_legais=modelo.RIGIDAS_LEGAIS_BR)
+    exemplo."""
+    veredito, escala = resolver_modelo(modelo_br(inst, custo_atribuicao), solver, tempo)
+    return veredito, inst, escala
+
+
+def resolver_modelo(m, solver: str, tempo: int | None) -> tuple[str, object]:
+    """Resolve um modelo ja montado. NUNCA levanta. Devolve (veredito, escala ou None); o
+    modelo fica com a solucao carregada, para quem quiser resolver de novo por cima dele."""
     try:
         resultado = modelo.resolver(m, solver=solver, tempo_limite=tempo, carregar=False)
     except Exception as e:  # noqa: BLE001
         print(f"      [ERRO] o solver levantou {type(e).__name__}: {e}")
-        return ERRO, inst, None
+        return ERRO, None
     veredito = classificar(resultado)
     if veredito != VIAVEL:
-        return veredito, inst, None
+        return veredito, None
     if not modelo.carregar_solucao(m, resultado):
         print("      [ERRO] solver declarou viavel mas nao entregou solucao")
-        return ERRO, inst, None
-    return VIAVEL, inst, modelo.atribuicoes(m)
+        return ERRO, None
+    return VIAVEL, modelo.atribuicoes(m)
 
 
 def celula(grau: str, regime: str, regra: str, solver: str, tempo: int | None,

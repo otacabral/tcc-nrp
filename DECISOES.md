@@ -1142,8 +1142,9 @@ partindo da generalista (um feriado, por exemplo). **Cobertura entre categorias 
 pacientes; técnico nunca cobre posto de enfermeiro. A saída informa quantos turnos de
 enfermeiro foram usados em posto de técnico.
 
-**CLT como trava, com diagnóstico do motivo.** *O diagnóstico do motivo — qual regra trava
-quando não há escala — ainda não está implementado; hoje a ferramenta diz só "faltam N".* As regras de descanso deixam de ser escritas
+**CLT como trava, com diagnóstico do motivo.** *(Registro de 29/09, Etapa 5: o diagnóstico
+ainda não estava implementado. Implementado na Etapa 7 — ver "Diagnóstico da trava" abaixo.)*
+As regras de descanso deixam de ser escritas
 à mão e passam a ser **geradas dos horários** (`pares_proibidos_por_horario`): para cada par
 de turnos, o descanso medido no relógio é proibido abaixo de 11 h (art. 66), e abaixo de
 36 h depois de turno de 12 h ou mais (art. 59-A). O gerador é a **fonte única** das regras de
@@ -1166,6 +1167,37 @@ enfermeiros no quadro pelo grau predominante informado; turnos sem enfermeiro na
 com pacientes informados, quadro abaixo do QP completo, mostrando também o núcleo. **No
 caminho novo, o piso de 1 enfermeiro por turno deixa de ser cobertura rígida** — quem define
 a demanda é o usuário — e vira alerta.
+
+**Objetivo (Etapa 7, decisão do Otávio, 29/09).** Evitar enfermeiro em posto de técnico
+quando não for necessário, com **pesos inteiros na mesma resolução**: cada turno de enfermeiro
+em posto de técnico custa 1; cada pedido de folga não atendido custa W = (número máximo
+possível de turnos de enfermeiro em posto de técnico) + 1, e o máximo possível é o total de
+postos de técnico do horizonte. Como W passa tudo o que os postos de técnico podem somar,
+negar um pedido nunca compensa: primeiro os pedidos, depois o enfermeiro em posto de técnico.
+Sem pesos fracionários. Implementado em `ferramenta.pesos`; o modelo ganhou a família
+`custo_atribuicao`, vazia no INRC. *Conferido:* no caso de 8 enfermeiros + 5 técnicos, a
+contagem caiu de 66 (sem os pesos) para **35, que é o mínimo aritmético** (os técnicos dão
+840 h para 1.120 h de posto de técnico), com os 3 pedidos atendidos nos dois casos.
+
+**Equilíbrio ligado na ferramenta.** Com a penalidade da etapa 1 fixada no ótimo, a etapa 2
+minimiza a penalidade individual máxima — o mecanismo do Experimento B, sobre o mesmo modelo
+(`ferramenta.equilibrar`). Só roda com a etapa 1 ótima e penalidade maior que zero.
+*Medido, afirmação fraca:* no 12×36 equivalente ao Experimento A, com 40 profissionais e 20
+pedidos, a etapa 1 levou 56,9 s e a etapa 2 90,7 s de CPU (appsi_highs, na máquina do
+Otávio); a maior penalidade individual caiu de 10 para 7.
+
+**Diagnóstico da trava.** Quando o quadro informado não tem escala legal, a tela explica o
+motivo pela conta mais simples que se aplica, nesta ordem: **horas** (demanda do período
+acima de 42 h/semana × equipe); **alternância** do plantão de 12 h (dois dias seguidos somam
+mais plantões que a equipe, com o par de dias); **categoria** (horas ou plantões de posto de
+enfermeiro acima do que os enfermeiros cobrem); **dia específico** (numa data, descontadas as
+férias, sobram menos pessoas que postos); **combinação de regras** (nenhuma conta explica; o
+solver provou). Em todos, quantos faltam e o menor quadro viável. Implementado em
+`ferramenta.diagnosticar`, só contas, sem solver. Na busca do menor quadro, cada tamanho é
+tentado com a composição da regra e, se inviável, com todos os acréscimos como enfermeiros —
+enfermeiro cobre tudo o que técnico cobre, então se essa também falha, nenhuma composição
+daquele tamanho fecha. *Conferido:* um caso por motivo, com o motivo registrado antes de
+rodar; os cinco acertaram, e o 39 do Experimento A cai em alternância.
 
 **Funcionalidades congeladas em 10/10.** **A Etapa 4 (P1, curva de escalabilidade com
 objetivo não trivial) passa para depois da Etapa 7.**

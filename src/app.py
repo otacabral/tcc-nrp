@@ -209,6 +209,13 @@ if "resultado" in st.session_state:
         st.warning(r.frase())
     else:
         st.error(r.frase())
+    if r.diagnostico:
+        motivo, texto = r.diagnostico
+        with st.container(border=True, key="diagnostico"):
+            st.subheader(f"Por que não há escala legal com {r.quadro_informado}: "
+                         f"{fe.TITULO[motivo]}")
+            st.write(texto)
+            st.write(r.frase())
     for alerta in r.alertas:
         st.error(f"Alerta COFEN (não impede a escala): {alerta}")
 
@@ -225,6 +232,12 @@ if "resultado" in st.session_state:
         st.caption(f"Descanso mínimo entre turnos {c['menor_geral']:.0f} h · descanso "
                    f"semanal {fe.fmt_semanal(c['menor_semanal'])} · no máximo "
                    f"{c['max_consec']} dias seguidos")
+        equilibrio = ind.get("etapa2")
+        if equilibrio == "ok":
+            st.caption(f"Equilíbrio: entre as escalas de mesmo custo, a maior penalidade "
+                       f"individual caiu de {ind['pena_max_etapa1']} para {ind['pena_max']}.")
+        elif equilibrio:
+            st.caption(f"Equilíbrio: {equilibrio}.")
     if r.qp:
         q1, q2 = st.columns(2)
         q1.metric("QP núcleo assistencial", f"{r.qp[0]:.2f}".replace(".", ","),
@@ -239,8 +252,9 @@ if "resultado" in st.session_state:
                    "viavel": "viável — escala encontrada e conferida",
                    "indeterminado": "não decidido no limite de tempo",
                    "erro": "o solver falhou"}
-        for quadro, v in r.tentativas:
-            st.write(f"{quadro} profissionais: {explica.get(v, v)}")
+        for quadro, v, n_enf_t, n_tec_t in r.tentativas:
+            composicao = f" ({n_enf_t} enf. + {n_tec_t} téc.)" if n_enf_t is not None else ""
+            st.write(f"{quadro} profissionais{composicao}: {explica.get(v, v)}")
 
     if r.escala:
         dados = fe.planilha(r, e)

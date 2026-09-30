@@ -26,6 +26,7 @@ Etapa 7.
 
 from __future__ import annotations
 
+import dataclasses
 import io
 import math
 import sys
@@ -45,7 +46,7 @@ from conferencia_descanso_escala import cumpre, fmt_semanal, medir  # noqa: E402
 MARGEM = 12          # quantos quadros acima do informado tentar antes de desistir
 TEMPO = 600          # limite por resolucao, em segundos
 
-ADMITE, FALTAM, NAO_DECIDIDO = "admite", "faltam", "nao_decidido"
+ADMITE, FALTAM, NAO_DECIDIDO, SEM_VIAVEL = "admite", "faltam", "nao_decidido", "sem_viavel"
 
 # Modelos prontos de turnos: (nome, inicio, fim), em horas cheias.
 MODELOS = {
@@ -87,12 +88,13 @@ class Resultado:
     quadro_informado: int
     menor_viavel: int | None
     alertas: list[str]
-    tentativas: list[tuple[int, str]]      # (quadro, veredito ou "piso")
+    tentativas: list[tuple]                # (quadro, veredito ou "piso", enfermeiros, tecnicos)
     qp: tuple[float, float] | None = None  # (nucleo, completo), com pacientes informados
     inst: object = None
     escala: tuple = ()
     conformidade: dict | None = None
     indicadores: dict = field(default_factory=dict)
+    diagnostico: tuple[str, str] | None = None   # (motivo, explicacao), sem escala legal
 
     @property
     def faltam(self) -> int | None:
@@ -103,6 +105,9 @@ class Resultado:
             return "O quadro informado admite escala legal."
         if self.veredito == FALTAM:
             return f"Faltam {self.faltam}; o menor quadro viável é {self.menor_viavel}."
+        if self.veredito == SEM_VIAVEL:
+            return (f"Não há escala legal até {self.quadro_informado + MARGEM} profissionais; "
+                    f"o menor quadro viável está acima disso.")
         return ("Não decidido: o solver atingiu o limite de tempo antes de concluir. "
                 "O quadro mínimo não foi determinado.")
 
@@ -137,12 +142,23 @@ def equipe(e: Entrada, acrescimo: int, horas_enf: float | None = None):
     return n_enf, n_tec, nomes_enf, nomes_tec
 
 
-def montar(e: Entrada, acrescimo: int = 0, horas_enf: float | None = None):
+def montar(e: Entrada, acrescimo: int = 0, horas_enf: float | None = None,
+           so_enfermeiros: bool = False):
     """So a instancia, sem resolver. Levanta ValueError com mensagem legivel se a entrada
-    estiver errada (turno repetido, nome inexistente, data fora do horizonte...)."""
-    n_enf, n_tec, nomes_enf, nomes_tec = (
-        (e.n_enfermeiros, e.n_tecnicos, e.nomes_enfermeiros, e.nomes_tecnicos)
-        if acrescimo == 0 else equipe(e, acrescimo, horas_enf))
+    estiver errada (turno repetido, nome inexistente, data fora do horizonte...).
+
+    `so_enfermeiros`: os `acrescimo` entram todos como enfermeiros — a segunda tentativa de
+    cada quadro na varredura (ver `verificar`)."""
+    if acrescimo == 0:
+        n_enf, n_tec, nomes_enf, nomes_tec = (e.n_enfermeiros, e.n_tecnicos,
+                                              e.nomes_enfermeiros, e.nomes_tecnicos)
+    elif so_enfermeiros:
+        n_enf, n_tec = e.n_enfermeiros + acrescimo, e.n_tecnicos
+        nomes_enf = (None if e.nomes_enfermeiros is None else list(e.nomes_enfermeiros)
+                     + [f"Enf {e.n_enfermeiros + i + 1}" for i in range(acrescimo)])
+        nomes_tec = e.nomes_tecnicos
+    else:
+        n_enf, n_tec, nomes_enf, nomes_tec = equipe(e, acrescimo, horas_enf)
     return br.construir(
         turnos=[(nome, ini, duracao(ini, fim), nome) for nome, ini, fim in e.turnos],
         demanda_turno=e.demanda_turno, demanda_fds=e.demanda_fds,
@@ -196,9 +212,155 @@ def indicadores(inst, escala) -> dict:
             "atribuicoes": len(escala)}
 
 
+# --- objetivo: pesos inteiros, depois equilibrio -------------------------------------------
+
+def pesos(inst):
+    """Objetivo da ferramenta em UMA resolucao, com pesos inteiros (DECISOES.md, "Redesenho"):
+
+    - cada turno de enfermeiro em posto de tecnico custa 1;
+    - cada pedido de folga nao atendido custa W = (maximo possivel de turnos de enfermeiro em
+      posto de tecnico) + 1. O maximo possivel e o total de postos de tecnico do horizonte.
+
+    Como W passa o maior custo que os postos de tecnico podem somar, negar um pedido nunca
+    compensa: primeiro atendem-se os pedidos, depois evita-se enfermeiro em posto de tecnico.
+    Devolve (instancia com os pedidos pesados, custo por atribuicao, W).
+    """
+    base = [s for s, t in inst.turnos.items() if br.HABILIDADE_ENF not in t.habilidades]
+    enf = [p.id for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades]
+    maximo = sum(q for (_, s), q in inst.demanda.items() if s in base)
+    W = maximo + 1
+    inst = dataclasses.replace(
+        inst, pedidos=tuple(dataclasses.replace(p, peso=W) for p in inst.pedidos))
+    return inst, {(n, s): 1 for n in enf for s in base}, W
+
+
+def equilibrar(m, z: int, tempo: int | None) -> tuple[str, object]:
+    """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a penalidade
+    individual maxima — o mecanismo do Experimento B (`experimentos.minimo_do_maximo`),
+    sobre o mesmo modelo, sem monta-lo de novo."""
+    import pyomo.environ as pyo
+    m.objetivo.deactivate()
+    m.total_no_otimo = pyo.Constraint(expr=m.objetivo.expr == z)
+    m.t_max = pyo.Var(domain=pyo.NonNegativeReals)
+    m.teto_individual = pyo.Constraint(list(m.pena.keys()),
+                                       rule=lambda m, n: m.t_max >= m.pena[n])
+    m.objetivo_equilibrio = pyo.Objective(expr=m.t_max, sense=pyo.minimize)
+    return ea.resolver_modelo(m, modelo.SOLVER_PADRAO, tempo)
+
+
+def resolver_com_objetivo(inst, tempo: int) -> tuple[str, object, object, dict]:
+    """Etapa 1 (pesos) e, havendo penalidade a distribuir, etapa 2 (equilibrio).
+
+    A etapa 2 so roda com a etapa 1 provada OTIMA: fixar num valor que nao e o otimo mediria
+    o equilibrio de outra coisa. Com penalidade zero nao ha o que equilibrar."""
+    import time
+    import pyomo.environ as pyo
+    inst, custo, W = pesos(inst)
+    m = ea.modelo_br(inst, custo)
+    t0 = time.process_time()
+    veredito, escala = ea.resolver_modelo(m, modelo.SOLVER_PADRAO, tempo)
+    info = {"peso_pedido": W, "cpu_etapa1": time.process_time() - t0, "cpu_etapa2": 0.0,
+            "etapa2": "nao rodou"}
+    if veredito != ea.VIAVEL:
+        return veredito, inst, None, info
+    z = int(round(pyo.value(m.objetivo)))
+    info["penalidade"] = z
+    info["pena_max_etapa1"] = max(round(pyo.value(m.pena[n])) for n in m.pena)
+    if z == 0:
+        info["etapa2"] = "nada a equilibrar (penalidade zero)"
+        return veredito, inst, escala, info
+    t0 = time.process_time()
+    v2, escala2 = equilibrar(m, z, tempo)
+    info["cpu_etapa2"] = time.process_time() - t0
+    if v2 == ea.VIAVEL:
+        info["etapa2"] = "ok"
+        info["pena_max"] = max(round(pyo.value(m.pena[n])) for n in m.pena)
+        return veredito, inst, escala2, info
+    info["etapa2"] = f"sem resposta ({v2}); fica a escala da etapa 1"
+    return veredito, inst, escala, info
+
+
+# --- diagnostico da trava ----------------------------------------------------------------
+
+HORAS, ALTERNANCIA, CATEGORIA, DIA, COMBINACAO = (
+    "horas", "alternancia", "categoria", "dia", "combinacao")
+TITULO = {HORAS: "Horas", ALTERNANCIA: "Alternância do plantão de 12 h",
+          CATEGORIA: "Categoria", DIA: "Dia específico", COMBINACAO: "Combinação de regras"}
+
+
+def diagnosticar(inst) -> tuple[str, str]:
+    """Por que o quadro informado nao tem escala legal: o diagnostico MAIS SIMPLES que se
+    aplica, nesta ordem (especificacao, Etapa 7). Devolve (motivo, explicacao).
+
+    So contas, sem solver. Chamado quando o quadro informado ja foi provado inviavel (pelo
+    solver ou pelo piso); se nenhuma conta simples explica, e a combinacao de regras.
+    """
+    enf = {p.id for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades}
+    N, E = len(inst.profissionais), len(enf)
+    carga = inst.carga_maxima_h
+    dur = {s: t.duracao_h for s, t in inst.turnos.items()}
+    posto_enf = {s for s, t in inst.turnos.items() if br.HABILIDADE_ENF in t.habilidades}
+    por_dia = {d: sum(inst.demanda_de(d, s) for s in inst.turnos) for d in inst.dias}
+    enf_dia = {d: sum(inst.demanda_de(d, s) for s in posto_enf) for d in inst.dias}
+
+    horas = sum(q * dur[s] for (_, s), q in inst.demanda.items())
+    if horas > N * carga + 1e-9:
+        k = math.ceil(horas / carga - 1e-9) - N
+        return HORAS, (f"A demanda do período soma {horas:g} h. Com 42 h por semana, "
+                       f"{N} pessoas trabalham no máximo {N * carga:g} h. "
+                       f"Pela conta, faltam pelo menos {k}.")
+
+    L = limite_efetivo(inst)
+    if L == 1:
+        d, soma = max(((inst.dias[i], por_dia[inst.dias[i]] + por_dia[inst.dias[i + 1]])
+                       for i in range(len(inst.dias) - 1)), key=lambda x: x[1])
+        if soma > N:
+            return ALTERNANCIA, (
+                f"Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do "
+                f"plantão é de 36 h). {rotulo_dia(d)} e {rotulo_dia(d + timedelta(days=1))} "
+                f"somam {soma} plantões, que precisam de {soma} pessoas diferentes; a equipe "
+                f"tem {N}. Pela conta, faltam pelo menos {soma - N}.")
+
+    horas_enf = sum(q * dur[s] for (_, s), q in inst.demanda.items() if s in posto_enf)
+    if horas_enf > E * carga + 1e-9:
+        k = math.ceil(horas_enf / carga - 1e-9) - E
+        return CATEGORIA, (f"Os turnos que pedem enfermeiro somam {horas_enf:g} h, e só "
+                           f"enfermeiro os cobre. {E} enfermeiros trabalham no máximo "
+                           f"{E * carga:g} h. Pela conta, faltam pelo menos {k} "
+                           f"enfermeiro(s).")
+    if L == 1:
+        d, soma = max(((inst.dias[i], enf_dia[inst.dias[i]] + enf_dia[inst.dias[i + 1]])
+                       for i in range(len(inst.dias) - 1)), key=lambda x: x[1])
+        if soma > E:
+            return CATEGORIA, (f"{rotulo_dia(d)} e {rotulo_dia(d + timedelta(days=1))} pedem "
+                               f"{soma} plantões de enfermeiro, que precisam de {soma} "
+                               f"enfermeiros diferentes; há {E}. Pela conta, faltam pelo "
+                               f"menos {soma - E} enfermeiro(s).")
+
+    for d in inst.dias:
+        fora = {n for n, dd in inst.indisponiveis if dd == d}
+        livres, livres_enf = N - len(fora), E - len(fora & enf)
+        if livres < por_dia[d] or livres_enf < enf_dia[d]:
+            return DIA, (f"Em {rotulo_dia(d)}, descontadas férias e licenças, sobram "
+                         f"{livres} pessoas ({livres_enf} enfermeiros) para {por_dia[d]} "
+                         f"postos ({enf_dia[d]} de enfermeiro).")
+
+    return COMBINACAO, ("Nenhuma conta simples explica: horas, alternância, categoria e cada "
+                        "dia fecham separados. O solver provou que as regras juntas — "
+                        "descanso entre turnos, dias seguidos, férias e licenças — não "
+                        "admitem escala com este quadro.")
+
+
+# --- veredito -----------------------------------------------------------------------------
+
 def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int = TEMPO,
               margem: int = MARGEM) -> Resultado:
-    """Veredito do quadro, com a escala do menor quadro viavel encontrado."""
+    """Veredito do quadro, com a escala do menor quadro viavel encontrado.
+
+    Cada quadro acima do informado e tentado com a composicao da regra (`equipe`) e, se der
+    inviavel, com todos os acrescimos como enfermeiros: enfermeiro cobre tudo o que tecnico
+    cobre, entao se esta segunda tambem e inviavel, nenhuma composicao desse tamanho fecha.
+    """
     base = montar(e)                          # valida a entrada antes de gastar solver
     horas_enf = _horas_enfermeiro(e)
     alertas = br.alertas_cofen(base, e.grau, e.pacientes)
@@ -207,28 +369,45 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int = TEMPO,
     r = Resultado(veredito=NAO_DECIDIDO, quadro_informado=e.quadro, menor_viavel=None,
                   alertas=alertas, tentativas=[], qp=qp)
 
+    decidido = True
     for acrescimo in range(0, margem + 1):
         quadro = e.quadro + acrescimo
         progresso(acrescimo / (margem + 1), f"testando quadro de {quadro} profissionais")
         if quadro < minimo:
-            # inviavel pela aritmetica, sem solver
-            r.tentativas.append((quadro, "piso"))
+            r.tentativas.append((quadro, "piso", None, None))   # aritmetica, sem solver
             continue
-        inst = montar(e, acrescimo, horas_enf)
-        veredito, inst, escala = ea.resolver_instancia(inst, modelo.SOLVER_PADRAO, tempo)
-        r.tentativas.append((quadro, veredito))
+        candidatas = [montar(e, acrescimo, horas_enf)]
+        if acrescimo:
+            so_enf = montar(e, acrescimo, horas_enf, so_enfermeiros=True)
+            if so_enf.profissionais.keys() != candidatas[0].profissionais.keys() or \
+                    _n_enf(so_enf) != _n_enf(candidatas[0]):
+                candidatas.append(so_enf)
+        for inst in candidatas:
+            veredito, inst, escala, info = resolver_com_objetivo(inst, tempo)
+            r.tentativas.append((quadro, veredito, _n_enf(inst),
+                                 len(inst.profissionais) - _n_enf(inst)))
+            if veredito != ea.INVIAVEL:
+                break
         if veredito == ea.VIAVEL:
             r.veredito = ADMITE if acrescimo == 0 else FALTAM
             r.menor_viavel, r.inst, r.escala = quadro, inst, escala
             m = medir(inst, escala)
             r.conformidade = {"ok": cumpre(inst, m), **m}
-            r.indicadores = indicadores(inst, escala)
+            r.indicadores = {**indicadores(inst, escala), **info}
             break
         if veredito != ea.INVIAVEL:
-            # indeterminado ou erro: nao da para dizer que o minimo esta acima daqui
+            decidido = False     # indeterminado ou erro: o minimo nao esta provado acima
             break
+    if r.veredito != ADMITE and r.tentativas and r.tentativas[0][1] in ("piso", ea.INVIAVEL):
+        r.diagnostico = diagnosticar(base)
+    if decidido and r.veredito == NAO_DECIDIDO:
+        r.veredito = SEM_VIAVEL  # toda a faixa foi provada inviavel
     progresso(1.0, "concluido")
     return r
+
+
+def _n_enf(inst) -> int:
+    return sum(1 for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades)
 
 
 # --- planilha -----------------------------------------------------------------------------

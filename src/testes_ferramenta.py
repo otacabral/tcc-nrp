@@ -91,7 +91,7 @@ def caso_experimento_a() -> None:
                        variacao=1.0)
     confere(r.inst.demanda == ref.demanda, "demanda montada pela tela = celula v1 do "
                                            "Experimento A")
-    confere(r.tentativas == [(40, "viavel")], f"tentativas {r.tentativas}")
+    confere(r.tentativas == [(40, "viavel", 14, 26)], f"tentativas {r.tentativas}")
     wb = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))
     confere(wb.sheetnames == ["Escala", "Resumo", "Legenda"]
             and wb["Escala"].max_row == 41, f"planilha abre: {wb.sheetnames}")
@@ -103,7 +103,13 @@ def caso_experimento_a() -> None:
     confere(textos(at, "warning") == ["Faltam 1; o menor quadro viável é 40."],
             f"veredito: {textos(at, 'warning') + textos(at, 'success')}")
     r, _ = at.session_state["resultado"]
-    confere(r.tentativas == [(39, "piso"), (40, "viavel")], f"tentativas {r.tentativas}")
+    confere(r.tentativas == [(39, "piso", None, None), (40, "viavel", 14, 26)],
+            f"tentativas {r.tentativas}")
+    confere(r.diagnostico is not None and r.diagnostico[0] == fe.ALTERNANCIA,
+            f"diagnostico na tela: {r.diagnostico}")
+    confere(len(at.get("subheader")) and any("Alternância" in s.value
+                                             for s in at.get("subheader")),
+            "janela do diagnostico aparece na tela")
 
 
 def caso_6h_12h() -> None:
@@ -138,11 +144,119 @@ def caso_enfermeiro_em_posto_de_tecnico() -> None:
     confere(n >= 35, f"contagem na tela: {n} turnos de enfermeiro em posto de tecnico (>= 35)")
 
 
+# --- Etapa 7, sem tela (a tela nao edita as tabelas de ferias e pedidos no AppTest) ------
+
+M8_TURNOS, M12_TURNOS = fe.MODELOS[M8], fe.MODELOS[M12]
+
+
+def _entrada(turnos, n_enf, n_tec, demanda, **extra) -> fe.Entrada:
+    return fe.Entrada(turnos=turnos, grau="intermediario", n_enfermeiros=n_enf,
+                      n_tecnicos=n_tec, demanda_turno=demanda,
+                      inicio=br.primeira_segunda(), **extra)
+
+
+def dia(k: int):
+    from datetime import timedelta
+    return br.primeira_segunda() + timedelta(days=k)
+
+
+def caso_objetivo() -> None:
+    """Esperado registrado antes: a contagem cai de 71 para 35 ou perto (<= 40), e os 3
+    pedidos continuam atendidos."""
+    import experimento_a as ea
+    import modelo
+    print("7.1 objetivo: enfermeiro em posto de tecnico so quando necessario (8 + 5)")
+    pedidos = [("Enf 1", dia(3)), ("Téc 2", dia(7)), ("Téc 4", dia(15))]
+    e = _entrada(M8_TURNOS, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)}, pedidos=pedidos)
+    antes_v, inst, antes = ea.resolver_instancia(fe.montar(e), modelo.SOLVER_PADRAO, fe.TEMPO)
+    ind_antes = fe.indicadores(inst, antes)
+    r = fe.verificar(e)
+    ind = r.indicadores
+    confere(r.veredito == fe.ADMITE, f"veredito {r.veredito}")
+    print(f"      sem os pesos (Etapa 6): {ind_antes['enf_em_posto_tec']} turnos, pedidos "
+          f"{ind_antes['pedidos_atendidos']}/{ind_antes['pedidos_total']}")
+    confere(ind["enf_em_posto_tec"] <= 40,
+            f"com os pesos: {ind['enf_em_posto_tec']} turnos de enfermeiro em posto de "
+            f"tecnico (minimo aritmetico 35)")
+    confere(ind["pedidos_atendidos"] == 3 and
+            ind["pedidos_atendidos"] >= ind_antes["pedidos_atendidos"],
+            f"pedidos atendidos {ind['pedidos_atendidos']}/3, sem piorar")
+    # postos de tecnico no horizonte: (2 + 2 + 1) por dia x 28 dias = 140; W = 141
+    confere(ind["peso_pedido"] == 141,
+            f"peso de cada pedido = {ind['peso_pedido']} (140 postos de tecnico + 1)")
+    confere(r.conformidade["ok"], "conferencia de descanso cumpre")
+
+
+def caso_tempo_40() -> None:
+    """So relata: tempo da etapa de equilibrio num caso de 40 profissionais."""
+    print("7.2 equilibrio: 12x36 do Experimento A, 40 profissionais, 20 pedidos de folga")
+    nomes = [f"Enf {i + 1}" for i in range(14)] + [f"Téc {i + 1}" for i in range(26)]
+    pedidos = [(nomes[i], dia((3 * i) % 28)) for i in range(20)]
+    e = _entrada(M12_TURNOS, 14, 26, {"D": (1, 9), "N": (1, 9)},
+                 demanda_fds={"D": (1, 6), "N": (1, 6)}, pedidos=pedidos)
+    r = fe.verificar(e)
+    ind = r.indicadores
+    confere(r.veredito == fe.ADMITE and ind["etapa2"] == "ok", f"etapa 2: {ind['etapa2']}")
+    print(f"      CPU etapa 1 {ind['cpu_etapa1']:.1f} s | etapa 2 {ind['cpu_etapa2']:.1f} s "
+          f"(appsi_highs, esta maquina) | penalidade {ind['penalidade']} | maior individual "
+          f"{ind['pena_max_etapa1']} -> {ind['pena_max']} | pedidos "
+          f"{ind['pedidos_atendidos']}/{ind['pedidos_total']} | enf em posto tec "
+          f"{ind['enf_em_posto_tec']} | carga {ind['horas_min']:g}-{ind['horas_max']:g} h")
+    c = r.inst.contratos["0"]
+    print(f"      contrato: MinNumAssignments ligada={c.min_num_assignments.ligada} "
+          f"valor={c.min_num_assignments.valor} peso={c.min_num_assignments.peso} | "
+          f"MaxNumAssignments ligada={c.max_num_assignments.ligada} "
+          f"valor={c.max_num_assignments.valor} peso={c.max_num_assignments.peso} | "
+          f"teto em horas {r.inst.carga_maxima_h:g}")
+
+
+DIAGNOSTICOS = [
+    # (rotulo, entrada, motivo esperado, menor viavel esperado, trecho esperado no texto)
+    ("horas: 8 h, 1+3 por turno, 4 + 10",
+     lambda: _entrada(M8_TURNOS, 4, 10, {"M": (1, 3), "T": (1, 3), "N": (1, 3)}),
+     fe.HORAS, None, "faltam pelo menos 2"),
+    ("alternancia: Experimento A com 39",
+     lambda: _entrada(M12_TURNOS, 13, 26, {"D": (1, 9), "N": (1, 9)},
+                      demanda_fds={"D": (1, 6), "N": (1, 6)}),
+     fe.ALTERNANCIA, 40, "seg 04/01 e ter 05/01"),
+    ("categoria: 8 h, 1+2 por turno, 3 + 20",
+     lambda: _entrada(M8_TURNOS, 3, 20, {"M": (1, 2), "T": (1, 2), "N": (1, 2)}),
+     fe.CATEGORIA, 24, "pelo menos 1 enfermeiro"),
+    ("dia: 8 h, 1+2, 6 + 8, Tec 1 a 6 de licenca em 14/01",
+     lambda: _entrada(M8_TURNOS, 6, 8, {"M": (1, 2), "T": (1, 2), "N": (1, 2)},
+                      indisponibilidades=[(f"Téc {i}", dia(10), dia(10))
+                                          for i in range(1, 7)]),
+     fe.DIA, 15, "qui 14/01"),
+    ("combinacao: 12x36 so enfermeiro, 4, Enf 3 de licenca 09 e 10/01",
+     lambda: _entrada(M12_TURNOS, 4, 0, {"D": (1, 0), "N": (1, 0)},
+                      indisponibilidades=[("Enf 3", dia(5), dia(6))]),
+     fe.COMBINACAO, 5, "solver provou"),
+]
+
+
+def casos_diagnostico() -> None:
+    print("7.3 diagnostico da trava (motivo esperado registrado antes)")
+    for rotulo, entrada, motivo, menor, trecho in DIAGNOSTICOS:
+        r = fe.verificar(entrada())
+        obtido = r.diagnostico[0] if r.diagnostico else None
+        confere(obtido == motivo, f"{rotulo}: motivo {obtido} (esperado {motivo})")
+        if r.diagnostico:
+            confere(trecho in r.diagnostico[1], f"   texto: {r.diagnostico[1]}")
+        if menor is None:
+            confere(r.menor_viavel is not None and r.menor_viavel >= 16,
+                    f"   {r.frase()}")
+        else:
+            confere(r.menor_viavel == menor, f"   {r.frase()} tentativas {r.tentativas}")
+
+
 def main() -> int:
     caso_experimento_a()
     caso_6h_12h()
     caso_poucos_enfermeiros()
     caso_enfermeiro_em_posto_de_tecnico()
+    caso_objetivo()
+    caso_tempo_40()
+    casos_diagnostico()
     print()
     if FALHAS:
         print(f"{len(FALHAS)} FALHA(S)")
