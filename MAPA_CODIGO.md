@@ -21,7 +21,7 @@ da ferramenta**, só que sem interface. Estão marcadas com ⭐ abaixo.
 | `src/solucao.py` | Escreve a escala produzida e valida contra o esquema. É a saída. |
 | `src/tabela.py` | Gravação de CSV por mesclagem, com testes próprios. Utilitário. |
 | `src/ferramenta.py` | **A ferramenta sem tela** (29/09): entrada do formulário → veredito do quadro ("admite escala legal" / "faltam N; o menor quadro viável é X"), QP em duas parcelas, escala conferida e planilha `.xlsx`. Resolve pelo `experimento_a.tentar`, sem copiar a configuração do modelo. |
-| `src/app.py` | **A tela** (Streamlit): `streamlit run src\app.py`. Só a casca de `ferramenta.py`; resolução atrás de botão, resultado em `st.session_state`. |
+| `src/app.py` | **A tela** (Streamlit): `streamlit run src\app.py`. Só a casca de `ferramenta.py`. Desde 29/09 (Etapa 6), na ordem da especificação: unidade (modelo de turnos editável, fim de semana, grau), equipe (férias, pedidos de folga), demanda por turno (generalista e específica), painel COFEN opcional, resultado com alertas em vermelho. |
 | `src/testes_ferramenta.py` | Ponta a ponta pela tela (AppTest): configuração do Experimento A, 12×36, razão 20/29 — 40 admite, 39 diz que o menor viável é 40, QP 35,24 e 40,52, planilha abre. |
 | `src/testes_entrada.py` | Testes das entradas da ferramenta (29/09): pacientes, QP em duas parcelas, razão fim de semana/dia útil, equipe por quantidade, indisponibilidade. Reproduz 40 e 37 do Experimento A pela razão 20/29. `--rapido` pula o solver. |
 

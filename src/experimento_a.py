@@ -146,7 +146,7 @@ def piso_de_capacidade(inst, regime: str) -> int:
     return math.ceil(inst.demanda_total / br.MAX_ATRIBUICOES[regime])
 
 
-def piso_de_alternancia(inst) -> int:
+def piso_de_alternancia(inst, limite: int | None = None) -> int:
     """Segundo piso, que so aparece quando a demanda varia entre dias.
 
     Se o contrato limita a `L` dias consecutivos de trabalho, entao em qualquer janela de
@@ -161,11 +161,17 @@ def piso_de_alternancia(inst) -> int:
     nao tinha como medir.
 
     Devolve 0 quando o contrato nao limita dias consecutivos.
+
+    `limite` substitui o do contrato quando outra regra aperta mais — com turnos
+    configurados so de 12 h, a regra das 36 h ja proibe dois dias seguidos, embora o contrato
+    diga 6 (ver `ferramenta.limite_efetivo`).
     """
     c = inst.contratos["0"].max_consecutive_working_days
-    if not c.ativa or c.valor < 1:
-        return 0
-    L = c.valor
+    if limite is None:
+        if not c.ativa or c.valor < 1:
+            return 0
+        limite = c.valor
+    L = limite
     dias = inst.dias
     por_dia = {d: 0 for d in dias}
     for (d, _), q in inst.demanda.items():

@@ -48,6 +48,7 @@ multiplicativo igual nos dois regimes — nao altera a comparacao relativa.
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import math
 from dataclasses import dataclass
 from datetime import date, time, timedelta
@@ -62,6 +63,7 @@ from instancia import (
     Instancia,
     Padrao,
     EntradaPadrao,
+    Pedido,
     Profissional,
     Turno,
 )
@@ -721,6 +723,16 @@ def alertas_cofen(inst: Instancia, grau: str | None = None,
     return alertas
 
 
+def _id_profissional(profs: dict[str, Profissional], quem: str) -> str:
+    """Profissional pelo id ou pelo nome."""
+    if quem in profs:
+        return quem
+    por_nome = {p.nome: p.id for p in profs.values()}
+    if quem not in por_nome:
+        raise ValueError(f"profissional inexistente: {quem}")
+    return por_nome[quem]
+
+
 def _indisponiveis(profs: dict[str, Profissional], periodos, inicio: date,
                    fim: date) -> frozenset[tuple[str, date]]:
     """(profissional, data inicial, data final) -> pares (id, dia) indisponiveis.
@@ -728,12 +740,9 @@ def _indisponiveis(profs: dict[str, Profissional], periodos, inicio: date,
     O profissional pode vir pelo id ou pelo nome. Periodo que sai do horizonte e recortado;
     periodo inteiramente fora dele e erro, porque quase certamente e data digitada errada.
     """
-    por_nome = {p.nome: p.id for p in profs.values()}
     pares = set()
     for quem, de, ate in periodos:
-        pid = quem if quem in profs else por_nome.get(quem)
-        if pid is None:
-            raise ValueError(f"indisponibilidade de profissional inexistente: {quem}")
+        pid = _id_profissional(profs, quem)
         if ate < de:
             raise ValueError(f"indisponibilidade de {quem}: fim {ate} antes do inicio {de}")
         if ate < inicio or de > fim:
@@ -795,11 +804,17 @@ def _validar_turnos(turnos) -> list[tuple[str, int, int, str]]:
     return vistos
 
 
+FIM_DE_SEMANA = {"sab_dom": ((5, 6), "SaturdaySunday"),
+                 "sex_dom": ((4, 5, 6), "FridaySaturdaySunday")}
+
+
 def demanda_por_turno(turnos, inicio: date, dias: int, demanda_turno,
-                      demanda_fds=None, demanda_data=None) -> dict[tuple[date, str], int]:
+                      demanda_fds=None, demanda_data=None,
+                      fim_de_semana: str = "sab_dom") -> dict[tuple[date, str], int]:
     """Demanda informada pelo usuario -> cobertura por (dia, turno), com a variante de
     enfermeiro. Generalista: `demanda_turno[id] = (enfermeiros, tecnicos)`, com
-    `demanda_fds[id]` opcional para sabado e domingo. Especifica, por cima da generalista:
+    `demanda_fds[id]` opcional para o fim de semana (`fim_de_semana`: sabado e domingo, ou
+    sexta a domingo). Especifica, por cima da generalista:
     `demanda_data[(data, id, "enf" | "tec")] = n` — um feriado, por exemplo.
 
     O posto de tecnico (turno-base, habilidade "Enfermagem") pode ser coberto por enfermeiro,
@@ -816,11 +831,12 @@ def demanda_por_turno(turnos, inicio: date, dias: int, demanda_turno,
     for (d, tid, cat), n in demanda_data.items():
         if tid not in ids or cat not in CATEGORIAS or not (inicio <= d <= fim) or n < 0:
             raise ValueError(f"demanda especifica invalida: {(d, tid, cat)} = {n}")
+    dias_fds = FIM_DE_SEMANA[fim_de_semana][0]
     demanda: dict[tuple[date, str], int] = {}
     for k in range(dias):
         d = inicio + timedelta(days=k)
         for tid in ids:
-            base = demanda_fds.get(tid, demanda_turno[tid]) if d.weekday() >= 5 \
+            base = demanda_fds.get(tid, demanda_turno[tid]) if d.weekday() in dias_fds \
                 else demanda_turno[tid]
             enf = demanda_data.get((d, tid, "enf"), base[0])
             tec = demanda_data.get((d, tid, "tec"), base[1])
@@ -834,7 +850,8 @@ def demanda_por_turno(turnos, inicio: date, dias: int, demanda_turno,
 def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
                           n_enfermeiros, n_tecnicos, nomes_enfermeiros, nomes_tecnicos,
                           dias: int, inicio: date, descanso_clt: bool,
-                          indisponibilidades) -> Instancia:
+                          indisponibilidades, pedidos=(),
+                          fim_de_semana: str = "sab_dom") -> Instancia:
     """Instancia com turnos e demanda do usuario. A CLT trava; o COFEN nao entra aqui.
 
     - regras de descanso GERADAS dos horarios (`pares_proibidos_por_horario`);
@@ -864,10 +881,21 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
         objetos[f"{tid}E"] = Turno(id=f"{tid}E", inicio=time(ini), fim=t_fim,
                                    descricao=f"{desc} (enfermeiro)",
                                    habilidades=frozenset({HABILIDADE_ENF}))
+    if fim_de_semana not in FIM_DE_SEMANA:
+        raise ValueError(f"fim de semana {fim_de_semana!r}; use {sorted(FIM_DE_SEMANA)}")
     contrato = _contrato(None, descanso_clt, tuple(padroes),
                          max_atribuicoes=math.floor(carga / min(d for _, _, d in base)),
                          max_consecutivos=MAX_CONSECUTIVOS_GENERICO,
                          descricao="turnos configurados, 42h/semana")
+    contrato = dataclasses.replace(contrato,
+                                   weekend_definition=FIM_DE_SEMANA[fim_de_semana][1])
+    # pedidos de folga: flexiveis, peso 1 — entram na penalidade, nunca travam
+    folgas = []
+    for quem, d in pedidos:
+        if not (inicio <= d <= fim):
+            raise ValueError(f"pedido de folga de {quem} em {d}, fora do horizonte")
+        folgas.append(Pedido(tipo="folga_dia", profissional=_id_profissional(profs, quem),
+                             data=d, peso=1))
     return Instancia(
         id=f"br_turnos_e{len(profs)}",
         arquivo="",
@@ -879,8 +907,8 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
         contratos={"0": contrato},
         profissionais=profs,
         demanda=demanda_por_turno(turnos, inicio, dias, demanda_turno, demanda_fds,
-                                  demanda_data),
-        pedidos=(),
+                                  demanda_data, fim_de_semana),
+        pedidos=tuple(folgas),
         indisponiveis=_indisponiveis(profs, indisponibilidades, inicio, fim),
         carga_maxima_h=carga,
     )
@@ -895,7 +923,7 @@ def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
               n_enfermeiros: int | None = None, n_tecnicos: int | None = None,
               nomes_enfermeiros=None, nomes_tecnicos=None,
               indisponibilidades=(), turnos=None, demanda_turno=None, demanda_fds=None,
-              demanda_data=None) -> Instancia:
+              demanda_data=None, pedidos=(), fim_de_semana: str = "sab_dom") -> Instancia:
     """Monta a instancia brasileira.
 
     Tres caminhos, que nao se misturam:
@@ -932,9 +960,13 @@ def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
             turnos, demanda_turno, demanda_fds, demanda_data, n_enfermeiros=n_enfermeiros,
             n_tecnicos=n_tecnicos, nomes_enfermeiros=nomes_enfermeiros,
             nomes_tecnicos=nomes_tecnicos, dias=dias, inicio=inicio,
-            descanso_clt=descanso_clt, indisponibilidades=indisponibilidades)
+            descanso_clt=descanso_clt, indisponibilidades=indisponibilidades,
+            pedidos=pedidos, fim_de_semana=fim_de_semana)
     if demanda_turno is not None or demanda_fds is not None or demanda_data is not None:
         raise ValueError("demanda por turno so vale com turnos configurados (turnos=...)")
+    if pedidos or fim_de_semana != "sab_dom":
+        raise ValueError("pedidos de folga e fim de semana configuravel so valem com turnos "
+                         "configurados (turnos=...)")
     if pacientes is not None:
         if porte_horas is not None:
             raise ValueError("pacientes e porte_horas sao duas formas do porte; use uma so")

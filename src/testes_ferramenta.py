@@ -1,17 +1,24 @@
-"""Caso de ponta a ponta PELA TELA (Streamlit AppTest). Roda da raiz, com a .venv ativa:
+"""Casos de ponta a ponta PELA TELA (Streamlit AppTest). Roda da raiz, com a .venv ativa:
 
     python src\\testes_ferramenta.py
 
-O AppTest executa `src/app.py` como o navegador faria: preenche o formulario, clica no botao
-e le o que aparece na tela. Caso: a configuracao do Experimento A — 5.920 h em 28 dias, grau
-intermediario (35,24 pacientes em media), 12x36, razao 20/29.
+O AppTest executa `src/app.py` como o navegador faria: escolhe o modelo de turnos, preenche
+equipe e demanda, clica no botao e le o que aparece na tela. Esperado registrado ANTES de
+rodar (29/09, Etapa 6):
 
-- 40 profissionais (14 enfermeiros + 26 tecnicos, a composicao que o Experimento A usou):
-  a tela diz "admite escala legal", o QP mostra 35,24 e 40,52, e a planilha abre;
-- 39 profissionais (13 + 26): a tela diz que o menor quadro viavel e 40.
-
-Confere tambem que a instancia montada pela tela tem a MESMA demanda da celula do
-Experimento A — senao o 40 poderia coincidir por acaso.
+1. 12x36, demanda por turno equivalente a celula v1 do Experimento A (razao 20/29): D e N
+   com 1 enfermeiro + 9 tecnicos nos dias uteis e 1 + 6 no fim de semana. 40 (14 + 26):
+   "admite escala legal", sem alerta, e a demanda montada e IDENTICA a da celula — senao o
+   40 poderia coincidir por acaso.
+2. Mesma configuracao com 39 (13 + 26): "Faltam 1; o menor quadro viavel e 40". O 39 cai no
+   piso de alternancia: so ha turnos de 12 h, a regra das 36 h proibe dois dias seguidos, e
+   o quadro cobre a soma de dois dias uteis (20 + 20).
+3. Modelo 6 h + 12 h, M e T com 1 + 3, N com 1 + 2, 7 + 12: gera escala; descanso cumpre.
+4. Poucos enfermeiros: 8 h, M e T com 1 + 3, N com 1 + 2, 5 + 15: gera escala E mostra o
+   alerta vermelho de composicao (o intermediario pede 7 em 20).
+5. Enfermeiro em posto de tecnico: 8 h, M e T com 1 + 2, N com 1 + 1, 8 + 5. Os tecnicos
+   dao 5 x 168 = 840 h para 1.120 h de posto de tecnico: faltam 280 h = 35 turnos de 8 h, que
+   so enfermeiro pode cobrir. Gera escala, com contagem >= 35 na tela.
 """
 
 from __future__ import annotations
@@ -30,6 +37,7 @@ import ferramenta as fe  # noqa: E402
 import instancia_br as br  # noqa: E402
 
 FALHAS: list[str] = []
+M12, M8, M6 = list(fe.MODELOS)
 
 
 def confere(condicao: bool, mensagem: str) -> None:
@@ -38,17 +46,26 @@ def confere(condicao: bool, mensagem: str) -> None:
         FALHAS.append(mensagem)
 
 
-def pela_tela(n_enf: int, n_tec: int) -> AppTest:
+def pela_tela(modelo: str, n_enf: int, n_tec: int, demanda: dict, fds: dict | None = None,
+              grau: str = "intermediario") -> AppTest:
     at = AppTest.from_file(str(RAIZ / "src" / "app.py"), default_timeout=1800)
     at.run()
-    at.number_input(key="pac_intermediario").set_value(
-        br.PORTE_HORAS / br.DIAS_HORIZONTE / br.GRAUS["intermediario"].horas_paciente_24h)
-    at.radio[0].set_value("12x36")
+    at.selectbox(key="modelo").set_value(modelo)
+    at.selectbox(key="grau").set_value(grau)
+    at.date_input(key="inicio").set_value(br.primeira_segunda())
     at.number_input(key="n_enf").set_value(n_enf)
     at.number_input(key="n_tec").set_value(n_tec)
-    at.text_input(key="razao").set_value("20/29")
-    at.date_input(key="inicio").set_value(br.primeira_segunda())
-    at.button[0].click()
+    if fds:
+        at.checkbox(key="com_fds").check()
+    at.run()
+    for nome, (enf, tec) in demanda.items():
+        at.number_input(key=f"g_{nome}_enf").set_value(enf)
+        at.number_input(key=f"g_{nome}_tec").set_value(tec)
+    for nome, (enf, tec) in (fds or {}).items():
+        at.number_input(key=f"f_{nome}_enf").set_value(enf)
+        at.number_input(key=f"f_{nome}_tec").set_value(tec)
+    at.run()
+    at.button(key="gerar").click()
     at.run()
     return at
 
@@ -57,43 +74,75 @@ def textos(at, tipo) -> list[str]:
     return [el.value for el in getattr(at, tipo)]
 
 
-def main() -> int:
-    print("40 profissionais (14 + 26), 12x36, razao 20/29, pela tela")
-    at = pela_tela(14, 26)
-    confere(not at.exception, f"sem excecao na tela {[e.value for e in at.exception]}")
-    confere(any("admite escala legal" in t for t in textos(at, "success")),
-            f"veredito: {textos(at, 'success') + textos(at, 'warning') + textos(at, 'error')}")
-    metricas = {m.label: m.value for m in at.metric}
-    confere(metricas.get("QP núcleo assistencial") == "35,24",
-            f"QP núcleo = {metricas.get('QP núcleo assistencial')}")
-    confere(metricas.get("QP completo (IST 15%)") == "40,52",
-            f"QP completo = {metricas.get('QP completo (IST 15%)')}")
+def metricas(at) -> dict:
+    return {m.label: m.value for m in at.metric}
+
+
+def caso_experimento_a() -> None:
+    demanda, fds = {"D": (1, 9), "N": (1, 9)}, {"D": (1, 6), "N": (1, 6)}
+    print("1. 12x36, demanda equivalente ao Experimento A (razao 20/29), 40 = 14 + 26")
+    at = pela_tela(M12, 14, 26, demanda, fds)
+    confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
+    confere(textos(at, "success") == ["O quadro informado admite escala legal."],
+            f"veredito: {textos(at, 'success') + textos(at, 'warning')}")
+    confere(textos(at, "error") == [], f"sem alerta: {textos(at, 'error')}")
     r, e = at.session_state["resultado"]
-    wb = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))
-    confere(wb.sheetnames == ["Escala", "Resumo", "Legenda"],
-            f"planilha abre, abas {wb.sheetnames}")
-    aba = wb["Escala"]
-    confere(aba.max_row == 1 + 40 and aba.max_column == 3 + 28,
-            f"aba Escala: {aba.max_row - 1} profissionais x {aba.max_column - 3} dias")
     ref = br.construir(grau="intermediario", regime="12x36", regra="teto", efetivo=40,
                        variacao=1.0)
-    confere(r.inst.demanda == ref.demanda,
-            "demanda montada pela tela = demanda da celula 12x36 v1 do Experimento A")
-    confere(r.conformidade["ok"], "conferencia de descanso da escala: cumpre")
+    confere(r.inst.demanda == ref.demanda, "demanda montada pela tela = celula v1 do "
+                                           "Experimento A")
+    confere(r.tentativas == [(40, "viavel")], f"tentativas {r.tentativas}")
+    wb = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))
+    confere(wb.sheetnames == ["Escala", "Resumo", "Legenda"]
+            and wb["Escala"].max_row == 41, f"planilha abre: {wb.sheetnames}")
+    confere(r.conformidade["ok"], "conferencia de descanso: cumpre")
 
-    print("39 profissionais (13 + 26), mesma configuracao, pela tela")
-    at = pela_tela(13, 26)
+    print("2. mesma configuracao, 39 = 13 + 26")
+    at = pela_tela(M12, 13, 26, demanda, fds)
     confere(not at.exception, "sem excecao na tela")
-    avisos = textos(at, "warning")
-    confere(any("o menor quadro viável é 40" in t and "Faltam 1" in t for t in avisos),
-            f"veredito: {avisos + textos(at, 'success') + textos(at, 'error')}")
+    confere(textos(at, "warning") == ["Faltam 1; o menor quadro viável é 40."],
+            f"veredito: {textos(at, 'warning') + textos(at, 'success')}")
     r, _ = at.session_state["resultado"]
-    # 39 fica abaixo do piso de alternancia (40 na celula v1 do Experimento A): no 12x36
-    # ninguem trabalha dois dias seguidos, entao o quadro cobre a SOMA de dois dias. E prova
-    # aritmetica de inviabilidade, sem solver — a mesma que o Experimento A usa.
-    confere(r.tentativas == [(39, "piso"), (40, "viavel")],
-            f"39 inviavel pela aritmetica (piso de alternancia), 40 viavel: {r.tentativas}")
+    confere(r.tentativas == [(39, "piso"), (40, "viavel")], f"tentativas {r.tentativas}")
 
+
+def caso_6h_12h() -> None:
+    print("3. modelo 6 h + 12 h, 7 + 12")
+    at = pela_tela(M6, 7, 12, {"M": (1, 3), "T": (1, 3), "N": (1, 2)})
+    confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
+    confere(textos(at, "success") == ["O quadro informado admite escala legal."],
+            f"veredito: {textos(at, 'success') + textos(at, 'warning')}")
+    confere(metricas(at).get("Conferência de descanso") == "cumpre",
+            f"conferencia de descanso na tela: {metricas(at).get('Conferência de descanso')}")
+
+
+def caso_poucos_enfermeiros() -> None:
+    print("4. poucos enfermeiros: 8 h, 5 + 15")
+    at = pela_tela(M8, 5, 15, {"M": (1, 3), "T": (1, 3), "N": (1, 2)})
+    confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
+    confere(textos(at, "success") == ["O quadro informado admite escala legal."],
+            f"ainda gera a escala: {textos(at, 'success') + textos(at, 'warning')}")
+    alertas = textos(at, "error")
+    confere(len(alertas) == 1 and alertas[0].startswith("Alerta COFEN (não impede a escala)")
+            and "5 enfermeiros em 20" in alertas[0] and "isto e, 7" in alertas[0],
+            f"alerta vermelho: {alertas}")
+
+
+def caso_enfermeiro_em_posto_de_tecnico() -> None:
+    print("5. enfermeiro em posto de tecnico: 8 h, 8 + 5")
+    at = pela_tela(M8, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)})
+    confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
+    confere(textos(at, "success") == ["O quadro informado admite escala legal."],
+            f"veredito: {textos(at, 'success') + textos(at, 'warning')}")
+    n = int(metricas(at).get("Turnos de enfermeiro em posto de técnico", -1))
+    confere(n >= 35, f"contagem na tela: {n} turnos de enfermeiro em posto de tecnico (>= 35)")
+
+
+def main() -> int:
+    caso_experimento_a()
+    caso_6h_12h()
+    caso_poucos_enfermeiros()
+    caso_enfermeiro_em_posto_de_tecnico()
     print()
     if FALHAS:
         print(f"{len(FALHAS)} FALHA(S)")
