@@ -203,9 +203,9 @@ if gerar:
 if "resultado" in st.session_state:
     r, e = st.session_state["resultado"]
     st.header("5. Resultado")
-    if r.veredito == fe.ADMITE:
+    if r.veredito == fe.ADMITE and r.provado:
         st.success(r.frase())
-    elif r.veredito == fe.FALTAM:
+    elif r.veredito in (fe.ADMITE, fe.FALTAM):
         st.warning(r.frase())
     else:
         st.error(r.frase())
@@ -234,10 +234,16 @@ if "resultado" in st.session_state:
                    f"{c['max_consec']} dias seguidos")
         equilibrio = ind.get("etapa2")
         if equilibrio == "ok":
-            st.caption(f"Equilíbrio: entre as escalas de mesmo custo, a maior penalidade "
-                       f"individual caiu de {ind['pena_max_etapa1']} para {ind['pena_max']}.")
+            sem_prova = "" if ind["provado_etapa2"] else " (sem prova de que é a menor)"
+            st.caption(f"Equilíbrio de carga: entre as escalas de mesmo custo, a diferença "
+                       f"entre a maior e a menor carga caiu de {ind['amplitude_etapa1']:g} h "
+                       f"para {ind['amplitude']:g} h{sem_prova}.")
         elif equilibrio:
-            st.caption(f"Equilíbrio: {equilibrio}.")
+            st.caption(f"Equilíbrio de carga: {equilibrio}.")
+        if ind["pedidos_total"]:
+            st.caption(f"Pedidos de folga negados: {ind['pedidos_total'] - ind['pedidos_atendidos']}"
+                       f", em {ind['com_pedido_negado']} profissional(is); no máximo "
+                       f"{ind['negados_max']} por pessoa.")
     if r.qp:
         q1, q2 = st.columns(2)
         q1.metric("QP núcleo assistencial", f"{r.qp[0]:.2f}".replace(".", ","),
@@ -250,7 +256,7 @@ if "resultado" in st.session_state:
                            "cobrem a demanda",
                    "inviavel": "inviável, provado pelo solver",
                    "viavel": "viável — escala encontrada e conferida",
-                   "indeterminado": "não decidido no limite de tempo",
+                   "indeterminado": "sem escala no tempo disponível — nem provado inviável",
                    "erro": "o solver falhou"}
         for quadro, v, n_enf_t, n_tec_t in r.tentativas:
             composicao = f" ({n_enf_t} enf. + {n_tec_t} téc.)" if n_enf_t is not None else ""

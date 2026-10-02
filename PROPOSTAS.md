@@ -104,3 +104,30 @@ A P1 está desbloqueada: objetivo decidido.
 - **Continuidade entre períodos** (acrescentado em 29/09): receber os últimos dias do
   período anterior como entrada, para conferir interjornada e descanso na virada entre uma
   escala e a seguinte. Ver `DECISOES.md`, "2026-09-29 — Ajustes da Etapa 2".
+
+---
+
+## 2026-10-02 — P4: amplitude de carga com férias e licenças
+
+**Status: aguardando decisão.** Nada implementado além do decidido.
+
+A etapa 2 passou a minimizar a amplitude de carga do período (maior carga − menor carga, em
+horas), sobre **todos** os profissionais, como decidido em 02/10. Quem tem férias ou licença
+no período tem a carga limitada pelos dias disponíveis: no 12×36, com uma semana de férias,
+cabem no máximo 11 plantões nos 21 dias restantes (alternância), 132 h, contra 14 plantões e
+168 h de quem está o período inteiro. Essa pessoa vira, por construção, a menor carga, e
+a amplitude passa a medir a distância até ela, não o desequilíbrio entre quem trabalhou o
+período inteiro. No limite, minimizar a amplitude vira minimizar a maior carga, e a etapa 2
+pode **empurrar carga para quem tem férias** até o teto dos dias livres dela, só para
+aproximar o piso — o que é o contrário do que se quer.
+
+Duas saídas, as duas mudança de formulação:
+
+1. **Amplitude só entre quem não tem indisponibilidade no período.** Simples; quem tem férias
+   fica fora do critério (mas continua sob o teto de 42 h/semana).
+2. **Amplitude da carga proporcional** — horas ÷ dias disponíveis × 28. Compara todos, mas
+   introduz uma divisão por constante por pessoa (continua linear, porque os dias
+   disponíveis são dado).
+
+Recomendo a 1, por ser a que se explica em uma frase na tela. Enquanto não decidido, a
+ferramenta faz o que foi decidido (todos), e a tela mostra a amplitude que resultou.

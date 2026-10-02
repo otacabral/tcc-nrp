@@ -1227,6 +1227,43 @@ até aqui terminaram com resposta provada — a maior da curva de escalabilidade
 para em 600 s por resolução, em vez de poder rodar sem fim. Achado ao preparar a P1: o teste
 rápido com "60 s por etapa" passou de 800 s de CPU.
 
+*Nota de 02/10 — o que a tela diz quando o tempo esgota (decisão do Otávio).* Três desfechos
+distintos: **(a)** ótimo provado → "Escala gerada."; **(b)** escala encontrada sem prova →
+"Escala gerada; pode haver uma melhor", com o gap da etapa 1; **(c)** tempo esgotado sem
+escala → "Não foi possível gerar a escala no tempo disponível." **Nunca "faltam N" em (c)**:
+o diagnóstico de falta só aparece com prova de inviabilidade, pela conta ou pelo solver. Se
+o quadro informado foi provado curto e o seguinte esgotou o tempo, a tela mostra o
+diagnóstico do informado (provado) e diz que o menor quadro viável não foi determinado. Na
+situação (b) a etapa 2 não roda (só roda sobre ótimo provado). *Defeito achado ao montar o
+teste de (b):* parado no limite de tempo **com** escala, o appsi devolve `maxTimeLimit`, e
+`experimento_a.classificar` só reconhecia "optimal" ou "feasible" — classificava como não
+decidido e descartava uma escala legal. Corrigido com `modelo.tem_solucao`, que lê o valor
+da melhor solução e não o nome do estado. Não afeta nenhum número registrado, porque até
+02/10 o limite nunca chegava ao solver e toda resolução terminava com prova. *Testes*
+(`src/testes_ferramenta.py`, 8a–8d, esperado registrado antes): os quatro acertaram. Os casos
+(b) e (c) dependem da máquina — escolhidos por sondagem no log do HiGHS (no 40 com 20
+pedidos, primeira escala aos ~17 s com gap 1,03%, prova aos ~43 s), limites de 25 s e 3 s.
+
+*Nota de 02/10 — a etapa 2 passa a equilibrar HORAS (decisão do Otávio).* Com a penalidade
+da etapa 1 fixada no ótimo, a etapa 2 minimiza a **amplitude de carga**: maior carga do
+período menos a menor, em horas, sobre todos os profissionais (`ferramenta.preparar_equilibrio`).
+A distribuição dos pedidos negados continua informada na tela (quantos, em quantas pessoas,
+no máximo quantos por pessoa), mas não é otimizada. **O mecanismo é o do Experimento B** —
+fixar o ótimo, otimizar um segundo critério — e o Experimento B continua válido como
+demonstração; muda o critério que a ferramenta otimiza. A etapa 2 agora roda também com
+penalidade zero, porque a carga pode estar desequilibrada sem pedido negado. *Medido no caso
+de 40 profissionais (12×36, 14 + 26, 20 pedidos):* amplitude **72 h na escala da etapa 1 →
+48 h**, com otimalidade provada; carga de 120 h a 168 h; 20 de 20 pedidos atendidos. A
+amplitude de 48 h é **a menor possível com a penalidade da etapa 1 fixada**, e a conta mostra
+por quê: fixado o ótimo, ficam fixos os 96 turnos de enfermeiro em posto de técnico. Os
+enfermeiros fazem então 56 + 96 = 152 plantões, 10,86 por pessoa — ao menos um fica com 10
+ou menos (120 h). Os técnicos fazem 456 − 96 = 360, mais que 26 × 13 = 338 — ao menos um
+fica com 14 (168 h). Logo amplitude ≥ 48 h, e o solver a atinge. A diferença de 48 h da nota
+anterior não era acaso da etapa 1: é consequência do objetivo (técnico em posto de técnico
+antes de enfermeiro), e equilibrar horas não a remove.
+*Afirmação fraca:* etapa 1 em 35,9 s e etapa 2 em 37,5 s de relógio (appsi_highs, Intel
+i5-10210U, Windows 11). Questão aberta sobre quem tem férias: ver P4 do `PROPOSTAS.md`.
+
 ---
 
 ## Modelo de entrada

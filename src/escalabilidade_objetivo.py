@@ -6,7 +6,8 @@ Roda da raiz do repositorio, com a .venv ativa:
     python src\\escalabilidade_objetivo.py --n 40           # so esse
     python src\\escalabilidade_objetivo.py --tempo 900      # limite POR ETAPA, em segundos
 
-Saida: `resultados/escalabilidade_objetivo.csv`, gravado a cada tamanho concluido.
+Saida: `resultados/escalabilidade_objetivo.csv`, gravado a cada tamanho concluido, e o log
+do HiGHS de cada etapa no terminal (redirecionar para arquivo).
 
 ## O que muda em relacao a `escalabilidade.py`
 
@@ -19,12 +20,17 @@ mesmas opcoes da ferramenta). Muda:
   sequencia, reproduzivel sozinho com `--n`;
 - **o objetivo completo da ferramenta** (DECISOES.md, "Redesenho"): etapa 1 com pesos
   inteiros (`ferramenta.pesos`: enfermeiro em posto de tecnico custa 1, pedido negado custa
-  W); etapa 2 com a penalidade presa no otimo, minimizando a penalidade individual maxima
-  (`ferramenta.preparar_equilibrio`). Como na ferramenta, a etapa 2 so roda se a etapa 1
-  provou otimalidade e a penalidade e maior que zero.
+  W); etapa 2 com a penalidade presa no otimo, minimizando a amplitude de carga em horas
+  (`ferramenta.preparar_equilibrio`, 02/10). Como na ferramenta, a etapa 2 so roda se a
+  etapa 1 provou otimalidade.
 
 Com isso o limite inferior deixa de ser zero por construcao, e a prova de otimalidade passa
 a custar alguma coisa — e isso que a P1 queria medir.
+
+Por etapa registra-se: estado do solver, se provou otimalidade, gap ao fim, tempo de relogio
+e **tempo ate a primeira escala legal** — lido do log do HiGHS (primeira linha da arvore com
+solucao finita, na coluna de tempo do proprio HiGHS). Toda solucao do modelo e legal: a CLT
+esta nas restricoes rigidas.
 
 Tempo de resolucao e LIMITE OPERACIONAL, nao resultado (CLAUDE.md): registra-se com a
 maquina e o solver nomeados. O que interessa e se a prova fecha.
@@ -33,14 +39,16 @@ maquina e o solver nomeados. O que interessa e se a prova fecha.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import dataclasses
+import io
+import math
 import platform
 import random
+import re
 import sys
 import time
 from pathlib import Path
-
-import pyomo.environ as pyo
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "src"))
@@ -59,6 +67,11 @@ ESCALAS = RAIZ / "resultados" / "escalabilidade_objetivo"
 SEMENTE = 20261002         # data da rodada; cada tamanho usa SEMENTE + N
 PEDIDOS_POR_PESSOA = 2
 
+# linha da arvore do HiGHS: "Src Proc. InQueue | Leaves Expl. | BestBound BestSol Gap | ...
+# Time". O BestSol e o 7o campo depois da letra de origem (opcional); o tempo, o ultimo.
+_LINHA_ARVORE = re.compile(
+    r"^\s*[A-Za-z]?\s+\d+\s+\d+\s+\d+\s+[\d.]+%\s+(\S+)\s+(\S+)\s+.*?([\d.]+)s\s*$")
+
 
 def com_pedidos(inst, n: int):
     """2 pedidos de folga por profissional, em datas distintas sorteadas. Peso 1 aqui;
@@ -71,19 +84,61 @@ def com_pedidos(inst, n: int):
     return dataclasses.replace(inst, pedidos=tuple(pedidos))
 
 
-def _resolver(m, solver: str, tempo: int):
-    """Resolve e devolve (estado, resultado, parede, cpu). Nunca levanta."""
-    t0, c0 = time.time(), time.process_time()
+class _Tee(io.TextIOBase):
+    """Escreve no terminal (que vai para o log) e guarda copia para ler o tempo da 1a escala."""
+
+    def __init__(self, destino):
+        self.destino, self.copia = destino, io.StringIO()
+
+    def write(self, texto):
+        self.destino.write(texto)
+        self.copia.write(texto)
+        return len(texto)
+
+    def flush(self):
+        self.destino.flush()
+
+
+def primeira_solucao_s(log: str) -> float | None:
+    """Tempo do HiGHS na primeira linha da arvore com melhor solucao finita."""
+    for linha in log.splitlines():
+        achou = _LINHA_ARVORE.match(linha)
+        if achou:
+            try:
+                melhor = float(achou.group(2))
+            except ValueError:
+                continue
+            if math.isfinite(melhor):
+                return float(achou.group(3))
+    return None
+
+
+def _resolver(m, solver: str, tempo: int) -> dict:
+    """Resolve com o log do HiGHS ligado e devolve o que a P1 registra. Nunca levanta."""
+    tee = _Tee(sys.stdout)
+    t0 = time.time()
     try:
-        resultado = modelo.resolver(m, solver=solver, tempo_limite=tempo, carregar=False)
+        with contextlib.redirect_stdout(tee):
+            resultado = modelo.resolver(m, solver=solver, tempo_limite=tempo, log=True,
+                                        carregar=False)
     except Exception as e:  # noqa: BLE001
-        return f"erro: {type(e).__name__}: {e}", None, time.time() - t0, time.process_time() - c0
-    return (modelo.estado(resultado), resultado, time.time() - t0,
-            time.process_time() - c0)
+        return {"estado": f"erro: {type(e).__name__}: {e}", "resultado": None,
+                "relogio_s": round(time.time() - t0, 1), "otimo": False, "gap": "",
+                "primeira_s": None}
+    return {"estado": modelo.estado(resultado), "resultado": resultado,
+            "relogio_s": round(time.time() - t0, 1),
+            "otimo": modelo.provou_otimo(resultado),
+            "gap": esc.folga_relativa(resultado),
+            "primeira_s": primeira_solucao_s(tee.copia.getvalue())}
 
 
-def _provou(estado: str) -> bool:
-    return "optimal" in estado.lower()
+def _registrar(linha: dict, etapa: str, r: dict) -> None:
+    linha.update({f"{etapa}_estado": r["estado"], f"{etapa}_otimo": r["otimo"],
+                  f"{etapa}_gap": r["gap"], f"{etapa}_relogio_s": r["relogio_s"],
+                  f"{etapa}_primeira_escala_s": r["primeira_s"]})
+    print(f"   ### {etapa}: {r['estado']} | provou otimo: {'sim' if r['otimo'] else 'NAO'} | "
+          f"gap {r['gap'] or '-'} | relogio {r['relogio_s']} s | primeira escala legal "
+          f"{r['primeira_s'] if r['primeira_s'] is not None else '-'} s (HiGHS)", flush=True)
 
 
 def rodar(n: int, solver: str, tempo: int) -> dict:
@@ -94,44 +149,36 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
     inst, custo, W = fe.pesos(com_pedidos(inst, n))
     m = ea.modelo_br(inst, custo)
     d = modelo.dimensao(m)
-    print(f"\nN = {n:3d}: {len(inst.pedidos)} pedidos, W = {W}, {d['variaveis']} variaveis, "
-          f"{d['restricoes']} restricoes", flush=True)
+    print(f"\n### N = {n:3d}: {len(inst.pedidos)} pedidos, W = {W}, {d['variaveis']} "
+          f"variaveis, {d['restricoes']} restricoes", flush=True)
 
     linha = {"N": n, "pedidos": len(inst.pedidos), "peso_pedido": W, "semente": SEMENTE + n,
              "variaveis": d["variaveis"], "restricoes": d["restricoes"], "limite_s": tempo,
              "solver": solver}
 
     # etapa 1: pesos inteiros
-    e1, r1, parede1, cpu1 = _resolver(m, solver, tempo)
-    linha.update(etapa1_estado=e1, etapa1_otimo=_provou(e1), etapa1_parede_s=round(parede1, 1),
-                 etapa1_cpu_s=round(cpu1, 1), etapa1_gap=esc.folga_relativa(r1) if r1 else "")
-    print(f"         etapa 1: {e1}, gap {linha['etapa1_gap'] or '-'}, "
-          f"{parede1:.0f} s de parede, {cpu1:.0f} s de CPU", flush=True)
-    if r1 is None or not ("optimal" in e1.lower() or "feasible" in e1.lower()) \
-            or not modelo.carregar_solucao(m, r1):
-        linha["etapa2_estado"] = "nao rodou (etapa 1 sem solucao)"
+    r1 = _resolver(m, solver, tempo)
+    _registrar(linha, "etapa1", r1)
+    if r1["resultado"] is None or not modelo.tem_solucao(r1["resultado"]) \
+            or not modelo.carregar_solucao(m, r1["resultado"]):
+        linha["etapa2_estado"] = "nao rodou (etapa 1 sem escala)"
+        print("   ### sem escala na etapa 1", flush=True)
         return linha
     escala = modelo.atribuicoes(m)
     z = modelo.valor_objetivo(m)
-    linha.update(penalidade=z, pena_max_etapa1=max(round(pyo.value(m.pena[k])) for k in m.pena))
+    linha.update(penalidade=z, amplitude_etapa1_h=fe.amplitude(inst, escala))
 
-    # etapa 2: equilibrio, so com a etapa 1 provada otima e penalidade > 0 (como na ferramenta)
-    if not _provou(e1):
+    # etapa 2: equilibrio de horas, so com a etapa 1 provada otima (como na ferramenta)
+    if not r1["otimo"]:
         linha["etapa2_estado"] = "nao rodou (etapa 1 sem prova)"
-    elif z == 0:
-        linha["etapa2_estado"] = "nao rodou (penalidade zero)"
     else:
-        fe.preparar_equilibrio(m, z)
-        e2, r2, parede2, cpu2 = _resolver(m, solver, tempo)
-        linha.update(etapa2_estado=e2, etapa2_otimo=_provou(e2),
-                     etapa2_parede_s=round(parede2, 1), etapa2_cpu_s=round(cpu2, 1),
-                     etapa2_gap=esc.folga_relativa(r2) if r2 else "")
-        print(f"         etapa 2: {e2}, gap {linha['etapa2_gap'] or '-'}, "
-              f"{parede2:.0f} s de parede, {cpu2:.0f} s de CPU", flush=True)
-        if r2 is not None and ("optimal" in e2.lower() or "feasible" in e2.lower()) \
-                and modelo.carregar_solucao(m, r2):
+        fe.preparar_equilibrio(m, inst, z)
+        r2 = _resolver(m, solver, tempo)
+        _registrar(linha, "etapa2", r2)
+        if r2["resultado"] is not None and modelo.tem_solucao(r2["resultado"]) \
+                and modelo.carregar_solucao(m, r2["resultado"]):
             escala = modelo.atribuicoes(m)
-            linha["pena_max_etapa2"] = max(round(pyo.value(m.pena[k])) for k in m.pena)
+            linha["amplitude_etapa2_h"] = fe.amplitude(inst, escala)
 
     # conferencias da escala final: rigidas e descanso medido no relogio
     ind = fe.indicadores(inst, escala)
@@ -139,7 +186,7 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
     problemas = solucao.conferir_rigidas(inst, escala, habilidade_rigida=True)
     descanso_ok = fe.cumpre(inst, med)
     linha.update(pedidos_atendidos=ind["pedidos_atendidos"],
-                 enf_em_posto_tec=ind["enf_em_posto_tec"],
+                 enf_em_posto_tec=ind["enf_em_posto_tec"], negados_max=ind["negados_max"],
                  horas_min=ind["horas_min"], horas_max=ind["horas_max"],
                  descanso_ok=descanso_ok, menor_folga_h=med["menor_folga"],
                  menor_semanal_h=med["menor_semanal"], max_consec=med["max_consec"],
@@ -149,12 +196,13 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
     linha["penalidade_recontada"] = recontada
     ESCALAS.mkdir(parents=True, exist_ok=True)
     solucao.escrever_xml(inst, escala, ESCALAS / f"{inst.id}_objetivo.xml", penalidade=z)
-    print(f"         penalidade {z} (recontada {recontada}) | pedidos "
+    print(f"   ### penalidade {z} (recontada {recontada}) | pedidos "
           f"{ind['pedidos_atendidos']}/{ind['pedidos_total']} | enf em posto tec "
-          f"{ind['enf_em_posto_tec']} | maior individual {linha['pena_max_etapa1']} -> "
-          f"{linha.get('pena_max_etapa2', '-')} | descanso {'ok' if descanso_ok else 'FALHA'} "
-          f"(menor {med['menor_folga']:g} h acima do exigido, semanal {med['menor_semanal']:g} h)"
-          f" | rigidas {linha['rigidas']}", flush=True)
+          f"{ind['enf_em_posto_tec']} | amplitude {linha['amplitude_etapa1_h']:g} -> "
+          f"{linha.get('amplitude_etapa2_h', '-')} h | carga {ind['horas_min']:g}-"
+          f"{ind['horas_max']:g} h | descanso {'ok' if descanso_ok else 'FALHA'} (folga minima "
+          f"{med['menor_folga']:g} h acima do exigido, semanal {med['menor_semanal']:g} h) | "
+          f"rigidas {linha['rigidas']}", flush=True)
     return linha
 
 
@@ -165,9 +213,9 @@ def main() -> int:
     ap.add_argument("--tempo", type=int, default=900, help="limite POR ETAPA (padrao 900 s)")
     a = ap.parse_args()
 
-    print(f"Curva com objetivo nao trivial (P1). Solver {a.solver}, limite {a.tempo} s por "
+    print(f"### Curva com objetivo nao trivial (P1). Solver {a.solver}, limite {a.tempo} s por "
           f"etapa, semente {SEMENTE} (+N).")
-    print(f"Maquina: {platform.processor()} | {platform.platform()} | "
+    print(f"### Maquina: {platform.processor()} | {platform.platform()} | "
           f"Python {platform.python_version()}", flush=True)
     linhas = []
     for n in a.n or esc.TAMANHOS:
@@ -178,14 +226,14 @@ def main() -> int:
             return 1
         mesclar_csv(SAIDA, linhas, ("N",))
 
-    print(f"\n{'N':>5s}{'etapa 1':>22s}{'s parede':>10s}{'etapa 2':>22s}{'s parede':>10s}"
-          f"{'penal.':>8s}{'pedidos':>10s}{'descanso':>10s}")
+    print("\n### resumo")
     for r in linhas:
-        print(f"{r['N']:5d}{str(r.get('etapa1_estado', '')):>22s}"
-              f"{str(r.get('etapa1_parede_s', '')):>10s}{str(r.get('etapa2_estado', '')):>22s}"
-              f"{str(r.get('etapa2_parede_s', '')):>10s}{str(r.get('penalidade', '')):>8s}"
-              f"{str(r.get('pedidos_atendidos', '')) + '/' + str(r['pedidos']):>10s}"
-              f"{'ok' if r.get('descanso_ok') else 'FALHA':>10s}")
+        print(f"### N={r['N']:3d} | etapa 1 {r.get('etapa1_estado')} gap "
+              f"{r.get('etapa1_gap') or '-'} {r.get('etapa1_relogio_s')} s (1a escala "
+              f"{r.get('etapa1_primeira_escala_s')} s) | etapa 2 {r.get('etapa2_estado')} gap "
+              f"{r.get('etapa2_gap') or '-'} {r.get('etapa2_relogio_s', '-')} s | penalidade "
+              f"{r.get('penalidade', '-')} | descanso "
+              f"{'ok' if r.get('descanso_ok') else 'FALHA/sem escala'}")
     print(f"\nresultado: {SAIDA}")
     return 0
 

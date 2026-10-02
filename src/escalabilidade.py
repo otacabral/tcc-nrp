@@ -98,31 +98,10 @@ def piso(inst) -> int:
     return max(capacidade, alternancia)
 
 
-def _numero(resultado, *caminhos):
-    """Le um numero do objeto de resultado, tentando varios dialetos de Pyomo."""
-    for caminho in caminhos:
-        alvo = resultado
-        try:
-            for parte in caminho.split("."):
-                alvo = getattr(alvo, parte)
-            if alvo is not None:
-                return float(alvo)
-        except (AttributeError, TypeError, ValueError):
-            continue
-    return None
-
-
 def folga_relativa(resultado) -> str:
     """Gap entre a melhor solucao e o melhor limite, ao fim do tempo. "" se nao der para ler."""
-    melhor = _numero(resultado, "best_feasible_objective",
-                     "problem.upper_bound", "problem[0].upper_bound")
-    limite = _numero(resultado, "best_objective_bound",
-                     "problem.lower_bound", "problem[0].lower_bound")
-    if melhor is None or limite is None:
-        return ""
-    if abs(melhor) < 1e-9:
-        return "0.0%" if abs(melhor - limite) < 1e-6 else "inf"
-    return f"{abs(melhor - limite) / abs(melhor):.1%}"
+    g = modelo.gap_relativo(resultado)
+    return "" if g is None else ("inf" if math.isinf(g) else f"{g:.1%}")
 
 
 def rodar(n: int, solver: str, tempo: int, verboso: bool = True) -> dict:
@@ -156,7 +135,7 @@ def rodar(n: int, solver: str, tempo: int, verboso: bool = True) -> dict:
     valor, descanso, conferencia = "", "", ""
     if "infeasible" in estado:
         veredito = INVIAVEL
-    elif "optimal" in estado or "feasible" in estado:
+    elif "optimal" in estado or "feasible" in estado or modelo.tem_solucao(resultado):
         if not modelo.carregar_solucao(m, resultado):
             veredito = ERRO
             conferencia = "solver declarou solucao e nao entregou"

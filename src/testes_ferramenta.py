@@ -19,6 +19,28 @@ rodar (29/09, Etapa 6):
 5. Enfermeiro em posto de tecnico: 8 h, M e T com 1 + 2, N com 1 + 1, 8 + 5. Os tecnicos
    dao 5 x 168 = 840 h para 1.120 h de posto de tecnico: faltam 280 h = 35 turnos de 8 h, que
    so enfermeiro pode cobrir. Gera escala, com contagem >= 35 na tela.
+
+Os tres desfechos do tempo (02/10, DECISOES.md "Redesenho"), esperado registrado ANTES de
+rodar. O limite e encurtado em `fe.TEMPO`, que a tela le na chamada. Os casos (b) e (c)
+dependem da maquina: foram escolhidos por sondagem no log do HiGHS em 02/10 (i5-10210U) —
+no 40 com 20 pedidos, primeira escala aos ~17 s com gap 1,03% e prova aos ~43 s; sem
+pedidos, prova aos ~14 s. Numa maquina muito diferente, os limites podem precisar de ajuste.
+
+8a. Otimo provado: o caso 5 com limite de 600 s. Tela: success "O quadro informado admite
+    escala legal. Escala gerada." e nenhum "pode haver uma melhor".
+8b. Escala sem prova: o 40 do 12x36 com os 20 pedidos do 7.2, limite de 25 s. Tela: warning
+    que comeca por "O quadro informado admite escala legal. Escala gerada; pode haver uma
+    melhor (gap", nenhum success; escala e planilha na tela; equilibrio "nao rodou".
+    Pedidos entram por fora da tela (o AppTest nao edita a tabela): `fe.verificar` e
+    embrulhado para acrescenta-los a entrada que a tela montou.
+8c. Tempo esgotado sem escala: o 40 sem pedidos, limite de 3 s. Tela: error "Nao foi possivel
+    gerar a escala no tempo disponivel."; nenhum "Faltam" em lugar nenhum; sem diagnostico,
+    sem escala, sem botao de planilha.
+8d. Quadro provado curto pela conta, e o seguinte sem escala no tempo: o 39, limite de 3 s.
+    O 39 cai no piso (alternancia), o 40 esgota o tempo. Tela: o diagnostico de alternancia
+    aparece (provado pela conta); a frase e "Nao foi possivel gerar a escala no tempo
+    disponivel com mais profissionais; o menor quadro viavel nao foi determinado."; nenhum
+    "Faltam 1".
 """
 
 from __future__ import annotations
@@ -70,6 +92,9 @@ def pela_tela(modelo: str, n_enf: int, n_tec: int, demanda: dict, fds: dict | No
     return at
 
 
+ADMITE_OK = "O quadro informado admite escala legal. Escala gerada."
+
+
 def textos(at, tipo) -> list[str]:
     return [el.value for el in getattr(at, tipo)]
 
@@ -83,7 +108,7 @@ def caso_experimento_a() -> None:
     print("1. 12x36, demanda equivalente ao Experimento A (razao 20/29), 40 = 14 + 26")
     at = pela_tela(M12, 14, 26, demanda, fds)
     confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
-    confere(textos(at, "success") == ["O quadro informado admite escala legal."],
+    confere(textos(at, "success") == [ADMITE_OK],
             f"veredito: {textos(at, 'success') + textos(at, 'warning')}")
     confere(textos(at, "error") == [], f"sem alerta: {textos(at, 'error')}")
     r, e = at.session_state["resultado"]
@@ -100,7 +125,7 @@ def caso_experimento_a() -> None:
     print("2. mesma configuracao, 39 = 13 + 26")
     at = pela_tela(M12, 13, 26, demanda, fds)
     confere(not at.exception, "sem excecao na tela")
-    confere(textos(at, "warning") == ["Faltam 1; o menor quadro viável é 40."],
+    confere(textos(at, "warning") == ["Faltam 1; o menor quadro viável é 40. Escala gerada."],
             f"veredito: {textos(at, 'warning') + textos(at, 'success')}")
     r, _ = at.session_state["resultado"]
     confere(r.tentativas == [(39, "piso", None, None), (40, "viavel", 14, 26)],
@@ -116,7 +141,7 @@ def caso_6h_12h() -> None:
     print("3. modelo 6 h + 12 h, 7 + 12")
     at = pela_tela(M6, 7, 12, {"M": (1, 3), "T": (1, 3), "N": (1, 2)})
     confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
-    confere(textos(at, "success") == ["O quadro informado admite escala legal."],
+    confere(textos(at, "success") == [ADMITE_OK],
             f"veredito: {textos(at, 'success') + textos(at, 'warning')}")
     confere(metricas(at).get("Conferência de descanso") == "cumpre",
             f"conferencia de descanso na tela: {metricas(at).get('Conferência de descanso')}")
@@ -126,7 +151,7 @@ def caso_poucos_enfermeiros() -> None:
     print("4. poucos enfermeiros: 8 h, 5 + 15")
     at = pela_tela(M8, 5, 15, {"M": (1, 3), "T": (1, 3), "N": (1, 2)})
     confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
-    confere(textos(at, "success") == ["O quadro informado admite escala legal."],
+    confere(textos(at, "success") == [ADMITE_OK],
             f"ainda gera a escala: {textos(at, 'success') + textos(at, 'warning')}")
     alertas = textos(at, "error")
     confere(len(alertas) == 1 and alertas[0].startswith("Alerta COFEN (não impede a escala)")
@@ -138,7 +163,7 @@ def caso_enfermeiro_em_posto_de_tecnico() -> None:
     print("5. enfermeiro em posto de tecnico: 8 h, 8 + 5")
     at = pela_tela(M8, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)})
     confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
-    confere(textos(at, "success") == ["O quadro informado admite escala legal."],
+    confere(textos(at, "success") == [ADMITE_OK],
             f"veredito: {textos(at, 'success') + textos(at, 'warning')}")
     n = int(metricas(at).get("Turnos de enfermeiro em posto de técnico", -1))
     confere(n >= 35, f"contagem na tela: {n} turnos de enfermeiro em posto de tecnico (>= 35)")
@@ -197,17 +222,82 @@ def caso_tempo_40() -> None:
     r = fe.verificar(e)
     ind = r.indicadores
     confere(r.veredito == fe.ADMITE and ind["etapa2"] == "ok", f"etapa 2: {ind['etapa2']}")
-    print(f"      CPU etapa 1 {ind['cpu_etapa1']:.1f} s | etapa 2 {ind['cpu_etapa2']:.1f} s "
-          f"(appsi_highs, esta maquina) | penalidade {ind['penalidade']} | maior individual "
-          f"{ind['pena_max_etapa1']} -> {ind['pena_max']} | pedidos "
-          f"{ind['pedidos_atendidos']}/{ind['pedidos_total']} | enf em posto tec "
-          f"{ind['enf_em_posto_tec']} | carga {ind['horas_min']:g}-{ind['horas_max']:g} h")
+    print(f"      relogio: etapa 1 {ind['tempo_etapa1']:.1f} s | etapa 2 "
+          f"{ind['tempo_etapa2']:.1f} s (appsi_highs, esta maquina) | penalidade "
+          f"{ind['penalidade']} | pedidos {ind['pedidos_atendidos']}/{ind['pedidos_total']} "
+          f"| enf em posto tec {ind['enf_em_posto_tec']} | amplitude de carga "
+          f"{ind['amplitude_etapa1']:g} h -> {ind['amplitude']:g} h "
+          f"({'provada' if ind['provado_etapa2'] else 'SEM prova'}) | carga "
+          f"{ind['horas_min']:g}-{ind['horas_max']:g} h | pedidos negados: no maximo "
+          f"{ind['negados_max']} por pessoa")
     c = r.inst.contratos["0"]
     print(f"      contrato: MinNumAssignments ligada={c.min_num_assignments.ligada} "
           f"valor={c.min_num_assignments.valor} peso={c.min_num_assignments.peso} | "
           f"MaxNumAssignments ligada={c.max_num_assignments.ligada} "
           f"valor={c.max_num_assignments.valor} peso={c.max_num_assignments.peso} | "
           f"teto em horas {r.inst.carga_maxima_h:g}")
+
+
+def _todos_textos(at) -> list[str]:
+    return [x for tipo in ("success", "warning", "error", "info", "caption", "markdown")
+            for x in textos(at, tipo)]
+
+
+def casos_tempo() -> None:
+    """Os tres desfechos do tempo — esperado no docstring do modulo, registrado antes."""
+    import dataclasses
+    demanda, fds = {"D": (1, 9), "N": (1, 9)}, {"D": (1, 6), "N": (1, 6)}
+    nomes = [f"Enf {i + 1}" for i in range(14)] + [f"Téc {i + 1}" for i in range(26)]
+    pedidos = tuple((nomes[i], dia((3 * i) % 28)) for i in range(20))
+    original_tempo, original_verificar = fe.TEMPO, fe.verificar
+    try:
+        print("8a. otimo provado: caso 5, limite 600 s")
+        at = pela_tela(M8, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)})
+        confere(textos(at, "success") == [ADMITE_OK], f"tela: {textos(at, 'success')}")
+        confere(not any("pode haver" in t for t in _todos_textos(at)), "sem 'pode haver'")
+
+        print("8b. escala sem prova: 40 com 20 pedidos, limite 25 s")
+        fe.TEMPO = 25
+        fe.verificar = lambda e, **kw: original_verificar(
+            dataclasses.replace(e, pedidos=pedidos), **kw)
+        at = pela_tela(M12, 14, 26, demanda, fds)
+        fe.verificar = original_verificar
+        avisos = textos(at, "warning")
+        confere(len(avisos) == 1 and avisos[0].startswith(
+            "O quadro informado admite escala legal. Escala gerada; pode haver uma melhor "
+            "(gap"), f"tela: {avisos}")
+        confere(textos(at, "success") == [], f"sem success: {textos(at, 'success')}")
+        r, _ = at.session_state["resultado"]
+        confere(bool(r.escala) and len(at.get("download_button")) == 1,
+                "escala e planilha na tela")
+        confere(any(t.startswith("Equilíbrio de carga: não rodou") for t in textos(at, "caption")),
+                "equilibrio nao rodou")
+        print(f"      gap {r.indicadores['gap']:.2%} | pedidos "
+              f"{r.indicadores['pedidos_atendidos']}/{r.indicadores['pedidos_total']}")
+
+        print("8c. tempo esgotado sem escala: 40 sem pedidos, limite 3 s")
+        fe.TEMPO = 3
+        at = pela_tela(M12, 14, 26, demanda, fds)
+        confere(textos(at, "error") == ["Não foi possível gerar a escala no tempo disponível."],
+                f"tela: {textos(at, 'error')}")
+        confere(not any("Faltam" in t for t in _todos_textos(at)), "nenhum 'Faltam'")
+        r, _ = at.session_state["resultado"]
+        confere(r.diagnostico is None and not r.escala
+                and len(at.get("download_button")) == 0, "sem diagnostico, escala nem planilha")
+
+        print("8d. 39 provado curto pela conta, 40 sem escala no tempo: limite 3 s")
+        at = pela_tela(M12, 13, 26, demanda, fds)
+        r, _ = at.session_state["resultado"]
+        confere(r.tentativas == [(39, "piso", None, None), (40, "indeterminado", 14, 26)],
+                f"tentativas {r.tentativas}")
+        confere(r.diagnostico is not None and r.diagnostico[0] == fe.ALTERNANCIA,
+                f"diagnostico de alternancia: {r.diagnostico}")
+        esperado = ("Não foi possível gerar a escala no tempo disponível com mais "
+                    "profissionais; o menor quadro viável não foi determinado.")
+        confere(esperado in textos(at, "error"), f"tela: {textos(at, 'error')}")
+        confere(not any("Faltam" in t for t in _todos_textos(at)), "nenhum 'Faltam'")
+    finally:
+        fe.TEMPO, fe.verificar = original_tempo, original_verificar
 
 
 DIAGNOSTICOS = [
@@ -257,6 +347,7 @@ def main() -> int:
     caso_objetivo()
     caso_tempo_40()
     casos_diagnostico()
+    casos_tempo()
     print()
     if FALHAS:
         print(f"{len(FALHAS)} FALHA(S)")

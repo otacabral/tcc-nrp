@@ -20,6 +20,7 @@ O solver e parametro da chamada, nunca do modelo (CONTEXTO_PROJETO.md, secao 8):
 from __future__ import annotations
 
 import inspect
+import math
 from datetime import date
 
 import pyomo.environ as pyo
@@ -548,6 +549,49 @@ def estado(resultado) -> str:
         except AttributeError:
             continue
     return str(resultado)
+
+
+def _numero(resultado, *caminhos):
+    """Le um numero do objeto de resultado, tentando varios dialetos de Pyomo."""
+    for caminho in caminhos:
+        alvo = resultado
+        try:
+            for parte in caminho.split("."):
+                alvo = getattr(alvo, parte)
+            if alvo is not None:
+                return float(alvo)
+        except (AttributeError, TypeError, ValueError):
+            continue
+    return None
+
+
+def gap_relativo(resultado) -> float | None:
+    """(melhor solucao - melhor limite) / |melhor solucao|, ao fim da resolucao, num problema
+    de minimizacao. None se nao ha solucao ou se nao da para ler; 0 com ambos em zero.
+    Fonte unica: a tela e as curvas de escalabilidade leem daqui."""
+    melhor = _numero(resultado, "best_feasible_objective",
+                     "problem.upper_bound", "problem[0].upper_bound")
+    limite = _numero(resultado, "best_objective_bound",
+                     "problem.lower_bound", "problem[0].lower_bound")
+    if melhor is None or limite is None or math.isinf(melhor) or math.isinf(limite):
+        return None
+    if abs(melhor) < 1e-9:
+        return 0.0 if abs(melhor - limite) < 1e-6 else math.inf
+    return abs(melhor - limite) / abs(melhor)
+
+
+def tem_solucao(resultado) -> bool:
+    """Ha escala em maos, provada otima ou nao? Le o valor da melhor solucao, nao o nome do
+    estado: parado no limite de tempo COM solucao, o appsi devolve `maxTimeLimit`, que nao
+    contem "feasible" — e ate 02/10 isso era lido como "nao decidido", jogando fora uma escala
+    legal. Nao confundir com `resolvido`, que o Experimento B e a regressao leem como otimo."""
+    melhor = _numero(resultado, "best_feasible_objective",
+                     "problem.upper_bound", "problem[0].upper_bound")
+    return melhor is not None and math.isfinite(melhor)
+
+
+def provou_otimo(resultado) -> bool:
+    return "optimal" in estado(resultado).lower()
 
 
 def resolvido(resultado) -> bool:

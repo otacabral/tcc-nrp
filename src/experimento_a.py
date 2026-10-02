@@ -136,8 +136,8 @@ def classificar(resultado) -> str:
     e = modelo.estado(resultado).lower()
     if "infeasible" in e:
         return INVIAVEL
-    if "optimal" in e or "feasible" in e:
-        return VIAVEL
+    if "optimal" in e or "feasible" in e or modelo.tem_solucao(resultado):
+        return VIAVEL           # parado no limite de tempo com escala tambem e viavel
     return INDETERMINADO
 
 

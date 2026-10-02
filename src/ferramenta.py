@@ -16,7 +16,11 @@ O veredito do quadro:
 - **admite escala legal** — o quadro informado tem escala que cumpre cobertura e lei;
 - **faltam N; o menor quadro viavel e X** — o quadro informado e inviavel, com prova do
   solver ou da aritmetica, e X e o primeiro viavel subindo o quadro;
-- **nao decidido** — o solver bateu no limite de tempo. Nunca e contado como inviavel.
+- **nao decidido** — o solver bateu no limite de tempo sem escala: "nao foi possivel gerar a
+  escala no tempo disponivel". Nunca e contado como inviavel, e nunca vira "faltam N".
+
+Com escala, a frase separa o otimo provado ("escala gerada") da escala achada no limite de
+tempo sem prova ("pode haver uma melhor", com o gap). DECISOES.md, "Redesenho", 02/10.
 
 Ao subir o quadro, as pessoas acrescentadas entram primeiro como enfermeiros — ate o que a
 demanda de enfermeiro exige em horas e ate a proporcao do grau — e depois como tecnicos.
@@ -100,16 +104,36 @@ class Resultado:
     def faltam(self) -> int | None:
         return None if self.menor_viavel is None else self.menor_viavel - self.quadro_informado
 
+    @property
+    def provado(self) -> bool:
+        return bool(self.indicadores.get("provado"))
+
+    def frase_escala(self) -> str:
+        """(a) otimo provado -> "escala gerada"; (b) escala sem prova -> "pode haver uma
+        melhor", com o gap da etapa 1 (DECISOES.md, "Redesenho", 02/10)."""
+        if self.provado:
+            return "Escala gerada."
+        gap = self.indicadores.get("gap")
+        if gap is None or math.isinf(gap):
+            return "Escala gerada; pode haver uma melhor."
+        gap_txt = f"{gap:.1%}".replace(".", ",")
+        return (f"Escala gerada; pode haver uma melhor (gap {gap_txt}: distância máxima "
+                f"até a melhor possível).")
+
     def frase(self) -> str:
         if self.veredito == ADMITE:
-            return "O quadro informado admite escala legal."
+            return f"O quadro informado admite escala legal. {self.frase_escala()}"
         if self.veredito == FALTAM:
-            return f"Faltam {self.faltam}; o menor quadro viável é {self.menor_viavel}."
+            return (f"Faltam {self.faltam}; o menor quadro viável é {self.menor_viavel}. "
+                    f"{self.frase_escala()}")
         if self.veredito == SEM_VIAVEL:
             return (f"Não há escala legal até {self.quadro_informado + MARGEM} profissionais; "
                     f"o menor quadro viável está acima disso.")
-        return ("Não decidido: o solver atingiu o limite de tempo antes de concluir. "
-                "O quadro mínimo não foi determinado.")
+        # (c) tempo esgotado sem escala. NUNCA "faltam N": falta so se afirma com prova.
+        if self.diagnostico:
+            return ("Não foi possível gerar a escala no tempo disponível com mais "
+                    "profissionais; o menor quadro viável não foi determinado.")
+        return "Não foi possível gerar a escala no tempo disponível."
 
 
 # --- montagem -----------------------------------------------------------------------------
@@ -206,7 +230,13 @@ def indicadores(inst, escala) -> dict:
     trabalhados = {(n, d) for d, n, _ in escala}
     pedidos = [p for p in inst.pedidos if p.tipo == "folga_dia"]
     atendidos = sum(1 for p in pedidos if (p.profissional, p.data) not in trabalhados)
+    negados: dict[str, int] = {}
+    for p in pedidos:
+        if (p.profissional, p.data) in trabalhados:
+            negados[p.profissional] = negados.get(p.profissional, 0) + 1
     return {"enf_em_posto_tec": em_posto_tec,
+            "negados_max": max(negados.values(), default=0),
+            "com_pedido_negado": len(negados),
             "horas_min": min(horas.values()), "horas_max": max(horas.values()),
             "pedidos_total": len(pedidos), "pedidos_atendidos": atendidos,
             "atribuicoes": len(escala)}
@@ -234,54 +264,91 @@ def pesos(inst):
     return inst, {(n, s): 1 for n in enf for s in base}, W
 
 
-def equilibrar(m, z: int, tempo: int | None) -> tuple[str, object]:
-    """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a penalidade
-    individual maxima — o mecanismo do Experimento B (`experimentos.minimo_do_maximo`),
-    sobre o mesmo modelo, sem monta-lo de novo."""
-    preparar_equilibrio(m, z)
-    return ea.resolver_modelo(m, modelo.SOLVER_PADRAO, tempo)
+def resolver(m, tempo: int | None) -> tuple[str, object, bool, float | None]:
+    """Resolve um modelo ja montado. Devolve (veredito, escala ou None, provou_otimo, gap).
+
+    O veredito de `ea.resolver_modelo` junta "otimo provado" e "solucao no limite de tempo"
+    em VIAVEL; a tela precisa separar os dois (escala gerada / pode haver uma melhor). Nunca
+    levanta: excecao do solver vira ERRO, como em `ea.resolver_modelo`."""
+    try:
+        resultado = modelo.resolver(m, solver=modelo.SOLVER_PADRAO, tempo_limite=tempo,
+                                    carregar=False)
+    except Exception as e:  # noqa: BLE001
+        print(f"      [ERRO] o solver levantou {type(e).__name__}: {e}")
+        return ea.ERRO, None, False, None
+    veredito = ea.classificar(resultado)
+    if veredito != ea.VIAVEL:
+        return veredito, None, False, None
+    if not modelo.carregar_solucao(m, resultado):
+        print("      [ERRO] solver declarou viavel mas nao entregou solucao")
+        return ea.ERRO, None, False, None
+    return (veredito, modelo.atribuicoes(m), modelo.provou_otimo(resultado),
+            modelo.gap_relativo(resultado))
 
 
-def preparar_equilibrio(m, z: int) -> None:
+def equilibrar(m, inst, z: int, tempo: int | None) -> tuple[str, object, bool, float | None]:
+    """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a AMPLITUDE DE
+    CARGA — maior carga do periodo menos a menor, em horas (DECISOES.md, "Redesenho", 02/10).
+    O mecanismo e o do Experimento B (fixar o otimo, otimizar um segundo criterio), sobre o
+    mesmo modelo, sem monta-lo de novo; muda o criterio."""
+    preparar_equilibrio(m, inst, z)
+    return resolver(m, tempo)
+
+
+def preparar_equilibrio(m, inst, z: int) -> None:
     """Troca o objetivo do modelo pelo da etapa 2, sem resolver. Separado de `equilibrar`
-    para a curva de escalabilidade (`src/escalabilidade_objetivo.py`) ler o estado do solver
-    — otimo provado ou nao — que o veredito de `resolver_modelo` nao distingue."""
+    para a curva de escalabilidade (`src/escalabilidade_objetivo.py`) resolver por conta
+    propria e cronometrar."""
     import pyomo.environ as pyo
+    termos: dict[str, list] = {n: [] for n in inst.profissionais}
+    for (n, s, d) in m.X:
+        termos[n].append(inst.turnos[s].duracao_h * m.x[n, s, d])
     m.objetivo.deactivate()
     m.total_no_otimo = pyo.Constraint(expr=m.objetivo.expr == z)
-    m.t_max = pyo.Var(domain=pyo.NonNegativeReals)
-    m.teto_individual = pyo.Constraint(list(m.pena.keys()),
-                                       rule=lambda m, n: m.t_max >= m.pena[n])
-    m.objetivo_equilibrio = pyo.Objective(expr=m.t_max, sense=pyo.minimize)
+    m.carga = pyo.Expression(list(termos), rule=lambda m, n: sum(termos[n]))
+    m.h_max = pyo.Var(domain=pyo.NonNegativeReals)
+    m.h_min = pyo.Var(domain=pyo.NonNegativeReals)
+    m.teto_carga = pyo.Constraint(list(termos), rule=lambda m, n: m.h_max >= m.carga[n])
+    m.piso_carga = pyo.Constraint(list(termos), rule=lambda m, n: m.h_min <= m.carga[n])
+    m.objetivo_equilibrio = pyo.Objective(expr=m.h_max - m.h_min, sense=pyo.minimize)
 
 
-def resolver_com_objetivo(inst, tempo: int) -> tuple[str, object, object, dict]:
-    """Etapa 1 (pesos) e, havendo penalidade a distribuir, etapa 2 (equilibrio).
+def amplitude(inst, escala) -> float:
+    """Maior carga do periodo menos a menor, em horas, contando quem nao trabalhou."""
+    horas = {n: 0.0 for n in inst.profissionais}
+    for _, n, s in escala:
+        horas[n] += inst.turnos[s].duracao_h
+    return max(horas.values()) - min(horas.values())
+
+
+def resolver_com_objetivo(inst, tempo: int | None) -> tuple[str, object, object, dict]:
+    """Etapa 1 (pesos) e, havendo escala provada otima, etapa 2 (equilibrio de horas).
 
     A etapa 2 so roda com a etapa 1 provada OTIMA: fixar num valor que nao e o otimo mediria
-    o equilibrio de outra coisa. Com penalidade zero nao ha o que equilibrar."""
+    o equilibrio de outra coisa. Roda tambem com penalidade zero — a carga pode estar
+    desequilibrada mesmo sem pedido negado. `info["provado"]` e `info["gap"]` sao os da
+    etapa 1, que e o que diz se pode haver escala melhor."""
     import time
-    import pyomo.environ as pyo
     inst, custo, W = pesos(inst)
     m = ea.modelo_br(inst, custo)
-    t0 = time.process_time()
-    veredito, escala = ea.resolver_modelo(m, modelo.SOLVER_PADRAO, tempo)
-    info = {"peso_pedido": W, "cpu_etapa1": time.process_time() - t0, "cpu_etapa2": 0.0,
-            "etapa2": "nao rodou"}
+    t0 = time.time()
+    veredito, escala, provado, gap = resolver(m, tempo)
+    info = {"peso_pedido": W, "tempo_etapa1": time.time() - t0, "tempo_etapa2": 0.0,
+            "provado": provado, "gap": gap, "etapa2": "nao rodou"}
     if veredito != ea.VIAVEL:
         return veredito, inst, None, info
-    z = int(round(pyo.value(m.objetivo)))
+    z = modelo.valor_objetivo(m)
     info["penalidade"] = z
-    info["pena_max_etapa1"] = max(round(pyo.value(m.pena[n])) for n in m.pena)
-    if z == 0:
-        info["etapa2"] = "nada a equilibrar (penalidade zero)"
+    info["amplitude_etapa1"] = amplitude(inst, escala)
+    if not provado:
+        info["etapa2"] = "não rodou: a etapa 1 não provou o ótimo no tempo disponível"
         return veredito, inst, escala, info
-    t0 = time.process_time()
-    v2, escala2 = equilibrar(m, z, tempo)
-    info["cpu_etapa2"] = time.process_time() - t0
+    t0 = time.time()
+    v2, escala2, provado2, gap2 = equilibrar(m, inst, z, tempo)
+    info["tempo_etapa2"] = time.time() - t0
     if v2 == ea.VIAVEL:
-        info["etapa2"] = "ok"
-        info["pena_max"] = max(round(pyo.value(m.pena[n])) for n in m.pena)
+        info.update(etapa2="ok", provado_etapa2=provado2, gap_etapa2=gap2,
+                    amplitude=amplitude(inst, escala2))
         return veredito, inst, escala2, info
     info["etapa2"] = f"sem resposta ({v2}); fica a escala da etapa 1"
     return veredito, inst, escala, info
@@ -360,7 +427,7 @@ def diagnosticar(inst) -> tuple[str, str]:
 
 # --- veredito -----------------------------------------------------------------------------
 
-def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int = TEMPO,
+def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = None,
               margem: int = MARGEM) -> Resultado:
     """Veredito do quadro, com a escala do menor quadro viavel encontrado.
 
@@ -368,6 +435,7 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int = TEMPO,
     inviavel, com todos os acrescimos como enfermeiros: enfermeiro cobre tudo o que tecnico
     cobre, entao se esta segunda tambem e inviavel, nenhuma composicao desse tamanho fecha.
     """
+    tempo = TEMPO if tempo is None else tempo  # lido na chamada: os testes o encurtam
     base = montar(e)                          # valida a entrada antes de gastar solver
     horas_enf = _horas_enfermeiro(e)
     alertas = br.alertas_cofen(base, e.grau, e.pacientes)
