@@ -1202,6 +1202,20 @@ rodar; os cinco acertaram, e o 39 do Experimento A cai em alternância.
 **Funcionalidades congeladas em 10/10.** **A Etapa 4 (P1, curva de escalabilidade com
 objetivo não trivial) passa para depois da Etapa 7.**
 
+*Nota de 02/10 — carga mínima, verificação sem mudança no código.* No caminho de turnos
+configurados, o contrato tem **MinNumAssignments desligada** (valor 0, peso 0): nenhuma carga
+mínima, nem rígida nem penalizada. **MaxNumAssignments ligada**, valor 14 turnos = 168 h ÷
+12 h (o turno mais curto do modelo), rígida por `RIGIDAS_LEGAIS_BR`; o teto que vale é o de
+**horas**, 168 h no horizonte (`carga_maxima_h`), também rígido. O mínimo, se existisse,
+seria contado em turnos, que é o que o formato do INRC sabe contar. Medido no 12×36
+equivalente ao Experimento A, 40 profissionais (14 + 26), objetivo completo (pesos + etapa
+de equilíbrio), appsi_highs: **menor carga 120 h, maior 168 h**, com e sem os 20 pedidos de
+folga do teste 7.2. Sem pedidos, 22 pessoas ficam em 168 h e 7 em 120 h; média 153,6 h
+(512 plantões × 12 h ÷ 40). A etapa de equilíbrio não iguala horas: ela minimiza a
+penalidade individual máxima, e horas não são penalidade. Uma diferença de 48 h no mês
+entre colegas do mesmo regime é o que pede decisão (carga mínima, ou equilíbrio de horas)
+— ver `ESTADO_ATUAL.md`, seção 5.
+
 ---
 
 ## Modelo de entrada
