@@ -461,7 +461,7 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
 
 def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
              tempo_limite: int | None = None, log: bool = False,
-             carregar: bool = True):
+             carregar: bool = True, log_arquivo: str | None = None):
     """Resolve e devolve o objeto de resultado do Pyomo.
 
     `carregar=False` e obrigatorio quando a resposta pode ser INVIAVEL. O appsi/HiGHS tenta
@@ -489,6 +489,11 @@ def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
     # padrao None. O limite gravado acima era apagado, e NENHUMA resolucao pelo appsi teve
     # limite ate 02/10 — os "600 s" da ferramenta e os "900 s" da curva nao valiam. Vai tambem
     # como kwarg na chamada, quando o solver aceita.
+    if log_arquivo is not None:
+        # log do proprio HiGHS, em ordem: o `tee` pelo Python sai embaralhado quando a saida
+        # vai para arquivo (02/10). `opt.options` sobrevive ao `solve` legado, ao contrario do
+        # config.
+        opt.options["log_file"] = str(log_arquivo)
     extra = {}
     if tempo_limite is not None and _aceita(opt.solve, "timelimit"):
         extra["timelimit"] = tempo_limite

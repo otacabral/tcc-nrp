@@ -50,6 +50,7 @@ Não entram no produto, mas sustentam o capítulo que diz que ele está correto.
 | Arquivo | O que faz |
 |---|---|
 | `src/escalabilidade.py` | Curva 40–200 profissionais: até que tamanho a prova fecha. Decide se o warm start heurístico é necessário. |
+| `src/escalabilidade_objetivo.py` | A mesma curva com o objetivo da ferramenta e 2 pedidos de folga por pessoa (P1, 02/10). Registra, por etapa, prova, gap e tempo até a primeira escala legal. |
 
 ## Escopo anterior — referência, não produto
 

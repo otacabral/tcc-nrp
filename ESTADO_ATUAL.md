@@ -105,8 +105,10 @@ MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativ
 
 **Pendente, nesta ordem:**
 
-1. **P1 — curva de escalabilidade com objetivo não trivial** (Etapa 4). Mesmos seis tamanhos,
-   objetivo completo da ferramenta e pedidos de folga sintéticos. Ver `PROPOSTAS.md`.
+1. ~~**P1 — curva de escalabilidade com objetivo não trivial** (Etapa 4).~~ **Concluída em
+   02/10**: com o objetivo da ferramenta, a prova deixa de fechar a partir de N = 80 em
+   900 s por etapa; escala legal sai em todos os tamanhos. Pelo critério de 25/09, o warm
+   start passa a ter faixa onde ajudar — decisão em aberto. Ver `PROPOSTAS.md`, P1.
 2. **Decisão sobre carga mínima.** Hoje não há carga mínima: no caso de 40 profissionais do
    12×36, a carga vai de 120 h a 168 h no mês. Ver a nota de 02/10 na entrada "Redesenho" do
    `DECISOES.md`. Decisão do projeto de redação.

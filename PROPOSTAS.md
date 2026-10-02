@@ -11,8 +11,9 @@ escopo anterior, com as treze propostas P1–P13, está em
 
 ## 2026-09-28 — P1: a curva de escalabilidade mede um problema mais fácil do que o da ferramenta
 
-**Status: decidida em 29/09; executa depois da Etapa 7 (ver DECISOES 2026-09-29,
-Redesenho).** Registro anterior (28/09): aguardando
+**Status: CONCLUÍDA em 02/10.** Resultado na seção "Rodada de 02/10", no fim desta
+entrada. Registro anterior: decidida em 29/09; executa depois da Etapa 7 (ver DECISOES
+2026-09-29, Redesenho). Registro anterior (28/09): aguardando
 validação. Nada implementado. O experimento rodou como combinado e o
 resultado está abaixo; o que proponho é sobre **como lê-lo**, e sobre uma rodada adicional.
 
@@ -69,6 +70,61 @@ profissionais esperando nove minutos por uma escala é uma decisão de projeto d
 processamento assíncrono, resultado por e-mail, barra de progresso — e não uma limitação do
 método. Vale entrar na especificação como requisito não funcional, com o número medido ao
 lado.
+
+### Rodada de 02/10 — com o objetivo da ferramenta
+
+`python src\escalabilidade_objetivo.py --tempo 900`. **Mesmas seis instâncias** da rodada
+de 28/09 (12×36, grau intermediário, piso = N); **muda só o objetivo**: o completo da
+ferramenta (etapa 1 com pesos inteiros, etapa 2 minimizando a amplitude de carga em horas com
+a etapa 1 fixada no ótimo; a etapa 2 só roda sobre ótimo provado) e **2 pedidos de folga por
+profissional**, em datas distintas sorteadas com `random.Random(20261002 + N)` — semente
+20261002. Limite de **900 s por etapa**, que agora de fato chega ao solver (ver DECISOES,
+"Redesenho", nota de 02/10). Máquina: Intel Core i5-10210U (4 núcleos, 8 threads), 12 GB,
+Windows 11, Python 3.11.9, HiGHS 1.15.1 via appsi. Uma rodada por tamanho.
+
+| N | pedidos | etapa 1 | 1ª escala legal | gap ao fim | etapa 2 | penalidade | pedidos atendidos |
+|---|---|---|---|---|---|---|---|
+| 36 | 72 | ótimo provado, 35,8 s | 35,1 s | 0% | ótimo provado, 23,8 s | 9.541 | 51 |
+| 40 | 80 | ótimo provado, 27,9 s | 27,4 s | 0% | ótimo provado, 22,0 s | 10.745 | 59 |
+| 60 | 120 | ótimo provado, 64,6 s | 63,6 s | 0% | ótimo provado, 223,7 s | 22.989 | 91 |
+| 80 | 160 | **sem prova**, 900 s | 112,8 s | **43,0%** | não rodou | 94.042 | 72 |
+| 120 | 240 | **sem prova**, 900 s | 240,4 s | **3,2%** | não rodou | 102.879 | 177 |
+| 200 | 400 | **sem prova**, 900 s | 287,6 s | **46,3%** | não rodou | 569.083 | 193 |
+
+Tempos de relógio; "1ª escala legal" é o tempo do próprio HiGHS na primeira linha da árvore
+com solução, lido do log de cada etapa (`resultados/escalabilidade_objetivo/highs_N*_etapa*.log`).
+Toda solução do modelo é legal: a CLT está nas restrições rígidas. Gap = (melhor solução −
+melhor limite) ÷ melhor solução, ao fim da etapa.
+
+**Conferências, nas seis escalas finais:** descanso medido no relógio (`conferencia_descanso_
+escala`) cumpre em todas — folga mínima exatamente no exigido de 36 h, descanso semanal de
+36 h; rígidas OK (`solucao.conferir_rigidas`); penalidade recontada a partir da escala
+(pedidos negados × W + enfermeiros em posto de técnico) igual à do solver em todas.
+
+**O que isso responde.** A ressalva da rodada de 28/09 se confirmou: com objetivo de verdade,
+**a prova deixa de fechar a partir de N = 80** no limite de 900 s, enquanto com o objetivo
+degenerado fechava até 200. Escala legal continua saindo em todos os tamanhos — o que não sai
+é a garantia de que é a melhor. **Pelo critério de 25/09, existe agora a faixa em que a prova
+não fecha, e o warm start heurístico passa a ter o que acelerar.** Se entra ou não é decisão
+do projeto de redação; nada foi implementado.
+
+**Leituras que o texto não deve fazer:**
+- O gap **não é monótono** no tamanho (43% em 80, 3,2% em 120, 46% em 200). Uma rodada por
+  tamanho, numa máquina; é o mesmo aviso da rodada anterior. Não sustenta frase sobre como o
+  gap cresce com N.
+- O gap é relativo a uma penalidade dominada pelo peso W dos pedidos negados: 43% de gap não
+  quer dizer 43% dos pedidos. Em N = 80, o solver garante só que o ótimo está entre 53.572 e
+  94.042.
+- A etapa 2 desta curva mede pouco sobre equilíbrio: com o quadro no piso, todos trabalham
+  168 h já na etapa 1 (amplitude zero). O que ela custou — 22 a 224 s — foi achar outra escala
+  com a mesma penalidade. Isso vale para o requisito de tempo da tela, não para a qualidade do
+  equilíbrio.
+- Tempo é limite operacional, com máquina e solver nomeados acima — nunca resultado.
+
+**Consequência para a ferramenta, já coberta:** acima de cerca de 60 profissionais com
+pedidos, a tela tende a mostrar "Escala gerada; pode haver uma melhor", com o gap, em vez de
+"Escala gerada" — que é o desfecho (b) decidido em 02/10. Com o limite de 600 s da tela, a
+primeira escala de N = 200 (287,6 s aqui) ainda aparece; a etapa 2 não roda.
 
 ---
 

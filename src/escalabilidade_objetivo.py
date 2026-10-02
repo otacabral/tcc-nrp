@@ -7,7 +7,7 @@ Roda da raiz do repositorio, com a .venv ativa:
     python src\\escalabilidade_objetivo.py --tempo 900      # limite POR ETAPA, em segundos
 
 Saida: `resultados/escalabilidade_objetivo.csv`, gravado a cada tamanho concluido, e o log
-do HiGHS de cada etapa no terminal (redirecionar para arquivo).
+do HiGHS de cada etapa em `resultados/escalabilidade_objetivo/highs_N<n>_etapa<k>.log`.
 
 ## O que muda em relacao a `escalabilidade.py`
 
@@ -39,9 +39,7 @@ maquina e o solver nomeados. O que interessa e se a prova fecha.
 from __future__ import annotations
 
 import argparse
-import contextlib
 import dataclasses
-import io
 import math
 import platform
 import random
@@ -84,21 +82,6 @@ def com_pedidos(inst, n: int):
     return dataclasses.replace(inst, pedidos=tuple(pedidos))
 
 
-class _Tee(io.TextIOBase):
-    """Escreve no terminal (que vai para o log) e guarda copia para ler o tempo da 1a escala."""
-
-    def __init__(self, destino):
-        self.destino, self.copia = destino, io.StringIO()
-
-    def write(self, texto):
-        self.destino.write(texto)
-        self.copia.write(texto)
-        return len(texto)
-
-    def flush(self):
-        self.destino.flush()
-
-
 def primeira_solucao_s(log: str) -> float | None:
     """Tempo do HiGHS na primeira linha da arvore com melhor solucao finita."""
     for linha in log.splitlines():
@@ -113,14 +96,14 @@ def primeira_solucao_s(log: str) -> float | None:
     return None
 
 
-def _resolver(m, solver: str, tempo: int) -> dict:
-    """Resolve com o log do HiGHS ligado e devolve o que a P1 registra. Nunca levanta."""
-    tee = _Tee(sys.stdout)
+def _resolver(m, solver: str, tempo: int, log: Path) -> dict:
+    """Resolve com o log do HiGHS em `log` e devolve o que a P1 registra. Nunca levanta."""
+    log.parent.mkdir(parents=True, exist_ok=True)
+    log.unlink(missing_ok=True)
     t0 = time.time()
     try:
-        with contextlib.redirect_stdout(tee):
-            resultado = modelo.resolver(m, solver=solver, tempo_limite=tempo, log=True,
-                                        carregar=False)
+        resultado = modelo.resolver(m, solver=solver, tempo_limite=tempo, carregar=False,
+                                    log_arquivo=str(log))
     except Exception as e:  # noqa: BLE001
         return {"estado": f"erro: {type(e).__name__}: {e}", "resultado": None,
                 "relogio_s": round(time.time() - t0, 1), "otimo": False, "gap": "",
@@ -129,7 +112,8 @@ def _resolver(m, solver: str, tempo: int) -> dict:
             "relogio_s": round(time.time() - t0, 1),
             "otimo": modelo.provou_otimo(resultado),
             "gap": esc.folga_relativa(resultado),
-            "primeira_s": primeira_solucao_s(tee.copia.getvalue())}
+            "primeira_s": primeira_solucao_s(log.read_text(encoding="utf-8", errors="replace")
+                                             if log.exists() else "")}
 
 
 def _registrar(linha: dict, etapa: str, r: dict) -> None:
@@ -157,7 +141,7 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
              "solver": solver}
 
     # etapa 1: pesos inteiros
-    r1 = _resolver(m, solver, tempo)
+    r1 = _resolver(m, solver, tempo, ESCALAS / f"highs_N{n}_etapa1.log")
     _registrar(linha, "etapa1", r1)
     if r1["resultado"] is None or not modelo.tem_solucao(r1["resultado"]) \
             or not modelo.carregar_solucao(m, r1["resultado"]):
@@ -173,7 +157,7 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
         linha["etapa2_estado"] = "nao rodou (etapa 1 sem prova)"
     else:
         fe.preparar_equilibrio(m, inst, z)
-        r2 = _resolver(m, solver, tempo)
+        r2 = _resolver(m, solver, tempo, ESCALAS / f"highs_N{n}_etapa2.log")
         _registrar(linha, "etapa2", r2)
         if r2["resultado"] is not None and modelo.tem_solucao(r2["resultado"]) \
                 and modelo.carregar_solucao(m, r2["resultado"]):
