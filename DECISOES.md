@@ -1216,6 +1216,17 @@ penalidade individual máxima, e horas não são penalidade. Uma diferença de 4
 entre colegas do mesmo regime é o que pede decisão (carga mínima, ou equilíbrio de horas)
 — ver `ESTADO_ATUAL.md`, seção 5.
 
+*Nota de 02/10 — o limite de tempo nunca chegava ao HiGHS.* Pelo appsi, o
+`LegacySolverInterface.solve` refaz `config.time_limit` a partir do argumento `timelimit`
+da chamada, que tem padrão vazio; o limite que `modelo.resolver` gravava antes da chamada
+era apagado. É a mesma armadilha já registrada no código para o `load_solution`. Corrigido
+passando o limite na chamada; conferido no log do HiGHS ("Time limit reached" em 20,03 s com
+limite de 20 s); regressão OK. **Os números registrados não mudam**: todas as resoluções
+até aqui terminaram com resposta provada — a maior da curva de escalabilidade antiga levou
+549 s, abaixo dos 900 s que se supunha valerem. O que muda é o comportamento: a tela agora
+para em 600 s por resolução, em vez de poder rodar sem fim. Achado ao preparar a P1: o teste
+rápido com "60 s por etapa" passou de 800 s de CPU.
+
 ---
 
 ## Modelo de entrada
