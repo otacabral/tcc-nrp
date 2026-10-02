@@ -73,7 +73,11 @@ XSD_ENTRADA = RAIZ / "docs" / "scheme_input.xsd"
 
 PORTE_HORAS = 5920.0      # invariante da P4: o porte do long01
 DIAS_HORIZONTE = 28
-CARGA_SEMANAL = 42.0      # h/semana nos dois regimes
+CARGA_SEMANAL = 42.0      # h/semana nos dois regimes — caminho dos experimentos e do QP
+# Caminho de turnos configurados (DECISOES.md, "2026-10-02 — Carga por contrato"): cada
+# profissional tem a sua carga contratual. Padrao 44 h, o limite da CF (art. 7o, XIII).
+CARGA_CONTRATUAL_PADRAO = 44.0
+CARGAS_CONTRATUAIS = (30.0, 36.0, 40.0, 44.0)
 CORTE = 7                 # janelas alinhadas as 07:00; o horizonte COMECA no corte
 
 HABILIDADE_BASE = "Enfermagem"    # todo profissional tem
@@ -713,7 +717,7 @@ def alertas_cofen(inst: Instancia, grau: str | None = None,
         alertas.append(f"{len(sem_enf)} turno(s) sem enfermeiro na demanda "
                        f"(ex.: {exemplos}{', ...' if len(sem_enf) > 3 else ''})")
     if pacientes:
-        nucleo, completo = quadro_pessoal(horas_por_dia(pacientes))
+        nucleo, completo = quadro_pessoal(horas_por_dia(pacientes), chs(inst))
         quadro = len(inst.profissionais)
         if quadro < completo:
             virgula = lambda x: f"{x:.2f}".replace(".", ",")  # noqa: E731
@@ -721,6 +725,12 @@ def alertas_cofen(inst: Instancia, grau: str | None = None,
                            f"({virgula(completo)}, com IST de {IST:.0%}); o núcleo "
                            f"assistencial, sem IST, é {virgula(nucleo)}")
     return alertas
+
+
+def chs(inst: Instancia) -> float:
+    """CHS do QP: a media das cargas contratuais da equipe, quando a instancia as tem (caminho
+    de turnos configurados); senao, as 42 h, hipotese declarada dos experimentos."""
+    return inst.chs_media if inst.chs_media is not None else CARGA_SEMANAL
 
 
 def _id_profissional(profs: dict[str, Profissional], quem: str) -> str:
@@ -851,15 +861,18 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
                           n_enfermeiros, n_tecnicos, nomes_enfermeiros, nomes_tecnicos,
                           dias: int, inicio: date, descanso_clt: bool,
                           indisponibilidades, pedidos=(),
-                          fim_de_semana: str = "sab_dom") -> Instancia:
+                          fim_de_semana: str = "sab_dom", cargas=None) -> Instancia:
     """Instancia com turnos e demanda do usuario. A CLT trava; o COFEN nao entra aqui.
 
     - regras de descanso GERADAS dos horarios (`pares_proibidos_por_horario`);
     - no maximo 6 dias seguidos (art. 67, aproximado); a alternancia de quem faz so 12 h sai
       sozinha da regra das 36 h;
-    - teto de 42 h/semana em HORAS (`carga_maxima_h`), rigido no modelo, porque com turnos de
-      duracoes diferentes contar turnos nao limita horas. O `MaxNumAssignments` do XML fica
-      com o teto em turnos do turno mais curto, que nunca e mais apertado que as horas;
+    - carga contratual semanal por profissional (`cargas`: nome ou id -> horas; quem nao
+      aparece fica com 44 h). Dela sai o teto em HORAS no horizonte, rigido no modelo:
+      carga x dias disponiveis / 7 (`Instancia.horas_devidas`), porque com turnos de duracoes
+      diferentes contar turnos nao limita horas. O `MaxNumAssignments` do XML fica com o teto
+      em turnos da maior carga no horizonte inteiro, pelo turno mais curto — nunca mais
+      apertado que as horas de ninguem (DECISOES.md, "2026-10-02 — Carga por contrato");
     - o piso de 1 enfermeiro por turno NAO e cobertura: quem define a demanda e o usuario, e
       a falta de enfermeiro vira alerta (`alertas_cofen`).
     """
@@ -867,9 +880,15 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
         raise ValueError("com turnos configurados, informe n_enfermeiros e n_tecnicos")
     turnos = _validar_turnos(turnos)
     base = [(tid, ini, dur) for tid, ini, dur, _ in turnos]
-    carga = CARGA_SEMANAL * dias / 7
     fim = inicio + timedelta(days=dias - 1)
     profs = _equipe(n_enfermeiros, n_tecnicos, nomes_enfermeiros, nomes_tecnicos)
+    carga_semanal = {n: CARGA_CONTRATUAL_PADRAO for n in profs}
+    for quem, horas in (cargas or {}).items():
+        if not 0 < horas <= CARGA_CONTRATUAL_PADRAO:
+            raise ValueError(f"carga de {quem}: {horas:g} h por semana; o limite da CF e "
+                             f"{CARGA_CONTRATUAL_PADRAO:g} h")
+        carga_semanal[_id_profissional(profs, quem)] = float(horas)
+    carga = max(carga_semanal.values()) * dias / 7
     pares = pares_proibidos_por_horario(base, MAX_CONSECUTIVOS_GENERICO,
                                         interjornada=descanso_clt)
     padroes = _padroes_de(pares, variantes=True)
@@ -910,7 +929,7 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
                                   demanda_data, fim_de_semana),
         pedidos=tuple(folgas),
         indisponiveis=_indisponiveis(profs, indisponibilidades, inicio, fim),
-        carga_maxima_h=carga,
+        carga_semanal_h=carga_semanal,
     )
 
 
@@ -923,7 +942,8 @@ def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
               n_enfermeiros: int | None = None, n_tecnicos: int | None = None,
               nomes_enfermeiros=None, nomes_tecnicos=None,
               indisponibilidades=(), turnos=None, demanda_turno=None, demanda_fds=None,
-              demanda_data=None, pedidos=(), fim_de_semana: str = "sab_dom") -> Instancia:
+              demanda_data=None, pedidos=(), fim_de_semana: str = "sab_dom",
+              cargas=None) -> Instancia:
     """Monta a instancia brasileira.
 
     Tres caminhos, que nao se misturam:
@@ -961,12 +981,13 @@ def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
             n_tecnicos=n_tecnicos, nomes_enfermeiros=nomes_enfermeiros,
             nomes_tecnicos=nomes_tecnicos, dias=dias, inicio=inicio,
             descanso_clt=descanso_clt, indisponibilidades=indisponibilidades,
-            pedidos=pedidos, fim_de_semana=fim_de_semana)
+            pedidos=pedidos, fim_de_semana=fim_de_semana, cargas=cargas)
     if demanda_turno is not None or demanda_fds is not None or demanda_data is not None:
         raise ValueError("demanda por turno so vale com turnos configurados (turnos=...)")
-    if pedidos or fim_de_semana != "sab_dom":
-        raise ValueError("pedidos de folga e fim de semana configuravel so valem com turnos "
-                         "configurados (turnos=...)")
+    if pedidos or fim_de_semana != "sab_dom" or cargas:
+        raise ValueError("pedidos de folga, fim de semana configuravel e carga por contrato "
+                         "so valem com turnos configurados (turnos=...); o caminho dos "
+                         "experimentos fica com 42 h, hipotese declarada")
     if pacientes is not None:
         if porte_horas is not None:
             raise ValueError("pacientes e porte_horas sao duas formas do porte; use uma so")

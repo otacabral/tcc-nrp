@@ -225,8 +225,8 @@ def caso_tempo_40() -> None:
     print(f"      relogio: etapa 1 {ind['tempo_etapa1']:.1f} s | etapa 2 "
           f"{ind['tempo_etapa2']:.1f} s (appsi_highs, esta maquina) | penalidade "
           f"{ind['penalidade']} | pedidos {ind['pedidos_atendidos']}/{ind['pedidos_total']} "
-          f"| enf em posto tec {ind['enf_em_posto_tec']} | amplitude de carga "
-          f"{ind['amplitude_etapa1']:g} h -> {ind['amplitude']:g} h "
+          f"| enf em posto tec {ind['enf_em_posto_tec']} | amplitude da fracao "
+          f"{ind['amplitude_etapa1']:.1%} -> {ind['amplitude']:.1%} "
           f"({'provada' if ind['provado_etapa2'] else 'SEM prova'}) | carga "
           f"{ind['horas_min']:g}-{ind['horas_max']:g} h | pedidos negados: no maximo "
           f"{ind['negados_max']} por pessoa")
@@ -235,7 +235,7 @@ def caso_tempo_40() -> None:
           f"valor={c.min_num_assignments.valor} peso={c.min_num_assignments.peso} | "
           f"MaxNumAssignments ligada={c.max_num_assignments.ligada} "
           f"valor={c.max_num_assignments.valor} peso={c.max_num_assignments.peso} | "
-          f"teto em horas {r.inst.carga_maxima_h:g}")
+          f"tetos em horas {sorted({r.inst.horas_devidas(n) for n in r.inst.profissionais})}")
 
 
 def _todos_textos(at) -> list[str]:

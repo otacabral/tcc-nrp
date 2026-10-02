@@ -87,6 +87,19 @@ nomes_enf, nomes_tec = _nomes(texto_enf), _nomes(texto_tec)
 pessoas = ((nomes_enf or [f"Enf {i + 1}" for i in range(int(n_enf))])
            + (nomes_tec or [f"Téc {i + 1}" for i in range(int(n_tec))]))
 
+st.caption("Carga contratual semanal de cada profissional. O teto vale sobre o período, "
+           "não por semana (no 12×36 há semanas de 48 h e de 36 h), e desconta férias e "
+           "licenças. Padrão 44 h, o limite da Constituição.")
+tabela_cargas = st.data_editor(
+    pd.DataFrame({"Profissional": pessoas,
+                  "Carga semanal (h)": [br.CARGA_CONTRATUAL_PADRAO] * len(pessoas)}),
+    key=f"cargas_{len(pessoas)}", width="content", disabled=["Profissional"],
+    column_config={"Carga semanal (h)": st.column_config.SelectboxColumn(
+        options=list(br.CARGAS_CONTRATUAIS), required=True)})
+cargas = {str(l["Profissional"]): float(l["Carga semanal (h)"])
+          for _, l in tabela_cargas.dropna().iterrows()
+          if float(l["Carga semanal (h)"]) != br.CARGA_CONTRATUAL_PADRAO}
+
 f1, f2 = st.columns(2)
 with f1:
     st.caption("Férias e licenças — nesses dias a pessoa não é escalada (regra rígida).")
@@ -187,7 +200,7 @@ if gerar:
                                 for _, l in tabela_indisp.dropna().iterrows()],
             pedidos=[(str(l["Profissional"]), _data(l["Data"]))
                      for _, l in tabela_pedidos.dropna().iterrows()],
-            pacientes=pacientes or None)
+            pacientes=pacientes or None, cargas=cargas)
         fe.montar(entrada)                    # erro de entrada aparece antes do solver
     except (ValueError, TypeError) as erro:
         st.session_state.pop("resultado", None)
@@ -226,8 +239,10 @@ if "resultado" in st.session_state:
         m[1].metric("Turnos de enfermeiro em posto de técnico", ind["enf_em_posto_tec"])
         m[2].metric("Pedidos de folga atendidos",
                     f"{ind['pedidos_atendidos']} de {ind['pedidos_total']}")
-        m[3].metric("Carga no período (mín.–máx.)",
-                    f"{ind['horas_min']:g}–{ind['horas_max']:g} h")
+        m[3].metric("Contrato cumprido (mín.–máx.)",
+                    f"{ind['fracao_min']:.0%}–{ind['fracao_max']:.0%}",
+                    help=f"Horas trabalhadas ÷ horas contratadas nos dias disponíveis. Em "
+                         f"horas: {ind['horas_min']:g}–{ind['horas_max']:g} h no período.")
         m[4].metric("Conferência de descanso", "cumpre" if c["ok"] else "NÃO CUMPRE")
         st.caption(f"Descanso mínimo entre turnos {c['menor_geral']:.0f} h · descanso "
                    f"semanal {fe.fmt_semanal(c['menor_semanal'])} · no máximo "
@@ -236,8 +251,9 @@ if "resultado" in st.session_state:
         if equilibrio == "ok":
             sem_prova = "" if ind["provado_etapa2"] else " (sem prova de que é a menor)"
             st.caption(f"Equilíbrio de carga: entre as escalas de mesmo custo, a diferença "
-                       f"entre a maior e a menor carga caiu de {ind['amplitude_etapa1']:g} h "
-                       f"para {ind['amplitude']:g} h{sem_prova}.")
+                       f"entre a maior e a menor fração do contrato cumprida caiu de "
+                       f"{ind['amplitude_etapa1']:.0%} para {ind['amplitude']:.0%}"
+                       f"{sem_prova}.")
         elif equilibrio:
             st.caption(f"Equilíbrio de carga: {equilibrio}.")
         if ind["pedidos_total"]:
@@ -246,8 +262,10 @@ if "resultado" in st.session_state:
                        f"{ind['negados_max']} por pessoa.")
     if r.qp:
         q1, q2 = st.columns(2)
+        st.caption(f"CHS usada no QP: {r.chs:.1f} h por semana, a média das cargas "
+                   f"contratuais da equipe.".replace(".", ",", 1))
         q1.metric("QP núcleo assistencial", f"{r.qp[0]:.2f}".replace(".", ","),
-                  help="Horas por dia × 7 / 42 h.")
+                  help=f"Horas por dia × 7 / CHS ({r.chs:g} h).")
         q2.metric("QP completo (IST 15%)", f"{r.qp[1]:.2f}".replace(".", ","),
                   help="Núcleo × 1,15. O IST cobre férias e ausências que a escala não "
                        "modela.")

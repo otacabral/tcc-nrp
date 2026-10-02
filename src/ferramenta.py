@@ -80,6 +80,9 @@ class Entrada:
     indisponibilidades: list[tuple[str, date, date]] = field(default_factory=list)
     pedidos: list[tuple[str, date]] = field(default_factory=list)
     pacientes: dict[str, float] | None = None           # painel "Conferir com o COFEN"
+    # carga contratual semanal, por nome (ou id); quem nao aparece fica com 44 h, e quem a
+    # varredura acrescenta tambem (DECISOES.md, "2026-10-02 — Carga por contrato")
+    cargas: dict[str, float] = field(default_factory=dict)
 
     @property
     def quadro(self) -> int:
@@ -99,6 +102,7 @@ class Resultado:
     conformidade: dict | None = None
     indicadores: dict = field(default_factory=dict)
     diagnostico: tuple[str, str] | None = None   # (motivo, explicacao), sem escala legal
+    chs: float | None = None               # CHS do QP: media das cargas contratuais
 
     @property
     def faltam(self) -> int | None:
@@ -150,9 +154,12 @@ def equipe(e: Entrada, acrescimo: int, horas_enf: float | None = None):
     de enfermeiro exige em horas e ate a proporcao do grau; depois tecnicos."""
     total = e.quadro + acrescimo
     pct = br.GRAUS[e.grau].pct_enfermeiros
-    carga = br.CARGA_SEMANAL * br.DIAS_HORIZONTE / 7
+    base = montar(e)
+    cobrem = sum(base.horas_devidas(p.id) for p in base.profissionais.values()
+                 if br.HABILIDADE_ENF in p.habilidades)
+    falta_h = max(0.0, (horas_enf or 0) - cobrem)
     exigidos = max(math.ceil(pct * total - 1e-9),
-                   math.ceil((horas_enf or 0) / carga - 1e-9))
+                   e.n_enfermeiros + math.ceil(falta_h / _teto_padrao() - 1e-9))
     n_enf = max(e.n_enfermeiros, min(e.n_enfermeiros + acrescimo, exigidos))
     n_tec = total - n_enf
     extras_enf, extras_tec = n_enf - e.n_enfermeiros, n_tec - e.n_tecnicos
@@ -164,6 +171,11 @@ def equipe(e: Entrada, acrescimo: int, horas_enf: float | None = None):
         nomes_tec = list(e.nomes_tecnicos) + [
             f"Téc {e.n_tecnicos + i + 1}" for i in range(extras_tec)]
     return n_enf, n_tec, nomes_enf, nomes_tec
+
+
+def _teto_padrao() -> float:
+    """Teto no horizonte de quem a varredura acrescenta: 44 h, sem ferias."""
+    return br.CARGA_CONTRATUAL_PADRAO * br.DIAS_HORIZONTE / 7
 
 
 def montar(e: Entrada, acrescimo: int = 0, horas_enf: float | None = None,
@@ -189,7 +201,7 @@ def montar(e: Entrada, acrescimo: int = 0, horas_enf: float | None = None,
         demanda_data=e.demanda_data, fim_de_semana=e.fim_de_semana, inicio=e.inicio,
         n_enfermeiros=n_enf, n_tecnicos=n_tec, nomes_enfermeiros=nomes_enf,
         nomes_tecnicos=nomes_tec, indisponibilidades=e.indisponibilidades,
-        pedidos=e.pedidos)
+        pedidos=e.pedidos, cargas=e.cargas)
 
 
 def limite_efetivo(inst) -> int:
@@ -210,10 +222,15 @@ def limite_efetivo(inst) -> int:
 
 
 def piso(inst) -> int:
-    """Menor quadro que a aritmetica admite: horas de demanda / teto de horas por pessoa, e
-    a soma de dias seguidos quando o limite efetivo de dias seguidos aperta. Sem solver."""
+    """Menor quadro que a aritmetica admite, sem solver: o informado mais quantos acrescimos
+    de 44 h faltam para as horas da demanda caberem nos tetos individuais (carga contratual
+    nos dias disponiveis), e a soma de dias seguidos quando o limite efetivo aperta."""
     horas = sum(q * inst.turnos[s].duracao_h for (_, s), q in inst.demanda.items())
-    capacidade = math.ceil(horas / inst.carga_maxima_h - 1e-9)
+    cobrem = sum(inst.horas_devidas(n) for n in inst.profissionais)
+    capacidade = 0
+    if horas > cobrem + 1e-9:
+        capacidade = len(inst.profissionais) + math.ceil((horas - cobrem) / _teto_padrao()
+                                                         - 1e-9)
     return max(capacidade, ea.piso_de_alternancia(inst, limite_efetivo(inst)))
 
 
@@ -234,7 +251,10 @@ def indicadores(inst, escala) -> dict:
     for p in pedidos:
         if (p.profissional, p.data) in trabalhados:
             negados[p.profissional] = negados.get(p.profissional, 0) + 1
+    f = fracoes(inst, escala) if inst.carga_semanal_h is not None else {}
     return {"enf_em_posto_tec": em_posto_tec,
+            "fracao_min": min(f.values(), default=0.0),
+            "fracao_max": max(f.values(), default=0.0),
             "negados_max": max(negados.values(), default=0),
             "com_pedido_negado": len(negados),
             "horas_min": min(horas.values()), "horas_max": max(horas.values()),
@@ -287,9 +307,10 @@ def resolver(m, tempo: int | None) -> tuple[str, object, bool, float | None]:
 
 
 def equilibrar(m, inst, z: int, tempo: int | None) -> tuple[str, object, bool, float | None]:
-    """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a AMPLITUDE DE
-    CARGA — maior carga do periodo menos a menor, em horas (DECISOES.md, "Redesenho", 02/10).
-    O mecanismo e o do Experimento B (fixar o otimo, otimizar um segundo criterio), sobre o
+    """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a amplitude da
+    FRACAO CUMPRIDA — horas trabalhadas / horas devidas (carga contratual nos dias
+    disponiveis), maior menos menor (DECISOES.md, "2026-10-02 — Carga por contrato"). O
+    mecanismo e o do Experimento B (fixar o otimo, otimizar um segundo criterio), sobre o
     mesmo modelo, sem monta-lo de novo; muda o criterio."""
     preparar_equilibrio(m, inst, z)
     return resolver(m, tempo)
@@ -300,25 +321,36 @@ def preparar_equilibrio(m, inst, z: int) -> None:
     para a curva de escalabilidade (`src/escalabilidade_objetivo.py`) resolver por conta
     propria e cronometrar."""
     import pyomo.environ as pyo
-    termos: dict[str, list] = {n: [] for n in inst.profissionais}
+    # quem nao tem dia disponivel nao deve hora nenhuma: fica fora da fracao
+    devidas = {n: inst.horas_devidas(n) for n in inst.profissionais}
+    termos: dict[str, list] = {n: [] for n, h in devidas.items() if h > 0}
     for (n, s, d) in m.X:
-        termos[n].append(inst.turnos[s].duracao_h * m.x[n, s, d])
+        if n in termos:
+            termos[n].append(inst.turnos[s].duracao_h * m.x[n, s, d])
     m.objetivo.deactivate()
     m.total_no_otimo = pyo.Constraint(expr=m.objetivo.expr == z)
-    m.carga = pyo.Expression(list(termos), rule=lambda m, n: sum(termos[n]))
-    m.h_max = pyo.Var(domain=pyo.NonNegativeReals)
-    m.h_min = pyo.Var(domain=pyo.NonNegativeReals)
-    m.teto_carga = pyo.Constraint(list(termos), rule=lambda m, n: m.h_max >= m.carga[n])
-    m.piso_carga = pyo.Constraint(list(termos), rule=lambda m, n: m.h_min <= m.carga[n])
-    m.objetivo_equilibrio = pyo.Objective(expr=m.h_max - m.h_min, sense=pyo.minimize)
+    m.fracao = pyo.Expression(list(termos), rule=lambda m, n: sum(termos[n]) / devidas[n])
+    m.f_max = pyo.Var(domain=pyo.NonNegativeReals)
+    m.f_min = pyo.Var(domain=pyo.NonNegativeReals)
+    m.teto_fracao = pyo.Constraint(list(termos), rule=lambda m, n: m.f_max >= m.fracao[n])
+    m.piso_fracao = pyo.Constraint(list(termos), rule=lambda m, n: m.f_min <= m.fracao[n])
+    m.objetivo_equilibrio = pyo.Objective(expr=m.f_max - m.f_min, sense=pyo.minimize)
 
 
-def amplitude(inst, escala) -> float:
-    """Maior carga do periodo menos a menor, em horas, contando quem nao trabalhou."""
+def fracoes(inst, escala) -> dict[str, float]:
+    """Fracao cumprida por profissional: horas trabalhadas / horas devidas nos dias
+    disponiveis. Quem nao deve hora nenhuma (o periodo todo de ferias) fica de fora."""
     horas = {n: 0.0 for n in inst.profissionais}
     for _, n, s in escala:
         horas[n] += inst.turnos[s].duracao_h
-    return max(horas.values()) - min(horas.values())
+    return {n: h / inst.horas_devidas(n) for n, h in horas.items()
+            if inst.horas_devidas(n) > 0}
+
+
+def amplitude(inst, escala) -> float:
+    """Maior fracao cumprida menos a menor (0 = todos cumprem a mesma parte do contrato)."""
+    f = fracoes(inst, escala)
+    return max(f.values()) - min(f.values()) if f else 0.0
 
 
 def resolver_com_objetivo(inst, tempo: int | None) -> tuple[str, object, object, dict]:
@@ -371,18 +403,21 @@ def diagnosticar(inst) -> tuple[str, str]:
     """
     enf = {p.id for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades}
     N, E = len(inst.profissionais), len(enf)
-    carga = inst.carga_maxima_h
+    cobrem = sum(inst.horas_devidas(n) for n in inst.profissionais)
+    cobrem_enf = sum(inst.horas_devidas(n) for n in enf)
+    teto = _teto_padrao()
     dur = {s: t.duracao_h for s, t in inst.turnos.items()}
     posto_enf = {s for s, t in inst.turnos.items() if br.HABILIDADE_ENF in t.habilidades}
     por_dia = {d: sum(inst.demanda_de(d, s) for s in inst.turnos) for d in inst.dias}
     enf_dia = {d: sum(inst.demanda_de(d, s) for s in posto_enf) for d in inst.dias}
 
     horas = sum(q * dur[s] for (_, s), q in inst.demanda.items())
-    if horas > N * carga + 1e-9:
-        k = math.ceil(horas / carga - 1e-9) - N
-        return HORAS, (f"A demanda do período soma {horas:g} h. Com 42 h por semana, "
-                       f"{N} pessoas trabalham no máximo {N * carga:g} h. "
-                       f"Pela conta, faltam pelo menos {k}.")
+    if horas > cobrem + 1e-9:
+        k = math.ceil((horas - cobrem) / teto - 1e-9)
+        return HORAS, (f"A demanda do período soma {horas:g} h. Pelas cargas contratuais, "
+                       f"descontadas férias e licenças, as {N} pessoas trabalham no máximo "
+                       f"{cobrem:.0f} h. Pela conta, faltam pelo menos {k} de "
+                       f"{br.CARGA_CONTRATUAL_PADRAO:g} h.")
 
     L = limite_efetivo(inst)
     if L == 1:
@@ -396,12 +431,12 @@ def diagnosticar(inst) -> tuple[str, str]:
                 f"tem {N}. Pela conta, faltam pelo menos {soma - N}.")
 
     horas_enf = sum(q * dur[s] for (_, s), q in inst.demanda.items() if s in posto_enf)
-    if horas_enf > E * carga + 1e-9:
-        k = math.ceil(horas_enf / carga - 1e-9) - E
+    if horas_enf > cobrem_enf + 1e-9:
+        k = math.ceil((horas_enf - cobrem_enf) / teto - 1e-9)
         return CATEGORIA, (f"Os turnos que pedem enfermeiro somam {horas_enf:g} h, e só "
-                           f"enfermeiro os cobre. {E} enfermeiros trabalham no máximo "
-                           f"{E * carga:g} h. Pela conta, faltam pelo menos {k} "
-                           f"enfermeiro(s).")
+                           f"enfermeiro os cobre. Pelas cargas contratuais, {E} enfermeiros "
+                           f"trabalham no máximo {cobrem_enf:.0f} h. Pela conta, faltam pelo "
+                           f"menos {k} enfermeiro(s) de {br.CARGA_CONTRATUAL_PADRAO:g} h.")
     if L == 1:
         d, soma = max(((inst.dias[i], enf_dia[inst.dias[i]] + enf_dia[inst.dias[i + 1]])
                        for i in range(len(inst.dias) - 1)), key=lambda x: x[1])
@@ -439,10 +474,11 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
     base = montar(e)                          # valida a entrada antes de gastar solver
     horas_enf = _horas_enfermeiro(e)
     alertas = br.alertas_cofen(base, e.grau, e.pacientes)
-    qp = br.quadro_pessoal(br.horas_por_dia(e.pacientes)) if e.pacientes else None
+    chs = br.chs(base)
+    qp = br.quadro_pessoal(br.horas_por_dia(e.pacientes), chs) if e.pacientes else None
     minimo = piso(base)
     r = Resultado(veredito=NAO_DECIDIDO, quadro_informado=e.quadro, menor_viavel=None,
-                  alertas=alertas, tentativas=[], qp=qp)
+                  alertas=alertas, tentativas=[], qp=qp, chs=chs)
 
     decidido = True
     for acrescimo in range(0, margem + 1):
@@ -527,13 +563,16 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
          f"{ind.get('pedidos_atendidos')} de {ind.get('pedidos_total')}"),
         ("Carga horária no período (mín.–máx.)",
          f"{ind.get('horas_min', 0):g}–{ind.get('horas_max', 0):g} h"),
+        ("Fração do contrato cumprida (mín.–máx.)",
+         f"{ind.get('fracao_min', 0):.0%}–{ind.get('fracao_max', 0):.0%}"),
         ("Descanso mínimo entre turnos (medido)", f"{c.get('menor_geral', 0):.0f} h"),
         ("Descanso semanal mínimo (medido)", fmt_semanal(c.get("menor_semanal", 0))),
         ("Maior sequência de dias trabalhados", c.get("max_consec")),
         ("Conferência de descanso", "cumpre" if c.get("ok") else "NÃO CUMPRE"),
     ]
     if r.qp:
-        linhas += [("QP núcleo assistencial (sem IST)", round(r.qp[0], 2)),
+        linhas += [("CHS do QP (média das cargas contratuais)", f"{r.chs:g} h"),
+                   ("QP núcleo assistencial (sem IST)", round(r.qp[0], 2)),
                    ("QP completo (com IST de 15%)", round(r.qp[1], 2))]
     linhas += [("Alerta COFEN (não impede a escala)", a) for a in r.alertas]
     resumo = pd.DataFrame(linhas, columns=["Item", "Valor"])

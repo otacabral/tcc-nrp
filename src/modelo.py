@@ -133,17 +133,19 @@ def construir(inst: Instancia, flexiveis: bool = True, habilidade_rigida: bool =
                 m.x[n, s, d].fix(0)
         m.y[n, d].fix(0)
 
-    # (IV) teto de horas no horizonte (42 h/semana), RIGIDO. So existe com turnos configurados
-    # (DECISOES.md, 29/09): com duracoes diferentes, MaxNumAssignments conta turnos e nao
-    # limita horas. None nas instancias do INRC e no caminho antigo, entao o modelo delas nao
-    # muda.
-    if inst.carga_maxima_h is not None:
+    # (IV) teto de horas no horizonte, por profissional, RIGIDO: as horas contratadas nos dias
+    # disponiveis (`Instancia.horas_devidas`; DECISOES.md, "2026-10-02 — Carga por contrato").
+    # So existe com turnos configurados: com duracoes diferentes, MaxNumAssignments conta
+    # turnos e nao limita horas. None nas instancias do INRC e no caminho antigo, entao o
+    # modelo delas nao muda.
+    if inst.carga_semanal_h is not None:
         duracao = {s: inst.turnos[s].duracao_h for s in turnos}
 
         def _carga(m, n):
             termos = [duracao[s] * m.x[n, s, d] for s in turnos if n in elegiveis[s]
                       for d in dias]
-            return sum(termos) <= inst.carga_maxima_h if termos else pyo.Constraint.Skip
+            return (sum(termos) <= inst.horas_devidas(n) + 1e-9 if termos
+                    else pyo.Constraint.Skip)
 
         m.carga_horaria = pyo.Constraint(tuple(inst.profissionais), rule=_carga)
 

@@ -84,16 +84,18 @@ def conferir_rigidas(inst: Instancia, escala: list[Atribuicao] | tuple[Atribuica
         if quantidade > 1:
             problemas.append(f"{n} tem {quantidade} turnos em {d}")
 
-    # teto de horas no horizonte, quando a instancia declara um (turnos configurados)
-    if inst.carga_maxima_h is not None:
+    # teto de horas no horizonte, por profissional, quando a instancia declara carga
+    # contratual (turnos configurados): as horas contratadas nos dias disponiveis
+    if inst.carga_semanal_h is not None:
         horas: dict[str, float] = {}
         for (d, n, s) in escala:
             if n in inst.profissionais and s in inst.turnos:
                 horas[n] = horas.get(n, 0.0) + inst.turnos[s].duracao_h
         for n, h in horas.items():
-            if h > inst.carga_maxima_h + 1e-9:
+            teto = inst.horas_devidas(n)
+            if h > teto + 1e-6:
                 problemas.append(f"{n} com {h:g} h no periodo, acima do teto de "
-                                 f"{inst.carga_maxima_h:g} h")
+                                 f"{teto:g} h")
 
     return problemas
 

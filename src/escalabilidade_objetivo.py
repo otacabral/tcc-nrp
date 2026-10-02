@@ -150,7 +150,7 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
         return linha
     escala = modelo.atribuicoes(m)
     z = modelo.valor_objetivo(m)
-    linha.update(penalidade=z, amplitude_etapa1_h=fe.amplitude(inst, escala))
+    linha.update(penalidade=z, amplitude_etapa1=fe.amplitude(inst, escala))
 
     # etapa 2: equilibrio de horas, so com a etapa 1 provada otima (como na ferramenta)
     if not r1["otimo"]:
@@ -162,7 +162,7 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
         if r2["resultado"] is not None and modelo.tem_solucao(r2["resultado"]) \
                 and modelo.carregar_solucao(m, r2["resultado"]):
             escala = modelo.atribuicoes(m)
-            linha["amplitude_etapa2_h"] = fe.amplitude(inst, escala)
+            linha["amplitude_etapa2"] = fe.amplitude(inst, escala)
 
     # conferencias da escala final: rigidas e descanso medido no relogio
     ind = fe.indicadores(inst, escala)
@@ -182,8 +182,8 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
     solucao.escrever_xml(inst, escala, ESCALAS / f"{inst.id}_objetivo.xml", penalidade=z)
     print(f"   ### penalidade {z} (recontada {recontada}) | pedidos "
           f"{ind['pedidos_atendidos']}/{ind['pedidos_total']} | enf em posto tec "
-          f"{ind['enf_em_posto_tec']} | amplitude {linha['amplitude_etapa1_h']:g} -> "
-          f"{linha.get('amplitude_etapa2_h', '-')} h | carga {ind['horas_min']:g}-"
+          f"{ind['enf_em_posto_tec']} | amplitude da fracao {linha['amplitude_etapa1']:.1%}"
+          f" -> {linha.get('amplitude_etapa2', '-')} | carga {ind['horas_min']:g}-"
           f"{ind['horas_max']:g} h | descanso {'ok' if descanso_ok else 'FALHA'} (folga minima "
           f"{med['menor_folga']:g} h acima do exigido, semanal {med['menor_semanal']:g} h) | "
           f"rigidas {linha['rigidas']}", flush=True)

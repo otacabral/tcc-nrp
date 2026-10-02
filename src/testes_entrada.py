@@ -223,9 +223,10 @@ def teste_turnos_configurados() -> None:
             "sabado: M do fim de semana (2 tec), N sem valor de fim de semana (2 tec)")
     confere([inst.demanda_de(feriado, s) for s in ("M", "ME", "T", "TE", "N", "NE")]
             == [1, 1, 1, 1, 1, 0], f"feriado {feriado:%d/%m}: demanda especifica por categoria")
-    confere(inst.carga_maxima_h == 168, f"teto de horas = {inst.carga_maxima_h} h em 28 dias")
-    confere(inst.contratos["0"].max_num_assignments.valor == 28,
-            "MaxNumAssignments = 168 / 6 h (turno mais curto), nunca mais apertado que as horas")
+    tetos = {inst.horas_devidas(n) for n in inst.profissionais}
+    confere(tetos == {176}, f"teto de horas = {tetos} h em 28 dias (44 h padrao x 4 semanas)")
+    confere(inst.contratos["0"].max_num_assignments.valor == 29,
+            "MaxNumAssignments = 176 / 6 h (turno mais curto), nunca mais apertado que as horas")
     alertas = br.alertas_cofen(inst, "intermediario")
     confere(len(alertas) == 1 and "1 turno(s) sem enfermeiro" in alertas[0],
             f"alertas COFEN: {alertas}")

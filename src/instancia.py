@@ -195,11 +195,13 @@ class Instancia:
     # (profissional, dia) em que a pessoa nao pode ser escalada: ferias, licenca. RIGIDO, e
     # fora do formato do INRC — o parser nunca preenche, so a instancia brasileira.
     indisponiveis: frozenset[tuple[str, date]] = frozenset()
-    # Teto de horas por profissional no horizonte (42 h/semana x semanas). RIGIDO, e fora do
-    # formato do INRC, que so conta turnos (MaxNumAssignments). So a instancia brasileira com
-    # turnos configurados preenche: com turnos de duracoes diferentes, contar turnos nao
-    # limita horas. None = nao ha teto de horas alem do do contrato.
-    carga_maxima_h: float | None = None
+    # Carga contratual SEMANAL de cada profissional, em horas (DECISOES.md, "2026-10-02 —
+    # Carga por contrato"). Dela sai o teto de horas no horizonte, RIGIDO, e o denominador do
+    # equilibrio: `horas_devidas`. Fora do formato do INRC, que so conta turnos
+    # (MaxNumAssignments). So a instancia brasileira com turnos configurados preenche: com
+    # turnos de duracoes diferentes, contar turnos nao limita horas. None = nao ha teto de
+    # horas alem do do contrato (INRC, experimentos).
+    carga_semanal_h: dict[str, float] | None = None
 
     # --- horizonte
 
@@ -215,6 +217,28 @@ class Instancia:
     def indice(self, dia: date) -> int:
         """Posicao do dia no horizonte, contando de 0."""
         return (dia - self.inicio).days
+
+    # --- carga contratual
+
+    def dias_disponiveis(self, profissional: str) -> int:
+        """Dias do horizonte sem ferias nem licenca."""
+        return self.n_dias - sum(1 for n, _ in self.indisponiveis if n == profissional)
+
+    def horas_devidas(self, profissional: str) -> float:
+        """Horas contratadas nos dias DISPONIVEIS: carga semanal x dias disponiveis / 7.
+
+        E ao mesmo tempo o teto rigido de horas no horizonte e o denominador da fracao
+        cumprida no equilibrio — uma conta so, para os dois nao divergirem. O teto vale sobre
+        o horizonte, nao por semana: o 12x36 tem semanas de 48 h compensadas por semanas de
+        36 h (CLT, art. 59-A). Quem tem 44 h e 14 dias de ferias deve 88 h, nao 176 h."""
+        return self.carga_semanal_h[profissional] * self.dias_disponiveis(profissional) / 7
+
+    @property
+    def chs_media(self) -> float | None:
+        """Media das cargas contratuais semanais da equipe — a CHS do painel do COFEN."""
+        if not self.carga_semanal_h:
+            return None
+        return sum(self.carga_semanal_h.values()) / len(self.carga_semanal_h)
 
     # --- demanda
 
