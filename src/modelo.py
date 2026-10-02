@@ -483,8 +483,16 @@ def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
                     break
                 except Exception:  # noqa: BLE001
                     continue
+    # A MESMA ARMADILHA vale para o limite de tempo, achada em 02/10: o
+    # `LegacySolverInterface.solve` faz `config.time_limit = timelimit`, e `timelimit` tem
+    # padrao None. O limite gravado acima era apagado, e NENHUMA resolucao pelo appsi teve
+    # limite ate 02/10 — os "600 s" da ferramenta e os "900 s" da curva nao valiam. Vai tambem
+    # como kwarg na chamada, quando o solver aceita.
+    extra = {}
+    if tempo_limite is not None and _aceita(opt.solve, "timelimit"):
+        extra["timelimit"] = tempo_limite
     if carregar:
-        return opt.solve(m, tee=log)
+        return opt.solve(m, tee=log, **extra)
 
     # ARMADILHA, custou uma rodada em 22/09: mexer em `opt.config.load_solution` ANTES de
     # chamar `solve` nao adianta no appsi. O `LegacySolverInterface.solve` refaz o config a
@@ -493,10 +501,10 @@ def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
     if _aceita(opt.solve, "load_solutions"):
         if hasattr(opt, "config") and hasattr(opt.config, "load_solution"):
             opt.config.load_solution = False      # cinto, para as versoes que nao refazem
-        return opt.solve(m, tee=log, load_solutions=False)   # e suspensorio
+        return opt.solve(m, tee=log, load_solutions=False, **extra)   # e suspensorio
     if hasattr(opt, "config") and hasattr(opt.config, "load_solution"):
         opt.config.load_solution = False
-        return opt.solve(m, tee=log)
+        return opt.solve(m, tee=log, **extra)
     raise RuntimeError(
         f"o solver {solver} nao oferece jeito de resolver sem carregar a solucao; sem isso "
         f"uma resposta INVIAVEL vira excecao e nao da para distinguir de erro")

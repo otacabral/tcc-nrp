@@ -238,6 +238,14 @@ def equilibrar(m, z: int, tempo: int | None) -> tuple[str, object]:
     """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a penalidade
     individual maxima — o mecanismo do Experimento B (`experimentos.minimo_do_maximo`),
     sobre o mesmo modelo, sem monta-lo de novo."""
+    preparar_equilibrio(m, z)
+    return ea.resolver_modelo(m, modelo.SOLVER_PADRAO, tempo)
+
+
+def preparar_equilibrio(m, z: int) -> None:
+    """Troca o objetivo do modelo pelo da etapa 2, sem resolver. Separado de `equilibrar`
+    para a curva de escalabilidade (`src/escalabilidade_objetivo.py`) ler o estado do solver
+    — otimo provado ou nao — que o veredito de `resolver_modelo` nao distingue."""
     import pyomo.environ as pyo
     m.objetivo.deactivate()
     m.total_no_otimo = pyo.Constraint(expr=m.objetivo.expr == z)
@@ -245,7 +253,6 @@ def equilibrar(m, z: int, tempo: int | None) -> tuple[str, object]:
     m.teto_individual = pyo.Constraint(list(m.pena.keys()),
                                        rule=lambda m, n: m.t_max >= m.pena[n])
     m.objetivo_equilibrio = pyo.Objective(expr=m.t_max, sense=pyo.minimize)
-    return ea.resolver_modelo(m, modelo.SOLVER_PADRAO, tempo)
 
 
 def resolver_com_objetivo(inst, tempo: int) -> tuple[str, object, object, dict]:
