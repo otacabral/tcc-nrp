@@ -1,6 +1,6 @@
 # Estado atual — ponto de partida para qualquer sessão
 
-**Atualizado em 29/09/2026.** Este arquivo existe para responder, em uma leitura, *onde o
+**Atualizado em 02/10/2026.** Este arquivo existe para responder, em uma leitura, *onde o
 trabalho está*. É o primeiro que qualquer assistente — Claude Code aqui no repositório ou o
 chat de orientação/redação — deve ler.
 
@@ -27,10 +27,11 @@ colunas. Warm start heurístico só como partida, e só se a escala exigir.
 | Data | O quê |
 |---|---|
 | 24/09/2026 | Virada de escopo (comparação de regimes → ferramenta). Feita. |
+| **10/10/2026** | **Congelamento das funcionalidades.** Depois disso, nenhuma função nova entra na ferramenta. |
 | **14/10/2026** | **Congelamento de resultado numérico.** Depois disso, nenhum número novo entra. |
 | **04/11/2026** | **Entrega.** |
 
-Restam cerca de duas semanas até o congelamento e cinco até a entrega.
+Em 02/10: oito dias até o congelamento das funcionalidades, doze até o de resultado numérico e cerca de cinco semanas até a entrega.
 
 ## 3. O que está fechado
 
@@ -75,65 +76,52 @@ Detalhe arquivo por arquivo em `MAPA_CODIGO.md`. O resumo que importa:
 
 **O motor está pronto.** `modelo.py` + `instancia.py` + `instancia_br.py` + `solucao.py`.
 
-**Três coisas que nasceram como experimento já são funções da ferramenta, sem interface:**
-`experimento_a.py` ("o quadro que a fórmula do COFEN dá admite escala legal?"),
-`docs/conferencia_descanso_escala.py` ("esta escala é legal?" — é o relatório de conformidade),
-`experimentos.py` ("me dê a escala mais equilibrada entre as de mesmo custo").
+**A interface existe** (02/10): `src/app.py`, em Streamlit — `streamlit run srcpp.py`.
+É a casca de `src/ferramenta.py`. Tem, na ordem da especificação:
 
-**O que falta é a casca**: entrada que não seja código Python, apresentação da escala em
-formato legível por gestor, e o relatório de conformidade como saída de produto.
+- configuração da unidade: modelo de turnos editável (início e duração), definição de fim de
+  semana, grau de dependência;
+- equipe: enfermeiros e técnicos por quantidade, nomes opcionais, férias e licenças
+  (rígidas), pedidos de folga (flexíveis);
+- demanda por turno, geral (com valores próprios para o fim de semana) e por data;
+- conferência com o COFEN, que só alerta e nunca trava;
+- alertas em vermelho no resultado;
+- diagnóstico da trava: quando o quadro não tem escala legal, o motivo e o menor quadro
+  viável;
+- escala conferida na conferência de descanso e planilha `.xlsx` para baixar.
+
+Testes ponta a ponta pela tela em `src/testes_ferramenta.py`; testes das entradas em
+`src/testes_entrada.py`.
+
+As três funções que nasceram como experimento estão dentro dela: `experimento_a.py` (o quadro
+admite escala legal?), `docs/conferencia_descanso_escala.py` (a escala é legal?) e
+`experimentos.py` (a mais equilibrada entre as de mesmo custo).
 
 ## 5. O que está pendente, em ordem
 
-### Bloqueia tudo
+**Concluído: Etapas 1 a 7** da especificação (ver `DECISOES.md`, entradas de 29/09:
+"Especificação da ferramenta", "Ajustes da Etapa 2" e "Redesenho da ferramenta"). Licença
+MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativo.
 
-**1. ~~A especificação da ferramenta.~~ — RESOLVIDO em 29/09.** Decidida, ver
-`DECISOES.md`, "2026-09-29 — Especificação da ferramenta". Registro original, abaixo.
+**Pendente, nesta ordem:**
 
-Está sendo escrita no projeto de redação. Sem ela não dá
-para começar a interface, e a reescrita dos arquivos de contexto está congelada esperando por
-ela. **É o caminho crítico.** Enquanto ela não sai, o trabalho de código é organização e
-dívida.
+1. **P1 — curva de escalabilidade com objetivo não trivial** (Etapa 4). Mesmos seis tamanhos,
+   objetivo completo da ferramenta e pedidos de folga sintéticos. Ver `PROPOSTAS.md`.
+2. **Decisão sobre carga mínima.** Hoje não há carga mínima: no caso de 40 profissionais do
+   12×36, a carga vai de 120 h a 168 h no mês. Ver a nota de 02/10 na entrada "Redesenho" do
+   `DECISOES.md`. Decisão do projeto de redação.
+3. **Acabamento visual mínimo** na tela: concordância e textos soltos ("isto e" sem acento,
+   "1 dias").
+4. **Arquivo de configuração** (pacote INRC + complemento). Menor prioridade: se não estiver
+   pronto em 10/10, vira trabalho futuro.
 
-### Esperando decisão
+**Dívida menor, sem prazo:**
 
-**2. ~~P1 — repetir a curva de escalabilidade com objetivo não trivial.~~ — RESOLVIDO em
-29/09.** Desbloqueada; executa depois da Etapa 7 (ver DECISOES 2026-09-29, Redesenho). Registro original, abaixo.
-
-Registrado em
-`PROPOSTAS.md`, aguardando validação. Custo: ~20 min de máquina. Só faz sentido depois da
-especificação, porque é ela que define o objetivo.
-
-**3. ~~Licença.~~ — RESOLVIDO em 29/09.** MIT; arquivo `LICENSE` na raiz. Registro
-original, abaixo.
-
-Uma ferramenta que se propõe gratuita e não declara licença é juridicamente
-inutilizável por quem a receber. Precisa de decisão — provavelmente MIT ou GPL. Questão para a
-orientação.
-
-**4. Destino de quatro notas do escopo anterior** em `docs/`:
-`nota_conferencias_contrato_2026-09-22.md`, `nota_intervalo_individual_2026-09-22.md`,
-`nota_piso_forcado_2026-09-22.md`, `para_orientacao_2026-09-23.md`. Vão para `historico/` ou
-ficam como metodologia ativa? Não decidido.
-
-**5. ~~`DECISOES.md` está em `historico/`, e isso é um risco.~~ — RESOLVIDO em 29/09.** O
-arquivo voltou à raiz como ativo, com marca de status em cada entrada e em cada pergunta
-aberta. É **exceção declarada** à regra da VIRADA de não reescrever contexto antes da
-especificação: só movimentação e marcação, sem alteração do texto das entradas. A correção
-das linhas 3 e 4 da `VIRADA_ESCOPO_2026-09-24.md`, que apontavam o `DECISOES.md` como
-substituído, faz parte da mesma exceção. Registro original do problema, abaixo.
-
-O arquivo foi para o histórico
-junto com o escopo anterior, mas boa parte do que está nele são **decisões de modelagem que
-sobrevivem à virada**: cobertura como igualdade, os limites legais rígidos, o piso aritmético,
-o achado do avaliador. Pelo `CLAUDE.md`, `historico/` é "consulta, não referência ativa" — ou
-seja, uma sessão nova pode não olhar. Decisão a tomar: separar as decisões que continuam
-valendo, ou reclassificar o arquivo.
-
-### Dívida menor
-
-**6. O `README.md` tem três links mortos** para arquivos que foram para `historico/`. Reescrita
-adiada de propósito: o README vai ter de mudar de qualquer jeito quando a especificação sair.
+- **Destino de quatro notas do escopo anterior** em `docs/`:
+  `nota_conferencias_contrato_2026-09-22.md`, `nota_intervalo_individual_2026-09-22.md`,
+  `nota_piso_forcado_2026-09-22.md`, `para_orientacao_2026-09-23.md`. Vão para `historico/`
+  ou ficam como metodologia ativa? Não decidido.
+- **O `README.md` tem três links mortos** para arquivos que foram para `historico/`.
 
 ## 6. O que este repositório aprendeu errando
 
