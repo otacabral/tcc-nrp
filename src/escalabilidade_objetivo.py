@@ -5,15 +5,38 @@ Roda da raiz do repositorio, com a .venv ativa:
     python src\\escalabilidade_objetivo.py                  # 36, 40, 60, 80, 120, 200
     python src\\escalabilidade_objetivo.py --n 40           # so esse
     python src\\escalabilidade_objetivo.py --tempo 900      # limite POR ETAPA, em segundos
+    python src\\escalabilidade_objetivo.py --equivalencia   # caminho novo x antigo, N=36 e 40
 
 Saida: `resultados/escalabilidade_objetivo.csv`, gravado a cada tamanho concluido, e o log
 do HiGHS de cada etapa em `resultados/escalabilidade_objetivo/highs_N<n>_etapa<k>.log`.
 
 ## O que muda em relacao a `escalabilidade.py`
 
-So o objetivo. As instancias sao AS MESMAS (`escalabilidade.construir`: 12x36, grau
-intermediario, porte escolhido para o piso cair em N), e o modelo tambem (`ea.modelo_br`, as
-mesmas opcoes da ferramenta). Muda:
+**Caminho das instancias (decisao do Otavio, 03/10): o da FERRAMENTA.** Cada tamanho e
+montado pela mesma funcao que a tela usa (`ferramenta.montar`: turnos 12x36 de 7h-19h e
+19h-7h, demanda por turno, carga contratual de 44 h para todos), com a demanda por turno e a
+composicao (enfermeiros + tecnicos) IGUAIS as que o caminho antigo
+(`escalabilidade.construir`: 12x36, grau intermediario, porte escolhido para o piso cair em
+N) gera para aquele tamanho — `construir` confere a igualdade da demanda dia a dia. O caminho
+antigo fica intacto para o Experimento A. Motivo: a etapa 2 equilibra a fracao do contrato,
+e as instancias do caminho antigo nao tem carga contratual — a rodada de 03/10 14:29 morreu
+na primeira etapa 2 por isso.
+
+**Teste de equivalencia** (`--equivalencia`). Esperado registrado ANTES de rodar (03/10): em
+N = 36 e N = 40, a viabilidade pelo caminho novo e a mesma do caminho antigo, resolvendo so
+as rigidas (sem objetivo), limite de 900 s cada:
+- N = 36 (12 + 24, 1 + 8 por turno, demanda constante): VIAVEL nos dois. E a ancora do
+  Experimento A — 36 viavel com demanda constante.
+- N = 40 (14 + 26, 1 + 9 por turno, demanda constante): VIAVEL nos dois, como o caminho
+  antigo deu na curva de escalabilidade (otimo provado).
+- Conta, sem solver: demanda do caminho novo = a do antigo em cada (dia, turno); e o piso da
+  ferramenta (`ferramenta.piso`) = N nos dois tamanhos (a alternancia soma dois dias: 2 x 18 =
+  36 e 2 x 20 = 40; as horas, 6.048 h e 6.720 h, cabem em N x 176 h).
+Diferencas declaradas entre os caminhos: o novo tem teto de 176 h (o antigo, 14 plantoes =
+168 h, e o novo mantem MaxNumAssignments = 14); as regras de descanso do novo sao geradas dos
+horarios. Nos dois, com 12 h, ninguem passa de 14 plantoes (9b-sem-teto, 03/10).
+
+O modelo e o mesmo (`ea.modelo_br`, as mesmas opcoes da ferramenta). Muda:
 
 - **pedidos de folga sinteticos**: 2 por profissional, em datas distintas sorteadas com
   `random.Random(SEMENTE + N)` — a semente esta registrada abaixo, e cada tamanho tem a sua
@@ -55,6 +78,7 @@ sys.path.insert(0, str(RAIZ / "src"))
 import escalabilidade as esc  # noqa: E402
 import experimento_a as ea  # noqa: E402
 import ferramenta as fe  # noqa: E402
+import instancia_br as br  # noqa: E402
 import modelo  # noqa: E402
 import solucao  # noqa: E402
 from instancia import Pedido  # noqa: E402
@@ -70,6 +94,62 @@ PEDIDOS_POR_PESSOA = 2
 # Time". O BestSol e o 7o campo depois da letra de origem (opcional); o tempo, o ultimo.
 _LINHA_ARVORE = re.compile(
     r"^\s*[A-Za-z]?\s+\d+\s+\d+\s+\d+\s+[\d.]+%\s+(\S+)\s+(\S+)\s+.*?([\d.]+)s\s*$")
+
+
+TURNOS_12X36 = fe.MODELOS[next(k for k in fe.MODELOS if k.startswith("12"))]
+
+
+def construir(n: int):
+    """A instancia do tamanho `n` pelo caminho da FERRAMENTA, com a demanda por turno e a
+    composicao do caminho antigo (`escalabilidade.construir`). Falha alto se a demanda nao
+    for constante no caminho antigo ou nao sair igual no novo."""
+    antiga = esc.construir(n)
+    d0 = antiga.dias[0]
+    por_turno = {s: (antiga.demanda_de(d0, f"{s}E"), antiga.demanda_de(d0, s))
+                 for s in ("D", "N")}
+    for d in antiga.dias:
+        for s, (enf, tec) in por_turno.items():
+            if (antiga.demanda_de(d, f"{s}E"), antiga.demanda_de(d, s)) != (enf, tec):
+                raise RuntimeError(f"N={n}: demanda do caminho antigo nao e constante em {d}")
+    n_enf = sum(1 for p in antiga.profissionais.values() if br.HABILIDADE_ENF in p.habilidades)
+    e = fe.Entrada(turnos=TURNOS_12X36, grau="intermediario", n_enfermeiros=n_enf,
+                   n_tecnicos=len(antiga.profissionais) - n_enf, demanda_turno=por_turno,
+                   inicio=antiga.inicio)
+    inst = fe.montar(e)
+    for d in antiga.dias:
+        for s in antiga.turnos:
+            if inst.demanda_de(d, s) != antiga.demanda_de(d, s):
+                raise RuntimeError(f"N={n}: demanda nova != antiga em {d}, {s}")
+    if set(inst.turnos) != set(antiga.turnos) or len(inst.profissionais) != n:
+        raise RuntimeError(f"N={n}: turnos ou equipe diferem do caminho antigo")
+    return inst
+
+
+def equivalencia(solver: str, tempo: int) -> int:
+    """Esperado no docstring do modulo, registrado antes de rodar."""
+    falhas = 0
+    for n in (36, 40):
+        antiga, nova = esc.construir(n), construir(n)
+        p = fe.piso(nova)
+        print(f"### N={n}: piso da ferramenta no caminho novo = {p} (esperado {n}) | "
+              f"carga {sorted(set(nova.carga_semanal_h.values()))} h | MaxNumAssignments "
+              f"{nova.contratos['0'].max_num_assignments.valor}", flush=True)
+        falhas += p != n
+        vereditos = {}
+        for nome, inst in (("antigo", antiga), ("novo", nova)):
+            t0 = time.time()
+            v, _, escala = ea.resolver_instancia(inst, solver, tempo)
+            ok = escala is not None and not solucao.conferir_rigidas(
+                inst, escala, habilidade_rigida=True)
+            vereditos[nome] = v
+            print(f"### N={n} caminho {nome}: {v} ({time.time() - t0:.0f} s) | rigidas "
+                  f"{'ok' if ok else '-'}", flush=True)
+        igual = vereditos["antigo"] == vereditos["novo"] == ea.VIAVEL
+        falhas += not igual
+        print(f"   {'ok   ' if igual else 'FALHA'} N={n}: antigo {vereditos['antigo']}, novo "
+              f"{vereditos['novo']} (esperado viavel nos dois)", flush=True)
+    print("equivalencia OK" if not falhas else f"{falhas} FALHA(S)")
+    return 1 if falhas else 0
 
 
 def com_pedidos(inst, n: int):
@@ -127,8 +207,8 @@ def _registrar(linha: dict, etapa: str, r: dict) -> None:
 
 
 def rodar(n: int, solver: str, tempo: int) -> dict:
-    inst = esc.construir(n)
-    p = esc.piso(inst)
+    inst = construir(n)
+    p = fe.piso(inst)
     if p != n:
         raise RuntimeError(f"N={n}: piso deu {p}, esperado {n} — a escala de demanda quebrou")
     inst, custo, W = fe.pesos(com_pedidos(inst, n))
@@ -137,7 +217,7 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
     print(f"\n### N = {n:3d}: {len(inst.pedidos)} pedidos, W = {W}, {d['variaveis']} "
           f"variaveis, {d['restricoes']} restricoes", flush=True)
 
-    linha = {"N": n, "pedidos": len(inst.pedidos), "peso_pedido": W, "semente": SEMENTE + n,
+    linha = {"N": n, "caminho": "ferramenta (44 h)", "pedidos": len(inst.pedidos), "peso_pedido": W, "semente": SEMENTE + n,
              "variaveis": d["variaveis"], "restricoes": d["restricoes"], "limite_s": tempo,
              "solver": solver}
 
@@ -199,7 +279,11 @@ def main() -> int:
     ap.add_argument("--n", action="append", type=int, help="tamanho; pode repetir")
     ap.add_argument("--solver", default=modelo.SOLVER_PADRAO)
     ap.add_argument("--tempo", type=int, default=900, help="limite POR ETAPA (padrao 900 s)")
+    ap.add_argument("--equivalencia", action="store_true",
+                    help="so o teste de equivalencia caminho novo x antigo (N=36 e 40)")
     a = ap.parse_args()
+    if a.equivalencia:
+        return equivalencia(a.solver, a.tempo)
 
     print(f"### Curva com objetivo nao trivial (P1). Solver {a.solver}, limite {a.tempo} s por "
           f"etapa, semente {SEMENTE} (+N).")

@@ -905,7 +905,8 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
     contrato = _contrato(None, descanso_clt, tuple(padroes),
                          max_atribuicoes=math.floor(carga / min(d for _, _, d in base)),
                          max_consecutivos=MAX_CONSECUTIVOS_GENERICO,
-                         descricao="turnos configurados, 42h/semana")
+                         descricao="turnos configurados, carga contratual informada "
+                                   "(limite legal de 44h/semana)")
     contrato = dataclasses.replace(contrato,
                                    weekend_definition=FIM_DE_SEMANA[fim_de_semana][1])
     # pedidos de folga: flexiveis, peso 1 — entram na penalidade, nunca travam

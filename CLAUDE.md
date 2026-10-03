@@ -62,6 +62,9 @@ trabalho.
 
 **Decisão de modelagem não óbvia**: lembrar de registrar, com data.
 
+**Execução longa** (regra de 03/10): antes de lançar, rodar o menor caso até o fim; depois de
+lançar, só relatar que está rodando após o primeiro caso completo aparecer no log.
+
 ## Formato das respostas
 
 Começar com uma seção curta **"Para o Otávio"**: o que mudou, o que ele precisa executar, o
