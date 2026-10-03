@@ -1,6 +1,6 @@
 # Estado atual — ponto de partida para qualquer sessão
 
-**Atualizado em 02/10/2026.** Este arquivo existe para responder, em uma leitura, *onde o
+**Atualizado em 03/10/2026.** Este arquivo existe para responder, em uma leitura, *onde o
 trabalho está*. É o primeiro que qualquer assistente — Claude Code aqui no repositório ou o
 chat de orientação/redação — deve ler.
 
@@ -108,9 +108,11 @@ MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativ
 1. **P1 — curva de escalabilidade com objetivo não trivial** (Etapa 4). Será lançada depois
    do item 1 do próximo bloco (carga por contrato, equilíbrio por fração do contrato), com o
    modelo final. A rodada de 02/10 foi preliminar e não é resultado. Ver `PROPOSTAS.md`, P1.
-2. **Decisão sobre carga mínima.** Hoje não há carga mínima: no caso de 40 profissionais do
-   12×36, a carga vai de 120 h a 168 h no mês. Ver a nota de 02/10 na entrada "Redesenho" do
-   `DECISOES.md`. Decisão do projeto de redação.
+2. ~~**Decisão sobre carga mínima.**~~ Respondida em 02/10 pela decisão "Carga por contrato"
+   (`DECISOES.md`): carga contratual por profissional, teto nos dias disponíveis, equilíbrio
+   pela fração do contrato cumprida. Implementada em 03/10. **Em aberto, P6:** a amplitude da
+   fração fica presa à separação entre enfermeiros e técnicos (teste 9c); decidir o critério
+   final da etapa 2 antes de relançar a P1.
 3. **Acabamento visual mínimo** na tela: concordância e textos soltos ("isto e" sem acento,
    "1 dias").
 4. **Arquivo de configuração** (pacote INRC + complemento). Menor prioridade: se não estiver

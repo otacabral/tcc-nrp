@@ -1266,6 +1266,90 @@ i5-10210U, Windows 11). Questão aberta sobre quem tem férias: ver P4 do `PROPO
 
 ---
 
+## 2026-10-02 — Carga por contrato
+
+**Status: vigente**
+
+Decidido pelo Otávio no projeto de redação, para o caminho de turnos configurados (a
+ferramenta). Implementado em 02–03/10.
+
+**a) Carga contratual por profissional.** Cada profissional tem carga contratual semanal de
+30, 36, 40 ou 44 h, informada na tela de equipe. Padrão 44 h, o limite da Constituição
+(art. 7º, XIII). `instancia_br.CARGA_CONTRATUAL_PADRAO`, `Instancia.carga_semanal_h`.
+
+**b) O teto vale sobre o horizonte, não por semana**: carga × 4 semanas. O 12×36 tem semanas
+de 48 h compensadas por semanas de 36 h (CLT, art. 59-A); um teto semanal o tornaria ilegal.
+*Como estava antes (verificado em 02/10):* o teto já era sobre o horizonte — uma restrição por
+profissional, soma das horas nos 28 dias ≤ 168 h (42 × 4), igual para todos — mas não
+descontava férias.
+
+**c) A etapa 2 minimiza (maior − menor) da FRAÇÃO cumprida**: horas trabalhadas ÷ horas
+devidas, com horas devidas = carga semanal × dias disponíveis ÷ 7. Quem tem 44 h e 14 dias
+de férias deve 88 h, não 176 h. Resolve a P4 (amplitude distorcida por férias). Quem não tem
+dia disponível no período fica fora da fração. Substitui a etapa 2 por horas da nota de 02/10
+na entrada "Redesenho"; o mecanismo continua o do Experimento B.
+
+**d) O teto também usa os dias disponíveis** — é a mesma conta das horas devidas,
+`Instancia.horas_devidas`, que serve ao teto rígido (`modelo.py`), à conferência
+(`solucao.conferir_rigidas`) e ao denominador da fração. Uma conta só, para os três não
+divergirem.
+
+**e) O painel do COFEN usa como CHS a média das cargas contratuais da equipe**, e a tela
+mostra o valor usado (`instancia_br.chs`).
+
+**f) O caminho por pacientes e o Experimento A ficam intactos**, com 42 h como hipótese
+declarada. *Conferido:* 544 XML do caminho dos experimentos e do caminho por pacientes (5
+graus × 2 regimes × 2 regras × efetivos 36–44 × 3 variações, mais 4 por pacientes) saem
+idênticos byte a byte antes e depois (`docs/conferencia_xml_experimentos.py`). A comparação
+foi posta à prova com um byte alterado numa cópia, e acusou. A conferência avulsa dos 361 XML
+de 29/09 não ficou no repositório; esta a substitui.
+
+**Argumento.** As 42 h do 12×36 decorrem da alternância — 14 plantões de 12 h em 28 dias são
+168 h, ou 42 h por semana —, não de um teto. Fixar 42 h para todo contrato confunde
+consequência do regime com regra. E o levantamento do projeto de redação aponta contratos
+heterogêneos em só 30% dos estudos: tratar a carga como dado do contrato, e não como
+constante, é o que o caso real pede.
+
+**Consequências na ferramenta.** Quem a varredura do menor quadro acrescenta entra com 44 h.
+O piso e o diagnóstico da trava passam a comparar as horas da demanda com a soma dos tetos
+individuais (carga nos dias disponíveis), e dizem "faltam pelo menos k de 44 h".
+`MaxNumAssignments` do XML fica com a maior carga no horizonte inteiro ÷ turno mais curto —
+nunca mais apertado que as horas de ninguém (no modelo de 6 h: 29, antes 28).
+
+**Testes** (`src/testes_ferramenta.py`, `casos_carga`, esperado registrado antes, 03/10):
+- **9a, acertou:** em equipe mista 30/44 h, a maior carga entre os de 30 h foi 112 h (teto
+  120 h) e entre os de 44 h, 168 h (teto 176 h); rígidas OK.
+- **9b, acertou, com ressalva registrada antes de rodar:** no 12×36 com 44 h, ninguém passa
+  de 14 plantões. Mas o teto de 176 h também para em 14 (15 plantões dariam 180 h), então o
+  teste não separa alternância de teto.
+- **9c, metade acertou:** quem tem 14 dias de férias ficou com 72 h de 88 h devidas,
+  81,8%, dentro da faixa dos demais (63,6%–90,9%). Em horas, ficaria em 72 h contra 112–160 h.
+- **9c, a outra metade falhou:** amplitude final de 27,3% contra ≤ 10 pp esperados. **O erro
+  é do esperado**, e a conta mostra por quê. Com a penalidade da etapa 1 fixada em zero,
+  enfermeiro não ocupa posto de técnico. Os enfermeiros cobrem exatamente o posto de
+  enfermeiro (63,6% cada), e os técnicos não cabem abaixo de 90,9%; o mínimo é 27,3 pp, e o
+  solver o provou.
+- **9d, acertou:** o equilíbrio por fração reduziu a amplitude de 45,5% para 27,3%.
+
+**Esperados antigos que a carga de 44 h desatualizou (03/10, não corrigidos — parado por
+regra).** O caso 5 da tela e o 7.1 esperavam ≥ 35 turnos de enfermeiro em posto de técnico,
+"mínimo aritmético" calculado com 42 h: 5 técnicos × 168 h = 840 h para 1.120 h de posto. Com
+o padrão de 44 h, os técnicos dão 5 × 176 = 880 h, faltam 240 h = **30 turnos**, e o solver deu
+exatamente 30 — o caso 5 falha (≥ 35), o 7.1 passa (sua condição é ≤ 35), mas o texto dele
+ainda diz "mínimo aritmético 35". Ambos precisam do esperado refeito com 44 h.
+
+**Suíte de 03/10:** `regressao.py --todos` OK (os 4 ótimos da Tabela 6); `testes_entrada.py`
+completo OK; testes da tela: casos 1–4 OK, caso 5 FALHA (acima), 7.1 OK; a suíte foi
+interrompida pelo sistema por falta de memória durante o 7.2 — 7.2, 7.3 e 8a–8d **não
+rodaram** depois da carga por contrato. Os testes 9a–9d rodaram à parte (acima).
+
+**O que a falha do 9c revela: decisão em aberto, P6 do `PROPOSTAS.md`.** Com enfermeiros
+dedicados ao posto de enfermeiro, a amplitude da fração fica presa à razão entre posto de
+enfermeiro e posto de técnico, não às férias. A P1 não foi relançada: o bloco parou aqui por
+regra.
+
+---
+
 ## Modelo de entrada
 
 ```

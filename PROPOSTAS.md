@@ -121,7 +121,11 @@ A P1 está desbloqueada: objetivo decidido.
 
 ## 2026-10-02 — P4: amplitude de carga com férias e licenças
 
-**Status: aguardando decisão.** Nada implementado além do decidido.
+**Status: RESOLVIDA em 02/10 pelo item c) da decisão "2026-10-02 — Carga por contrato"**
+(`DECISOES.md`): a etapa 2 passou a equilibrar a fração do contrato cumprida, com
+denominador nas horas devidas nos dias disponíveis — uma variante da saída 2 abaixo, que
+compara todos. Conferido no teste 9c (03/10): quem tem 14 dias de férias ficou com 81,8% do
+devido, dentro da faixa dos demais. Registro anterior: aguardando decisão.
 
 A etapa 2 passou a minimizar a amplitude de carga do período (maior carga − menor carga, em
 horas), sobre **todos** os profissionais, como decidido em 02/10. Quem tem férias ou licença
@@ -143,3 +147,60 @@ Duas saídas, as duas mudança de formulação:
 
 Recomendo a 1, por ser a que se explica em uma frase na tela. Enquanto não decidido, a
 ferramenta faz o que foi decidido (todos), e a tela mostra a amplitude que resultou.
+
+---
+
+## 2026-10-02 — P5: teste de uso qualitativo com 1 ou 2 profissionais de enfermagem
+
+**Status: não executada, por decisão** (Otávio, 02/10). O escopo está congelado, e o
+orientador já aceitou a validação sem teste em hospital: o motor é validado contra o
+benchmark INRC-2010, com ótimos publicados, e a conformidade legal é conferida por medição
+independente do modelo (`docs/conferencia_descanso_escala.py`).
+
+O que seria: uma ou duas enfermeiras com experiência em montar escala usariam a ferramenta
+numa configuração real da unidade delas e diriam, em entrevista curta, se a escala é
+aplicável e o que falta. Mediria usabilidade e aderência à prática, que nenhuma das
+conferências atuais mede.
+
+**Entra no texto como limitação declarada**: a ferramenta não foi testada por usuários
+finais; a validação cobre a correção do motor e a conformidade legal, não a adoção.
+
+---
+
+## 2026-10-03 — P6: a amplitude da fração fica presa à separação entre categorias
+
+**Status: aguardando decisão.** Nada implementado. Achado pelo teste 9c (`DECISOES.md`,
+"2026-10-02 — Carga por contrato").
+
+**O que acontece.** A etapa 1 penaliza enfermeiro em posto de técnico. Quando os enfermeiros
+bastam para o posto de enfermeiro, o ótimo é não usar nenhum enfermeiro em posto de técnico, e
+a etapa 2, que fixa esse ótimo, herda a separação. Os enfermeiros cumprem a fração que o posto
+de enfermeiro dá (no 9c, 672 h ÷ 6 = 112 h, 63,6%), os técnicos a que o posto de técnico dá
+(≥ 88,5% em média, 90,9% no máximo pelos degraus de 8 h). A amplitude mínima é a diferença
+entre as duas, **27,3 pp no 9c** (e, pelo critério anterior em horas, os 48 h do caso de 40 do 12×36) — e equilibrar não mexe nisso.
+A amplitude que a tela mostra mede, então, a razão entre a demanda de cada categoria e o
+tamanho de cada categoria, não a justiça da escala.
+
+**Por que importa.** A tela diz "a diferença entre a maior e a menor fração caiu para 27%", e
+um gestor lê isso como desequilíbrio entre colegas. Na verdade é desequilíbrio entre
+categorias, que vem do quadro informado (enfermeiros de sobra para o posto deles), e a
+resposta certa seria "há enfermeiros ociosos em relação ao contrato".
+
+**Três saídas, todas mudança de formulação ou de apresentação:**
+
+1. **Equilibrar dentro de cada categoria**: amplitude entre enfermeiros + amplitude entre
+   técnicos (ou a maior das duas). Mede justiça entre colegas que fazem o mesmo trabalho. A
+   diferença entre categorias passa a ser informada à parte.
+2. **Manter o critério e explicar na tela**: mostrar a fração média por categoria ao lado da
+   amplitude, com a frase "enfermeiros cumprem X% do contrato porque o posto de enfermeiro
+   não ocupa mais que isso".
+3. **Deixar a etapa 1 trocar enfermeiro em posto de técnico por equilíbrio** — mexe na
+   prioridade decidida em 29/09 (pedidos, depois enfermeiro em posto de técnico) e não
+   recomendo.
+
+Recomendo a 1, com a informação da 2 na tela. É troca de critério da etapa 2, que é decisão do
+projeto de redação.
+
+**Impacto na P1:** nenhum sobre o que a P1 mede (prova e gap por etapa), mas a P1 deve rodar
+com o critério final da etapa 2. Por isso não foi relançada em 03/10.
+

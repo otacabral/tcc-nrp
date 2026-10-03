@@ -56,6 +56,7 @@ import openpyxl  # noqa: E402
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
 import ferramenta as fe  # noqa: E402
+import solucao  # noqa: E402
 import instancia_br as br  # noqa: E402
 
 FALHAS: list[str] = []
@@ -300,6 +301,94 @@ def casos_tempo() -> None:
         fe.TEMPO, fe.verificar = original_tempo, original_verificar
 
 
+def casos_carga() -> None:
+    """Carga por contrato (DECISOES.md, "2026-10-02 — Carga por contrato"). Sem tela: o
+    AppTest nao edita a tabela de cargas. Esperado registrado ANTES de rodar (03/10):
+
+    9a. Equipe mista 30/44 h: 8 h em tres turnos, M e T com 1 + 3, N com 1 + 2 (2.464 h no
+        periodo); 6 + 12, com Enf 1, Enf 2 e Tec 1 a Tec 4 em 30 h (teto 120 h) e o resto em
+        44 h (teto 176 h). Capacidade 6 x 120 + 12 x 176 = 2.832 h. Esperado: admite; nenhum
+        de 30 h passa de 120 h, nenhum de 44 h passa de 176 h; `conferir_rigidas` sem
+        problema.
+    9b. 12x36 com 44 h: o 40 do Experimento A (14 + 26), carga padrao. Esperado: ninguem
+        passa de 14 plantoes. RESSALVA registrada antes: com 44 h o teto e 176 h, e 15
+        plantoes dariam 180 h — o teto tambem para em 14. Alternancia (28 dias, um plantao a
+        cada dois dias) e teto coincidem; o teste nao separa qual dos dois limita.
+    9c. Ferias: o caso 9a com todos em 44 h e Tec 1 de ferias nos 14 primeiros dias (deve
+        88 h). Media esperada da fracao: 2.464 / (17 x 176 + 88) = 80%. Esperado: a fracao de
+        Tec 1 fica entre a menor e a maior fracao dos demais, e a amplitude final e no
+        maximo 10 pontos percentuais (turnos de 8 h dao degraus de 4,5 pp em 176 h e de
+        9 pp em 88 h). Em HORAS, Tec 1 fica bem abaixo dos demais — e e isso que a fracao
+        deixa de punir.
+    9d. Equilibrio por fracao reduz a amplitude: no mesmo caso 9c, amplitude da etapa 2
+        estritamente menor que a da escala da etapa 1.
+
+    RESULTADO DE 03/10 (anotado depois de rodar; o esperado acima NAO foi alterado): 9a, 9b,
+    9d e a primeira metade de 9c acertaram. A segunda metade de 9c FALHOU: amplitude final
+    27,3%, provada otima, contra <= 10 pp esperados. O ERRO E DO ESPERADO: ele tratou a equipe
+    como um grupo so (media 80%) e errou as horas de posto de tecnico (sao 1.792 h, nao
+    1.680). Com a penalidade da etapa 1 fixada em 0, enfermeiro nao ocupa posto de tecnico:
+    os 6 enfermeiros cobrem exatamente as 672 h de posto de enfermeiro (112 h = 63,6%), e os
+    tecnicos, 1.792 h — com 11 deles em <= 152 h nao fecha (11 x 152 + 88 = 1.760), entao
+    alguem chega a 160 h (90,9%). Amplitude >= 27,3 pp, que e o que o solver provou. Parado
+    para decisao do Otavio (ver resultados/relatorio_2026-10-03.md); nao corrigido aqui.
+    """
+    print("9a. equipe mista 30/44 h: 8 h, 6 + 12")
+    demanda = {"M": (1, 3), "T": (1, 3), "N": (1, 2)}
+    trinta = ["Enf 1", "Enf 2", "Téc 1", "Téc 2", "Téc 3", "Téc 4"]
+    e = _entrada(M8_TURNOS, 6, 12, demanda, cargas={n: 30 for n in trinta})
+    r = fe.verificar(e)
+    confere(r.veredito == fe.ADMITE, f"veredito {r.veredito}")
+    if r.escala:
+        horas = {n: 0.0 for n in r.inst.profissionais}
+        for _, n, t in r.escala:
+            horas[n] += r.inst.turnos[t].duracao_h
+        nome = {n: p.nome for n, p in r.inst.profissionais.items()}
+        h30 = max(h for n, h in horas.items() if nome[n] in trinta)
+        h44 = max(h for n, h in horas.items() if nome[n] not in trinta)
+        confere(h30 <= 120, f"maior carga entre os de 30 h: {h30:g} h (teto 120 h)")
+        confere(h44 <= 176, f"maior carga entre os de 44 h: {h44:g} h (teto 176 h)")
+        prob = solucao.conferir_rigidas(r.inst, r.escala, habilidade_rigida=True)
+        confere(not prob, f"conferir_rigidas: {prob[:2] or 'ok'}")
+
+    print("9b. 12x36 com 44 h: 40 = 14 + 26")
+    e = _entrada(M12_TURNOS, 14, 26, {"D": (1, 9), "N": (1, 9)},
+                 demanda_fds={"D": (1, 6), "N": (1, 6)})
+    r = fe.verificar(e)
+    plantoes: dict[str, int] = {}
+    for _, n, _t in r.escala:
+        plantoes[n] = plantoes.get(n, 0) + 1
+    confere(r.veredito == fe.ADMITE and max(plantoes.values()) <= 14,
+            f"maior numero de plantoes: {max(plantoes.values(), default=0)} (<= 14)")
+    print(f"      teto em horas {sorted({r.inst.horas_devidas(n) for n in r.inst.profissionais})}"
+          f" h; 15 plantoes seriam 180 h")
+
+    print("9c/9d. ferias: 8 h, 6 + 12 em 44 h, Tec 1 de ferias nos 14 primeiros dias")
+    e = _entrada(M8_TURNOS, 6, 12, demanda,
+                 indisponibilidades=[("Téc 1", dia(0), dia(13))])
+    r = fe.verificar(e)
+    ind = r.indicadores
+    confere(r.veredito == fe.ADMITE and ind.get("etapa2") == "ok",
+            f"veredito {r.veredito}, etapa 2 {ind.get('etapa2')}")
+    if r.escala:
+        f = fe.fracoes(r.inst, r.escala)
+        tec1 = next(n for n, p in r.inst.profissionais.items() if p.nome == "Téc 1")
+        outros = [v for n, v in f.items() if n != tec1]
+        horas = {n: v * r.inst.horas_devidas(n) for n, v in f.items()}
+        print(f"      Tec 1: {horas[tec1]:g} h de 88 h devidas = {f[tec1]:.1%} | demais: "
+              f"{min(outros):.1%}-{max(outros):.1%} "
+              f"({min(horas[n] for n in f if n != tec1):g}-"
+              f"{max(horas[n] for n in f if n != tec1):g} h)")
+        confere(min(outros) - 1e-9 <= f[tec1] <= max(outros) + 1e-9,
+                "9c: fracao de Tec 1 dentro da faixa dos demais")
+        confere(ind["amplitude"] <= 0.10 + 1e-9,
+                f"9c: amplitude final {ind['amplitude']:.1%} (<= 10 pp)")
+        confere(ind["amplitude"] < ind["amplitude_etapa1"] - 1e-9,
+                f"9d: amplitude {ind['amplitude_etapa1']:.1%} na etapa 1 -> "
+                f"{ind['amplitude']:.1%} na etapa 2 ({'provada' if ind['provado_etapa2'] else 'SEM prova'})"
+                f"; etapa 2 em {ind['tempo_etapa2']:.1f} s")
+
+
 DIAGNOSTICOS = [
     # (rotulo, entrada, motivo esperado, menor viavel esperado, trecho esperado no texto)
     ("horas: 8 h, 1+3 por turno, 4 + 10",
@@ -348,6 +437,7 @@ def main() -> int:
     caso_tempo_40()
     casos_diagnostico()
     casos_tempo()
+    casos_carga()
     print()
     if FALHAS:
         print(f"{len(FALHAS)} FALHA(S)")
