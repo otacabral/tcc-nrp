@@ -370,6 +370,10 @@ def casos_carga() -> None:
     MAXIMIZA-SE o numero de plantoes de Tec 1, so com as rigidas. Esperado: 14, provado
     otimo — 28 dias sem dois dias seguidos de trabalho (a regra das 36 h, gerada dos
     horarios) admitem no maximo 14. Se der 14, quem limita e a alternancia.
+
+    RESULTADO DE 03/10, criterio por categoria (anotado depois de rodar): 9c acertou em tudo
+    (enfermeiros 0, tecnicos 4,55 pp provado, Tec 1 em 90,9%, 384 h e 232 h nao utilizadas,
+    +24,9 pp entre categorias); 9d 36,4 -> 4,5 pp; 9b-sem-teto deu 14, provado.
     """
     print("9a. equipe mista 30/44 h: 8 h, 6 + 12")
     demanda = {"M": (1, 3), "T": (1, 3), "N": (1, 2)}

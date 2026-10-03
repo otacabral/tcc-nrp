@@ -113,6 +113,9 @@ MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativ
    pela fração do contrato cumprida. Implementada em 03/10. **Em aberto, P6:** a amplitude da
    fração fica presa à separação entre enfermeiros e técnicos (teste 9c); decidir o critério
    final da etapa 2 antes de relançar a P1.
+   *Atualização de 03/10:* P6 resolvida — a etapa 2 equilibra dentro de cada categoria
+   (`DECISOES.md`, "Carga por contrato", itens g e h); suíte completa OK; P1 lançada com o
+   modelo final.
 3. **Acabamento visual mínimo** na tela: concordância e textos soltos ("isto e" sem acento,
    "1 dias").
 4. **Arquivo de configuração** (pacote INRC + complemento). Menor prioridade: se não estiver

@@ -12,7 +12,10 @@ escopo anterior, com as treze propostas P1–P13, está em
 ## 2026-09-28 — P1: a curva de escalabilidade mede um problema mais fácil do que o da ferramenta
 
 **Status: pendente — será refeita com o modelo final** (decisão do Otávio, 02/10: o modelo
-vai mudar para carga por contrato e equilíbrio por fração do contrato). Uma rodada
+vai mudar para carga por contrato e equilíbrio por fração do contrato). *Atualização de
+03/10:* **lançada às 14:29 de 03/10 com o modelo final** (etapa 2 por categoria, P6), 900 s
+por etapa, log em `resultados/escalabilidade_objetivo/p1_2026-10-03.log`; resultado pendente
+de leitura. Uma rodada
 preliminar foi feita em 02/10 e **não é resultado** — ver o fim desta entrada. Registro
 anterior: decidida em 29/09; executa depois da Etapa 7 (ver DECISOES 2026-09-29, Redesenho). Registro anterior (28/09): aguardando
 validação. Nada implementado. O experimento rodou como combinado e o
@@ -169,7 +172,14 @@ finais; a validação cobre a correção do motor e a conformidade legal, não a
 
 ## 2026-10-03 — P6: a amplitude da fração fica presa à separação entre categorias
 
-**Status: aguardando decisão.** Nada implementado. Achado pelo teste 9c (`DECISOES.md`,
+**Status: RESOLVIDA em 03/10 — saída 1, decisão do Otávio**: a etapa 2 equilibra dentro de
+cada categoria (amplitude entre enfermeiros + amplitude entre técnicos), e a diferença entre
+categorias é mostrada à parte, não otimizada; com ela, um indicador novo de horas de contrato
+não utilizadas por categoria. Implementada e testada em 03/10 — ver `DECISOES.md`, "2026-10-02
+— Carga por contrato", itens g) e h). O 9c, refeito por este critério com a conta registrada
+antes, acertou (enfermeiros 0, técnicos 4,55 pp, provado).
+
+*Registro anterior:* aguardando decisão. Achado pelo teste 9c (`DECISOES.md`,
 "2026-10-02 — Carga por contrato").
 
 **O que acontece.** A etapa 1 penaliza enfermeiro em posto de técnico. Quando os enfermeiros

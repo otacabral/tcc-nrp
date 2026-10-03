@@ -1348,6 +1348,45 @@ dedicados ao posto de enfermeiro, a amplitude da fração fica presa à razão e
 enfermeiro e posto de técnico, não às férias. A P1 não foi relançada: o bloco parou aqui por
 regra.
 
+**g) Adendo de 03/10 — a etapa 2 equilibra DENTRO de cada categoria (P6 decidida pelo
+Otávio).** Substitui o critério do item c) quanto ao alcance: a etapa 2, com a etapa 1 fixada
+no ótimo, minimiza (maior − menor fração entre enfermeiros) + (maior − menor fração entre
+técnicos). A fração continua a do item c). A diferença ENTRE categorias não é otimizada: vem
+da demanda de cada posto frente ao tamanho de cada categoria, e a tela e a planilha a mostram
+à parte (fração média dos técnicos − fração média dos enfermeiros, em pontos percentuais).
+`ferramenta.preparar_equilibrio`, `ferramenta.por_categoria`. Motivo: a amplitude da equipe
+inteira media a razão entre os postos, não a justiça entre colegas que fazem o mesmo trabalho
+(P6).
+
+**h) Indicador novo, sem mudança no modelo: horas de contrato não utilizadas por
+categoria** = horas contratadas nos dias disponíveis − horas escaladas. Na tela (uma linha por
+categoria, com a faixa da fração) e na planilha (aba Resumo).
+
+**Esperados corrigidos ou novos (03/10).**
+- **9c**, refeito pelo critério por categoria, com a conta registrada ANTES de rodar (commit
+  `08603c6`): enfermeiros cobrem 672 h ÷ 6 = 112 h cada, amplitude 0; técnicos cobrem
+  1.792 h, e como 23x = 224 não tem inteiro, a amplitude mínima é 1/22 = 4,55 pp, atingida só
+  com Téc 1 em 10 turnos (90,9%). **Acertou em tudo:** enfermeiros 0, técnicos 4,55 pp,
+  provado; Téc 1 em 90,9%, dentro da faixa dos técnicos (86,4%–90,9%); horas não utilizadas
+  384 h (enfermeiros) e 232 h (técnicos); diferença entre categorias +24,9 pp, como na conta.
+- **9d:** o critério caiu de 36,4 pp na escala da etapa 1 para 4,5 pp, provado.
+- **Caso 5 da tela:** esperado refeito para ≥ 30, pela conta com o padrão de 44 h (5 × 176 =
+  880 h para 1.120 h de posto de técnico, faltam 240 h = 30 turnos). **Corrigido depois de ver o
+  resultado (30)** — admitido por ser aritmético e independente do solver. O texto do 7.1
+  também passou a dizer "mínimo aritmético 30"; a condição do 7.1 (≤ 40) não mudou. Ambos
+  deram 30.
+- **9b-sem-teto**, variante nova, esperado registrado antes: desligados o teto de horas E o
+  `MaxNumAssignments` (que no 12×36 é floor(176/12) = 14 e é rígido — desligar só o teto de
+  horas deixaria esse limite parando em 14), maximizou-se o número de plantões de Téc 1.
+  **Deu 14, provado ótimo.** Quem limita é a alternância (regra das 36 h), não o teto.
+
+**Suíte completa de 03/10, depois do adendo (um teste por processo, por memória):** tela 1–5,
+7.1, 7.2, 7.3, 8a–8d, 9a–9d e 9b-sem-teto OK; `regressao.py --todos` OK (56, 58, 197, 219 =
+Tabela 6); `testes_entrada.py` OK; 544 XML idênticos byte a byte ao commit `cec3d8e`.
+Observação, não resultado: no 7.2 (40 profissionais, 20 pedidos) a etapa 2 por categoria
+parou no limite de 600 s sem provar (amplitude 34,1 → 13,6 pp); no 9c provou em 111 s.
+Máquina: i5-10210U, 12 GB, Windows 11, HiGHS 1.15.1 via appsi.
+
 ---
 
 ## Modelo de entrada
