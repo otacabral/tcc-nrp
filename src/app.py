@@ -247,13 +247,24 @@ if "resultado" in st.session_state:
         st.caption(f"Descanso mínimo entre turnos {c['menor_geral']:.0f} h · descanso "
                    f"semanal {fe.fmt_semanal(c['menor_semanal'])} · no máximo "
                    f"{c['max_consec']} dias seguidos")
+        for g, cat in ind.get("categorias", {}).items():
+            st.caption(f"{fe.NOME_CATEGORIA[g]}: {cat['fracao_min']:.0%}–"
+                       f"{cat['fracao_max']:.0%} do contrato cumprido · "
+                       f"{cat['nao_utilizadas']:.0f} h de contrato não utilizadas "
+                       f"(de {cat['devidas']:.0f} h contratadas nos dias disponíveis).")
+        if ind.get("diferenca_categorias") is not None:
+            st.caption(f"Diferença entre categorias: técnicos cumprem em média "
+                       f"{ind['diferenca_categorias'] * 100:+.0f} pontos percentuais do "
+                       f"contrato em relação aos enfermeiros. Ela não é otimizada: vem da "
+                       f"demanda de cada posto frente ao tamanho de cada categoria.")
         equilibrio = ind.get("etapa2")
         if equilibrio == "ok":
             sem_prova = "" if ind["provado_etapa2"] else " (sem prova de que é a menor)"
-            st.caption(f"Equilíbrio de carga: entre as escalas de mesmo custo, a diferença "
-                       f"entre a maior e a menor fração do contrato cumprida caiu de "
-                       f"{ind['amplitude_etapa1']:.0%} para {ind['amplitude']:.0%}"
-                       f"{sem_prova}.")
+            st.caption(f"Equilíbrio de carga dentro de cada categoria: entre as escalas de "
+                       f"mesmo custo, a diferença entre a maior e a menor fração do contrato "
+                       f"cumprida, somada entre enfermeiros e entre técnicos, caiu de "
+                       f"{ind['amplitude_etapa1'] * 100:.0f} para "
+                       f"{ind['amplitude'] * 100:.0f} pontos percentuais{sem_prova}.")
         elif equilibrio:
             st.caption(f"Equilíbrio de carga: {equilibrio}.")
         if ind["pedidos_total"]:

@@ -252,9 +252,13 @@ def indicadores(inst, escala) -> dict:
         if (p.profissional, p.data) in trabalhados:
             negados[p.profissional] = negados.get(p.profissional, 0) + 1
     f = fracoes(inst, escala) if inst.carga_semanal_h is not None else {}
+    cat = por_categoria(inst, escala) if inst.carga_semanal_h is not None else {}
     return {"enf_em_posto_tec": em_posto_tec,
             "fracao_min": min(f.values(), default=0.0),
             "fracao_max": max(f.values(), default=0.0),
+            "categorias": cat,
+            "diferenca_categorias": (diferenca_entre_categorias(inst, escala)
+                                     if inst.carga_semanal_h is not None else None),
             "negados_max": max(negados.values(), default=0),
             "com_pedido_negado": len(negados),
             "horas_min": min(horas.values()), "horas_max": max(horas.values()),
@@ -309,11 +313,23 @@ def resolver(m, tempo: int | None) -> tuple[str, object, bool, float | None]:
 def equilibrar(m, inst, z: int, tempo: int | None) -> tuple[str, object, bool, float | None]:
     """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a amplitude da
     FRACAO CUMPRIDA — horas trabalhadas / horas devidas (carga contratual nos dias
-    disponiveis), maior menos menor (DECISOES.md, "2026-10-02 — Carga por contrato"). O
-    mecanismo e o do Experimento B (fixar o otimo, otimizar um segundo criterio), sobre o
-    mesmo modelo, sem monta-lo de novo; muda o criterio."""
+    disponiveis), maior menos menor — DENTRO de cada categoria: amplitude entre enfermeiros
+    + amplitude entre tecnicos (DECISOES.md, "2026-10-02 — Carga por contrato", P6 decidida
+    em 03/10). A diferenca ENTRE categorias nao e otimizada: vem da demanda de cada posto
+    frente ao tamanho de cada categoria, e e mostrada a parte (`por_categoria`). O mecanismo
+    e o do Experimento B (fixar o otimo, otimizar um segundo criterio), sobre o mesmo modelo,
+    sem monta-lo de novo; muda o criterio."""
     preparar_equilibrio(m, inst, z)
     return resolver(m, tempo)
+
+
+def categoria(inst, n: str) -> str:
+    """ENF ou TEC: a categoria do profissional, pela habilidade."""
+    return ENF if br.HABILIDADE_ENF in inst.profissionais[n].habilidades else TEC
+
+
+ENF, TEC = "enfermeiros", "tecnicos"
+NOME_CATEGORIA = {ENF: "Enfermeiros", TEC: "Técnicos"}
 
 
 def preparar_equilibrio(m, inst, z: int) -> None:
@@ -327,14 +343,18 @@ def preparar_equilibrio(m, inst, z: int) -> None:
     for (n, s, d) in m.X:
         if n in termos:
             termos[n].append(inst.turnos[s].duracao_h * m.x[n, s, d])
+    grupos = sorted({categoria(inst, n) for n in termos})
     m.objetivo.deactivate()
     m.total_no_otimo = pyo.Constraint(expr=m.objetivo.expr == z)
     m.fracao = pyo.Expression(list(termos), rule=lambda m, n: sum(termos[n]) / devidas[n])
-    m.f_max = pyo.Var(domain=pyo.NonNegativeReals)
-    m.f_min = pyo.Var(domain=pyo.NonNegativeReals)
-    m.teto_fracao = pyo.Constraint(list(termos), rule=lambda m, n: m.f_max >= m.fracao[n])
-    m.piso_fracao = pyo.Constraint(list(termos), rule=lambda m, n: m.f_min <= m.fracao[n])
-    m.objetivo_equilibrio = pyo.Objective(expr=m.f_max - m.f_min, sense=pyo.minimize)
+    m.f_max = pyo.Var(grupos, domain=pyo.NonNegativeReals)
+    m.f_min = pyo.Var(grupos, domain=pyo.NonNegativeReals)
+    m.teto_fracao = pyo.Constraint(list(termos),
+                                   rule=lambda m, n: m.f_max[categoria(inst, n)] >= m.fracao[n])
+    m.piso_fracao = pyo.Constraint(list(termos),
+                                   rule=lambda m, n: m.f_min[categoria(inst, n)] <= m.fracao[n])
+    m.objetivo_equilibrio = pyo.Objective(
+        expr=sum(m.f_max[g] - m.f_min[g] for g in grupos), sense=pyo.minimize)
 
 
 def fracoes(inst, escala) -> dict[str, float]:
@@ -347,10 +367,41 @@ def fracoes(inst, escala) -> dict[str, float]:
             if inst.horas_devidas(n) > 0}
 
 
-def amplitude(inst, escala) -> float:
-    """Maior fracao cumprida menos a menor (0 = todos cumprem a mesma parte do contrato)."""
+def por_categoria(inst, escala) -> dict[str, dict]:
+    """Por categoria: faixa e amplitude da fracao cumprida, fracao media (horas escaladas /
+    horas contratadas nos dias disponiveis) e HORAS DE CONTRATO NAO UTILIZADAS (contratadas
+    nos dias disponiveis - escaladas). So leitura da escala; nao entra no modelo."""
     f = fracoes(inst, escala)
-    return max(f.values()) - min(f.values()) if f else 0.0
+    horas = {n: 0.0 for n in inst.profissionais}
+    for _, n, s in escala:
+        horas[n] += inst.turnos[s].duracao_h
+    saida = {}
+    for g in (ENF, TEC):
+        membros = [n for n in inst.profissionais if categoria(inst, n) == g]
+        if not membros:
+            continue
+        fg = [f[n] for n in membros if n in f]
+        devidas = sum(inst.horas_devidas(n) for n in membros)
+        escaladas = sum(horas[n] for n in membros)
+        saida[g] = {"fracao_min": min(fg, default=0.0), "fracao_max": max(fg, default=0.0),
+                    "amplitude": max(fg) - min(fg) if fg else 0.0,
+                    "fracao_media": escaladas / devidas if devidas else 0.0,
+                    "devidas": devidas, "escaladas": escaladas,
+                    "nao_utilizadas": devidas - escaladas}
+    return saida
+
+
+def amplitude(inst, escala) -> float:
+    """O criterio da etapa 2: (maior - menor fracao cumprida) entre enfermeiros + o mesmo
+    entre tecnicos. 0 = dentro de cada categoria, todos cumprem a mesma parte do contrato."""
+    return sum(c["amplitude"] for c in por_categoria(inst, escala).values())
+
+
+def diferenca_entre_categorias(inst, escala) -> float | None:
+    """Fracao media dos tecnicos - fracao media dos enfermeiros. Mostrada a parte, nao
+    otimizada (P6, 03/10). None se faltar uma das categorias."""
+    c = por_categoria(inst, escala)
+    return c[TEC]["fracao_media"] - c[ENF]["fracao_media"] if ENF in c and TEC in c else None
 
 
 def resolver_com_objetivo(inst, tempo: int | None) -> tuple[str, object, object, dict]:
@@ -565,6 +616,20 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
          f"{ind.get('horas_min', 0):g}–{ind.get('horas_max', 0):g} h"),
         ("Fração do contrato cumprida (mín.–máx.)",
          f"{ind.get('fracao_min', 0):.0%}–{ind.get('fracao_max', 0):.0%}"),
+    ]
+    for g, cat in ind.get("categorias", {}).items():
+        nome = NOME_CATEGORIA[g].lower()
+        linhas += [
+            (f"Fração do contrato cumprida, {nome} (mín.–máx.)",
+             f"{cat['fracao_min']:.0%}–{cat['fracao_max']:.0%}"),
+            (f"Horas de contrato não utilizadas, {nome}",
+             f"{cat['nao_utilizadas']:.0f} h de {cat['devidas']:.0f} h contratadas nos dias "
+             f"disponíveis"),
+        ]
+    if ind.get("diferenca_categorias") is not None:
+        linhas.append(("Diferença entre categorias na fração média (técnicos − enfermeiros; "
+                       "não otimizada)", f"{ind['diferenca_categorias'] * 100:+.0f} pp"))
+    linhas += [
         ("Descanso mínimo entre turnos (medido)", f"{c.get('menor_geral', 0):.0f} h"),
         ("Descanso semanal mínimo (medido)", fmt_semanal(c.get("menor_semanal", 0))),
         ("Maior sequência de dias trabalhados", c.get("max_consec")),

@@ -20,9 +20,10 @@ mesmas opcoes da ferramenta). Muda:
   sequencia, reproduzivel sozinho com `--n`;
 - **o objetivo completo da ferramenta** (DECISOES.md, "Redesenho"): etapa 1 com pesos
   inteiros (`ferramenta.pesos`: enfermeiro em posto de tecnico custa 1, pedido negado custa
-  W); etapa 2 com a penalidade presa no otimo, minimizando a amplitude de carga em horas
-  (`ferramenta.preparar_equilibrio`, 02/10). Como na ferramenta, a etapa 2 so roda se a
-  etapa 1 provou otimalidade.
+  W); etapa 2 com a penalidade presa no otimo, minimizando a amplitude da fracao do
+  contrato cumprida DENTRO de cada categoria — enfermeiros + tecnicos
+  (`ferramenta.preparar_equilibrio`; DECISOES.md, "Carga por contrato", P6 decidida em
+  03/10). Como na ferramenta, a etapa 2 so roda se a etapa 1 provou otimalidade.
 
 Com isso o limite inferior deixa de ser zero por construcao, e a prova de otimalidade passa
 a custar alguma coisa — e isso que a P1 queria medir.
@@ -172,6 +173,9 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
     linha.update(pedidos_atendidos=ind["pedidos_atendidos"],
                  enf_em_posto_tec=ind["enf_em_posto_tec"], negados_max=ind["negados_max"],
                  horas_min=ind["horas_min"], horas_max=ind["horas_max"],
+                 diferenca_categorias=ind["diferenca_categorias"],
+                 **{f"{chave}_{g}": c[chave] for g, c in ind["categorias"].items()
+                    for chave in ("amplitude", "nao_utilizadas")},
                  descanso_ok=descanso_ok, menor_folga_h=med["menor_folga"],
                  menor_semanal_h=med["menor_semanal"], max_consec=med["max_consec"],
                  rigidas="; ".join(problemas) or "ok")

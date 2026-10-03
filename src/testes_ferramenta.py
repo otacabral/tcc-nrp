@@ -19,6 +19,10 @@ rodar (29/09, Etapa 6):
 5. Enfermeiro em posto de tecnico: 8 h, M e T com 1 + 2, N com 1 + 1, 8 + 5. Os tecnicos
    dao 5 x 168 = 840 h para 1.120 h de posto de tecnico: faltam 280 h = 35 turnos de 8 h, que
    so enfermeiro pode cobrir. Gera escala, com contagem >= 35 na tela.
+   ESPERADO REFEITO EM 03/10, DEPOIS de ver o resultado (30), por ser aritmetico e
+   independente do solver: a conta acima usava 42 h. Com a carga padrao de 44 h
+   (DECISOES.md, "Carga por contrato"), os tecnicos dao 5 x 176 = 880 h; faltam 1.120 - 880 =
+   240 h = 30 turnos de 8 h. Esperado: contagem >= 30 na tela.
 
 Os tres desfechos do tempo (02/10, DECISOES.md "Redesenho"), esperado registrado ANTES de
 rodar. O limite e encurtado em `fe.TEMPO`, que a tela le na chamada. Os casos (b) e (c)
@@ -167,7 +171,7 @@ def caso_enfermeiro_em_posto_de_tecnico() -> None:
     confere(textos(at, "success") == [ADMITE_OK],
             f"veredito: {textos(at, 'success') + textos(at, 'warning')}")
     n = int(metricas(at).get("Turnos de enfermeiro em posto de técnico", -1))
-    confere(n >= 35, f"contagem na tela: {n} turnos de enfermeiro em posto de tecnico (>= 35)")
+    confere(n >= 30, f"contagem na tela: {n} turnos de enfermeiro em posto de tecnico (>= 30)")
 
 
 # --- Etapa 7, sem tela (a tela nao edita as tabelas de ferias e pedidos no AppTest) ------
@@ -203,7 +207,7 @@ def caso_objetivo() -> None:
           f"{ind_antes['pedidos_atendidos']}/{ind_antes['pedidos_total']}")
     confere(ind["enf_em_posto_tec"] <= 40,
             f"com os pesos: {ind['enf_em_posto_tec']} turnos de enfermeiro em posto de "
-            f"tecnico (minimo aritmetico 35)")
+            f"tecnico (minimo aritmetico 30 com 44 h; era 35 com 42 h)")
     confere(ind["pedidos_atendidos"] == 3 and
             ind["pedidos_atendidos"] >= ind_antes["pedidos_atendidos"],
             f"pedidos atendidos {ind['pedidos_atendidos']}/3, sem piorar")
@@ -332,6 +336,40 @@ def casos_carga() -> None:
     tecnicos, 1.792 h — com 11 deles em <= 152 h nao fecha (11 x 152 + 88 = 1.760), entao
     alguem chega a 160 h (90,9%). Amplitude >= 27,3 pp, que e o que o solver provou. Parado
     para decisao do Otavio (ver resultados/relatorio_2026-10-03.md); nao corrigido aqui.
+
+    ESPERADO NOVO DE 9c, PELO CRITERIO POR CATEGORIA (P6 decidida em 03/10: a etapa 2 soma a
+    amplitude entre enfermeiros e a amplitude entre tecnicos). Conta registrada ANTES de rodar,
+    03/10. Supoe, como no resultado de 03/10, penalidade da etapa 1 = 0 (nenhum enfermeiro em
+    posto de tecnico); tecnico nao cobre posto de enfermeiro. As categorias nao se tocam.
+    - Enfermeiros: posto de enfermeiro = 3 turnos x 28 dias = 84 turnos = 672 h para 6 de
+      44 h (176 h devidas). 84 / 6 = 14 turnos = 112 h cada, 63,6%. Amplitude 0.
+    - Tecnicos: posto de tecnico = (3 + 3 + 2) x 28 = 224 turnos = 1.792 h. Tec 1 deve 88 h
+      (fracao em degraus de 1/11 = 9,09 pp); os outros 11 devem 176 h (degraus de 1/22 =
+      4,55 pp). Amplitude 0 exige x/11 = y/22 com todos os y iguais: x + 11 x 2x = 23x = 224,
+      sem inteiro. Logo a amplitude e >= 1/22 = 4,55 pp. Ela e atingida com Tec 1 em 10 turnos
+      (80 h, 90,9%) e os outros somando 214 = 5 x 20 + 6 x 19 (90,9% e 86,4%). Com Tec 1 em
+      9 (81,8%) os outros somam 215 > 11 x 19, entao alguem fica em 20 (90,9%): 9,09 pp. Com
+      11 (100%) os outros precisariam de >= 21 cada: 11 + 231 > 224. Unico jeito de 4,55 pp:
+      Tec 1 em 10 turnos.
+    - Esperado: amplitude dos enfermeiros 0; dos tecnicos 4,55 pp (1/22); criterio (soma)
+      4,55 pp, provado; Tec 1 em 90,9%, dentro da faixa dos tecnicos (86,4%-90,9%). Ressalva:
+      a conta supoe que 20 turnos em 28 dias para um tecnico e 10 turnos em 14 dias para Tec 1
+      cabem nas regras de descanso — o resultado de 03/10 ja teve tecnico em 160 h (20 turnos).
+    - Mostrado a parte (nao otimizado): fracao media dos enfermeiros 672 / 1.056 = 63,6%, dos
+      tecnicos 1.792 / 2.024 = 88,5%; diferenca +24,9 pp. Horas de contrato nao utilizadas:
+      enfermeiros 1.056 - 672 = 384 h; tecnicos 2.024 - 1.792 = 232 h.
+    - 9d: o criterio da etapa 2 (soma por categoria) estritamente menor que o da escala da
+      etapa 1, medido pelo mesmo criterio.
+
+    9b-sem-teto (acrescentado em 03/10, esperado registrado ANTES de rodar). O 9b nao separa
+    alternancia de teto. Para separar, desligam-se OS DOIS limites de numero que poderiam
+    parar em 14: o teto de horas (`carga_horaria`, 176 h) e o `MaxNumAssignments` do contrato,
+    que no 12x36 fica em floor(176 / 12) = 14 e e rigido no modelo brasileiro — desligar so o
+    teto de horas deixaria esse parando em 14. E, em vez de olhar a escala da ferramenta (a
+    demanda soma 512 plantoes para 40 pessoas, 12,8 em media; ninguem PRECISA passar de 14),
+    MAXIMIZA-SE o numero de plantoes de Tec 1, so com as rigidas. Esperado: 14, provado
+    otimo — 28 dias sem dois dias seguidos de trabalho (a regra das 36 h, gerada dos
+    horarios) admitem no maximo 14. Se der 14, quem limita e a alternancia.
     """
     print("9a. equipe mista 30/44 h: 8 h, 6 + 12")
     demanda = {"M": (1, 3), "T": (1, 3), "N": (1, 2)}
@@ -381,12 +419,56 @@ def casos_carga() -> None:
               f"{max(horas[n] for n in f if n != tec1):g} h)")
         confere(min(outros) - 1e-9 <= f[tec1] <= max(outros) + 1e-9,
                 "9c: fracao de Tec 1 dentro da faixa dos demais")
-        confere(ind["amplitude"] <= 0.10 + 1e-9,
-                f"9c: amplitude final {ind['amplitude']:.1%} (<= 10 pp)")
+        cat = ind["categorias"]
+        print(f"      enfermeiros {cat[fe.ENF]['fracao_min']:.1%}-{cat[fe.ENF]['fracao_max']:.1%}"
+              f", nao utilizadas {cat[fe.ENF]['nao_utilizadas']:g} h | tecnicos "
+              f"{cat[fe.TEC]['fracao_min']:.1%}-{cat[fe.TEC]['fracao_max']:.1%}, nao "
+              f"utilizadas {cat[fe.TEC]['nao_utilizadas']:g} h | diferenca entre categorias "
+              f"{ind['diferenca_categorias'] * 100:+.1f} pp | penalidade {ind['penalidade']}")
+        tec = [v for n, v in f.items() if n != tec1 and fe.categoria(r.inst, n) == fe.TEC]
+        confere(min(tec) - 1e-9 <= f[tec1] <= max(tec) + 1e-9,
+                f"9c: Tec 1 ({f[tec1]:.1%}) dentro da faixa dos tecnicos "
+                f"({min(tec):.1%}-{max(tec):.1%})")
+        confere(abs(cat[fe.ENF]["amplitude"]) <= 1e-6,
+                f"9c: amplitude entre enfermeiros {cat[fe.ENF]['amplitude']:.2%} (esperado 0)")
+        confere(abs(cat[fe.TEC]["amplitude"] - 1 / 22) <= 1e-6,
+                f"9c: amplitude entre tecnicos {cat[fe.TEC]['amplitude']:.2%} (esperado 4,55%)")
+        confere(abs(ind["amplitude"] - 1 / 22) <= 1e-6 and ind["provado_etapa2"],
+                f"9c: criterio da etapa 2 {ind['amplitude']:.2%} (esperado 4,55%, provado: "
+                f"{ind['provado_etapa2']})")
+        confere(abs(cat[fe.ENF]["nao_utilizadas"] - 384) <= 1e-6
+                and abs(cat[fe.TEC]["nao_utilizadas"] - 232) <= 1e-6,
+                "9c: horas nao utilizadas 384 h (enf) e 232 h (tec)")
         confere(ind["amplitude"] < ind["amplitude_etapa1"] - 1e-9,
                 f"9d: amplitude {ind['amplitude_etapa1']:.1%} na etapa 1 -> "
                 f"{ind['amplitude']:.1%} na etapa 2 ({'provada' if ind['provado_etapa2'] else 'SEM prova'})"
                 f"; etapa 2 em {ind['tempo_etapa2']:.1f} s")
+
+
+def caso_9b_sem_teto(tempo: int = 600) -> None:
+    """Esperado no docstring de `casos_carga` (9b-sem-teto), registrado antes de rodar."""
+    import dataclasses
+    import experimento_a as ea
+    import pyomo.environ as pyo
+    print("9b-sem-teto. 12x36, 14 + 26, sem teto de horas e sem MaxNumAssignments: maximo de "
+          "plantoes de Tec 1")
+    e = _entrada(M12_TURNOS, 14, 26, {"D": (1, 9), "N": (1, 9)},
+                 demanda_fds={"D": (1, 6), "N": (1, 6)})
+    inst = fe.montar(e)
+    inst = dataclasses.replace(inst, contratos={
+        k: dataclasses.replace(c, max_num_assignments=dataclasses.replace(
+            c.max_num_assignments, ligada=False)) for k, c in inst.contratos.items()})
+    m = ea.modelo_br(inst)
+    confere(hasattr(m, "carga_horaria"), "o modelo tem o teto de horas (a desligar)")
+    m.carga_horaria.deactivate()
+    tec1 = next(n for n, p in inst.profissionais.items() if p.nome == "Téc 1")
+    m.objetivo.deactivate()
+    m.max_tec1 = pyo.Objective(expr=sum(m.y[tec1, d] for d in inst.dias), sense=pyo.maximize)
+    veredito, escala, provado, gap = fe.resolver(m, tempo)
+    n = sum(1 for _, p, _t in escala if p == tec1) if escala else None
+    confere(veredito == ea.VIAVEL and provado and n == 14,
+            f"maximo de plantoes de Tec 1 sem os dois tetos: {n} (esperado 14, provado: "
+            f"{provado})")
 
 
 DIAGNOSTICOS = [
@@ -428,16 +510,17 @@ def casos_diagnostico() -> None:
             confere(r.menor_viavel == menor, f"   {r.frase()} tentativas {r.tentativas}")
 
 
+CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
+         "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
+         "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
+         "9b-sem-teto": caso_9b_sem_teto}
+
+
 def main() -> int:
-    caso_experimento_a()
-    caso_6h_12h()
-    caso_poucos_enfermeiros()
-    caso_enfermeiro_em_posto_de_tecnico()
-    caso_objetivo()
-    caso_tempo_40()
-    casos_diagnostico()
-    casos_tempo()
-    casos_carga()
+    """Sem argumento, todos. Com argumentos, so os casos nomeados — para rodar um por vez
+    quando falta memoria: `python src\\testes_ferramenta.py 7.2`."""
+    for nome in sys.argv[1:] or CASOS:
+        CASOS[nome]()
     print()
     if FALHAS:
         print(f"{len(FALHAS)} FALHA(S)")
