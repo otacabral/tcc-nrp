@@ -1,11 +1,17 @@
 # Relatório da sessão de 03/10/2026 (tarde)
 
+> **Correção de 03/10, feita depois (relatório 03c):** a P1 **não** ficou rodando. Lançada às
+> 14:29, morreu às 14:30, logo depois da etapa 1 de N = 36, com `TypeError` em
+> `Instancia.horas_devidas`: as instâncias do caminho antigo não têm carga contratual, e a
+> etapa 2 precisa dela para a fração do contrato. Não houve CSV nem resultado. Este relatório
+> afirmou que ela estava rodando conferindo só o início do log. O resto do relatório vale.
+
 ## Para o Otávio
 
 - A P6 foi implementada como você decidiu: a etapa 2 equilibra **dentro** de cada categoria. A diferença entre categorias aparece à parte.
 - A tela e a planilha ganharam um indicador novo: **horas de contrato não utilizadas** por categoria.
 - **Todos os testes passaram.** O 9c bateu exatamente com a conta registrada antes de rodar, e os 544 XML continuam idênticos.
-- **A P1 foi lançada** às 14:29, com o modelo final. Pode levar até cerca de 3 h. Nada a decidir agora.
+- ~~**A P1 foi lançada** às 14:29, com o modelo final. Pode levar até cerca de 3 h. Nada a decidir agora.~~ **Errado: morreu às 14:30 (ver a correção no topo).**
 - Para conferir em casa: `git pull`. Para rodar um teste da tela isolado: `python src\testes_ferramenta.py 9`, por exemplo.
 
 ---
@@ -68,7 +74,7 @@ Os tempos são limite operacional, não resultado. Máquina: Intel Core i5-10210
 
 ## 4. P1
 
-Lançada às **14:29 de 03/10** (PID 22292): `python src\escalabilidade_objetivo.py --tempo 900`, em segundo plano.
+**Correção: morreu às 14:30 — ver o topo.** Lançada às **14:29 de 03/10** (PID 22292): `python src\escalabilidade_objetivo.py --tempo 900`, em segundo plano.
 - Log: `resultados\escalabilidade_objetivo\p1_2026-10-03.log`.
 - Log do HiGHS por etapa: `highs_N<n>_etapa<k>.log`.
 - CSV: `resultados\escalabilidade_objetivo.csv`.

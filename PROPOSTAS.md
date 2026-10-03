@@ -13,9 +13,15 @@ escopo anterior, com as treze propostas P1–P13, está em
 
 **Status: pendente — será refeita com o modelo final** (decisão do Otávio, 02/10: o modelo
 vai mudar para carga por contrato e equilíbrio por fração do contrato). *Atualização de
-03/10:* **lançada às 14:29 de 03/10 com o modelo final** (etapa 2 por categoria, P6), 900 s
-por etapa, log em `resultados/escalabilidade_objetivo/p1_2026-10-03.log`; resultado pendente
-de leitura. Uma rodada
+03/10:* lançada às 14:29 de 03/10 com o modelo final (etapa 2 por categoria, P6), 900 s
+por etapa. **Correção de 03/10: a rodada morreu às 14:30**, logo depois da etapa 1 de N = 36
+(ótimo provado em 27 s), com `TypeError` em `Instancia.horas_devidas`: as instâncias do
+caminho antigo (`escalabilidade.construir`) não têm carga contratual, e a fração do contrato
+não pode ser calculada. Não gerou CSV e não há resultado. O relatório 03b e o commit
+`2284b75` disseram "lançada" sem conferir o primeiro tamanho completo. *Decisão do Otávio
+(03/10):* a P1 passa a medir o caminho da FERRAMENTA (`ferramenta.montar`, 44 h para todos,
+12×36), com a demanda por turno igual à do caminho antigo em cada tamanho; teste de
+equivalência em N = 36 e 40. Ver `resultados/relatorio_2026-10-03c.md`. Uma rodada
 preliminar foi feita em 02/10 e **não é resultado** — ver o fim desta entrada. Registro
 anterior: decidida em 29/09; executa depois da Etapa 7 (ver DECISOES 2026-09-29, Redesenho). Registro anterior (28/09): aguardando
 validação. Nada implementado. O experimento rodou como combinado e o
