@@ -148,6 +148,34 @@ categoria antes e depois da etapa 2 e o tempo até 90% da redução final, para 
 da etapa 2 na tela. O limite da etapa 1 na tela fica em 600 s (decidido); o da etapa 2 não
 muda até essa rodada terminar.
 
+**Rodada com folga — resultado (05/10).** Terminou normalmente, sem erro. CSV:
+`resultados/escalabilidade_objetivo_folga.csv`; logs `folga_teste_N40_2026-10-05.log` (40/44,
+o caso de teste rodado até o fim antes do lançamento) e `folga_2026-10-05.log` (60/66 e
+80/88). Máquina: i5-10210U, 12 GB, Windows 11, Python 3.11.9, HiGHS 1.15.1 via appsi. Tempos são
+limite operacional desta máquina, uma medição por tamanho.
+
+| Demanda / equipe | Etapa 1 | 1ª escala | Etapa 2 | Gap etapa 2 | Amplitude enf. | Amplitude téc. | Total | 90% da redução |
+|---|---|---|---|---|---|---|---|---|
+| 40 / 44 | ótimo provado, 21 s | 1,9 s | limite, sem prova, 902 s | 19,6% | 27,27 → 6,82 | 6,82 → 6,82 | 34,09 → 13,64 | 18 s |
+| 60 / 66 | ótimo provado, 39 s | 2,2 s | limite, sem prova, 904 s | 26,1% | 13,64 → 6,82 | 6,82 → 6,82 | 20,45 → 13,64 | 46 s |
+| 80 / 88 | ótimo provado, 62 s | 3,0 s | limite, sem prova, 907 s | 37,5% | 20,45 → 6,82 | 6,82 → 6,82 | 27,27 → 13,64 | 81 s |
+
+Em todos: pedidos atendidos 100%; descanso e rígidas OK; penalidade recontada = a do solver.
+Nos três, a primeira escala da etapa 2 já foi a final: o "90% da redução" coincide com ela, e
+nenhuma melhora veio depois.
+
+**A escala final é ótima pela conta, não pela prova do solver** (conta feita DEPOIS de ver o
+resultado; aritmética, independente do solver). Com a penalidade presa no ótimo e todos os
+pedidos atendidos, o total de enfermeiros em posto de técnico é fixo. Cada plantão vale 12 / 176 =
+6,82 pp. Uma categoria só tem amplitude 0 se os seus plantões se dividirem igualmente:
+enfermeiros 163/15 = 10,87, 237/22 = 10,77, 323/30 = 10,77; técnicos 397/29 = 13,69,
+603/44 = 13,70, 797/58 = 13,74. Nenhuma divisão é exata, então o piso é 2 × 6,82 = 13,64 pp nos
+três — o valor encontrado. Os gaps (19,6%, 26,1%, 37,5%) são fraqueza do limite inferior do
+solver.
+
+**Para o limite da etapa 2 na tela (decisão do Otávio):** a melhor escala veio entre 18 s e 81 s;
+o resto dos 900 s não melhorou nada.
+
 **Proposta original (05/10, agora decidida acima):** se o texto precisar dizer algo sobre
 o custo da etapa 2, rodar a etapa 2 numa instância com folga — por exemplo, a mesma demanda com
 equipe N + k — e declarar que a curva de 03/10 mede a etapa 1. Sem isso, a P1 responde à

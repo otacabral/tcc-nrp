@@ -2,10 +2,11 @@
 
 ## Para o Otávio
 
-- **A rodada com folga está rodando.** O caso de teste (demanda de 40, equipe de 44) terminou inteiro antes do lançamento. O 66 terminou inteiro no log e o 88 está em andamento.
+- **A rodada com folga terminou** (atualizado ao fim, 05/10 ~14:08). Os três tamanhos estão completos, sem erro.
 - **O que já aparece:** a etapa 2 chega à melhor escala que vai achar **logo no início** (18 s com 44 pessoas, 46 s com 66). Depois gasta o resto dos 900 s sem conseguir provar.
 - **Pela conta, essa escala já é a melhor possível** nos dois casos (item 3). O solver é que não consegue provar.
-- **Decisão sua, quando o 88 sair:** o limite de tempo da etapa 2 na tela. Por enquanto o limite não mudou, como você pediu.
+- **O 88 confirmou o padrão:** a escala final veio aos 81 s, e é ótima pela conta.
+- **Decisão sua:** o limite de tempo da etapa 2 na tela. Ele não mudou, como você pediu.
 
 ---
 
@@ -37,7 +38,7 @@
 |---|---|---|---|---|---|
 | 40 / 44 | ótimo provado, 20,7 s | 1,9 s | **limite de tempo**, 902 s, sem prova | 19,6% | **18,1 s** |
 | 60 / 66 | ótimo provado, 39,1 s | 2,2 s | **limite de tempo**, 904 s, sem prova | 26,1% | **45,6 s** |
-| 80 / 88 | em andamento | | | | |
+| 80 / 88 | ótimo provado, 61,5 s | 3,0 s | **limite de tempo**, 907 s, sem prova | 37,5% | **81,1 s** |
 
 **Amplitude da fração** (pontos percentuais), antes e depois da etapa 2:
 
@@ -45,6 +46,7 @@
 |---|---|---|---|
 | 40 / 44 | 34,09 → 13,64 | 27,27 → 6,82 | 6,82 → 6,82 |
 | 60 / 66 | 20,45 → 13,64 | 13,64 → 6,82 | 6,82 → 6,82 |
+| 80 / 88 | 27,27 → 13,64 | 20,45 → 6,82 | 6,82 → 6,82 |
 
 **Restante, por tamanho:**
 - **40 / 44:**
@@ -55,6 +57,10 @@
   - todos os 132 pedidos atendidos; 181 turnos de enfermeiro em posto de técnico;
   - carga de 120 a 168 h;
   - descanso e rígidas OK; penalidade recontada igual (181).
+- **80 / 88:**
+  - todos os 176 pedidos atendidos; 267 turnos de enfermeiro em posto de técnico;
+  - carga de 120 a 168 h; horas não utilizadas: 1.404 h dos enfermeiros e 644 h dos técnicos;
+  - descanso e rígidas OK; penalidade recontada igual (267).
 
 **A primeira escala da etapa 2 já é a final.** Nos dois casos, o "90% da redução" coincide com a primeira escala da etapa 2, e nenhuma melhora veio depois.
 
@@ -64,6 +70,7 @@
 |---|---|---|
 | 40 / 44 | (56 postos + 107 em posto de técnico) ÷ 15 = 10,87 | (504 − 107) ÷ 29 = 13,69 |
 | 60 / 66 | (56 + 181) ÷ 22 = 10,77 | (784 − 181) ÷ 44 = 13,70 |
+| 80 / 88 | (56 + 267) ÷ 30 = 10,77 | (1.064 − 267) ÷ 58 = 13,74 |
 
 Nenhum dos quatro valores é inteiro, então cada categoria tem amplitude de pelo menos 6,82 pp. O total não pode ficar abaixo de 13,64 pp, e foi exatamente o que a etapa 2 achou nos dois casos.
 
@@ -72,17 +79,17 @@ Nenhum dos quatro valores é inteiro, então cada categoria tem amplitude de pel
 - Fiz esta conta **depois** de ver o resultado. Ela é aritmética e não depende do solver, mas não foi registrada antes.
 
 **O que isso sugere para a tela (a decisão é sua).**
-- Um limite curto para a etapa 2 perderia pouco nestes casos: a melhor escala apareceu em 18 s e 46 s.
+- Um limite curto para a etapa 2 perderia pouco nestes casos: a melhor escala apareceu em 18 s, 46 s e 81 s.
 - Com 600 s, a tela esperaria quase tudo à toa.
 - Outra possibilidade é a ferramenta reconhecer o piso aritmético e parar quando chegar nele. Isso é mudança de formulação; se você quiser, registro como proposta. **Não implementei.**
-- Antes de decidir, falta o 88.
 
 ## 4. Commits
 
 | Commit | Conteúdo |
 |---|---|
 | `bea0300` | `--folga`, registros novos, PROPOSTAS (leitura de 03/10 e rodada decidida); feito antes de rodar |
-| o seguinte | Este relatório (parcial; o 88 entra quando terminar) |
+| `a0169ce` | Este relatório, parcial |
+| o seguinte | Este relatório completo; resultado na P1; nota no ESTADO_ATUAL |
 
 ---
 
@@ -91,4 +98,6 @@ Nenhum dos quatro valores é inteiro, então cada categoria tem amplitude de pel
 - **`PROPOSTAS.md`**, P1:
   - leitura decidida: a rodada de 03/10 mede o caso mais apertado (168 h por pessoa); a prova fecha até 80; 120 tem escala sem prova (gap 3,16%); 200 fica sem escala em 900 s; tempo é limite operacional;
   - rodada com folga decidida, com seus parâmetros.
-- `ESTADO_ATUAL.md`, `DECISOES.md` e `VIRADA_ESCOPO_2026-09-24.md`: sem mudança nesta etapa.
+  - resultado da rodada com folga: tabela por tamanho; a escala da etapa 2 é ótima pela conta, e os gaps são fraqueza do limite inferior do solver.
+- **`ESTADO_ATUAL.md`**: nota de 05/10 (tarde) no item 1 das pendências; pendente a decisão do limite da etapa 2.
+- `DECISOES.md` e `VIRADA_ESCOPO_2026-09-24.md`: sem mudança.
