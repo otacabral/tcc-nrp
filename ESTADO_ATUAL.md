@@ -137,10 +137,17 @@ MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativ
    24, 15, 5), horas do diagnóstico (2.688/2.464 h, 672/528 h), gap do 8b 1,03% com 20/20
    pedidos. Concluído.
 
+*Demonstração de uso pela tela — concluída em 05/10 (noite).* Três rodadas, uma por processo,
+com o Streamlit reiniciado entre elas: 30 pessoas (admite), 21 técnicos (admite, 13 turnos de
+enfermeiro em posto de técnico), 20 técnicos (trava: "Falta 1; o menor quadro viável é 29",
+diagnóstico "Combinação de regras"). Os cortes saíram onde a conta, registrada antes, previu
+(`docs/demonstracao/cortes_esperados.md`). Capturas e planilhas em `docs/demonstracao/`. A
+conta mostrou que o diagnóstico podia ter dado um motivo simples: P7, aguardando decisão.
+
 *Atualização de 05/10 (noite):* **P1 concluída** (`PROPOSTAS.md`); limite da etapa 2 na tela =
 180 s, e a etapa 2 mostra a diferença de carga entre colegas no lugar do gap (`DECISOES.md`,
 "Carga por contrato", item i). **Demonstração de uso pela tela: interrompida** pelo sistema por
-falta de memória durante a rodada 1 (`docs/demonstracao/`; dados e roteiro prontos, só a captura
+falta de memória durante a rodada 1 (*depois concluída na noite de 05/10, ver acima*) (`docs/demonstracao/`; dados e roteiro prontos, só a captura
 da entrada da rodada 1 saiu). Guia do usuário em `GUIA_DE_USO.md`; figuras do capítulo de
 resultados em `resultados/figuras/` (`src/figuras_tcc.py`).
 4. ~~**Arquivo de configuração** (pacote INRC + complemento). Menor prioridade: se não estiver

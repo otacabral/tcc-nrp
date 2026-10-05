@@ -42,3 +42,15 @@ proposta, não implementada.
 **Já se sabia de antes** (execução sem tela de 05/10, pelo mesmo motor; declarado aqui para não
 parecer previsão): 22 admite com 4 turnos de enfermeiro em posto de técnico; 21 admite com 13;
 20 trava, com "combinação de regras" e menor quadro viável de 29 (9 + 20).
+
+## Resultado pela tela (05/10/2026, anotado DEPOIS de rodar; o esperado acima não mudou)
+
+| Técnicos | Esperado pela conta | Saiu na tela |
+|---|---|---|
+| 22 (rodada 1) | admite; 1 alerta; enf. em posto de téc. ≥ 0 | admite; 1 alerta (proporção); **4** turnos de enfermeiro em posto de técnico |
+| 21 | admite; 2 alertas; enf. em posto de téc. ≥ 13 | admite; 2 alertas (proporção; QP completo 30,05); **13** — exatamente o mínimo da conta |
+| 20 | trava; menor quadro viável 29; diagnóstico da ferramenta "combinação de regras" | **"Falta 1; o menor quadro viável é 29"**; diagnóstico **"Combinação de regras"**; escala de 29 (9 + 20) com **27** turnos de enfermeiro em posto de técnico — o mínimo da conta para 20 técnicos |
+
+As três transições ocorreram onde a conta disse. O diagnóstico "combinação de regras" na
+trava é o que a ferramenta mostra; a conta explica a trava por horas e pelo par 03–04/11 com
+férias (P7).

@@ -241,17 +241,21 @@ dependência.
   1,5 plantão (18,4 h) entre técnicos.
 - Horas de contrato não utilizadas: 308 h dos enfermeiros e 184 h dos técnicos.
 
-**Rodada 2 — a mesma unidade com 20 técnicos (28 pessoas).**
-- Veredito: **"Falta 1; o menor quadro viável é 29."** O 29º profissional entra como
-  enfermeiro.
-- Diagnóstico: **combinação de regras**. Pela conta simples, 28 pessoas bastariam. As regras
-  juntas — descanso, dias seguidos e as duas férias — é que impedem.
-- Os alertas do COFEN passam a ser dois: a proporção de enfermeiros e o quadro abaixo do QP
-  completo do Parecer.
+**Rodada 2 — a mesma unidade com técnicos a menos.**
 
-> **Situação deste exemplo em 05/10/2026.** Os números acima vêm do mesmo motor da tela, rodado
-> por `docs/demonstracao/caso_clinica_medica.py`, com os mesmos dados. A rodada pela tela,
-> com capturas e planilha, foi interrompida pelo computador por falta de memória. A captura da
-> tela preenchida está em `docs/demonstracao/rodada1_entrada.png`. A diferença de carga entre
-> colegas pode variar um pouco de uma rodada para outra, porque o equilíbrio tem tempo
-> limitado.
+| Técnicos (quadro) | Veredito na tela | Enf. em posto de técnico | Alertas do COFEN |
+|---|---|---|---|
+| 21 (29) | "O quadro informado admite escala legal. Escala gerada." | 13 | 2: proporção de enfermeiros; quadro abaixo do QP completo (30,05) |
+| 20 (28) | **"Falta 1; o menor quadro viável é 29. Escala gerada."** | 27 (na escala de 29, com 9 enfermeiros) | 2: proporção; quadro abaixo do QP completo (30,10) |
+
+Com 20 técnicos, a caixa do diagnóstico diz **"Combinação de regras"**. A ferramenta
+acrescenta um enfermeiro e mostra a escala de 29. Em todas as rodadas, os 6 pedidos de
+folga foram atendidos e a conferência de descanso deu "cumpre".
+
+As capturas da tela e as planilhas estão em `docs/demonstracao/`:
+- `rodada1_*`, para 30 pessoas;
+- `rodada2_21tec_*`, para 21 técnicos;
+- `rodada2_20tec_*`, para 20 técnicos.
+
+Também estão lá o roteiro que preenche a tela e a conta feita antes de rodar,
+`cortes_esperados.md`.
