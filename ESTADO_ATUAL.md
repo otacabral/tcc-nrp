@@ -144,6 +144,13 @@ diagnóstico "Combinação de regras"). Os cortes saíram onde a conta, registra
 (`docs/demonstracao/cortes_esperados.md`). Capturas e planilhas em `docs/demonstracao/`. A
 conta mostrou que o diagnóstico podia ter dado um motivo simples: P7, aguardando decisão.
 
+*05/10, 20h:* **P7 implementada** (diagnóstico com teto pela alternância e férias no par;
+`DECISOES.md`, "2026-10-05 — Diagnóstico da trava"); testes de diagnóstico e de texto OK.
+**Demonstração a refazer, PARADA por regra:** o alerta da rodada de 30 pessoas é de proporção
+de enfermeiros (8, o Parecer pede 10); a equipe da rodada 1 será ajustada por decisão do
+Otávio, e só então entram o 20/11 como feriado e as três rodadas de novo. Ver
+`resultados/relatorio_2026-10-05e.md`.
+
 *Atualização de 05/10 (noite):* **P1 concluída** (`PROPOSTAS.md`); limite da etapa 2 na tela =
 180 s, e a etapa 2 mostra a diferença de carga entre colegas no lugar do gap (`DECISOES.md`,
 "Carga por contrato", item i). **Demonstração de uso pela tela: interrompida** pelo sistema por

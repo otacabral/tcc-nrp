@@ -173,13 +173,14 @@ A escala continua valendo. Os alertas são para a sua decisão.
 
 ### Por que não há escala legal (o diagnóstico)
 
-Quando falta gente, aparece uma caixa com **o motivo mais simples** que explica a falta:
+Quando falta gente, aparece uma caixa com **todos os motivos simples** que explicam a falta,
+cada um com os números. Cada motivo, sozinho, já prova que não há escala:
 
 | Motivo | Exemplo do que quer dizer |
 |---|---|
-| **Horas** | As horas da demanda passam do que a equipe pode trabalhar pelos contratos. |
-| **Alternância do plantão de 12 h** | Ninguém faz dois plantões de 12 h em dias seguidos. Por isso, dois dias seguidos precisam de pessoas diferentes. |
-| **Categoria** | Faltam enfermeiros para os postos que só enfermeiro cobre. |
+| **Horas** | As horas de técnico passam do que os técnicos podem trabalhar mais a folga dos enfermeiros. O limite de cada pessoa é a carga contratual nos dias disponíveis e, no 12×36, a alternância: no máximo um plantão a cada dois dias. |
+| **Alternância do plantão de 12 h** | Ninguém faz dois plantões de 12 h em dias seguidos. Por isso, dois dias seguidos precisam de pessoas diferentes, e quem está de férias nos dois dias não conta. |
+| **Categoria** | Faltam enfermeiros para os postos que só enfermeiro cobre (em horas, ou num par de dias seguidos). |
 | **Dia específico** | Num dia, com férias e licenças, sobram menos pessoas do que postos. |
 | **Combinação de regras** | Nenhuma conta simples explica. As regras juntas (descanso, dias seguidos, férias) é que impedem. |
 
@@ -188,7 +189,7 @@ Quando falta gente, aparece uma caixa com **o motivo mais simples** que explica 
 | Na tela | O que é |
 |---|---|
 | Quadro da escala | Quantas pessoas a escala usa. |
-| Turnos de enfermeiro em posto de técnico | Quantas vezes um enfermeiro cobriu vaga de técnico. |
+| Enfermeiro em posto de técnico | Quantos turnos um enfermeiro cobriu em vaga de técnico. |
 | Pedidos de folga atendidos | Quantos dos pedidos foram atendidos. |
 | Contrato cumprido (mín.–máx.) | Quanto do contrato cada pessoa cumpre: horas escaladas ÷ horas contratadas nos dias em que está disponível. |
 | Conferência de descanso | "cumpre" quer dizer que a escala foi medida no relógio e respeita os descansos da CLT. |
@@ -248,8 +249,14 @@ dependência.
 | 21 (29) | "O quadro informado admite escala legal. Escala gerada." | 13 | 2: proporção de enfermeiros; quadro abaixo do QP completo (30,05) |
 | 20 (28) | **"Falta 1; o menor quadro viável é 29. Escala gerada."** | 27 (na escala de 29, com 9 enfermeiros) | 2: proporção; quadro abaixo do QP completo (30,10) |
 
-Com 20 técnicos, a caixa do diagnóstico diz **"Combinação de regras"**. A ferramenta
-acrescenta um enfermeiro e mostra a escala de 29. Em todas as rodadas, os 6 pedidos de
+Com 20 técnicos, a caixa do diagnóstico das capturas de 05/10 diz **"Combinação de
+regras"**. Depois da correção do diagnóstico, na noite de 05/10, ela passa a mostrar os dois
+motivos simples:
+- **Horas:** faltam 324 h de técnico, contra 312 h de folga dos enfermeiros;
+- **Alternância:** ter 03/11 e qua 04/11 somam 28 plantões, e, com Karen de férias, só 27
+  pessoas estão disponíveis.
+
+As capturas serão refeitas. A ferramenta acrescenta um enfermeiro e mostra a escala de 29. Em todas as rodadas, os 6 pedidos de
 folga foram atendidos e a conferência de descanso deu "cumpre".
 
 As capturas da tela e as planilhas estão em `docs/demonstracao/`:
