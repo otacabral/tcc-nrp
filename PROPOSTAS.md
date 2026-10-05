@@ -227,6 +227,10 @@ A P1 está desbloqueada: objetivo decidido.
 - **Continuidade entre períodos** (acrescentado em 29/09): receber os últimos dias do
   período anterior como entrada, para conferir interjornada e descanso na virada entre uma
   escala e a seguinte. Ver `DECISOES.md`, "2026-09-29 — Ajustes da Etapa 2".
+- **Arquivo de configuração** (acrescentado em 05/10, decisão do Otávio): o pacote com o XML
+  no formato INRC mais o complemento com o que o formato não representa (indisponibilidades),
+  para baixar e carregar na tela, com validação e resumo em português. Ver `DECISOES.md`,
+  "2026-10-05 — Arquivo de configuração vira trabalho futuro".
 - **Parar a etapa 2 ao atingir o piso aritmético da amplitude** (acrescentado em 05/10, P1):
   simples só com contrato e turno homogêneos e sem indisponibilidade. Na rodada com folga, a
   etapa 2 chegou ao piso entre 18 e 81 s e gastou o resto do tempo tentando provar.

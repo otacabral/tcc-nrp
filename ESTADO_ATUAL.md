@@ -137,8 +137,10 @@ MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativ
 falta de memória durante a rodada 1 (`docs/demonstracao/`; dados e roteiro prontos, só a captura
 da entrada da rodada 1 saiu). Guia do usuário em `GUIA_DE_USO.md`; figuras do capítulo de
 resultados em `resultados/figuras/` (`src/figuras_tcc.py`).
-4. **Arquivo de configuração** (pacote INRC + complemento). Menor prioridade: se não estiver
-   pronto em 10/10, vira trabalho futuro.
+4. ~~**Arquivo de configuração** (pacote INRC + complemento). Menor prioridade: se não estiver
+   pronto em 10/10, vira trabalho futuro.~~ *05/10:* saiu do TCC e virou trabalho futuro, por
+   decisão do Otávio — ver `DECISOES.md`, "2026-10-05 — Arquivo de configuração vira trabalho
+   futuro", e `PROPOSTAS.md`, P3. Não há código parcial dele.
 
 **Dívida menor, sem prazo:**
 
@@ -146,7 +148,10 @@ resultados em `resultados/figuras/` (`src/figuras_tcc.py`).
   `nota_conferencias_contrato_2026-09-22.md`, `nota_intervalo_individual_2026-09-22.md`,
   `nota_piso_forcado_2026-09-22.md`, `para_orientacao_2026-09-23.md`. Vão para `historico/`
   ou ficam como metodologia ativa? Não decidido.
-- **O `README.md` tem três links mortos** para arquivos que foram para `historico/`.
+- ~~**O `README.md` tem três links mortos** para arquivos que foram para `historico/`.~~
+  *05/10:* corrigido. Restavam duas referências ao `CONTEXTO_PROJETO.md`, que agora apontam
+  para `historico/`; a terceira, ao `DECISOES.md`, já valia desde que ele voltou à raiz em
+  29/09. A lista de documentos do README passou a incluir os arquivos ativos.
 
 ## 6. O que este repositório aprendeu errando
 

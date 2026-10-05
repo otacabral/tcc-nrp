@@ -7,7 +7,9 @@ Stack: Python, Pyomo, HiGHS. Avaliador oficial em Java.
 
 O solver e parametro da chamada, nao do modelo. HiGHS e o padrao, por nao exigir
 licenca; Gurobi ou CPLEX entram nos experimentos se a licenca academica sair, sem
-reescrever o modelo. Ver CONTEXTO_PROJETO.md, secao 8.
+reescrever o modelo. Ver
+[CONTEXTO_PROJETO.md](historico/escopo-comparacao-regimes/CONTEXTO_PROJETO.md),
+secao 8 (documento do escopo anterior, guardado no historico).
 
 ## Estrutura
 
@@ -86,9 +88,14 @@ oficial ou contra a Tabela 6 de Santos et al. (2016).
 
 ## Documentos do projeto
 
-- `CONTEXTO_PROJETO.md` - escopo e pipeline
-- `DECISOES.md` - decisoes de modelagem tomadas
-- `PROPOSTAS.md` - sugestoes que aguardam validacao
+- [ESTADO_ATUAL.md](ESTADO_ATUAL.md) - onde o trabalho esta; ler primeiro
+- [VIRADA_ESCOPO_2026-09-24.md](VIRADA_ESCOPO_2026-09-24.md) - escopo atual e parametros normativos
+- [DECISOES.md](DECISOES.md) - decisoes de modelagem tomadas
+- [PROPOSTAS.md](PROPOSTAS.md) - sugestoes que aguardam validacao
+- [MAPA_CODIGO.md](MAPA_CODIGO.md) - inventario do codigo
+- [GUIA_DE_USO.md](GUIA_DE_USO.md) - guia para quem usa a ferramenta
+- [historico/escopo-comparacao-regimes/](historico/escopo-comparacao-regimes/) - documentos
+  do escopo anterior (comparacao de regimes), entre eles o `CONTEXTO_PROJETO.md`
 
 ## Licenca
 

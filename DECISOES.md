@@ -1412,6 +1412,31 @@ Máquina: i5-10210U, 12 GB, Windows 11, HiGHS 1.15.1 via appsi.
 
 ---
 
+## 2026-10-05 — Arquivo de configuração vira trabalho futuro
+
+**Status: vigente**
+
+Decidido pelo Otávio em 05/10. O arquivo de configuração — o pacote com o XML no formato INRC
+mais um complemento com o que o formato não representa, para baixar e carregar na tela —
+**sai do TCC e vira trabalho futuro** (`PROPOSTAS.md`, P3). Não será implementado.
+
+**Altera** a adição "arquivo de configuração no formato INRC" da especificação de 29/09
+(entrada "2026-09-29 — Especificação da ferramenta", em Configuração; e "Arquivo de
+configuração = pacote", em "Ajustes da Etapa 2"). A especificação já o marcava como de menor
+prioridade, a virar trabalho futuro se não estivesse pronto em 10/10.
+
+**Motivo.** O congelamento das funcionalidades é em 10/10, e a demonstração de uso tem
+prioridade. A reprodutibilidade dos resultados do TCC não depende do arquivo: está no
+repositório e nos scripts (`src/regressao.py`, `src/escalabilidade_objetivo.py`,
+`src/figuras_tcc.py`, `docs/demonstracao/`).
+
+**Código parcial (verificado em 05/10):** nenhum. Não há código do pacote nem do
+complemento. O que existe e continua é anterior e serve aos experimentos e à validação:
+`instancia_br.escrever_xml` (escreve a instância no formato INRC, para o avaliador oficial) e
+`src/parser.py` (lê as instâncias do INRC).
+
+---
+
 ## Modelo de entrada
 
 ```
