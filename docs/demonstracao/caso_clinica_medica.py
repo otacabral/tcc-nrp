@@ -7,8 +7,22 @@ Rodar da raiz, com a .venv ativa:
     python docs\\demonstracao\\caso_clinica_medica.py             # rodada 1 (o quadro do caso)
     python docs\\demonstracao\\caso_clinica_medica.py --tec 20    # mesma unidade, 20 tecnicos
 
-Nomes ficticios. Feriados nacionais do periodo: 02/11 (Finados, segunda) e 15/11
-(Proclamacao da Republica, domingo).
+Nomes ficticios.
+
+Como a demanda dos dias especiais foi lancada (declarado em 05/10):
+
+- 02/11 (Finados, segunda-feira, PRIMEIRO dia do horizonte): lancado como feriado, com a
+  demanda reduzida DEMANDA_FERIADO (1 enfermeiro + 4 tecnicos em cada turno), no lugar da
+  de dia util (2 + 6 de dia, 1 + 5 a noite).
+- 15/11 (Proclamacao da Republica, domingo): lancado como feriado, DEMANDA_FERIADO. Como cai
+  no fim de semana, so muda o turno do dia: 1 + 4 no lugar de 1 + 5; a noite ja era 1 + 4.
+- 20/11 (sexta-feira, Dia Nacional de Zumbi e da Consciencia Negra): lancado como DIA UTIL
+  (2 + 6 / 1 + 5), sem demanda especifica. E feriado nacional desde 2024 (Lei 14.759/2023),
+  e o caso NAO o tratou como feriado, ao contrario dos outros dois. Fica declarado; mudar
+  alteraria os numeros da demonstracao.
+- O primeiro dia (02/11) nao tem continuidade com o periodo anterior: a ferramenta gera cada
+  escala de 28 dias isolada, e o descanso na virada de outubro para novembro nao e conferido
+  (PROPOSTAS.md, P3, trabalho futuro "continuidade entre periodos").
 """
 
 from __future__ import annotations

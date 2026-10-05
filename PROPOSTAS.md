@@ -329,3 +329,29 @@ projeto de redação.
 **Impacto na P1:** nenhum sobre o que a P1 mede (prova e gap por etapa), mas a P1 deve rodar
 com o critério final da etapa 2. Por isso não foi relançada em 03/10.
 
+
+---
+
+## 2026-10-05 — P7: o diagnóstico da trava diz "combinação" quando uma conta simples explica
+
+**Status: aguardando decisão.** Nada implementado. Achado ao preparar a rodada 2 da
+demonstração (`docs/demonstracao/cortes_esperados.md`).
+
+**O que acontece.** Na clínica médica da demonstração com 20 técnicos (28 pessoas), duas
+contas simples já mostram que não há escala: (a) as horas de técnico que faltam (324 h) passam
+da folga dos enfermeiros (312 h), contando o teto de cada um pela alternância do 12×36 (14
+plantões = 168 h); (b) no par 03–04/11, 28 plantões para 27 pessoas disponíveis, porque uma
+técnica está de férias. O diagnóstico da ferramenta (`ferramenta.diagnosticar`) não enxerga
+nenhuma das duas e diz "combinação de regras":
+
+- a regra de alternância compara a soma de dois dias com o quadro inteiro, sem descontar quem
+  está de férias num dos dois dias;
+- a regra de horas usa o teto do contrato (176 h para 44 h), não o menor entre ele e o da
+  alternância, e não separa as horas do posto de técnico (que só técnico ou enfermeiro cobre)
+  da folga dos enfermeiros.
+
+**Por que importa.** "Combinação de regras" diz ao gestor que não há explicação simples,
+quando há: "no par 03–04/11, com Karen de férias, faltam pessoas" é acionável.
+
+**Proposta:** nas duas regras, descontar as férias do par e usar o teto pela alternância.
+Mudança de funcionalidade, com o congelamento em 10/10: decisão do Otávio.
