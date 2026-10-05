@@ -1437,7 +1437,40 @@ complemento. O que existe e continua é anterior e serve aos experimentos e à v
 
 ---
 
-## Modelo de entrada
+## 2026-10-05 — Diagnóstico da trava: teto pela alternância e férias no par
+
+**Status: vigente**
+
+Decidido pelo Otávio em 05/10 (fecha a P7). **Correção do diagnóstico da trava**
+(`ferramenta.diagnosticar`); o modelo e o objetivo não mudam. O diagnóstico só afirma
+condições NECESSÁRIAS: cada motivo que ele mostra é uma conta que, sozinha, prova que não há
+escala.
+
+**a) Teto de cada pessoa** (`ferramenta.teto_horas`) = o menor entre a carga contratual nos dias
+disponíveis e, quando ninguém pode trabalhar dois dias seguidos (12×36), a duração do turno
+mais longo × a soma, por bloco de dias disponíveis seguidos, de ceil(tamanho / 2). É limite
+superior válido: num bloco de b dias sem dois seguidos cabem no máximo ceil(b / 2) plantões.
+Com 44 h e o horizonte inteiro no 12×36: 168 h (14 plantões), não 176 h.
+
+**b) Duas condições por categoria**, com o enfermeiro podendo cobrir posto de técnico:
+- *horas*: primeiro os enfermeiros (horas do posto de enfermeiro contra os tetos deles — se
+  falta, motivo "Categoria"); depois os técnicos (horas do posto de técnico contra os tetos dos
+  técnicos mais a folga dos enfermeiros — se falta, motivo "Horas");
+- *par de dias seguidos no 12×36*: os plantões do par contra as pessoas disponíveis em pelo
+  menos um dos dois dias, descontando férias e licenças (motivo "Alternância"); e o mesmo só
+  para enfermeiros e posto de enfermeiro (motivo "Categoria"), quando o par geral não dispara.
+
+O diagnóstico mostra **todos** os motivos que disparam, cada um com os números; o título junta
+os nomes. A ordem: horas, par, dia específico; "combinação de regras" só quando nenhum dispara.
+
+**Esperado registrado antes de rodar** (`src/testes_ferramenta.py`, 7.3 e 7.4): na clínica da
+demonstração com 20 técnicos, "Horas" (324 h contra 312 h) e "Alternância" (ter 03/11 e qua
+04/11: 28 plantões, 27 pessoas); com 21, nenhum; o caso "combinação" do 7.3 passa a "Categoria"
+(672 h contra 667,4 h) e "Alternância" (sáb 09 e dom 10/01, 4 plantões para 3 pessoas) — motivo
+mais específico e verdadeiro; os outros quatro mantêm o motivo.
+
+**Fica igual:** `ferramenta.piso` (que decide se um quadro vai ao solver) continua com a conta
+antiga; trocá-la mudaria quais quadros o solver tenta. Não pedido.
 
 ```
 ## AAAA-MM-DD — Título curto da decisão

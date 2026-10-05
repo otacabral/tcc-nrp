@@ -170,7 +170,8 @@ def caso_enfermeiro_em_posto_de_tecnico() -> None:
     confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
     confere(textos(at, "success") == [ADMITE_OK],
             f"veredito: {textos(at, 'success') + textos(at, 'warning')}")
-    n = int(metricas(at).get("Turnos de enfermeiro em posto de técnico", -1))
+    # rotulo encurtado em 05/10 (cortava na tela); o "turnos" foi para a ajuda da metrica
+    n = int(metricas(at).get("Enfermeiro em posto de técnico", -1))
     confere(n >= 30, f"contagem na tela: {n} turnos de enfermeiro em posto de tecnico (>= 30)")
 
 
@@ -277,6 +278,10 @@ def casos_tempo() -> None:
                 "escala e planilha na tela")
         confere(any(t.startswith("Equilíbrio de carga: não rodou") for t in textos(at, "caption")),
                 "equilibrio nao rodou")
+        # 05/10: com todos os pedidos atendidos, a tela diz isso, e nao "negados: 0, em 0"
+        confere("Todos os 20 pedidos de folga foram atendidos." in textos(at, "caption")
+                and not any("negados: 0" in t for t in textos(at, "caption")),
+                f"pedidos: {[t for t in textos(at, 'caption') if 'edidos' in t]}")
         print(f"      gap {r.indicadores['gap']:.2%} | pedidos "
               f"{r.indicadores['pedidos_atendidos']}/{r.indicadores['pedidos_total']}")
 
@@ -552,11 +557,88 @@ DIAGNOSTICOS = [
                       indisponibilidades=[(f"Téc {i}", dia(10), dia(10))
                                           for i in range(1, 7)]),
      fe.DIA, 15, "qui 14/01"),
-    ("combinacao: 12x36 so enfermeiro, 4, Enf 3 de licenca 09 e 10/01",
+    # P7 (05/10): esperado refeito pela conta ANTES de rodar. Teto de cada um = menor entre
+    # contrato nos dias disponiveis e 12 h x soma de ceil(bloco/2): Enf 1, 2, 4 = min(176,
+    # 168) = 168 h; Enf 3 (licenca sab 09 e dom 10/01) = min(44 x 26/7 = 163,4; 12 x (3 +
+    # 11) = 168) = 163,4 h. Enfermeiros: 672 h de posto contra 667,4 h -> CATEGORIA (horas).
+    # Par sab 09 / dom 10/01: 4 plantoes, 3 pessoas disponiveis -> ALTERNANCIA (par). Era
+    # "combinacao"; passa a motivo mais especifico, e verdadeiro.
+    ("combinacao -> categoria: 12x36 so enfermeiro, 4, Enf 3 de licenca 09 e 10/01",
      lambda: _entrada(M12_TURNOS, 4, 0, {"D": (1, 0), "N": (1, 0)},
                       indisponibilidades=[("Enf 3", dia(5), dia(6))]),
-     fe.COMBINACAO, 5, "solver provou"),
+     fe.CATEGORIA, 5, "sáb 09/01 e dom 10/01"),
 ]
+
+
+def casos_diagnostico_p7() -> None:
+    """P7, diagnostico da trava (DECISOES.md, "2026-10-05 — Diagnostico da trava: teto pela
+    alternancia e ferias no par"). So contas, sem solver. Esperado registrado ANTES de rodar
+    (05/10), pela conta de `docs/demonstracao/cortes_esperados.md`, refeita aqui com o teto
+    novo:
+
+    7.4a. Clinica medica da demonstracao, 8 + 20, feriados 02/11 e 15/11 (os da demonstracao
+          de 05/10; o 20/11 fica de fora aqui de proposito, para o teste nao depender do
+          roteiro). Tetos: tecnicos 3.132 h para 3.456 h de posto de tecnico -> faltam 324 h;
+          enfermeiros 1.212 h para 900 h de posto -> folga 312 h. 324 > 312: HORAS dispara,
+          com "324 h" e "312 h" no texto. Par ter 03/11 e qua 04/11: 28 plantoes, 27 pessoas
+          disponiveis (Karen Dias de ferias): ALTERNANCIA dispara, com "28 plantões" e "27".
+          Os dois motivos, nessa ordem.
+    7.4b. A mesma com 8 + 21: tecnicos faltam 156 h, folga 312 h; par 28 para 28. Nenhum
+          motivo simples dispara.
+    7.4c. Teto de uma pessoa: 44 h com o horizonte inteiro no 12x36 = 168 h (14 plantoes,
+          nao 176 h); Karen Dias (44 h, ferias de 02 a 15/11) = 84 h (7 plantoes em 14 dias);
+          36 h = 144 h. Teto e limite SUPERIOR: na escala de 30 da rodada 1 de 05/10, ninguem
+          passou dele.
+    """
+    import dataclasses
+    from datetime import date
+    sys.path.insert(0, str(RAIZ / "docs" / "demonstracao"))
+    import caso_clinica_medica as caso
+    feriados = (date(2026, 11, 2), date(2026, 11, 15))
+
+    def entrada(n_tec):
+        e = caso.entrada(n_tec)
+        return dataclasses.replace(e, demanda_data={k: v for k, v in e.demanda_data.items()
+                                                    if k[0] in feriados})
+
+    print("7.4a. P7: clinica medica, 8 + 20")
+    inst = fe.montar(entrada(20))
+    motivos = fe.motivos_da_trava(inst)
+    texto = " ".join(t for _, t in motivos)
+    print(f"      {[m for m, _ in motivos]}: {texto}")
+    confere([m for m, _ in motivos] == [fe.HORAS, fe.ALTERNANCIA],
+            f"motivos {[m for m, _ in motivos]} (esperado horas, alternancia)")
+    confere("324 h" in texto and "312 h" in texto, "horas: 324 h contra 312 h no texto")
+    confere("ter 03/11 e qua 04/11" in texto and "28 plantões" in texto and " 27 " in texto,
+            "par ter 03/11 e qua 04/11: 28 plantoes, 27 pessoas")
+    d = fe.diagnosticar(inst)
+    confere(d[0] == fe.HORAS and d[2] == [fe.HORAS, fe.ALTERNANCIA],
+            f"diagnosticar: motivo {d[0]}, todos {d[2]}")
+
+    print("7.4b. P7: clinica medica, 8 + 21")
+    motivos = fe.motivos_da_trava(fe.montar(entrada(21)))
+    confere(motivos == [], f"nenhum motivo simples: {[m for m, _ in motivos]}")
+
+    print("7.4c. P7: teto de cada pessoa")
+    inst = fe.montar(entrada(22))
+    nome = {p.nome: n for n, p in inst.profissionais.items()}
+    tetos = {n: fe.teto_horas(inst, nome[n]) for n in ("Ana Ribeiro", "Karen Dias",
+                                                      "Gabriela Pires")}
+    confere(tetos == {"Ana Ribeiro": 168, "Karen Dias": 84, "Gabriela Pires": 144},
+            f"tetos {tetos} (esperado 168, 84, 144)")
+    import openpyxl as ox
+    planilha = RAIZ / "docs" / "demonstracao" / "rodada1_escala.xlsx"
+    if planilha.exists():
+        ws = ox.load_workbook(planilha)["Escala"]
+        cab = [c.value for c in ws[1]]
+        excede = []
+        for linha in ws.iter_rows(min_row=2, values_only=True):
+            n = linha[0]
+            plantoes = sum(1 for v in linha[3:] if v and v != "indisp.")
+            if n in nome and plantoes * 12 > fe.teto_horas(inst, nome[n]) + 1e-9:
+                excede.append(n)
+        confere(not excede and cab[0] == "Profissional",
+                f"na escala da rodada 1, ninguem acima do teto: {excede}")
 
 
 def casos_diagnostico() -> None:
@@ -577,7 +659,8 @@ def casos_diagnostico() -> None:
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
-         "9b-sem-teto": caso_9b_sem_teto, "9c-tela": caso_9c_tela}
+         "9b-sem-teto": caso_9b_sem_teto, "9c-tela": caso_9c_tela,
+         "7.4": casos_diagnostico_p7}
 
 
 def main() -> int:

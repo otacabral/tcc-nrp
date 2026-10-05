@@ -334,8 +334,10 @@ com o critério final da etapa 2. Por isso não foi relançada em 03/10.
 
 ## 2026-10-05 — P7: o diagnóstico da trava diz "combinação" quando uma conta simples explica
 
-**Status: aguardando decisão.** Nada implementado. Achado ao preparar a rodada 2 da
-demonstração (`docs/demonstracao/cortes_esperados.md`).
+**Status: DECIDIDA em 05/10 pelo Otávio — implementar como correção do diagnóstico** (sem
+mudar modelo nem objetivo). Ver `DECISOES.md`, "2026-10-05 — Diagnóstico da trava: teto pela
+alternância e férias no par". *Registro anterior:* aguardando decisão. Achado ao preparar a
+rodada 2 da demonstração (`docs/demonstracao/cortes_esperados.md`).
 
 **O que acontece.** Na clínica médica da demonstração com 20 técnicos (28 pessoas), duas
 contas simples já mostram que não há escala: (a) as horas de técnico que faltam (324 h) passam
