@@ -1,0 +1,154 @@
+Escala de enfermagem
+
+A CLT trava a escala; o COFEN só alerta. Horizonte de 28 dias, começando numa segunda-feira.
+
+1. Configuração da unidade
+
+Modelo de turnos
+
+Fim de semana
+
+sábado e domingo
+
+sexta a domingo
+
+Grau de dependência predominante
+
+Início (segunda-feira)
+
+02
+/
+11
+/
+2026
+
+Turnos: edite nome, início e fim (hora cheia). As regras de descanso da CLT saem dos horários.
+
+2. Equipe
+
+Enfermeiros
+
+Técnicos e auxiliares
+
+keyboard_arrow_down
+
+Nomes (opcional)
+
+Enfermeiros, um por linha
+
+Técnicos, um por linha
+
+Carga contratual semanal de cada profissional. O teto vale sobre o período, não por semana (no 12×36 há semanas de 48 h e de 36 h), e desconta férias e licenças. Padrão 44 h, o limite da Constituição.
+
+Férias e licenças — nesses dias a pessoa não é escalada (regra rígida).
+
+Pedidos de folga — atendidos quando possível; nunca impedem a escala.
+
+3. Demanda
+
+Quantas pessoas de cada categoria em cada turno. Valores próprios para o fim de semana são opcionais.
+
+Fim de semana com demanda própria
+
+D: enfermeiros
+
+D: técnicos
+
+D: enfermeiros (fds)
+
+D: técnicos (fds)
+
+N: enfermeiros
+
+N: técnicos
+
+N: enfermeiros (fds)
+
+N: técnicos (fds)
+
+keyboard_arrow_down
+
+Demanda específica por data (feriados, eventos) — opcional
+
+Preenchida a partir da demanda acima; edite só o que muda. Mudar a demanda acima refaz esta grade.
+
+keyboard_arrow_down
+
+4. Conferir com o COFEN (opcional) — pacientes por grau
+
+Média diária de pacientes. Serve só para comparar o quadro com o QP do Parecer; não muda a escala.
+
+Mínimo (4 h/paciente)
+
+Intermediário (6 h)
+
+Alta dependência (10 h)
+
+Semi-intensivo (10 h)
+
+Intensivo (18 h)
+
+Gerar escala
+
+5. Resultado
+
+O quadro informado admite escala legal. Escala gerada.
+
+Alerta COFEN (não impede a escala): 8 enfermeiros em 30 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 10
+
+Quadro da escala
+
+30
+
+Turnos de enfermeiro em posto de técnico
+
+4
+
+Pedidos de folga atendidos
+
+6 de 6
+
+Contrato cumprido (mín.–máx.)
+
+75%–100%
+
+Conferência de descanso
+
+cumpre
+
+Descanso mínimo entre turnos 36 h · descanso semanal 36 h · no máximo 1 dia seguido
+
+Enfermeiros: 75%–82% do contrato cumprido · 308 h de contrato não utilizadas (de 1256 h contratadas nos dias disponíveis).
+
+Técnicos: 89%–100% do contrato cumprido · 184 h de contrato não utilizadas (de 3592 h contratadas nos dias disponíveis).
+
+Diferença entre categorias: técnicos cumprem em média +19 pontos percentuais do contrato em relação aos enfermeiros. Ela não é otimizada: vem da demanda de cada posto frente ao tamanho de cada categoria.
+
+Equilíbrio de carga dentro de cada categoria, entre as escalas de mesmo custo. Diferença máxima de carga entre colegas — enfermeiros: 0,5 plantão (6,4 h) · técnicos: 1,5 plantão (18,4 h).
+
+Pedidos de folga negados: 0, em 0 profissionais; no máximo 0 por pessoa.
+
+QP núcleo assistencial
+
+26,08
+
+QP completo (IST 15%)
+
+30,00
+
+CHS usada no QP: 41,9 h por semana, a média das cargas contratuais da equipe.
+
+keyboard_arrow_right
+
+Como o veredito foi obtido
+
+keyboard_arrow_right
+
+Como o veredito foi obtido
+
+Baixar planilha (.xlsx)
+
+Código com * = posto de enfermeiro.
+PICO DE MEMORIA (MB): servidor Streamlit + solver 302; Chrome do Playwright (soma dos processos) 598; este roteiro 59
+status 0
+menor memoria livre: 19:24:58 livre_MB=646

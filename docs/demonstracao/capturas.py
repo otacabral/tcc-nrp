@@ -268,7 +268,7 @@ def main() -> int:
                     help="preenche e fotografa a entrada, sem gerar (para conferir)")
     a = ap.parse_args()
     with sync_playwright() as p:
-        b = p.chromium.launch(channel="chrome")
+        b = p.chromium.launch(channel="chrome", args=["--disable-gpu", "--renderer-process-limit=1", "--disable-extensions"])
         ctx = b.new_context(viewport={"width": LARGURA, "height": ALTURA},
                             accept_downloads=True, locale="pt-BR")
         ctx.grant_permissions(["clipboard-read", "clipboard-write"], origin=URL)
