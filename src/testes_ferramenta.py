@@ -570,6 +570,61 @@ DIAGNOSTICOS = [
 ]
 
 
+def casos_grau_alerta() -> None:
+    """Grau do alerta de proporcao com graus misturados (DECISOES.md, "2026-10-05 — Grau da
+    proporcao: o grupo de pacientes de maior carga"). So contas, sem solver. Esperado
+    registrado ANTES de rodar (05/10):
+
+    4b. Clinica da demonstracao (8 minimos, 14 intermediarios, 4 de alta dependencia): carga
+        por grupo = 8 x 4 = 32 h, 14 x 6 = 84 h, 4 x 10 = 40 h -> grupo de maior carga
+        INTERMEDIARIO, 33%. Com 10 enfermeiros em 30: nenhum alerta de proporcao (exige
+        ceil(0,33 x 30) = 10). Com 8 em 30, o alerta diz "intermediário", "84 h" e "10".
+    4c. Campo da tela diz intermediario, pacientes 2 minimos + 5 de alta dependencia: 8 h
+        contra 50 h -> ALTA, 36%. Com 8 enfermeiros em 30: alerta com "alta dependência" e
+        "isto é, 11" (ceil(0,36 x 30) = 10,8 -> 11) — o campo nao vale com pacientes.
+    4d. Sem pacientes: vale o campo (intermediario, 33%), e o alerta diz que e o grau
+        informado; com 8 em 30, "isto é, 10".
+    4e. Empate (3 minimos = 12 h, 2 intermediarios = 12 h): regra NAO decidida (P8). A
+        ferramenta nao escolhe em silencio: o alerta diz "empate" e nomeia os dois graus.
+    """
+    import dataclasses
+    sys.path.insert(0, str(RAIZ / "docs" / "demonstracao"))
+    import caso_clinica_medica as caso
+    e = caso.entrada()
+    inst = fe.montar(e)
+    n_enf = sum(1 for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades)
+    print(f"4b. grau do alerta, clinica da demonstracao ({n_enf} enf. em {len(inst.profissionais)})")
+    g, texto_g = br.grau_do_alerta("intermediario", caso.PACIENTES)
+    confere(g == "intermediario" and "84 h" in texto_g, f"grau {g}: {texto_g}")
+    prop = [a for a in br.alertas_cofen(inst, e.grau, caso.PACIENTES) if "Parecer pede" in a]
+    confere(not prop if n_enf >= 10 else prop, f"alerta de proporcao: {prop}")
+    base8 = _equipe_mista(8, 22)
+    a8 = [a for a in br.alertas_cofen(base8, "intermediario", caso.PACIENTES)
+          if "Parecer pede" in a]
+    confere(len(a8) == 1 and "intermediário" in a8[0] and "84 h" in a8[0]
+            and "isto é, 10" in a8[0], f"8 em 30: {a8}")
+
+    print("4c. pacientes mandam no grau, nao o campo")
+    a = [x for x in br.alertas_cofen(base8, "intermediario", {"minimo": 2, "alta": 5})
+         if "Parecer pede" in x]
+    confere(len(a) == 1 and "alta dependência" in a[0] and "isto é, 11" in a[0], f"{a}")
+
+    print("4d. sem pacientes, vale o campo")
+    a = [x for x in br.alertas_cofen(base8, "intermediario", None) if "Parecer pede" in x]
+    confere(len(a) == 1 and "informado" in a[0] and "isto é, 10" in a[0], f"{a}")
+
+    print("4e. empate: a ferramenta diz, nao escolhe em silencio")
+    a = [x for x in br.alertas_cofen(base8, "intermediario", {"minimo": 3, "intermediario": 2})
+         if "Parecer pede" in x or "empate" in x.lower()]
+    confere(any("empate" in x.lower() and "mínimo" in x and "intermediário" in x for x in a),
+            f"{a}")
+
+
+def _equipe_mista(n_enf: int, n_tec: int):
+    """Instancia de 12x36 com n_enf + n_tec, so para os alertas (sem solver)."""
+    return fe.montar(_entrada(M12_TURNOS, n_enf, n_tec, {"D": (1, 5), "N": (1, 5)}))
+
+
 def casos_diagnostico_p7() -> None:
     """P7, diagnostico da trava (DECISOES.md, "2026-10-05 — Diagnostico da trava: teto pela
     alternancia e ferias no par"). So contas, sem solver. Esperado registrado ANTES de rodar
@@ -660,7 +715,7 @@ CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeir
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
          "9b-sem-teto": caso_9b_sem_teto, "9c-tela": caso_9c_tela,
-         "7.4": casos_diagnostico_p7}
+         "7.4": casos_diagnostico_p7, "4b": casos_grau_alerta}
 
 
 def main() -> int:

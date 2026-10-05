@@ -357,3 +357,17 @@ quando há: "no par 03–04/11, com Karen de férias, faltam pessoas" é acioná
 
 **Proposta:** nas duas regras, descontar as férias do par e usar o teto pela alternância.
 Mudança de funcionalidade, com o congelamento em 10/10: decisão do Otávio.
+
+---
+
+## 2026-10-05 — P8: empate de carga entre grupos de pacientes, no alerta de proporção
+
+**Status: aguardando decisão.** Nada decidido. Aberta pela decisão "2026-10-05 — Grau da
+proporção: o grupo de pacientes de maior carga".
+
+O Parecer manda seguir o grupo de maior carga de trabalho, mas não diz o que fazer quando dois
+grupos têm a mesma carga (por exemplo, 3 de cuidados mínimos = 12 h e 2 intermediários = 12 h).
+Enquanto não houver decisão, a ferramenta diz no alerta que houve empate, nomeia os graus e
+conta com o maior percentual dos empatados, declarando isso. Saídas possíveis: maior
+percentual (conservador); maior número de pacientes ("prevalência", a palavra dos exercícios);
+ou exigir que o usuário escolha.

@@ -1472,6 +1472,57 @@ mais específico e verdadeiro; os outros quatro mantêm o motivo.
 **Fica igual:** `ferramenta.piso` (que decide se um quadro vai ao solver) continua com a conta
 antiga; trocá-la mudaria quais quadros o solver tenta. Não pedido.
 
+---
+
+## 2026-10-05 — Grau da proporção: o grupo de pacientes de maior carga
+
+**Status: vigente.** Decidido pelo Otávio em 05/10. **Corrige a leitura** da regra de graus
+misturados da entrada "2026-09-29 — Ajustes da Etapa 2" ("vale o maior percentual de
+enfermeiros entre os graus presentes").
+
+**O que o Parecer diz** (Parecer Normativo nº 1/2024/COFEN, seção 3, distribuição
+percentual; conferido no PDF oficial em 05/10,
+<https://www.cofen.gov.br/wp-content/uploads/2024/03/Parecer-Normativo-1-2024.pdf>):
+
+> "Quando houver diferentes tipos de cuidados em pacientes em um mesmo setor, a distribuição
+> de profissionais por categoria deverá seguir o tipo de cuidado, cujo grupo de pacientes
+> apresentar a maior carga de trabalho para assistência de Enfermagem."
+
+Os dois exercícios resolvidos com dependência plena (Anexo II, Saúde Mental e Psiquiatria)
+seguem o grupo de maior carga, e não o grau mais grave presente:
+
+- Exercício 1: 70 de dependência discreta, 25 intermediária, 15 plena, taxa de ocupação 75%
+  (52,5; 18,75; 11,25). "A carga de trabalho de maior prevalência é dependência discreta,
+  portanto: 33% Enfermeiros". Carga por grupo: 52,5 × 4 = 210 h; 18,75 × 6 = 112,5 h;
+  11,25 × 10 = 112,5 h.
+- Exercício 2: 12 discreta, 5 intermediária, 3 plena, ocupação 100%. Mesma frase, 33%. Carga:
+  48 h, 30 h, 30 h.
+
+O exercício de clínica médica do mesmo Anexo também fecha com essa leitura: mínimos 16 × 4 =
+64 h, intermediários 8 × 6 = 48 h, alta 5,6 × 10 = 56 h, semi 2,4 × 10 = 24 h. O Parecer usa
+"Prevalência Cuidados Mínimos, portanto, 33%".
+
+**Na ferramenta:**
+- Com pacientes por grau informados na tela, o alerta de proporção usa o grau do grupo de
+  maior carga total (pacientes × horas por paciente em 24 h) e diz qual grau usou e por quê
+  (`instancia_br.grau_do_alerta`).
+- O campo "Grau de dependência predominante" só vale sem pacientes informados.
+- **Empate** entre grupos: a regra não está decidida (P8). A ferramenta não escolhe em
+  silêncio: o alerta diz que houve empate e nomeia os graus. Conta, enquanto isso, com o maior
+  percentual dos empatados, e diz isso.
+
+**O que NÃO muda:** o modelo. `instancia_br.grau_de_maior_carga`, a leitura de 29/09, continua
+no caminho por pacientes de `instancia_br.construir`, que monta instâncias (e entra nos 544 XML
+da conferência). Trocá-la mudaria o modelo desse caminho. Fica como divergência declarada entre
+o caminho por pacientes (experimentos) e o alerta da tela.
+
+**Esperado registrado antes de rodar** (`src/testes_ferramenta.py`, caso 4b): na clínica da
+demonstração, 32 h, 84 h e 40 h → intermediário, 33%.
+
+---
+
+## Modelo de entrada
+
 ```
 ## AAAA-MM-DD — Título curto da decisão
 
