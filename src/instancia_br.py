@@ -685,7 +685,34 @@ def plural(n: int, singular: str, plural_: str) -> str:
     return f"{n} {singular if n == 1 else plural_}"
 
 
-def conferir_composicao(inst: Instancia, grau: str) -> list[str]:
+def grau_do_alerta(grau: str, pacientes: dict[str, float] | None) -> tuple[str, str]:
+    """Grau cujo percentual vale no alerta de proporcao, e por que (DECISOES.md, "2026-10-05
+    — Grau da proporcao: o grupo de pacientes de maior carga").
+
+    Com pacientes informados, o do GRUPO de maior carga total (pacientes x horas por paciente
+    em 24 h), como manda o Parecer (secao 3): o campo da tela nao vale. Sem pacientes, o grau
+    informado. Empate: regra nao decidida (PROPOSTAS.md, P8) — conta com o maior percentual dos
+    empatados e DIZ isso. Nao confundir com `grau_de_maior_carga` (leitura de 29/09, que monta
+    as instancias do caminho por pacientes e fica como esta).
+    """
+    cargas = {g: p * GRAUS[g].horas_paciente_24h for g, p in (pacientes or {}).items()
+              if p > 0}
+    if not cargas:
+        return grau, "grau informado na tela"
+    maior = max(cargas.values())
+    empatados = [g for g in GRAUS if g in cargas and abs(cargas[g] - maior) < 1e-9]
+    lista = ", ".join(f"{NOME_GRAU[g]} {cargas[g]:g} h" for g in GRAUS if g in cargas)
+    if len(empatados) == 1:
+        return empatados[0], (f"grupo de pacientes de maior carga por dia: "
+                              f"{NOME_GRAU[empatados[0]]} ({lista})")
+    escolhido = max(empatados, key=lambda g: GRAUS[g].pct_enfermeiros)
+    nomes = " e ".join(NOME_GRAU[g] for g in empatados)
+    return escolhido, (f"empate de carga entre {nomes} ({lista}); a regra para empate não está "
+                       f"decidida, e a conta usa o maior percentual, {NOME_GRAU[escolhido]}")
+
+
+def conferir_composicao(inst: Instancia, grau: str,
+                        pacientes: dict[str, float] | None = None) -> list[str]:
     """A equipe cumpre a proporcao de enfermeiros do Parecer no QUADRO?
 
     Com a equipe dada por quantidade, a proporcao deixa de sair por construcao e passa a ser
@@ -693,6 +720,7 @@ def conferir_composicao(inst: Instancia, grau: str) -> list[str]:
     O piso de 1 enfermeiro por turno esta na cobertura; se faltar enfermeiro para ele, quem
     responde e o solver, com inviabilidade.
     """
+    grau, porque = grau_do_alerta(grau, pacientes)
     g = GRAUS[grau]
     total = len(inst.profissionais)
     n_enf = sum(1 for p in inst.profissionais.values() if HABILIDADE_ENF in p.habilidades)
@@ -700,7 +728,7 @@ def conferir_composicao(inst: Instancia, grau: str) -> list[str]:
     if n_enf < exigido:
         return [f"{plural(n_enf, 'enfermeiro', 'enfermeiros')} em {total} profissionais; "
                 f"o Parecer pede ao menos {g.pct_enfermeiros:.0%} no grau "
-                f"{NOME_GRAU.get(grau, grau)}, isto é, {exigido}"]
+                f"{NOME_GRAU.get(grau, grau)}, isto é, {exigido} — {porque}"]
     return []
 
 
@@ -715,7 +743,7 @@ def alertas_cofen(inst: Instancia, grau: str | None = None,
     """
     alertas = []
     if grau is not None:
-        alertas += conferir_composicao(inst, grau)
+        alertas += conferir_composicao(inst, grau, pacientes)
     sem_enf = []
     for d in inst.dias:
         for tid, t in inst.turnos.items():

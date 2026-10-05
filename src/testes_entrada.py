@@ -228,7 +228,7 @@ def teste_turnos_configurados() -> None:
     confere(inst.contratos["0"].max_num_assignments.valor == 29,
             "MaxNumAssignments = 176 / 6 h (turno mais curto), nunca mais apertado que as horas")
     alertas = br.alertas_cofen(inst, "intermediario")
-    confere(len(alertas) == 1 and "1 turno(s) sem enfermeiro" in alertas[0],
+    confere(len(alertas) == 1 and "1 turno sem enfermeiro" in alertas[0],
             f"alertas COFEN: {alertas}")
     try:
         br.construir(turnos=TURNOS_MISTOS, demanda_turno={"M": (1, 3)}, n_enfermeiros=1,
