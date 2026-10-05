@@ -16,10 +16,10 @@ Como a demanda dos dias especiais foi lancada (declarado em 05/10):
   de dia util (2 + 6 de dia, 1 + 5 a noite).
 - 15/11 (Proclamacao da Republica, domingo): lancado como feriado, DEMANDA_FERIADO. Como cai
   no fim de semana, so muda o turno do dia: 1 + 4 no lugar de 1 + 5; a noite ja era 1 + 4.
-- 20/11 (sexta-feira, Dia Nacional de Zumbi e da Consciencia Negra): lancado como DIA UTIL
-  (2 + 6 / 1 + 5), sem demanda especifica. E feriado nacional desde 2024 (Lei 14.759/2023),
-  e o caso NAO o tratou como feriado, ao contrario dos outros dois. Fica declarado; mudar
-  alteraria os numeros da demonstracao.
+- 20/11 (sexta-feira, Dia Nacional de Zumbi e da Consciencia Negra, feriado nacional desde
+  2024, Lei 14.759/2023): lancado como feriado, como o 02/11, a partir de 05/10 (decisao do
+  Otavio). Ate o relatorio 05e entrou como dia util (2 + 6 / 1 + 5) — escolha do roteiro; a
+  ferramenta nao tem lista de feriados, feriado e demanda especifica por data.
 - O primeiro dia (02/11) nao tem continuidade com o periodo anterior: a ferramenta gera cada
   escala de 28 dias isolada, e o descanso na virada de outubro para novembro nao e conferido
   (PROPOSTAS.md, P3, trabalho futuro "continuidade entre periodos").
@@ -41,13 +41,17 @@ INICIO = date(2026, 11, 2)
 MODELO = next(k for k in fe.MODELOS if k.startswith("12"))
 GRAU = "intermediario"
 
+# Equipe da rodada 1 (decisao do Otavio, 05/10): 10 enfermeiros + 20 tecnicos = 30, a
+# proporcao 33/67 do Parecer no grau intermediario. Ate 05/10 (relatorios 05d e 05e) eram
+# 8 + 22: Icaro Mendes e Julia Freitas entraram; Cintia Zanetti e Diego Amaral (44 h) sairam.
 ENFERMEIROS = ["Ana Ribeiro", "Bruno Teixeira", "Carla Nunes", "Daniel Moura",
-               "Elisa Campos", "Fábio Lacerda", "Gabriela Pires", "Heitor Sales"]
+               "Elisa Campos", "Fábio Lacerda", "Gabriela Pires", "Heitor Sales",
+               "Ícaro Mendes", "Júlia Freitas"]
 TECNICOS = ["Ingrid Alves", "João Barros", "Karen Dias", "Leonardo Faria", "Marta Gomes",
             "Nelson Hora", "Olívia Jardim", "Paulo Lima", "Quitéria Melo", "Rafael Neves",
             "Sandra Oliveira", "Tiago Prado", "Úrsula Queiroz", "Vítor Rocha",
             "Wanda Siqueira", "Xavier Torres", "Yara Uchoa", "Zeca Valente",
-            "Alice Werneck", "Breno Xavier", "Cíntia Zanetti", "Diego Amaral"]
+            "Alice Werneck", "Breno Xavier"]
 
 # carga contratual: quem nao aparece fica com 44 h (padrao da tela)
 CARGAS_36 = ["Gabriela Pires", "Heitor Sales", "Wanda Siqueira", "Xavier Torres",
@@ -57,7 +61,7 @@ CARGAS_36 = ["Gabriela Pires", "Heitor Sales", "Wanda Siqueira", "Xavier Torres"
 DEMANDA = {"D": (2, 6), "N": (1, 5)}
 DEMANDA_FDS = {"D": (1, 5), "N": (1, 4)}
 # feriados: escala reduzida, igual a do domingo menos um tecnico de dia
-FERIADOS = [date(2026, 11, 2), date(2026, 11, 15)]
+FERIADOS = [date(2026, 11, 2), date(2026, 11, 15), date(2026, 11, 20)]
 DEMANDA_FERIADO = {"D": (1, 4), "N": (1, 4)}
 
 FERIAS = [("Carla Nunes", date(2026, 11, 16), date(2026, 11, 29)),

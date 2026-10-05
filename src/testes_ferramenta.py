@@ -651,10 +651,23 @@ def casos_diagnostico_p7() -> None:
     import caso_clinica_medica as caso
     feriados = (date(2026, 11, 2), date(2026, 11, 15))
 
+    # A equipe e os feriados de 05/10 (8 enfermeiros; 22 tecnicos na lista; feriados 02 e
+    # 15/11), congelados aqui: o roteiro mudou depois (10 + 20, 20/11 feriado) e o esperado
+    # deste teste foi registrado sobre a equipe antiga.
+    enf8 = caso.ENFERMEIROS[:8]
+    tec22 = caso.TECNICOS + [n for n in ("Cíntia Zanetti", "Diego Amaral")
+                             if n not in caso.TECNICOS]
+
     def entrada(n_tec):
-        e = caso.entrada(n_tec)
-        return dataclasses.replace(e, demanda_data={k: v for k, v in e.demanda_data.items()
-                                                    if k[0] in feriados})
+        e = caso.entrada(min(n_tec, len(caso.TECNICOS)))
+        tecnicos = tec22[:n_tec]
+        return dataclasses.replace(
+            e, n_enfermeiros=8, nomes_enfermeiros=enf8, n_tecnicos=n_tec,
+            nomes_tecnicos=tecnicos,
+            cargas={n: c for n, c in e.cargas.items() if n in enf8 + tecnicos},
+            indisponibilidades=[f for f in caso.FERIAS if f[0] in enf8 + tecnicos],
+            pedidos=[x for x in caso.PEDIDOS if x[0] in enf8 + tecnicos],
+            demanda_data={k: v for k, v in e.demanda_data.items() if k[0] in feriados})
 
     print("7.4a. P7: clinica medica, 8 + 20")
     inst = fe.montar(entrada(20))

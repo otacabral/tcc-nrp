@@ -7,7 +7,7 @@ conta e feita aqui, a partir dos dados de `caso_clinica_medica.py`, para nao con
 ferramenta com a propria premissa (CLAUDE.md). Os alertas do COFEN sao a definicao do
 proprio Parecer, e por isso saem de `instancia_br.alertas_cofen`.
 
-Para cada numero de tecnicos (os primeiros da lista do caso), de 22 para baixo:
+Para cada numero de tecnicos (os primeiros da lista do caso), do quadro do caso para baixo:
 
 1. Horas do posto de tecnico (H_tec) contra a soma dos tetos dos tecnicos (C_tec). O teto de
    cada um e o menor entre a carga contratual nos dias disponiveis e a alternancia do 12x36
@@ -111,7 +111,7 @@ def main() -> int:
           "| folga dos enf. | pior par de dias (demanda / disponíveis) | alertas COFEN "
           "| trava pela conta |")
     print("|---|---|---|---|---|---|---|---|---|")
-    for n in range(22, 16, -1):
+    for n in range(len(caso.TECNICOS), 11, -1):
         c = conta(n)
         _, d0, dem, livres = c["par"]
         print(f"| {n} | {c['total']} | {c['h_tec']:.0f} h | {c['c_tec']:.0f} h | "
