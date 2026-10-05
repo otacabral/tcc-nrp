@@ -240,9 +240,29 @@ def foto(pg, caminho):
     pg.wait_for_timeout(500)
 
 
+def pico_mb(filtro: str) -> int:
+    """Soma do pico de memoria (PeakWorkingSetSize) dos processos do Windows que casam com o
+    filtro WQL, em MB. Lido antes de fechar o navegador."""
+    import subprocess
+    cmd = ("(Get-CimInstance Win32_Process -Filter \"" + filtro + "\" | "
+           "Measure-Object PeakWorkingSetSize -Sum).Sum")
+    saida = subprocess.run(["powershell", "-NoProfile", "-Command", cmd],
+                           capture_output=True, text=True).stdout.strip()
+    return round(float(saida or 0) / 1024)          # PeakWorkingSetSize vem em KB
+
+
+def picos() -> str:
+    import os
+    servidor = pico_mb("Name='python.exe' AND CommandLine LIKE '%streamlit run%8599%'")
+    chrome = pico_mb("Name='chrome.exe' AND CommandLine LIKE '%remote-debugging-pipe%'")
+    roteiro = pico_mb(f"ProcessId={os.getpid()}")
+    return (f"PICO DE MEMORIA (MB): servidor Streamlit + solver {servidor}; Chrome do "
+            f"Playwright (soma dos processos) {chrome}; este roteiro {roteiro}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("rodada", choices=["rodada1", "rodada2"])
+    ap.add_argument("rodada", help="nome da rodada, prefixo dos arquivos (rodada1, ...)")
     ap.add_argument("--tec", type=int)
     ap.add_argument("--so-preencher", action="store_true",
                     help="preenche e fotografa a entrada, sem gerar (para conferir)")
@@ -270,6 +290,7 @@ def main() -> int:
                 botao.first.click()
             dl.value.save_as(str(AQUI / f"{a.rodada}_escala.xlsx"))
         print(pg.locator("[data-testid='stMain']").inner_text())
+        print(picos())
         b.close()
     return 0
 

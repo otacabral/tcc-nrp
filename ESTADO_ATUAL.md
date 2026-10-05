@@ -130,6 +130,12 @@ MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativ
    *05/10:* corrigidos ("isto é", grau com acento, "Falta 1", plurais). Os testes da tela que
    leem esses textos (1–2, 4, 7.3, 8) ainda não rodaram depois da correção, por falta de
    memória; os textos foram conferidos sem solver.
+   *05/10, noite:* **testes rodados, um por processo, todos OK** (1–2, 4, 7.3, 8a–8d). Antes,
+   o caso 4 rodou com o esperado antigo ("isto e, 7") e FALHOU — o teste lê o texto. Os
+   esperados de texto estavam atualizados desde o commit `9d81c5f`, antes de rodar. Os
+   números saíram idênticos aos de 03/10: tentativas e menores quadros viáveis (40, 16, 40,
+   24, 15, 5), horas do diagnóstico (2.688/2.464 h, 672/528 h), gap do 8b 1,03% com 20/20
+   pedidos. Concluído.
 
 *Atualização de 05/10 (noite):* **P1 concluída** (`PROPOSTAS.md`); limite da etapa 2 na tela =
 180 s, e a etapa 2 mostra a diferença de carga entre colegas no lugar do gap (`DECISOES.md`,
