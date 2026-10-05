@@ -106,7 +106,7 @@ class Resultado:
     escala: tuple = ()
     conformidade: dict | None = None
     indicadores: dict = field(default_factory=dict)
-    diagnostico: tuple[str, str] | None = None   # (motivo, explicacao), sem escala legal
+    diagnostico: tuple | None = None   # (motivo, explicacao, todos os motivos), sem escala legal
     chs: float | None = None               # CHS do QP: media das cargas contratuais
 
     @property
@@ -238,11 +238,6 @@ def piso(inst) -> int:
         capacidade = len(inst.profissionais) + math.ceil((horas - cobrem) / _teto_padrao()
                                                          - 1e-9)
     return max(capacidade, ea.piso_de_alternancia(inst, limite_efetivo(inst)))
-
-
-def _faltam(k: int, singular: str, plural_: str) -> str:
-    """"falta pelo menos 1 enfermeiro" / "faltam pelo menos 2 enfermeiros"."""
-    return f"{'falta' if k == 1 else 'faltam'} pelo menos {br.plural(k, singular, plural_)}"
 
 
 # --- veredito -----------------------------------------------------------------------------
@@ -486,73 +481,131 @@ TITULO = {HORAS: "Horas", ALTERNANCIA: "Alternância do plantão de 12 h",
           CATEGORIA: "Categoria", DIA: "Dia específico", COMBINACAO: "Combinação de regras"}
 
 
-def diagnosticar(inst) -> tuple[str, str]:
-    """Por que o quadro informado nao tem escala legal: o diagnostico MAIS SIMPLES que se
-    aplica, nesta ordem (especificacao, Etapa 7). Devolve (motivo, explicacao).
+def teto_horas(inst, n: str, L: int | None = None) -> float:
+    """Teto de horas de uma pessoa no horizonte, para o DIAGNOSTICO (DECISOES.md, "2026-10-05
+    — Diagnostico da trava"): o menor entre a carga contratual nos dias disponiveis e, quando
+    ninguem pode trabalhar dois dias seguidos (`limite_efetivo` = 1, o 12x36), o turno mais
+    longo x a soma, por bloco de dias disponiveis seguidos, de ceil(tamanho / 2). E limite
+    SUPERIOR: num bloco de b dias sem dois seguidos cabem no maximo ceil(b / 2) plantoes."""
+    contrato = inst.horas_devidas(n)
+    if (limite_efetivo(inst) if L is None else L) != 1:
+        return contrato
+    dur = max(t.duracao_h for t in inst.turnos.values())
+    fora = {d for m, d in inst.indisponiveis if m == n}
+    plantoes = bloco = 0
+    for d in list(inst.dias) + [None]:
+        if d is not None and d not in fora:
+            bloco += 1
+        else:
+            plantoes += math.ceil(bloco / 2)
+            bloco = 0
+    return min(contrato, dur * plantoes)
+
+
+def _h(x: float) -> str:
+    return f"{x:.0f} h"
+
+
+def motivos_da_trava(inst) -> list[tuple[str, str]]:
+    """Todas as contas simples que, cada uma sozinha, provam que o quadro nao tem escala legal
+    — condicoes NECESSARIAS, nunca suficientes. Lista vazia = nenhuma conta simples explica.
+    Ordem: horas (enfermeiros, depois tecnicos com a folga dos enfermeiros), par de dias
+    seguidos (todos, ou so enfermeiros), dia especifico."""
+    enf = {p.id for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades}
+    tec = set(inst.profissionais) - enf
+    E, T = len(enf), len(tec)
+    L = limite_efetivo(inst)
+    teto = {n: teto_horas(inst, n, L) for n in inst.profissionais}
+    dur = {s: t.duracao_h for s, t in inst.turnos.items()}
+    posto_enf = {s for s, t in inst.turnos.items() if br.HABILIDADE_ENF in t.habilidades}
+    padrao = _teto_padrao() if L != 1 else min(
+        _teto_padrao(), max(dur.values()) * math.ceil(len(inst.dias) / 2))
+    como = ("a carga contratual nos dias disponíveis" if L != 1 else
+            "a carga contratual nos dias disponíveis e a alternância do plantão de 12 h "
+            "(ninguém trabalha dois dias seguidos)")
+    motivos = []
+
+    h_enf = sum(q * dur[s] for (_, s), q in inst.demanda.items() if s in posto_enf)
+    h_tec = sum(q * dur[s] for (_, s), q in inst.demanda.items() if s not in posto_enf)
+    c_enf = sum(teto[n] for n in enf)
+    c_tec = sum(teto[n] for n in tec)
+    if h_enf > c_enf + 1e-9:
+        k = math.ceil((h_enf - c_enf) / padrao - 1e-9)
+        motivos.append((CATEGORIA, (
+            f"Os turnos que pedem enfermeiro somam {_h(h_enf)}, e só enfermeiro os cobre. Pelo "
+            f"teto de cada um — {como} —, {br.plural(E, 'enfermeiro trabalha', 'enfermeiros trabalham')} "
+            f"no máximo {_h(c_enf)}. Pela conta, "
+            f"{_faltam(k, 'enfermeiro', 'enfermeiros')} de {br.CARGA_CONTRATUAL_PADRAO:g} h.")))
+    elif h_tec - c_tec > c_enf - h_enf + 1e-9:
+        falta, folga = h_tec - c_tec, c_enf - h_enf
+        k = math.ceil((falta - folga) / padrao - 1e-9)
+        motivos.append((HORAS, (
+            f"Os turnos de técnico somam {_h(h_tec)}. Pelo teto de cada um — {como} —, "
+            f"{br.plural(T, 'técnico trabalha', 'técnicos trabalham')} no máximo {_h(c_tec)}: "
+            f"faltam {_h(falta)}, que só enfermeiro pode cobrir. Depois do posto de enfermeiro, "
+            f"os enfermeiros têm {_h(folga)} de folga. Pela conta, "
+            f"{_faltam(k, 'profissional', 'profissionais')} de "
+            f"{br.CARGA_CONTRATUAL_PADRAO:g} h.")))
+
+    fora = {n: {d for m, d in inst.indisponiveis if m == n} for n in inst.profissionais}
+    por_dia = {d: sum(inst.demanda_de(d, s) for s in inst.turnos) for d in inst.dias}
+    enf_dia = {d: sum(inst.demanda_de(d, s) for s in posto_enf) for d in inst.dias}
+    if L == 1:
+        def pior(grupo, demanda):
+            def livres(d0, d1):
+                return sum(1 for n in grupo if d0 not in fora[n] or d1 not in fora[n])
+            pares = [(demanda[d0] + demanda[d1] - livres(d0, d1), d0, d1,
+                      demanda[d0] + demanda[d1], livres(d0, d1))
+                     for d0, d1 in zip(inst.dias, inst.dias[1:])]
+            return max(pares, key=lambda x: x[0])
+        excesso, d0, d1, soma, livres = pior(inst.profissionais, por_dia)
+        if excesso > 0:
+            motivos.append((ALTERNANCIA, (
+                f"Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do "
+                f"plantão é de 36 h). {rotulo_dia(d0)} e {rotulo_dia(d1)} somam {soma} "
+                f"plantões, que precisam de {soma} pessoas diferentes; descontadas férias e "
+                f"licenças, {br.plural(livres, 'pessoa está disponível', 'pessoas estão disponíveis')} "
+                f"em pelo menos um dos dois dias. Pela conta, "
+                f"{_faltam(excesso, 'pessoa', 'pessoas')}.")))
+        else:
+            excesso, d0, d1, soma, livres = pior(enf, enf_dia)
+            if excesso > 0:
+                motivos.append((CATEGORIA, (
+                    f"{rotulo_dia(d0)} e {rotulo_dia(d1)} pedem {soma} plantões de enfermeiro, "
+                    f"que precisam de {soma} enfermeiros diferentes; descontadas férias e "
+                    f"licenças, {br.plural(livres, 'enfermeiro está disponível', 'enfermeiros estão disponíveis')} "
+                    f"em pelo menos um dos dois dias. Pela conta, "
+                    f"{_faltam(excesso, 'enfermeiro', 'enfermeiros')}.")))
+
+    N = len(inst.profissionais)
+    for d in inst.dias:
+        de_fora = {n for n in inst.profissionais if d in fora[n]}
+        livres, livres_enf = N - len(de_fora), E - len(de_fora & enf)
+        if livres < por_dia[d] or livres_enf < enf_dia[d]:
+            motivos.append((DIA, (
+                f"Em {rotulo_dia(d)}, descontadas férias e licenças, sobram "
+                f"{br.plural(livres, 'pessoa', 'pessoas')} "
+                f"({br.plural(livres_enf, 'enfermeiro', 'enfermeiros')}) para "
+                f"{br.plural(por_dia[d], 'posto', 'postos')} ({enf_dia[d]} de enfermeiro).")))
+            break
+    return motivos
+
+
+def diagnosticar(inst) -> tuple[str, str, list[str]]:
+    """Por que o quadro informado nao tem escala legal (especificacao, Etapa 7; P7, 05/10).
+    Devolve (motivo principal, explicacao, todos os motivos): a explicacao junta, um paragrafo
+    por motivo, todas as contas simples que disparam (`motivos_da_trava`).
 
     So contas, sem solver. Chamado quando o quadro informado ja foi provado inviavel (pelo
     solver ou pelo piso); se nenhuma conta simples explica, e a combinacao de regras.
     """
-    enf = {p.id for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades}
-    N, E = len(inst.profissionais), len(enf)
-    cobrem = sum(inst.horas_devidas(n) for n in inst.profissionais)
-    cobrem_enf = sum(inst.horas_devidas(n) for n in enf)
-    teto = _teto_padrao()
-    dur = {s: t.duracao_h for s, t in inst.turnos.items()}
-    posto_enf = {s for s, t in inst.turnos.items() if br.HABILIDADE_ENF in t.habilidades}
-    por_dia = {d: sum(inst.demanda_de(d, s) for s in inst.turnos) for d in inst.dias}
-    enf_dia = {d: sum(inst.demanda_de(d, s) for s in posto_enf) for d in inst.dias}
-
-    horas = sum(q * dur[s] for (_, s), q in inst.demanda.items())
-    if horas > cobrem + 1e-9:
-        k = math.ceil((horas - cobrem) / teto - 1e-9)
-        return HORAS, (f"A demanda do período soma {horas:g} h. Pelas cargas contratuais, "
-                       f"descontadas férias e licenças, as {N} pessoas trabalham no máximo "
-                       f"{cobrem:.0f} h. Pela conta, {_faltam(k, 'profissional', 'profissionais')} "
-                       f"de {br.CARGA_CONTRATUAL_PADRAO:g} h.")
-
-    L = limite_efetivo(inst)
-    if L == 1:
-        d, soma = max(((inst.dias[i], por_dia[inst.dias[i]] + por_dia[inst.dias[i + 1]])
-                       for i in range(len(inst.dias) - 1)), key=lambda x: x[1])
-        if soma > N:
-            return ALTERNANCIA, (
-                f"Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do "
-                f"plantão é de 36 h). {rotulo_dia(d)} e {rotulo_dia(d + timedelta(days=1))} "
-                f"somam {soma} plantões, que precisam de {soma} pessoas diferentes; a equipe "
-                f"tem {N}. Pela conta, {_faltam(soma - N, 'pessoa', 'pessoas')}.")
-
-    horas_enf = sum(q * dur[s] for (_, s), q in inst.demanda.items() if s in posto_enf)
-    if horas_enf > cobrem_enf + 1e-9:
-        k = math.ceil((horas_enf - cobrem_enf) / teto - 1e-9)
-        return CATEGORIA, (f"Os turnos que pedem enfermeiro somam {horas_enf:g} h, e só "
-                           f"enfermeiro os cobre. Pelas cargas contratuais, {E} enfermeiros "
-                           f"trabalham no máximo {cobrem_enf:.0f} h. Pela conta, "
-                           f"{_faltam(k, 'enfermeiro', 'enfermeiros')} de "
-                           f"{br.CARGA_CONTRATUAL_PADRAO:g} h.")
-    if L == 1:
-        d, soma = max(((inst.dias[i], enf_dia[inst.dias[i]] + enf_dia[inst.dias[i + 1]])
-                       for i in range(len(inst.dias) - 1)), key=lambda x: x[1])
-        if soma > E:
-            return CATEGORIA, (f"{rotulo_dia(d)} e {rotulo_dia(d + timedelta(days=1))} pedem "
-                               f"{soma} plantões de enfermeiro, que precisam de {soma} "
-                               f"enfermeiros diferentes; há {E}. Pela conta, "
-                               f"{_faltam(soma - E, 'enfermeiro', 'enfermeiros')}.")
-
-    for d in inst.dias:
-        fora = {n for n, dd in inst.indisponiveis if dd == d}
-        livres, livres_enf = N - len(fora), E - len(fora & enf)
-        if livres < por_dia[d] or livres_enf < enf_dia[d]:
-            return DIA, (f"Em {rotulo_dia(d)}, descontadas férias e licenças, sobram "
-                         f"{br.plural(livres, 'pessoa', 'pessoas')} "
-                         f"({br.plural(livres_enf, 'enfermeiro', 'enfermeiros')}) para "
-                         f"{br.plural(por_dia[d], 'posto', 'postos')} "
-                         f"({enf_dia[d]} de enfermeiro).")
-
+    motivos = motivos_da_trava(inst)
+    if motivos:
+        return motivos[0][0], "\n\n".join(t for _, t in motivos), [m for m, _ in motivos]
     return COMBINACAO, ("Nenhuma conta simples explica: horas, alternância, categoria e cada "
                         "dia fecham separados. O solver provou que as regras juntas — "
                         "descanso entre turnos, dias seguidos, férias e licenças — não "
-                        "admitem escala com este quadro.")
+                        "admitem escala com este quadro."), [COMBINACAO]
 
 
 def _faltam(k: int, singular: str, plural_: str) -> str:

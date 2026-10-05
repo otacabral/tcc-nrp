@@ -223,10 +223,10 @@ if "resultado" in st.session_state:
     else:
         st.error(r.frase())
     if r.diagnostico:
-        motivo, texto = r.diagnostico
+        motivo, texto, *todos = r.diagnostico
+        titulo = " · ".join(fe.TITULO[m] for m in (todos[0] if todos else [motivo]))
         with st.container(border=True, key="diagnostico"):
-            st.subheader(f"Por que não há escala legal com {r.quadro_informado}: "
-                         f"{fe.TITULO[motivo]}")
+            st.subheader(f"Por que não há escala legal com {r.quadro_informado}: {titulo}")
             st.write(texto)
             st.write(r.frase())
     for alerta in r.alertas:
@@ -236,7 +236,8 @@ if "resultado" in st.session_state:
         ind, c = r.indicadores, r.conformidade
         m = st.columns(5)
         m[0].metric("Quadro da escala", r.menor_viavel)
-        m[1].metric("Turnos de enfermeiro em posto de técnico", ind["enf_em_posto_tec"])
+        m[1].metric("Enfermeiro em posto de técnico", ind["enf_em_posto_tec"],
+                    help="Turnos em que um enfermeiro cobriu vaga de técnico.")
         m[2].metric("Pedidos de folga atendidos",
                     f"{ind['pedidos_atendidos']} de {ind['pedidos_total']}")
         m[3].metric("Contrato cumprido (mín.–máx.)",
@@ -267,7 +268,10 @@ if "resultado" in st.session_state:
                        f"mesmo custo. Diferença máxima de carga entre colegas — {dif}.")
         elif equilibrio:
             st.caption(f"Equilíbrio de carga: {equilibrio}.")
-        if ind["pedidos_total"]:
+        if ind["pedidos_total"] and ind["pedidos_atendidos"] == ind["pedidos_total"]:
+            st.caption(f"Todos os {ind['pedidos_total']} pedidos de folga foram atendidos."
+                       if ind["pedidos_total"] > 1 else "O pedido de folga foi atendido.")
+        elif ind["pedidos_total"]:
             st.caption(f"Pedidos de folga negados: {ind['pedidos_total'] - ind['pedidos_atendidos']}"
                        f", em {br.plural(ind['com_pedido_negado'], 'profissional', 'profissionais')}; no máximo "
                        f"{ind['negados_max']} por pessoa.")
