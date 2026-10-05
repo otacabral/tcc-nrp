@@ -381,6 +381,23 @@ def casos_carga() -> None:
     media x horas devidas. Tec 1: 80 - 77,9 = +2,1; em 160 h: +4,2; em 152 h: -3,8. Diferenca
     4,2 + 3,8 = 8 h = 1 plantao de 8 h -> "1 plantão (8 h)". Enfermeiros, todos em 112 h:
     "nenhuma (0 h)".
+
+    9c SEM EXIGIR PROVA (decisao do Otavio, 05/10). Esperado registrado ANTES de rodar, 05/10.
+    O 9c deixa de exigir que a etapa 2 prove o otimo dentro do limite de 180 s: a prova
+    dentro do limite depende da carga da maquina — 146,9 s rodando sozinho, e falhou em 05/10
+    com outro processo rodando junto (uma instalacao de pacote). Passa a conferir so que a
+    amplitude atingiu o piso da conta ja registrado no commit 08603c6: enfermeiros 0,
+    tecnicos 1/22 = 4,55 pp, criterio 4,55 pp; e a tela da etapa 2, "nenhuma (0 h)" e
+    "1 plantão (8 h)". Se o tempo nao bastar para chegar ao piso, o teste falha — e isso e
+    informacao, nao ruido.
+
+    9c-TELA (acrescentado em 05/10, esperado registrado ANTES de rodar). Se a etapa 2 nao
+    provar, a tela e a planilha NAO podem dizer "provado". Para o cenario existir com
+    certeza, o limite da etapa 2 e encurtado para 20 s (`fe.TEMPO_ETAPA2`), e o caso 9c entra
+    pela tela (as ferias por fora, como os pedidos do 8b). Esperado: a etapa 2 termina sem
+    prova; nenhum texto da tela (success, warning, error, info, caption, markdown, metricas,
+    subtitulos) nem celula da planilha contem "provad"; a tela mostra a linha "Diferença
+    máxima de carga entre colegas".
     """
     print("9a. equipe mista 30/44 h: 8 h, 6 + 12")
     demanda = {"M": (1, 3), "T": (1, 3), "N": (1, 2)}
@@ -444,9 +461,11 @@ def casos_carga() -> None:
                 f"9c: amplitude entre enfermeiros {cat[fe.ENF]['amplitude']:.2%} (esperado 0)")
         confere(abs(cat[fe.TEC]["amplitude"] - 1 / 22) <= 1e-6,
                 f"9c: amplitude entre tecnicos {cat[fe.TEC]['amplitude']:.2%} (esperado 4,55%)")
-        confere(abs(ind["amplitude"] - 1 / 22) <= 1e-6 and ind["provado_etapa2"],
-                f"9c: criterio da etapa 2 {ind['amplitude']:.2%} (esperado 4,55%, provado: "
-                f"{ind['provado_etapa2']})")
+        # Decisao de 05/10: NAO se exige prova dentro do limite (ver docstring de
+        # `casos_carga`, "9c SEM EXIGIR PROVA"); confere-se o piso da conta.
+        confere(abs(ind["amplitude"] - 1 / 22) <= 1e-6,
+                f"9c: criterio da etapa 2 {ind['amplitude']:.2%} (piso da conta 4,55%; "
+                f"provado no limite: {ind['provado_etapa2']}, informativo)")
         confere(abs(cat[fe.ENF]["nao_utilizadas"] - 384) <= 1e-6
                 and abs(cat[fe.TEC]["nao_utilizadas"] - 232) <= 1e-6,
                 "9c: horas nao utilizadas 384 h (enf) e 232 h (tec)")
@@ -458,6 +477,36 @@ def casos_carga() -> None:
                 f"9d: amplitude {ind['amplitude_etapa1']:.1%} na etapa 1 -> "
                 f"{ind['amplitude']:.1%} na etapa 2 ({'provada' if ind['provado_etapa2'] else 'SEM prova'})"
                 f"; etapa 2 em {ind['tempo_etapa2']:.1f} s")
+
+
+def caso_9c_tela() -> None:
+    """Esperado no docstring de `casos_carga` (9c-TELA), registrado antes de rodar."""
+    import dataclasses
+    print("9c-tela. 9c pela tela, etapa 2 com limite de 20 s: nada pode dizer 'provado'")
+    ferias = [("Téc 1", dia(0), dia(13))]
+    original_tempo2, original_verificar = fe.TEMPO_ETAPA2, fe.verificar
+    try:
+        fe.TEMPO_ETAPA2 = 20
+        fe.verificar = lambda e, **kw: original_verificar(
+            dataclasses.replace(e, indisponibilidades=ferias), **kw)
+        at = pela_tela(M8, 6, 12, {"M": (1, 3), "T": (1, 3), "N": (1, 2)})
+    finally:
+        fe.TEMPO_ETAPA2, fe.verificar = original_tempo2, original_verificar
+    confere(not at.exception, f"sem excecao na tela {[x.value for x in at.exception]}")
+    r, e = at.session_state["resultado"]
+    ind = r.indicadores
+    confere(ind.get("etapa2") == "ok" and not ind.get("provado_etapa2"),
+            f"cenario do teste: etapa 2 {ind.get('etapa2')}, provada: "
+            f"{ind.get('provado_etapa2')} (esperado: ok, sem prova)")
+    tela = _todos_textos(at) + [str(m.label) for m in at.metric] + \
+        [str(m.value) for m in at.metric] + [s.value for s in at.get("subheader")]
+    wb = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))
+    planilha_txt = [str(c.value) for ws in wb.worksheets for linha in ws.iter_rows()
+                    for c in linha if c.value is not None]
+    com_prova = [t for t in tela + planilha_txt if "provad" in t.lower()]
+    confere(not com_prova, f"nenhum 'provado' na tela nem na planilha: {com_prova[:3]}")
+    confere(any("Diferença máxima de carga entre colegas" in t for t in textos(at, "caption")),
+            "a tela mostra a diferenca maxima de carga entre colegas")
 
 
 def caso_9b_sem_teto(tempo: int = 600) -> None:
@@ -528,7 +577,7 @@ def casos_diagnostico() -> None:
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
-         "9b-sem-teto": caso_9b_sem_teto}
+         "9b-sem-teto": caso_9b_sem_teto, "9c-tela": caso_9c_tela}
 
 
 def main() -> int:

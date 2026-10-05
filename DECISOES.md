@@ -1402,6 +1402,13 @@ Máquina: i5-10210U, 12 GB, Windows 11, HiGHS 1.15.1 via appsi.
   horas (o mesmo cuidado da P4). Em plantões só quando todos os turnos têm a mesma duração;
   senão, só horas. `ferramenta.por_categoria`, `ferramenta.fmt_diferenca`. No 9c, esperado
   registrado antes: técnicos "1 plantão (8 h)", enfermeiros "nenhuma (0 h)".
+- **Adendo de 05/10 ao item i — o teste 9c não exige prova (decisão do Otávio).** A prova de
+  ótimo da etapa 2 dentro dos 180 s depende da carga da máquina: 146,9 s rodando sozinho;
+  falhou em 05/10 com outro processo rodando junto. O 9c passa a conferir que a amplitude
+  atingiu o piso da conta registrado no commit `08603c6` (enfermeiros 0, técnicos 4,55 pp;
+  tela "nenhuma (0 h)" e "1 plantão (8 h)"), sem exigir prova. Teste novo, 9c-tela: com a
+  etapa 2 encurtada para 20 s, para que termine sem prova, nem a tela nem a planilha podem
+  dizer "provado".
 
 ---
 
