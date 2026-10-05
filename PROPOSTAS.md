@@ -11,7 +11,9 @@ escopo anterior, com as treze propostas P1–P13, está em
 
 ## 2026-09-28 — P1: a curva de escalabilidade mede um problema mais fácil do que o da ferramenta
 
-**Status: rodada pelo caminho da ferramenta em 03/10; resultado registrado em 05/10** (ver
+**Status: CONCLUÍDA em 05/10** (decisão do Otávio). Curva principal de 03/10 (caso mais
+apertado) e rodada complementar com folga de 05/10, ambas abaixo. Registro anterior:
+**rodada pelo caminho da ferramenta em 03/10; resultado registrado em 05/10** (ver
 "Rodada de 03/10", no fim desta entrada: a prova fecha até N = 80; a etapa 2 é degenerada
 em todos os tamanhos). Registro anterior: **pendente — será refeita com o modelo final** (decisão do Otávio, 02/10: o modelo
 vai mudar para carga por contrato e equilíbrio por fração do contrato). *Atualização de
@@ -176,6 +178,16 @@ solver.
 **Para o limite da etapa 2 na tela (decisão do Otávio):** a melhor escala veio entre 18 s e 81 s;
 o resto dos 900 s não melhorou nada.
 
+**Leitura decidida pelo Otávio (05/10).** Com folga, a etapa 2 acha a melhor escala cedo — 18 s
+com 44 profissionais, 46 s com 66, 81 s com 88 — e o restante do tempo vai na prova, que não
+fecha em 900 s. A amplitude obtida coincide com o piso aritmético (2 × 6,82 = 13,64 pp); a conta
+foi feita APÓS o resultado e é explicação, não previsão. Tempo é limite operacional desta
+máquina. **Consequência (05/10):** limite da etapa 2 na tela = max(120 s; 1,5 × 81,1 s) =
+121,7 s, arredondado para cima ao minuto = **180 s** (`ferramenta.TEMPO_ETAPA2`); a etapa 1
+continua com 600 s. A etapa 2 deixa de mostrar gap e mostra a diferença máxima de carga entre
+colegas dentro de cada categoria, em plantões e horas (`DECISOES.md`, "Carga por contrato",
+item i).
+
 **Proposta original (05/10, agora decidida acima):** se o texto precisar dizer algo sobre
 o custo da etapa 2, rodar a etapa 2 numa instância com folga — por exemplo, a mesma demanda com
 equipe N + k — e declarar que a curva de 03/10 mede a etapa 1. Sem isso, a P1 responde à
@@ -215,6 +227,9 @@ A P1 está desbloqueada: objetivo decidido.
 - **Continuidade entre períodos** (acrescentado em 29/09): receber os últimos dias do
   período anterior como entrada, para conferir interjornada e descanso na virada entre uma
   escala e a seguinte. Ver `DECISOES.md`, "2026-09-29 — Ajustes da Etapa 2".
+- **Parar a etapa 2 ao atingir o piso aritmético da amplitude** (acrescentado em 05/10, P1):
+  simples só com contrato e turno homogêneos e sem indisponibilidade. Na rodada com folga, a
+  etapa 2 chegou ao piso entre 18 e 81 s e gastou o resto do tempo tentando provar.
 
 ---
 

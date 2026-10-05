@@ -374,6 +374,13 @@ def casos_carga() -> None:
     RESULTADO DE 03/10, criterio por categoria (anotado depois de rodar): 9c acertou em tudo
     (enfermeiros 0, tecnicos 4,55 pp provado, Tec 1 em 90,9%, 384 h e 232 h nao utilizadas,
     +24,9 pp entre categorias); 9d 36,4 -> 4,5 pp; 9b-sem-teto deu 14, provado.
+
+    EXIBICAO DA ETAPA 2 (decisao de 05/10: diferenca maxima de carga entre colegas, em
+    plantoes e horas, no lugar do gap). Esperado registrado ANTES de rodar, 05/10, pela escala
+    unica de 4,55 pp do 9c: fracao media dos tecnicos 1.792 / 2.024; desvio de cada um = horas -
+    media x horas devidas. Tec 1: 80 - 77,9 = +2,1; em 160 h: +4,2; em 152 h: -3,8. Diferenca
+    4,2 + 3,8 = 8 h = 1 plantao de 8 h -> "1 plantão (8 h)". Enfermeiros, todos em 112 h:
+    "nenhuma (0 h)".
     """
     print("9a. equipe mista 30/44 h: 8 h, 6 + 12")
     demanda = {"M": (1, 3), "T": (1, 3), "N": (1, 2)}
@@ -443,6 +450,10 @@ def casos_carga() -> None:
         confere(abs(cat[fe.ENF]["nao_utilizadas"] - 384) <= 1e-6
                 and abs(cat[fe.TEC]["nao_utilizadas"] - 232) <= 1e-6,
                 "9c: horas nao utilizadas 384 h (enf) e 232 h (tec)")
+        confere(fe.fmt_diferenca(cat[fe.TEC]) == "1 plantão (8 h)"
+                and fe.fmt_diferenca(cat[fe.ENF]) == "nenhuma (0 h)",
+                f"9c: diferenca entre colegas: tecnicos {fe.fmt_diferenca(cat[fe.TEC])!r}, "
+                f"enfermeiros {fe.fmt_diferenca(cat[fe.ENF])!r}")
         confere(ind["amplitude"] < ind["amplitude_etapa1"] - 1e-9,
                 f"9d: amplitude {ind['amplitude_etapa1']:.1%} na etapa 1 -> "
                 f"{ind['amplitude']:.1%} na etapa 2 ({'provada' if ind['provado_etapa2'] else 'SEM prova'})"

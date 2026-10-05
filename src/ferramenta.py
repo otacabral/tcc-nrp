@@ -48,7 +48,12 @@ import modelo  # noqa: E402
 from conferencia_descanso_escala import cumpre, fmt_semanal, medir  # noqa: E402
 
 MARGEM = 12          # quantos quadros acima do informado tentar antes de desistir
-TEMPO = 600          # limite por resolucao, em segundos
+TEMPO = 600          # limite da etapa 1, em segundos (decidido em 05/10)
+# Limite da etapa 2 (equilibrio), decisao do Otavio em 05/10: max(120 s; 1,5 x o tempo em que
+# o caso de 88 profissionais da rodada com folga chegou a 90% da reducao final, 81,1 s),
+# arredondado para cima ao minuto: max(120; 121,7) -> 180 s. Ver PROPOSTAS.md, P1. A etapa 2
+# usa o menor entre este e o limite da etapa 1 (os testes encurtam `TEMPO`).
+TEMPO_ETAPA2 = 180
 
 ADMITE, FALTAM, NAO_DECIDIDO, SEM_VIAVEL = "admite", "faltam", "nao_decidido", "sem_viavel"
 
@@ -375,6 +380,7 @@ def por_categoria(inst, escala) -> dict[str, dict]:
     horas = {n: 0.0 for n in inst.profissionais}
     for _, n, s in escala:
         horas[n] += inst.turnos[s].duracao_h
+    duracoes = {t.duracao_h for t in inst.turnos.values()}
     saida = {}
     for g in (ENF, TEC):
         membros = [n for n in inst.profissionais if categoria(inst, n) == g]
@@ -383,9 +389,21 @@ def por_categoria(inst, escala) -> dict[str, dict]:
         fg = [f[n] for n in membros if n in f]
         devidas = sum(inst.horas_devidas(n) for n in membros)
         escaladas = sum(horas[n] for n in membros)
-        saida[g] = {"fracao_min": min(fg, default=0.0), "fracao_max": max(fg, default=0.0),
+        # diferenca maxima de carga entre colegas (decisao de 05/10): o desvio de cada um em
+        # relacao a sua parte justa — a fracao media da categoria aplicada as SUAS horas
+        # devidas —, maior menos menor. Com contrato e disponibilidade iguais, e a diferenca
+        # de horas entre quem mais e quem menos trabalhou; com ferias ou contratos
+        # diferentes, nao pune quem deve menos horas.
+        media = escaladas / devidas if devidas else 0.0
+        desvio = [horas[n] - media * inst.horas_devidas(n) for n in membros
+                  if inst.horas_devidas(n) > 0]
+        dif_h = max(desvio) - min(desvio) if desvio else 0.0
+        saida[g] = {"diferenca_h": dif_h,
+                    "diferenca_plantoes": (dif_h / next(iter(duracoes))
+                                           if len(duracoes) == 1 else None),
+                    "fracao_min": min(fg, default=0.0), "fracao_max": max(fg, default=0.0),
                     "amplitude": max(fg) - min(fg) if fg else 0.0,
-                    "fracao_media": escaladas / devidas if devidas else 0.0,
+                    "fracao_media": media,
                     "devidas": devidas, "escaladas": escaladas,
                     "nao_utilizadas": devidas - escaladas}
     return saida
@@ -395,6 +413,22 @@ def amplitude(inst, escala) -> float:
     """O criterio da etapa 2: (maior - menor fracao cumprida) entre enfermeiros + o mesmo
     entre tecnicos. 0 = dentro de cada categoria, todos cumprem a mesma parte do contrato."""
     return sum(c["amplitude"] for c in por_categoria(inst, escala).values())
+
+
+def fmt_diferenca(cat: dict) -> str:
+    """"1 plantão (12 h)", "0,7 plantão (8 h)", "nenhuma (0 h)"; so horas se os turnos
+    tiverem duracoes diferentes."""
+    h = cat["diferenca_h"]
+    if h < 0.05:
+        return "nenhuma (0 h)"
+    horas = f"{h:.0f} h" if abs(h - round(h)) < 0.05 else f"{h:.1f} h".replace(".", ",")
+    p = cat.get("diferenca_plantoes")
+    if p is None:
+        return horas
+    if abs(p - round(p)) < 0.05:
+        n = round(p)
+        return f"{n} plant{'ão' if n == 1 else 'ões'} ({horas})"
+    return f"{p:.1f} plantão ({horas})".replace(".", ",", 1)
 
 
 def diferenca_entre_categorias(inst, escala) -> float | None:
@@ -427,7 +461,8 @@ def resolver_com_objetivo(inst, tempo: int | None) -> tuple[str, object, object,
         info["etapa2"] = "não rodou: a etapa 1 não provou o ótimo no tempo disponível"
         return veredito, inst, escala, info
     t0 = time.time()
-    v2, escala2, provado2, gap2 = equilibrar(m, inst, z, tempo)
+    tempo2 = TEMPO_ETAPA2 if tempo is None else min(TEMPO_ETAPA2, tempo)
+    v2, escala2, provado2, gap2 = equilibrar(m, inst, z, tempo2)
     info["tempo_etapa2"] = time.time() - t0
     if v2 == ea.VIAVEL:
         info.update(etapa2="ok", provado_etapa2=provado2, gap_etapa2=gap2,
@@ -620,6 +655,7 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
     for g, cat in ind.get("categorias", {}).items():
         nome = NOME_CATEGORIA[g].lower()
         linhas += [
+            (f"Diferença máxima de carga entre colegas, {nome}", fmt_diferenca(cat)),
             (f"Fração do contrato cumprida, {nome} (mín.–máx.)",
              f"{cat['fracao_min']:.0%}–{cat['fracao_max']:.0%}"),
             (f"Horas de contrato não utilizadas, {nome}",

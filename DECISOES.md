@@ -1387,6 +1387,22 @@ Observação, não resultado: no 7.2 (40 profissionais, 20 pedidos) a etapa 2 po
 parou no limite de 600 s sem provar (amplitude 34,1 → 13,6 pp); no 9c provou em 111 s.
 Máquina: i5-10210U, 12 GB, Windows 11, HiGHS 1.15.1 via appsi.
 
+**i) Adendo de 05/10 — limite e exibição da etapa 2 (decisão do Otávio).**
+- **Limite da etapa 2 na tela: 180 s** = max(120 s; 1,5 × 81,1 s), arredondado para cima ao
+  minuto; 81,1 s é o tempo em que a etapa 2 do caso de 88 profissionais da rodada com folga
+  chegou a 90% da redução final (`PROPOSTAS.md`, P1). A etapa 1 continua com 600 s. A etapa 2
+  usa o menor dos dois limites (os testes encurtam o da etapa 1). `ferramenta.TEMPO_ETAPA2`.
+- **A etapa 2 não mostra gap.** Na tela e na planilha mostra a **diferença máxima de carga
+  entre colegas dentro de cada categoria**, em plantões e em horas ("1 plantão (12 h)"). O gap
+  continua só para a etapa 1.
+- **Definição (decisão de implementação, não óbvia):** o desvio de cada profissional em relação à
+  sua parte justa — horas trabalhadas − (fração média da categoria × suas horas devidas) —,
+  maior menos menor. Com contrato e disponibilidade iguais, é a diferença de horas entre quem
+  mais e quem menos trabalhou. Com férias ou contratos diferentes, não pune quem deve menos
+  horas (o mesmo cuidado da P4). Em plantões só quando todos os turnos têm a mesma duração;
+  senão, só horas. `ferramenta.por_categoria`, `ferramenta.fmt_diferenca`. No 9c, esperado
+  registrado antes: técnicos "1 plantão (8 h)", enfermeiros "nenhuma (0 h)".
+
 ---
 
 ## Modelo de entrada

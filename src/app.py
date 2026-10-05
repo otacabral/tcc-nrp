@@ -259,12 +259,12 @@ if "resultado" in st.session_state:
                        f"demanda de cada posto frente ao tamanho de cada categoria.")
         equilibrio = ind.get("etapa2")
         if equilibrio == "ok":
-            sem_prova = "" if ind["provado_etapa2"] else " (sem prova de que é a menor)"
-            st.caption(f"Equilíbrio de carga dentro de cada categoria: entre as escalas de "
-                       f"mesmo custo, a diferença entre a maior e a menor fração do contrato "
-                       f"cumprida, somada entre enfermeiros e entre técnicos, caiu de "
-                       f"{ind['amplitude_etapa1'] * 100:.0f} para "
-                       f"{ind['amplitude'] * 100:.0f} pontos percentuais{sem_prova}.")
+            # a etapa 2 nao mostra gap (decisao de 05/10): mostra a diferenca de carga
+            # entre colegas da mesma categoria, que e o que o gestor le
+            dif = " · ".join(f"{fe.NOME_CATEGORIA[g].lower()}: {fe.fmt_diferenca(cat)}"
+                             for g, cat in ind.get("categorias", {}).items())
+            st.caption(f"Equilíbrio de carga dentro de cada categoria, entre as escalas de "
+                       f"mesmo custo. Diferença máxima de carga entre colegas — {dif}.")
         elif equilibrio:
             st.caption(f"Equilíbrio de carga: {equilibrio}.")
         if ind["pedidos_total"]:
