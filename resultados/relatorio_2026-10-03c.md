@@ -1,5 +1,9 @@
 # Relatório da sessão de 03/10/2026 (noite)
 
+> **Correção de 05/10:** a ressalva do item 4 de que "nos tamanhos maiores há folga" está
+> errada. A demanda é 14N em todos os tamanhos, e todo mundo faz exatamente 168 h; a etapa 2 é
+> degenerada em toda a curva. Ver `resultados/relatorio_2026-10-05.md`.
+
 ## Para o Otávio
 
 - **A P1 está rodando.** Desta vez conferi no log: o primeiro tamanho (36) terminou inteiro, com as duas etapas e o CSV gravado. Ela foi lançada às 19:33 e leva até cerca de 3 h.

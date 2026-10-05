@@ -108,6 +108,10 @@ MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativ
 1. **P1 — curva de escalabilidade com objetivo não trivial** (Etapa 4). Será lançada depois
    do item 1 do próximo bloco (carga por contrato, equilíbrio por fração do contrato), com o
    modelo final. A rodada de 02/10 foi preliminar e não é resultado. Ver `PROPOSTAS.md`, P1.
+   *Atualização de 05/10:* rodou em 03/10 pelo caminho da ferramenta. A prova fecha até
+   N = 80; em 120 fica sem prova (gap 3,2%), em 200 sem escala em 900 s. Ressalva: a etapa 2
+   é degenerada em todos os tamanhos (demanda = 14N, todos em 168 h). Proposta em aberto na
+   P1 sobre medir a etapa 2 numa instância com folga.
 2. ~~**Decisão sobre carga mínima.**~~ Respondida em 02/10 pela decisão "Carga por contrato"
    (`DECISOES.md`): carga contratual por profissional, teto nos dias disponíveis, equilíbrio
    pela fração do contrato cumprida. Implementada em 03/10. **Em aberto, P6:** a amplitude da

@@ -11,7 +11,9 @@ escopo anterior, com as treze propostas P1–P13, está em
 
 ## 2026-09-28 — P1: a curva de escalabilidade mede um problema mais fácil do que o da ferramenta
 
-**Status: pendente — será refeita com o modelo final** (decisão do Otávio, 02/10: o modelo
+**Status: rodada pelo caminho da ferramenta em 03/10; resultado registrado em 05/10** (ver
+"Rodada de 03/10", no fim desta entrada: a prova fecha até N = 80; a etapa 2 é degenerada
+em todos os tamanhos). Registro anterior: **pendente — será refeita com o modelo final** (decisão do Otávio, 02/10: o modelo
 vai mudar para carga por contrato e equilíbrio por fração do contrato). *Atualização de
 03/10:* lançada às 14:29 de 03/10 com o modelo final (etapa 2 por categoria, P6), 900 s
 por etapa. **Correção de 03/10: a rodada morreu às 14:30**, logo depois da etapa 1 de N = 36
@@ -90,6 +92,54 @@ Os logs ficam guardados em `resultados/preliminar_P1_2026-10-02/` (não versiona
 registro. **Nenhum número desta rodada vai ao texto.** A curva será lançada de novo depois do
 item 1 do próximo bloco, com o modelo final, pelo mesmo script
 (`src/escalabilidade_objetivo.py`).
+
+### Rodada de 03/10, caminho da ferramenta — resultado (registrado em 05/10)
+
+Lançada às 19:33 de 03/10 e terminada normalmente às 20:22, sem erro. Os seis tamanhos têm
+linha no CSV; quatro com as duas etapas. Parâmetros: 12×36, 44 h para todos, 2 pedidos por
+pessoa (semente 20261002 + N), 900 s por etapa, `appsi_highs`. Log:
+`resultados/escalabilidade_objetivo/p1_2026-10-03_ferramenta.log`; CSV:
+`resultados/escalabilidade_objetivo.csv`. Máquina: Intel Core i5-10210U (4 núcleos, 8
+threads), 12 GB, Windows 11, Python 3.11.9, HiGHS 1.15.1 via appsi. **Tempos são limite
+operacional desta máquina, uma medição por tamanho — não resultado.**
+
+| N | etapa 1 | 1ª escala legal | etapa 2 | pedidos negados | enf. em posto de téc. | descanso |
+|---|---|---|---|---|---|---|
+| 36 | ótimo provado, 40 s | 39 s | ótimo provado, 10 s | 21 de 72 | 112 | cumpre |
+| 40 | ótimo provado, 168 s | 54 s | ótimo provado, 16 s | 21 de 80 | 140 | cumpre |
+| 60 | ótimo provado, 130 s | 129 s | ótimo provado, 18 s | 29 de 120 | 224 | cumpre |
+| 80 | ótimo provado, 693 s | 235 s | ótimo provado, 34 s | 50 de 160 | 322 | cumpre |
+| 120 | **sem prova** (limite), gap 3,2% | 346 s | não rodou (etapa 1 sem prova) | 63 de 240; limite inferior 61 | 504 | cumpre |
+| 200 | **sem escala** em 900 s (nó raiz não terminou) | — | não rodou | limite inferior 111 de 400 | — | — |
+
+A penalidade recontada a partir da escala bateu com a do solver em todos os tamanhos com
+escala. Rígidas OK em todos.
+
+**O que se pode dizer:** com o objetivo da ferramenta, a prova de otimalidade fecha até
+N = 80 e deixa de fechar a partir de N = 120 em 900 s nesta máquina. Em N = 120 a escala
+existe e a distância é de 2 pedidos (63 negados contra o limite de 61); em N = 200 nenhuma
+escala legal apareceu no limite. Pelo critério de 25/09, existe faixa em que a prova não
+fecha — é a condição para admitir warm start como partida.
+
+**Ressalva grande — a etapa 2 é degenerada em todos os tamanhos, por construção.** A
+instância de escalabilidade foi montada para o piso cair em N (`escalabilidade.porte_para`):
+a demanda é 14N plantões, exatamente a capacidade de N pessoas a 14 plantões. Com a
+alternância do 12×36, todo mundo faz exatamente 14 plantões (168 h), e a amplitude da fração
+é 0 já na etapa 1, em todos os tamanhos. A etapa 2 só reencontra uma escala com a penalidade
+fixada; o tempo dela não mede a dificuldade de equilibrar. **O relatório de 03/10 (03c)
+afirmou que nos tamanhos maiores haveria folga — estava errado**: os 164,4–167,4 h do
+docstring de `escalabilidade.py` são horas de porte, não de demanda.
+
+**Também forçados pela conta, não escolhidos pelo solver:** os turnos de enfermeiro em posto de
+técnico, (técnicos × 14) contra 28 × 2 × (técnicos por turno). Em N = 36: 24 × 14 = 336 para
+448, faltam 112. A parte do objetivo que o solver de fato decide são os pedidos de folga. E a
+liberdade de cada pessoa é pequena: 14 dias de trabalho em 28 sem dois seguidos admitem só
+C(15, 14) = 15 conjuntos de dias.
+
+**Proposta (não implementada; é desenho experimental):** se o texto precisar dizer algo sobre
+o custo da etapa 2, rodar a etapa 2 numa instância com folga — por exemplo, a mesma demanda com
+equipe N + k — e declarar que a curva de 03/10 mede a etapa 1. Sem isso, a P1 responde à
+pergunta da etapa 1 (pesos inteiros, pedidos) e a etapa 2 fica sem medição.
 
 ---
 
