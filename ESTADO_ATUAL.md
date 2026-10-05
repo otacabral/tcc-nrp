@@ -127,6 +127,16 @@ MIT decidida e no repositório; `DECISOES.md` de volta à raiz como arquivo ativ
    `resultados/relatorio_2026-10-03c.md`.
 3. **Acabamento visual mínimo** na tela: concordância e textos soltos ("isto e" sem acento,
    "1 dias").
+   *05/10:* corrigidos ("isto é", grau com acento, "Falta 1", plurais). Os testes da tela que
+   leem esses textos (1–2, 4, 7.3, 8) ainda não rodaram depois da correção, por falta de
+   memória; os textos foram conferidos sem solver.
+
+*Atualização de 05/10 (noite):* **P1 concluída** (`PROPOSTAS.md`); limite da etapa 2 na tela =
+180 s, e a etapa 2 mostra a diferença de carga entre colegas no lugar do gap (`DECISOES.md`,
+"Carga por contrato", item i). **Demonstração de uso pela tela: interrompida** pelo sistema por
+falta de memória durante a rodada 1 (`docs/demonstracao/`; dados e roteiro prontos, só a captura
+da entrada da rodada 1 saiu). Guia do usuário em `GUIA_DE_USO.md`; figuras do capítulo de
+resultados em `resultados/figuras/` (`src/figuras_tcc.py`).
 4. **Arquivo de configuração** (pacote INRC + complemento). Menor prioridade: se não estiver
    pronto em 10/10, vira trabalho futuro.
 

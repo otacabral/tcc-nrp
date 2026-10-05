@@ -41,8 +41,9 @@ executar o avaliador oficial.
 
     streamlit run src\app.py
 
-Abre no navegador. Esqueleto de 29/09: formulario basico, veredito do quadro,
-escala e planilha para baixar.
+Abre no navegador. Para quem vai usar a ferramenta (instalacao no Windows passo a
+passo, como preencher, como ler o resultado, exemplo completo): ver
+[GUIA_DE_USO.md](GUIA_DE_USO.md).
 
 ## Avaliador oficial
 
