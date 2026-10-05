@@ -6,6 +6,7 @@ Roda da raiz do repositorio, com a .venv ativa:
     python src\\escalabilidade_objetivo.py --n 40           # so esse
     python src\\escalabilidade_objetivo.py --tempo 900      # limite POR ETAPA, em segundos
     python src\\escalabilidade_objetivo.py --equivalencia   # caminho novo x antigo, N=36 e 40
+    python src\\escalabilidade_objetivo.py --folga          # rodada complementar, equipe +10%
 
 Saida: `resultados/escalabilidade_objetivo.csv`, gravado a cada tamanho concluido, e o log
 do HiGHS de cada etapa em `resultados/escalabilidade_objetivo/highs_N<n>_etapa<k>.log`.
@@ -35,6 +36,17 @@ as rigidas (sem objetivo), limite de 900 s cada:
 Diferencas declaradas entre os caminhos: o novo tem teto de 176 h (o antigo, 14 plantoes =
 168 h, e o novo mantem MaxNumAssignments = 14); as regras de descanso do novo sao geradas dos
 horarios. Nos dois, com 12 h, ninguem passa de 14 plantoes (9b-sem-teto, 03/10).
+
+**Rodada complementar COM FOLGA** (`--folga`; decisao do Otavio, 05/10). Na curva principal
+a demanda e 14N plantoes, a capacidade exata de N pessoas: todo mundo faz 168 h e a etapa 2
+e degenerada (amplitude 0 ja na etapa 1). A rodada complementar usa a MESMA demanda dos
+tamanhos 40, 60 e 80 com equipe 10% maior (44, 66 e 88), cada categoria arredondada a
+partir de 1,1 x a do caminho antigo (40: 14 + 26 -> 15 + 29; 60: 20 + 40 -> 22 + 44; 80:
+27 + 53 -> 30 + 58), 44 h, 2 pedidos por pessoa com a mesma semente (SEMENTE + N, N o
+tamanho da demanda). Registra, alem do de sempre: amplitude por categoria antes e depois da
+etapa 2 e o tempo em que a etapa 2 chegou a 90% da reducao final, lido do log do HiGHS
+(primeira linha da arvore com melhor solucao <= amplitude da etapa 1 - 0,9 x reducao).
+Saida: `resultados/escalabilidade_objetivo_folga.csv`; logs `highs_N<n>_E<equipe>_etapa<k>.log`.
 
 O modelo e o mesmo (`ea.modelo_br`, as mesmas opcoes da ferramenta). Muda:
 
@@ -85,6 +97,9 @@ from instancia import Pedido  # noqa: E402
 from tabela import mesclar_csv  # noqa: E402
 
 SAIDA = RAIZ / "resultados" / "escalabilidade_objetivo.csv"
+SAIDA_FOLGA = RAIZ / "resultados" / "escalabilidade_objetivo_folga.csv"
+TAMANHOS_FOLGA = [40, 60, 80]
+FOLGA = 1.10
 ESCALAS = RAIZ / "resultados" / "escalabilidade_objetivo"
 
 SEMENTE = 20261002         # data da rodada; cada tamanho usa SEMENTE + N
@@ -99,7 +114,7 @@ _LINHA_ARVORE = re.compile(
 TURNOS_12X36 = fe.MODELOS[next(k for k in fe.MODELOS if k.startswith("12"))]
 
 
-def construir(n: int):
+def construir(n: int, equipe: int | None = None):
     """A instancia do tamanho `n` pelo caminho da FERRAMENTA, com a demanda por turno e a
     composicao do caminho antigo (`escalabilidade.construir`). Falha alto se a demanda nao
     for constante no caminho antigo ou nao sair igual no novo."""
@@ -112,15 +127,18 @@ def construir(n: int):
             if (antiga.demanda_de(d, f"{s}E"), antiga.demanda_de(d, s)) != (enf, tec):
                 raise RuntimeError(f"N={n}: demanda do caminho antigo nao e constante em {d}")
     n_enf = sum(1 for p in antiga.profissionais.values() if br.HABILIDADE_ENF in p.habilidades)
+    n_tec = len(antiga.profissionais) - n_enf
+    if equipe is not None:      # rodada com folga: cada categoria escalada e arredondada
+        n_enf = round(n_enf * equipe / n)
+        n_tec = equipe - n_enf
     e = fe.Entrada(turnos=TURNOS_12X36, grau="intermediario", n_enfermeiros=n_enf,
-                   n_tecnicos=len(antiga.profissionais) - n_enf, demanda_turno=por_turno,
-                   inicio=antiga.inicio)
+                   n_tecnicos=n_tec, demanda_turno=por_turno, inicio=antiga.inicio)
     inst = fe.montar(e)
     for d in antiga.dias:
         for s in antiga.turnos:
             if inst.demanda_de(d, s) != antiga.demanda_de(d, s):
                 raise RuntimeError(f"N={n}: demanda nova != antiga em {d}, {s}")
-    if set(inst.turnos) != set(antiga.turnos) or len(inst.profissionais) != n:
+    if set(inst.turnos) != set(antiga.turnos) or len(inst.profissionais) != (equipe or n):
         raise RuntimeError(f"N={n}: turnos ou equipe diferem do caminho antigo")
     return inst
 
@@ -177,6 +195,35 @@ def primeira_solucao_s(log: str) -> float | None:
     return None
 
 
+def trajetoria(log: str) -> list[tuple[float, float]]:
+    """(tempo do HiGHS, melhor solucao) em cada linha da arvore com solucao finita."""
+    pontos = []
+    for linha in log.splitlines():
+        achou = _LINHA_ARVORE.match(linha)
+        if achou:
+            try:
+                melhor = float(achou.group(2))
+            except ValueError:
+                continue
+            if math.isfinite(melhor):
+                pontos.append((float(achou.group(3)), melhor))
+    return pontos
+
+
+def tempo_ate_fracao(log: Path, inicio: float, final: float,
+                     fracao: float = 0.9) -> float | None:
+    """Tempo do HiGHS em que a melhor solucao da etapa 2 chegou a `fracao` da reducao final
+    (de `inicio`, a amplitude da escala da etapa 1, a `final`). None se nao houve reducao ou
+    o log nao mostra."""
+    if not log.exists() or inicio - final <= 1e-9:
+        return None
+    alvo = inicio - fracao * (inicio - final) + 1e-6
+    for t, melhor in trajetoria(log.read_text(encoding="utf-8", errors="replace")):
+        if melhor <= alvo:
+            return t
+    return None
+
+
 def _resolver(m, solver: str, tempo: int, log: Path) -> dict:
     """Resolve com o log do HiGHS em `log` e devolve o que a P1 registra. Nunca levanta."""
     log.parent.mkdir(parents=True, exist_ok=True)
@@ -206,23 +253,24 @@ def _registrar(linha: dict, etapa: str, r: dict) -> None:
           f"{r['primeira_s'] if r['primeira_s'] is not None else '-'} s (HiGHS)", flush=True)
 
 
-def rodar(n: int, solver: str, tempo: int) -> dict:
-    inst = construir(n)
+def rodar(n: int, solver: str, tempo: int, equipe: int | None = None) -> dict:
+    inst = construir(n, equipe)
+    tag = f"N{n}" if equipe is None else f"N{n}_E{equipe}"
     p = fe.piso(inst)
     if p != n:
         raise RuntimeError(f"N={n}: piso deu {p}, esperado {n} — a escala de demanda quebrou")
     inst, custo, W = fe.pesos(com_pedidos(inst, n))
     m = ea.modelo_br(inst, custo)
     d = modelo.dimensao(m)
-    print(f"\n### N = {n:3d}: {len(inst.pedidos)} pedidos, W = {W}, {d['variaveis']} "
+    print(f"\n### N = {n:3d}, equipe {len(inst.profissionais)}: {len(inst.pedidos)} pedidos, W = {W}, {d['variaveis']} "
           f"variaveis, {d['restricoes']} restricoes", flush=True)
 
-    linha = {"N": n, "caminho": "ferramenta (44 h)", "pedidos": len(inst.pedidos), "peso_pedido": W, "semente": SEMENTE + n,
+    linha = {"N": n, "equipe": len(inst.profissionais), "caminho": "ferramenta (44 h)", "pedidos": len(inst.pedidos), "peso_pedido": W, "semente": SEMENTE + n,
              "variaveis": d["variaveis"], "restricoes": d["restricoes"], "limite_s": tempo,
              "solver": solver}
 
     # etapa 1: pesos inteiros
-    r1 = _resolver(m, solver, tempo, ESCALAS / f"highs_N{n}_etapa1.log")
+    r1 = _resolver(m, solver, tempo, ESCALAS / f"highs_{tag}_etapa1.log")
     _registrar(linha, "etapa1", r1)
     if r1["resultado"] is None or not modelo.tem_solucao(r1["resultado"]) \
             or not modelo.carregar_solucao(m, r1["resultado"]):
@@ -231,19 +279,32 @@ def rodar(n: int, solver: str, tempo: int) -> dict:
         return linha
     escala = modelo.atribuicoes(m)
     z = modelo.valor_objetivo(m)
-    linha.update(penalidade=z, amplitude_etapa1=fe.amplitude(inst, escala))
+    linha.update(penalidade=z, amplitude_etapa1=fe.amplitude(inst, escala),
+                 **{f"amplitude_{g}_etapa1": c["amplitude"]
+                    for g, c in fe.por_categoria(inst, escala).items()})
 
     # etapa 2: equilibrio de horas, so com a etapa 1 provada otima (como na ferramenta)
     if not r1["otimo"]:
         linha["etapa2_estado"] = "nao rodou (etapa 1 sem prova)"
     else:
         fe.preparar_equilibrio(m, inst, z)
-        r2 = _resolver(m, solver, tempo, ESCALAS / f"highs_N{n}_etapa2.log")
+        log2 = ESCALAS / f"highs_{tag}_etapa2.log"
+        r2 = _resolver(m, solver, tempo, log2)
         _registrar(linha, "etapa2", r2)
         if r2["resultado"] is not None and modelo.tem_solucao(r2["resultado"]) \
                 and modelo.carregar_solucao(m, r2["resultado"]):
             escala = modelo.atribuicoes(m)
             linha["amplitude_etapa2"] = fe.amplitude(inst, escala)
+            linha.update({f"amplitude_{g}_etapa2": c["amplitude"]
+                          for g, c in fe.por_categoria(inst, escala).items()})
+            linha["etapa2_90pct_s"] = tempo_ate_fracao(log2, linha["amplitude_etapa1"],
+                                                       linha["amplitude_etapa2"])
+            print(f"   ### etapa 2: amplitude {linha['amplitude_etapa1']:.2%} -> "
+                  f"{linha['amplitude_etapa2']:.2%} | por categoria "
+                  + " | ".join(f"{g} {linha[f'amplitude_{g}_etapa1']:.2%} -> "
+                               f"{linha[f'amplitude_{g}_etapa2']:.2%}"
+                               for g in (fe.ENF, fe.TEC) if f"amplitude_{g}_etapa2" in linha)
+                  + f" | 90% da reducao aos {linha['etapa2_90pct_s']} s (HiGHS)", flush=True)
 
     # conferencias da escala final: rigidas e descanso medido no relogio
     ind = fe.indicadores(inst, escala)
@@ -279,6 +340,8 @@ def main() -> int:
     ap.add_argument("--n", action="append", type=int, help="tamanho; pode repetir")
     ap.add_argument("--solver", default=modelo.SOLVER_PADRAO)
     ap.add_argument("--tempo", type=int, default=900, help="limite POR ETAPA (padrao 900 s)")
+    ap.add_argument("--folga", action="store_true",
+                    help="rodada complementar: demanda de 40, 60, 80 com equipe 10%% maior")
     ap.add_argument("--equivalencia", action="store_true",
                     help="so o teste de equivalencia caminho novo x antigo (N=36 e 40)")
     a = ap.parse_args()
@@ -289,24 +352,30 @@ def main() -> int:
           f"etapa, semente {SEMENTE} (+N).")
     print(f"### Maquina: {platform.processor()} | {platform.platform()} | "
           f"Python {platform.python_version()}", flush=True)
+    if a.folga:
+        print(f"### Rodada COM FOLGA: equipe = round({FOLGA} x N), mesma demanda.", flush=True)
+    saida = SAIDA_FOLGA if a.folga else SAIDA
     linhas = []
-    for n in a.n or esc.TAMANHOS:
+    for n in a.n or (TAMANHOS_FOLGA if a.folga else esc.TAMANHOS):
         try:
-            linhas.append(rodar(n, a.solver, a.tempo))
+            linhas.append(rodar(n, a.solver, a.tempo,
+                                equipe=round(FOLGA * n) if a.folga else None))
         except RuntimeError as e:
             print(f"   FALHOU {e}")
             return 1
-        mesclar_csv(SAIDA, linhas, ("N",))
+        mesclar_csv(saida, linhas, ("N", "equipe") if a.folga else ("N",))
 
     print("\n### resumo")
     for r in linhas:
-        print(f"### N={r['N']:3d} | etapa 1 {r.get('etapa1_estado')} gap "
+        print(f"### N={r['N']:3d} equipe {r['equipe']:3d} | etapa 1 {r.get('etapa1_estado')} gap "
               f"{r.get('etapa1_gap') or '-'} {r.get('etapa1_relogio_s')} s (1a escala "
               f"{r.get('etapa1_primeira_escala_s')} s) | etapa 2 {r.get('etapa2_estado')} gap "
               f"{r.get('etapa2_gap') or '-'} {r.get('etapa2_relogio_s', '-')} s | penalidade "
               f"{r.get('penalidade', '-')} | descanso "
-              f"{'ok' if r.get('descanso_ok') else 'FALHA/sem escala'}")
-    print(f"\nresultado: {SAIDA}")
+              f"{'ok' if r.get('descanso_ok') else 'FALHA/sem escala'} | amplitude "
+              f"{r.get('amplitude_etapa1', '-')} -> {r.get('amplitude_etapa2', '-')} (90% aos "
+              f"{r.get('etapa2_90pct_s', '-')} s)")
+    print(f"\nresultado: {saida}")
     return 0
 
 

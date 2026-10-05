@@ -136,7 +136,19 @@ técnico, (técnicos × 14) contra 28 × 2 × (técnicos por turno). Em N = 36: 
 liberdade de cada pessoa é pequena: 14 dias de trabalho em 28 sem dois seguidos admitem só
 C(15, 14) = 15 conjuntos de dias.
 
-**Proposta (não implementada; é desenho experimental):** se o texto precisar dizer algo sobre
+**Leitura decidida pelo Otávio (05/10).** A rodada de 03/10 mede o **caso mais apertado**:
+demanda = 168 h por pessoa, sem folga. Nela, a prova fecha até N = 80; N = 120 tem escala
+legal sem prova (gap 3,16%); N = 200 fica sem escala em 900 s. Tempo é limite operacional
+desta máquina, não resultado.
+
+**Decidido em 05/10: rodada complementar com folga** (`escalabilidade_objetivo.py --folga`),
+para medir a etapa 2: mesma demanda de 40, 60 e 80, equipe 10% maior (44, 66, 88), 12×36,
+44 h, 2 pedidos por pessoa (mesma semente), 900 s por etapa. Registra também a amplitude por
+categoria antes e depois da etapa 2 e o tempo até 90% da redução final, para decidir o limite
+da etapa 2 na tela. O limite da etapa 1 na tela fica em 600 s (decidido); o da etapa 2 não
+muda até essa rodada terminar.
+
+**Proposta original (05/10, agora decidida acima):** se o texto precisar dizer algo sobre
 o custo da etapa 2, rodar a etapa 2 numa instância com folga — por exemplo, a mesma demanda com
 equipe N + k — e declarar que a curva de 03/10 mede a etapa 1. Sem isso, a P1 responde à
 pergunta da etapa 1 (pesos inteiros, pedidos) e a etapa 2 fica sem medição.
