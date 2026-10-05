@@ -674,6 +674,17 @@ def _equipe(n_enfermeiros: int, n_tecnicos: int, nomes_enfermeiros=None,
     return profs
 
 
+# Nome do grau no texto que o usuario le (os ids ficam sem acento no codigo).
+NOME_GRAU = {"minimo": "mínimo", "intermediario": "intermediário",
+             "alta": "alta dependência", "semi_intensivo": "semi-intensivo",
+             "intensivo": "intensivo"}
+
+
+def plural(n: int, singular: str, plural_: str) -> str:
+    """"1 dia", "2 dias": concordancia nos textos da tela e da planilha."""
+    return f"{n} {singular if n == 1 else plural_}"
+
+
 def conferir_composicao(inst: Instancia, grau: str) -> list[str]:
     """A equipe cumpre a proporcao de enfermeiros do Parecer no QUADRO?
 
@@ -687,8 +698,9 @@ def conferir_composicao(inst: Instancia, grau: str) -> list[str]:
     n_enf = sum(1 for p in inst.profissionais.values() if HABILIDADE_ENF in p.habilidades)
     exigido = math.ceil(g.pct_enfermeiros * total - 1e-9)
     if n_enf < exigido:
-        return [f"{n_enf} enfermeiros em {total} profissionais; o Parecer pede ao menos "
-                f"{g.pct_enfermeiros:.0%} no grau {grau}, isto e, {exigido}"]
+        return [f"{plural(n_enf, 'enfermeiro', 'enfermeiros')} em {total} profissionais; "
+                f"o Parecer pede ao menos {g.pct_enfermeiros:.0%} no grau "
+                f"{NOME_GRAU.get(grau, grau)}, isto é, {exigido}"]
     return []
 
 
@@ -714,7 +726,7 @@ def alertas_cofen(inst: Instancia, grau: str | None = None,
                 sem_enf.append((d, tid))
     if sem_enf:
         exemplos = ", ".join(f"{d:%d/%m} {tid}" for d, tid in sem_enf[:3])
-        alertas.append(f"{len(sem_enf)} turno(s) sem enfermeiro na demanda "
+        alertas.append(f"{plural(len(sem_enf), 'turno', 'turnos')} sem enfermeiro na demanda "
                        f"(ex.: {exemplos}{', ...' if len(sem_enf) > 3 else ''})")
     if pacientes:
         nucleo, completo = quadro_pessoal(horas_por_dia(pacientes), chs(inst))

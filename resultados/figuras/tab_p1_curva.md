@@ -1,0 +1,8 @@
+| N | Variáveis | Restrições | Etapa 1: estado | Etapa 1: ótimo provado | Etapa 1: gap | Etapa 1: tempo (s) | 1ª escala legal (s) | Etapa 2: estado | Etapa 2: tempo (s) | Pedidos atendidos | Enf. em posto de téc. | Descanso |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 36 | 3696 | 12640 | ótimo | sim | 0,0% | 39,8 | 39,0 | ótimo | 10,3 | 51 de 72 | 112 | cumpre |
+| 40 | 4144 | 14300 | ótimo | sim | 0,0% | 168,0 | 54,3 | ótimo | 16,2 | 59 de 80 | 140 | cumpre |
+| 60 | 6160 | 20992 | ótimo | sim | 0,0% | 130,1 | 128,9 | ótimo | 18,3 | 91 de 120 | 224 | cumpre |
+| 80 | 8232 | 28086 | ótimo | sim | 0,0% | 693,0 | 235,1 | ótimo | 34,0 | 110 de 160 | 322 | cumpre |
+| 120 | 12320 | 41872 | limite de tempo | não | 3,2% | 901,9 | 345,8 | não rodou (etapa 1 sem prova) |  | 177 de 240 | 504 | cumpre |
+| 200 | 20496 | 69444 | limite de tempo | não |  | 902,8 |  | não rodou (etapa 1 sem escala) |  |  |  |  |

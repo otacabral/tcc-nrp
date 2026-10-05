@@ -130,7 +130,7 @@ def caso_experimento_a() -> None:
     print("2. mesma configuracao, 39 = 13 + 26")
     at = pela_tela(M12, 13, 26, demanda, fds)
     confere(not at.exception, "sem excecao na tela")
-    confere(textos(at, "warning") == ["Faltam 1; o menor quadro viável é 40. Escala gerada."],
+    confere(textos(at, "warning") == ["Falta 1; o menor quadro viável é 40. Escala gerada."],
             f"veredito: {textos(at, 'warning') + textos(at, 'success')}")
     r, _ = at.session_state["resultado"]
     confere(r.tentativas == [(39, "piso", None, None), (40, "viavel", 14, 26)],
@@ -160,7 +160,7 @@ def caso_poucos_enfermeiros() -> None:
             f"ainda gera a escala: {textos(at, 'success') + textos(at, 'warning')}")
     alertas = textos(at, "error")
     confere(len(alertas) == 1 and alertas[0].startswith("Alerta COFEN (não impede a escala)")
-            and "5 enfermeiros em 20" in alertas[0] and "isto e, 7" in alertas[0],
+            and "5 enfermeiros em 20" in alertas[0] and "isto é, 7" in alertas[0],
             f"alerta vermelho: {alertas}")
 
 
@@ -285,7 +285,7 @@ def casos_tempo() -> None:
         at = pela_tela(M12, 14, 26, demanda, fds)
         confere(textos(at, "error") == ["Não foi possível gerar a escala no tempo disponível."],
                 f"tela: {textos(at, 'error')}")
-        confere(not any("Faltam" in t for t in _todos_textos(at)), "nenhum 'Faltam'")
+        confere(not any("Falta" in t for t in _todos_textos(at)), "nenhum 'Falta'")
         r, _ = at.session_state["resultado"]
         confere(r.diagnostico is None and not r.escala
                 and len(at.get("download_button")) == 0, "sem diagnostico, escala nem planilha")
@@ -300,7 +300,7 @@ def casos_tempo() -> None:
         esperado = ("Não foi possível gerar a escala no tempo disponível com mais "
                     "profissionais; o menor quadro viável não foi determinado.")
         confere(esperado in textos(at, "error"), f"tela: {textos(at, 'error')}")
-        confere(not any("Faltam" in t for t in _todos_textos(at)), "nenhum 'Faltam'")
+        confere(not any("Falta" in t for t in _todos_textos(at)), "nenhum 'Falta'")
     finally:
         fe.TEMPO, fe.verificar = original_tempo, original_verificar
 

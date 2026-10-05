@@ -246,7 +246,7 @@ if "resultado" in st.session_state:
         m[4].metric("Conferência de descanso", "cumpre" if c["ok"] else "NÃO CUMPRE")
         st.caption(f"Descanso mínimo entre turnos {c['menor_geral']:.0f} h · descanso "
                    f"semanal {fe.fmt_semanal(c['menor_semanal'])} · no máximo "
-                   f"{c['max_consec']} dias seguidos")
+                   f"{br.plural(c['max_consec'], 'dia seguido', 'dias seguidos')}")
         for g, cat in ind.get("categorias", {}).items():
             st.caption(f"{fe.NOME_CATEGORIA[g]}: {cat['fracao_min']:.0%}–"
                        f"{cat['fracao_max']:.0%} do contrato cumprido · "
@@ -269,7 +269,7 @@ if "resultado" in st.session_state:
             st.caption(f"Equilíbrio de carga: {equilibrio}.")
         if ind["pedidos_total"]:
             st.caption(f"Pedidos de folga negados: {ind['pedidos_total'] - ind['pedidos_atendidos']}"
-                       f", em {ind['com_pedido_negado']} profissional(is); no máximo "
+                       f", em {br.plural(ind['com_pedido_negado'], 'profissional', 'profissionais')}; no máximo "
                        f"{ind['negados_max']} por pessoa.")
     if r.qp:
         q1, q2 = st.columns(2)
