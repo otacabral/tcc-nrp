@@ -178,10 +178,12 @@ resultados em `resultados/figuras/` (`src/figuras_tcc.py`).
 
 **Dívida menor, sem prazo:**
 
-- **Destino de quatro notas do escopo anterior** em `docs/`:
+- ~~**Destino de quatro notas do escopo anterior** em `docs/`:
   `nota_conferencias_contrato_2026-09-22.md`, `nota_intervalo_individual_2026-09-22.md`,
   `nota_piso_forcado_2026-09-22.md`, `para_orientacao_2026-09-23.md`. Vão para `historico/`
-  ou ficam como metodologia ativa? Não decidido.
+  ou ficam como metodologia ativa? Não decidido.~~
+  *06/10:* decidido — as quatro **ficam em `docs/` como metodologia ativa** (`DECISOES.md`,
+  "2026-10-06 — Notas de 22 e 23/09 ficam em docs/").
 - ~~**O `README.md` tem três links mortos** para arquivos que foram para `historico/`.~~
   *05/10:* corrigido. Restavam duas referências ao `CONTEXTO_PROJETO.md`, que agora apontam
   para `historico/`; a terceira, ao `DECISOES.md`, já valia desde que ele voltou à raiz em

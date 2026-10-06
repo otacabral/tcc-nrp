@@ -1551,6 +1551,17 @@ continua em 14/10 e a entrega em 04/11.
 
 ---
 
+## 2026-10-06 — Notas de 22 e 23/09 ficam em docs/ como metodologia ativa
+
+**Status: vigente.** Decidido pelo Otávio em 06/10. As quatro notas
+`docs/nota_conferencias_contrato_2026-09-22.md`, `docs/nota_intervalo_individual_2026-09-22.md`,
+`docs/nota_piso_forcado_2026-09-22.md` e `docs/para_orientacao_2026-09-23.md` **ficam em
+`docs/`** como metodologia ativa, e não vão para `historico/`: cada uma tem achados citáveis que
+só existem nela (lista no `resultados/relatorio_2026-10-06a.md`, item 2). Fecha a dívida do
+`ESTADO_ATUAL.md`.
+
+---
+
 ## Modelo de entrada
 
 ```
