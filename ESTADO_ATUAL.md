@@ -151,6 +151,12 @@ de enfermeiros (8, o Parecer pede 10); a equipe da rodada 1 será ajustada por d
 Otávio, e só então entram o 20/11 como feriado e as três rodadas de novo. Ver
 `resultados/relatorio_2026-10-05e.md`.
 
+*05/10, 21h:* **demonstração refeita** com a equipe decidida (10 enfermeiros + 20 técnicos) e o
+20/11 como feriado; alerta de proporção pelo grupo de pacientes de maior carga (`DECISOES.md`,
+"2026-10-05 — Grau da proporção"). Os três cortes saíram onde a conta, registrada antes,
+previu: 20 técnicos sem alerta, 19 com o alerta de QP, 18 trava pela alternância (menor quadro
+viável 29). Ver `resultados/relatorio_2026-10-05f.md`. **Em aberto: P8** (empate de carga).
+
 *Atualização de 05/10 (noite):* **P1 concluída** (`PROPOSTAS.md`); limite da etapa 2 na tela =
 180 s, e a etapa 2 mostra a diferença de carga entre colegas no lugar do gap (`DECISOES.md`,
 "Carga por contrato", item i). **Demonstração de uso pela tela: interrompida** pelo sistema por

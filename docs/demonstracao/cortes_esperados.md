@@ -40,3 +40,11 @@ mais. "Trava pela conta" = alguma conta já prova que não há escala.
 
 **Conferência cruzada, sem solver:** o diagnóstico da ferramenta (`motivos_da_trava`), calculado
 depois da conta acima, dá o mesmo: nenhum motivo em 20 e 19; "alternância" em 18.
+
+## Resultado pela tela (05/10/2026, 21h, anotado DEPOIS de rodar; o esperado acima não mudou)
+
+| Técnicos | Esperado | Saiu na tela |
+|---|---|---|
+| 20 (rodada 1) | admite; 0 alertas; enf. em posto de téc. ≥ 24 | admite; **0 alertas**; **24** — o mínimo da conta |
+| 19 | admite; 1 alerta (QP 29,85); ≥ 36 | admite; **1 alerta**, texto idêntico ao esperado; **36** — o mínimo da conta |
+| 18 | trava; "Falta 1; o menor quadro viável é 29"; diagnóstico só "Alternância" (ter 03/11 e qua 04/11, 28 plantões, 27 pessoas); 1 alerta (QP 29,70) | **igual**, palavra por palavra. A escala de 29 é 10 enfermeiros + 19 técnicos, com 34 turnos de enfermeiro em posto de técnico |

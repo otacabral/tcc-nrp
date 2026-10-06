@@ -110,8 +110,10 @@ A tela é uma página só, de cima para baixo.
 
   Na tabela logo abaixo você pode mudar o nome e o horário dos turnos, sempre em hora cheia.
 - **Fim de semana.** Sábado e domingo, ou sexta a domingo.
-- **Grau de dependência predominante.** É o grau da maioria dos pacientes. Serve para o
-  alerta da proporção de enfermeiros.
+- **Grau de dependência predominante.** Serve para o alerta da proporção de enfermeiros,
+  **só quando você não informa os pacientes** no painel do COFEN. Com pacientes informados, a
+  ferramenta usa o grau do grupo de pacientes de maior carga, como manda o Parecer, e diz qual
+  usou.
 - **Início.** Tem de ser uma **segunda-feira**. A escala cobre 28 dias a partir dela.
 
 ### 2. Equipe
@@ -218,7 +220,8 @@ Os dados estão em `docs/demonstracao/caso_clinica_medica.py`.
 **02/11/2026** a 29/11/2026.
 
 **A equipe.**
-- 8 enfermeiros e 22 técnicos, 30 pessoas. Nomes fictícios.
+- 10 enfermeiros e 20 técnicos, 30 pessoas — a proporção 33/67 do Parecer no grau
+  intermediário. Nomes fictícios.
 - 8 pessoas com contrato de 36 h; o resto com 44 h.
 - Férias: Carla Nunes de 16 a 29/11; Karen Dias de 02 a 15/11.
 - Seis pedidos de folga.
@@ -226,43 +229,43 @@ Os dados estão em `docs/demonstracao/caso_clinica_medica.py`.
 **A demanda.**
 - Dias úteis: de dia, 2 enfermeiros e 6 técnicos; à noite, 1 e 5.
 - Fim de semana: de dia, 1 e 5; à noite, 1 e 4.
-- Feriados (02/11, Finados; 15/11, Proclamação da República): 1 enfermeiro e 4 técnicos em
-  cada turno.
+- Feriados (02/11, Finados; 15/11, Proclamação da República; 20/11, Consciência Negra):
+  1 enfermeiro e 4 técnicos em cada turno.
 
 **Pacientes (painel do COFEN).** 8 de cuidado mínimo, 14 intermediários e 4 de alta
-dependência.
+dependência. O grupo de maior carga é o intermediário (14 × 6 h = 84 h por dia, contra 32 h e
+40 h), e é ele que vale para a proporção de enfermeiros.
 
 **Rodada 1 — a equipe de 30.**
 - Veredito: **"O quadro informado admite escala legal. Escala gerada."**
-- Um alerta do COFEN: 8 enfermeiros em 30, quando o Parecer pede 10 no grau intermediário.
+- Nenhum alerta do COFEN.
 - Todos os 6 pedidos de folga atendidos.
-- 4 turnos de enfermeiro em posto de técnico.
+- 24 turnos de enfermeiro em posto de técnico: os técnicos não dão conta de todos os postos
+  de técnico, e os enfermeiros cobrem a diferença.
 - Conferência de descanso: cumpre.
-- Diferença máxima de carga entre colegas: 0,5 plantão (6,4 h) entre enfermeiros e
-  1,5 plantão (18,4 h) entre técnicos.
-- Horas de contrato não utilizadas: 308 h dos enfermeiros e 184 h dos técnicos.
+- Diferença máxima de carga entre colegas: 1 plantão (12 h) entre enfermeiros e
+  0,6 plantão (6,9 h) entre técnicos.
+- Horas de contrato não utilizadas: 432 h dos enfermeiros e 108 h dos técnicos.
 
 **Rodada 2 — a mesma unidade com técnicos a menos.**
 
 | Técnicos (quadro) | Veredito na tela | Enf. em posto de técnico | Alertas do COFEN |
 |---|---|---|---|
-| 21 (29) | "O quadro informado admite escala legal. Escala gerada." | 13 | 2: proporção de enfermeiros; quadro abaixo do QP completo (30,05) |
-| 20 (28) | **"Falta 1; o menor quadro viável é 29. Escala gerada."** | 27 (na escala de 29, com 9 enfermeiros) | 2: proporção; quadro abaixo do QP completo (30,10) |
+| 19 (29) | "O quadro informado admite escala legal. Escala gerada." | 36 | 1: quadro abaixo do QP completo (29,85) |
+| 18 (28) | **"Falta 1; o menor quadro viável é 29. Escala gerada."** | 34 (na escala de 29, com 10 enfermeiros e 19 técnicos) | 1: quadro abaixo do QP completo (29,70) |
 
-Com 20 técnicos, a caixa do diagnóstico das capturas de 05/10 diz **"Combinação de
-regras"**. Depois da correção do diagnóstico, na noite de 05/10, ela passa a mostrar os dois
-motivos simples:
-- **Horas:** faltam 324 h de técnico, contra 312 h de folga dos enfermeiros;
-- **Alternância:** ter 03/11 e qua 04/11 somam 28 plantões, e, com Karen de férias, só 27
-  pessoas estão disponíveis.
+Com 18 técnicos, a caixa do diagnóstico diz:
 
-As capturas serão refeitas. A ferramenta acrescenta um enfermeiro e mostra a escala de 29. Em todas as rodadas, os 6 pedidos de
-folga foram atendidos e a conferência de descanso deu "cumpre".
+> **Por que não há escala legal com 28: Alternância do plantão de 12 h.** Com plantões de 12 h
+> ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). ter 03/11 e qua
+> 04/11 somam 28 plantões, que precisam de 28 pessoas diferentes; descontadas férias e
+> licenças, 27 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo
+> menos 1 pessoa.
 
 As capturas da tela e as planilhas estão em `docs/demonstracao/`:
-- `rodada1_*`, para 30 pessoas;
-- `rodada2_21tec_*`, para 21 técnicos;
-- `rodada2_20tec_*`, para 20 técnicos.
+- `rodada1_*`;
+- `rodada2_19tec_*`;
+- `rodada2_18tec_*`.
 
 Também estão lá o roteiro que preenche a tela e a conta feita antes de rodar,
 `cortes_esperados.md`.
