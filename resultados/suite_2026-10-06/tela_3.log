@@ -1,0 +1,9 @@
+3. modelo 6 h + 12 h, 7 + 12
+2026-10-05 23:55:03.795 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    sem excecao na tela []
+   ok    veredito: ['O quadro informado admite escala legal. Escala gerada.']
+   ok    conferencia de descanso na tela: cumpre
+
+ponta a ponta pela tela OK

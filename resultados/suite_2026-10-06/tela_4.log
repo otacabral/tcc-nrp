@@ -1,0 +1,9 @@
+4. poucos enfermeiros: 8 h, 5 + 15
+2026-10-05 23:58:15.259 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    sem excecao na tela []
+   ok    ainda gera a escala: ['O quadro informado admite escala legal. Escala gerada.']
+   ok    alerta vermelho: ['Alerta COFEN (não impede a escala): 5 enfermeiros em 20 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 7 — grau informado na tela']
+
+ponta a ponta pela tela OK

@@ -1,0 +1,155 @@
+[
+ {
+  "teste": "regressao --todos",
+  "codigo": 0,
+  "tempo_s": 121.6,
+  "pico_mb": 478,
+  "menor_livre_mb": 1481,
+  "falhas": [],
+  "ultima_linha": "regressao OK: otimo provado, Tabela 6, espelho de avaliacao.py e decomposicao por profissional"
+ },
+ {
+  "teste": "testes_entrada",
+  "codigo": 0,
+  "tempo_s": 19.5,
+  "pico_mb": 106,
+  "menor_livre_mb": 1704,
+  "falhas": [],
+  "ultima_linha": "testes das entradas OK"
+ },
+ {
+  "teste": "tela 1-2",
+  "codigo": 0,
+  "tempo_s": 413.6,
+  "pico_mb": 306,
+  "menor_livre_mb": 919,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 3",
+  "codigo": 0,
+  "tempo_s": 192.0,
+  "pico_mb": 310,
+  "menor_livre_mb": 2103,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 4",
+  "codigo": 0,
+  "tempo_s": 184.4,
+  "pico_mb": 509,
+  "menor_livre_mb": 2221,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 4b",
+  "codigo": 0,
+  "tempo_s": 5.9,
+  "pico_mb": 39,
+  "menor_livre_mb": 2688,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 5",
+  "codigo": 0,
+  "tempo_s": 191.5,
+  "pico_mb": 445,
+  "menor_livre_mb": 1677,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 7.1",
+  "codigo": 0,
+  "tempo_s": 187.7,
+  "pico_mb": 354,
+  "menor_livre_mb": 2080,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 7.2",
+  "codigo": 0,
+  "tempo_s": 223.4,
+  "pico_mb": 249,
+  "menor_livre_mb": 2390,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 7.3",
+  "codigo": 0,
+  "tempo_s": 930.4,
+  "pico_mb": 560,
+  "menor_livre_mb": 1944,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 7.4",
+  "codigo": 0,
+  "tempo_s": 5.8,
+  "pico_mb": 39,
+  "menor_livre_mb": 2584,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 8",
+  "codigo": 0,
+  "tempo_s": 225.2,
+  "pico_mb": 445,
+  "menor_livre_mb": 2227,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 9",
+  "codigo": 0,
+  "tempo_s": 515.2,
+  "pico_mb": 381,
+  "menor_livre_mb": 2060,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 9b-sem-teto",
+  "codigo": 0,
+  "tempo_s": 11.6,
+  "pico_mb": 168,
+  "menor_livre_mb": 2545,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "tela 9c-tela",
+  "codigo": 0,
+  "tempo_s": 29.4,
+  "pico_mb": 334,
+  "menor_livre_mb": 2461,
+  "falhas": [],
+  "ultima_linha": "ponta a ponta pela tela OK"
+ },
+ {
+  "teste": "XML gerar",
+  "codigo": 0,
+  "tempo_s": 5.8,
+  "pico_mb": 23,
+  "menor_livre_mb": 2730,
+  "falhas": [],
+  "ultima_linha": "544 XML em C:\\Users\\Otavio\\AppData\\Local\\Temp\\claude\\D--dev-tcc-nrp\\9edb5cb8-3527-41f7-a883-7a5067e2f454\\scratchpad\\xml_final"
+ },
+ {
+  "teste": "XML comparar",
+  "codigo": 0,
+  "tempo_s": 11.5,
+  "pico_mb": 18,
+  "menor_livre_mb": 2721,
+  "falhas": [],
+  "ultima_linha": "544 XML; diferentes: 0; erros: 0"
+ }
+]

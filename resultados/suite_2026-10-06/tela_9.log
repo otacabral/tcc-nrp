@@ -1,0 +1,26 @@
+9a. equipe mista 30/44 h: 8 h, 6 + 12
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    veredito admite
+   ok    maior carga entre os de 30 h: 112 h (teto 120 h)
+   ok    maior carga entre os de 44 h: 168 h (teto 176 h)
+   ok    conferir_rigidas: ok
+9b. 12x36 com 44 h: 40 = 14 + 26
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    maior numero de plantoes: 14 (<= 14)
+      teto em horas [176.0] h; 15 plantoes seriam 180 h
+9c/9d. ferias: 8 h, 6 + 12 em 44 h, Tec 1 de ferias nos 14 primeiros dias
+   ok    veredito admite, etapa 2 ok
+      Tec 1: 80 h de 88 h devidas = 90.9% | demais: 63.6%-90.9% (112-160 h)
+   ok    9c: fracao de Tec 1 dentro da faixa dos demais
+      enfermeiros 63.6%-63.6%, nao utilizadas 384 h | tecnicos 86.4%-90.9%, nao utilizadas 232 h | diferenca entre categorias +24.9 pp | penalidade 0
+   ok    9c: Tec 1 (90.9%) dentro da faixa dos tecnicos (86.4%-90.9%)
+   ok    9c: amplitude entre enfermeiros 0.00% (esperado 0)
+   ok    9c: amplitude entre tecnicos 4.55% (esperado 4,55%)
+   ok    9c: criterio da etapa 2 4.55% (piso da conta 4,55%; provado no limite: True, informativo)
+   ok    9c: horas nao utilizadas 384 h (enf) e 232 h (tec)
+   ok    9c: diferenca entre colegas: tecnicos '1 plantão (8 h)', enfermeiros 'nenhuma (0 h)'
+   ok    9d: amplitude 36.4% na etapa 1 -> 4.5% na etapa 2 (provada); etapa 2 em 133.1 s
+
+ponta a ponta pela tela OK
