@@ -362,7 +362,10 @@ Mudança de funcionalidade, com o congelamento em 10/10: decisão do Otávio.
 
 ## 2026-10-05 — P8: empate de carga entre grupos de pacientes, no alerta de proporção
 
-**Status: aguardando decisão.** Nada decidido. Aberta pela decisão "2026-10-05 — Grau da
+**Status: DECIDIDA em 05/10 pelo Otávio** — mantém o comportamento atual: o alerta avisa o
+empate e usa o maior percentual dos empatados; escolha da ferramenta (conservadora), não regra
+do Parecer. Ver `DECISOES.md`, "2026-10-05 — Empate de carga entre grupos de pacientes".
+*Registro anterior:* aguardando decisão. Aberta pela decisão "2026-10-05 — Grau da
 proporção: o grupo de pacientes de maior carga".
 
 O Parecer manda seguir o grupo de maior carga de trabalho, mas não diz o que fazer quando dois

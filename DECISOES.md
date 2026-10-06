@@ -1519,6 +1519,36 @@ o caminho por pacientes (experimentos) e o alerta da tela.
 **Esperado registrado antes de rodar** (`src/testes_ferramenta.py`, caso 4b): na clínica da
 demonstração, 32 h, 84 h e 40 h → intermediário, 33%.
 
+**A divergência não afeta resultado** (verificado em 05/10, sem alterar nada). As únicas
+instâncias do caminho por pacientes são as 4 da conferência dos XML
+(`docs/conferencia_xml_experimentos.py`): 8 h e 12×36, com e sem razão de fim de semana, todas
+com 10 pacientes de cuidado mínimo e 12 intermediários — graus misturados. Nas 4, as duas
+leituras dão o mesmo grau, intermediário (pela de 29/09, empate de 33% resolvido pela ordem da
+tabela; pela de 05/10, 72 h contra 40 h), e o mesmo percentual, 33%. E nenhum número que vai ao
+texto vem desse caminho: o Experimento A monta cada instância com um grau só
+(`experimento_a.py`), a escalabilidade com o intermediário (`escalabilidade.py`), a P1 e a
+demonstração pelo caminho de turnos configurados, e as tabelas e figuras de
+`resultados/figuras/` saem dos CSVs da P1.
+
+---
+
+## 2026-10-05 — Empate de carga entre grupos de pacientes (fecha a P8)
+
+**Status: vigente.** Decidido pelo Otávio em 05/10. Mantém o comportamento que já estava no
+código: quando dois ou mais grupos de pacientes têm a mesma carga, o alerta de proporção avisa
+o empate, nomeia os graus e usa o **maior percentual** entre os empatados
+(`instancia_br.grau_do_alerta`). É **escolha da ferramenta, conservadora** — não regra do
+Parecer, que não trata empate. Sem mudança de código. Teste: `src/testes_ferramenta.py`, 4e.
+
+---
+
+## 2026-10-05 — Congelamento das funcionalidades antecipado para 05/10
+
+**Status: vigente.** Decidido pelo Otávio em 05/10. O congelamento das funcionalidades passa
+de 10/10 para **05/10**. De 05/10 a 10/10 só entra **correção de defeito**, com o esperado
+registrado antes de rodar. Nenhuma função nova. O congelamento de resultado numérico
+continua em 14/10 e a entrega em 04/11.
+
 ---
 
 ## Modelo de entrada

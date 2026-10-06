@@ -27,7 +27,7 @@ colunas. Warm start heurístico só como partida, e só se a escala exigir.
 | Data | O quê |
 |---|---|
 | 24/09/2026 | Virada de escopo (comparação de regimes → ferramenta). Feita. |
-| **10/10/2026** | **Congelamento das funcionalidades.** Depois disso, nenhuma função nova entra na ferramenta. |
+| ~~10/10/2026~~ **05/10/2026** | **Congelamento das funcionalidades — antecipado para 05/10** (decisão do Otávio, `DECISOES.md`, "2026-10-05 — Congelamento das funcionalidades antecipado"). Até 10/10 só entra correção de defeito, com esperado registrado antes. Nenhuma função nova. |
 | **14/10/2026** | **Congelamento de resultado numérico.** Depois disso, nenhum número novo entra. |
 | **04/11/2026** | **Entrega.** |
 
@@ -155,7 +155,7 @@ Otávio, e só então entram o 20/11 como feriado e as três rodadas de novo. Ve
 20/11 como feriado; alerta de proporção pelo grupo de pacientes de maior carga (`DECISOES.md`,
 "2026-10-05 — Grau da proporção"). Os três cortes saíram onde a conta, registrada antes,
 previu: 20 técnicos sem alerta, 19 com o alerta de QP, 18 trava pela alternância (menor quadro
-viável 29). Ver `resultados/relatorio_2026-10-05f.md`. **Em aberto: P8** (empate de carga).
+viável 29). Ver `resultados/relatorio_2026-10-05f.md`. ~~Em aberto: P8~~ — *decidida em 05/10*: mantém o comportamento atual (avisa o empate, usa o maior percentual).
 
 *Atualização de 05/10 (noite):* **P1 concluída** (`PROPOSTAS.md`); limite da etapa 2 na tela =
 180 s, e a etapa 2 mostra a diferença de carga entre colegas no lugar do gap (`DECISOES.md`,
