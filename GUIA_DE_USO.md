@@ -165,11 +165,26 @@ melhor possível.
 
 ### Alertas do COFEN (em vermelho)
 
-Começam com "Alerta COFEN (não impede a escala)". Exemplos:
+Começam com "Alerta COFEN (não impede a escala)". São de dois tipos.
 
-- "8 enfermeiros em 30 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto
-  é, 10";
-- "quadro de 28 abaixo do QP completo do Parecer".
+**Proporção de enfermeiros.** Exemplo:
+
+> 8 enfermeiros em 30 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é,
+> 10 — grupo de pacientes de maior carga por dia: intermediário (mínimo 32 h, intermediário
+> 84 h, alta dependência 40 h)
+
+O alerta diz qual grau usou e por quê:
+- com pacientes informados, é o grau do grupo de **maior carga** (pacientes × horas por
+  paciente), como manda o Parecer;
+- sem pacientes, o alerta termina com "grau informado na tela";
+- se dois grupos empatam em carga, o alerta diz "empate de carga entre…" e usa o maior
+  percentual. Essa é uma escolha da ferramenta, conservadora; o Parecer não trata empate.
+
+**Quadro de pessoal (QP).** Aparece quando você informa pacientes e a equipe fica abaixo do
+QP completo. Exemplo, da demonstração:
+
+> quadro de 29 abaixo do QP completo do Parecer (29,85, com IST de 15%); o núcleo
+> assistencial, sem IST, é 25,96
 
 A escala continua valendo. Os alertas são para a sua decisão.
 
@@ -192,7 +207,7 @@ cada um com os números. Cada motivo, sozinho, já prova que não há escala:
 |---|---|
 | Quadro da escala | Quantas pessoas a escala usa. |
 | Enfermeiro em posto de técnico | Quantos turnos um enfermeiro cobriu em vaga de técnico. |
-| Pedidos de folga atendidos | Quantos dos pedidos foram atendidos. |
+| Pedidos de folga atendidos | Quantos dos pedidos foram atendidos. Abaixo dos números, a tela diz "Todos os 6 pedidos de folga foram atendidos." ou, se algum foi negado, quantos e em quantas pessoas. |
 | Contrato cumprido (mín.–máx.) | Quanto do contrato cada pessoa cumpre: horas escaladas ÷ horas contratadas nos dias em que está disponível. |
 | Conferência de descanso | "cumpre" quer dizer que a escala foi medida no relógio e respeita os descansos da CLT. |
 | Diferença máxima de carga entre colegas | Por categoria. Por exemplo, "1 plantão (12 h)": entre dois colegas da mesma categoria, a diferença de carga é de no máximo um plantão, já descontadas férias e contratos diferentes. |
@@ -237,6 +252,16 @@ dependência. O grupo de maior carga é o intermediário (14 × 6 h = 84 h por d
 40 h), e é ele que vale para a proporção de enfermeiros.
 
 **Rodada 1 — a equipe de 30.**
+
+![Tela da rodada 1 preenchida](docs/demonstracao/rodada1_entrada.png)
+
+*A tela preenchida antes de gerar: unidade, equipe (com cargas, férias e pedidos), demanda com
+os três feriados e o painel do COFEN.*
+
+![Resultado da rodada 1](docs/demonstracao/rodada1_resultado.png)
+
+*O resultado: veredito em verde, sem alerta, os números e a escala.*
+
 - Veredito: **"O quadro informado admite escala legal. Escala gerada."**
 - Nenhum alerta do COFEN.
 - Todos os 6 pedidos de folga atendidos.
@@ -253,6 +278,14 @@ dependência. O grupo de maior carga é o intermediário (14 × 6 h = 84 h por d
 |---|---|---|---|
 | 19 (29) | "O quadro informado admite escala legal. Escala gerada." | 36 | 1: quadro abaixo do QP completo (29,85) |
 | 18 (28) | **"Falta 1; o menor quadro viável é 29. Escala gerada."** | 34 (na escala de 29, com 10 enfermeiros e 19 técnicos) | 1: quadro abaixo do QP completo (29,70) |
+
+![Resultado com 19 técnicos](docs/demonstracao/rodada2_19tec_resultado.png)
+
+*19 técnicos: a escala sai, com o alerta do quadro de pessoal.*
+
+![Resultado com 18 técnicos](docs/demonstracao/rodada2_18tec_resultado.png)
+
+*18 técnicos: falta 1. O diagnóstico aparece na caixa, e a escala mostrada é a de 29.*
 
 Com 18 técnicos, a caixa do diagnóstico diz:
 
