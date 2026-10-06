@@ -30,7 +30,8 @@ import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
-JAR = RAIZ / "avaliador" / "evaluator.jar"
+AVALIADOR = RAIZ / "avaliador"
+JAR = AVALIADOR / "evaluator.jar"
 CLASSE = "dds.nrp.core.evaluation.ScheduleEvaluator"
 TEMPO_LIMITE = 300  # segundos
 
@@ -53,7 +54,9 @@ def _executar(argumentos: list[str]) -> str:
     problemas = diagnostico()
     if problemas:
         raise AvaliadorIndisponivel("; ".join(problemas))
-    comando = ["java", "-cp", str(JAR), CLASSE, *argumentos]
+    # CORRIGIDO EM 06/10 (DECISOES.md, "Correcao de defeito: src/validar.py"): o classpath
+    # tinha so o evaluator.jar, sem dom4j/jaxen/jaxb-api; o curinga, como no README, leva todos.
+    comando = ["java", "-cp", str(AVALIADOR / "*"), CLASSE, *argumentos]
     try:
         processo = subprocess.run(comando, capture_output=True, text=True,
                                   timeout=TEMPO_LIMITE, check=False)
@@ -91,8 +94,12 @@ def avaliar(instancia: Path | str, solucao: Path | str) -> tuple[int | None, str
     solucao com sufixo `_avaliador.txt`.
     """
     instancia, solucao = Path(instancia), Path(solucao)
-    resumida = _executar([str(instancia), str(solucao), "-p"])
-    detalhada = _executar([str(instancia), str(solucao)])
+    # CORRIGIDO EM 06/10: `-p` tem de vir ANTES dos arquivos (README); depois deles o avaliador
+    # responde "Syntax error". E caminhos com barra normal: com contrabarra o avaliador recusa
+    # caminho absoluto ("Invalid file path").
+    arquivos = [instancia.as_posix(), solucao.as_posix()]
+    resumida = _executar(["-p", *arquivos])
+    detalhada = _executar(arquivos)
     registro = solucao.with_name(solucao.stem + "_avaliador.txt")
     registro.write_text(detalhada, encoding="utf-8")
     return _numero(resumida), resumida.strip(), detalhada

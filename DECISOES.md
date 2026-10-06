@@ -1614,6 +1614,10 @@ passados com barra normal.
 (`resultados/medium_late05_2026-10-06/medium_late05_escala.xml`), com "os dois valores batem"
 em cada uma.
 
+**Resultado (06/10, depois da correção, uma conferência por processo):** 56, 58, 197, 219 e
+224, "os dois valores batem" nas cinco — igual ao esperado. A do `medium_late05` foi chamada
+com caminho absoluto e contrabarra, de propósito, para pôr à prova a troca para barra normal.
+
 ---
 
 ## Modelo de entrada
