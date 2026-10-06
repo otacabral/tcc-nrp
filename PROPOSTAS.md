@@ -231,6 +231,9 @@ A P1 está desbloqueada: objetivo decidido.
   no formato INRC mais o complemento com o que o formato não representa (indisponibilidades),
   para baixar e carregar na tela, com validação e resumo em português. Ver `DECISOES.md`,
   "2026-10-05 — Arquivo de configuração vira trabalho futuro".
+- **Teste da ferramenta com quem monta escala** (acrescentado em 06/10, da P10 descartada):
+  validação de face com enfermeiros que montam escala de verdade. No texto, entra como
+  limitação declarada. Ver P10 e P5.
 - **Parar a etapa 2 ao atingir o piso aritmético da amplitude** (acrescentado em 05/10, P1):
   simples só com contrato e turno homogêneos e sem indisponibilidade. Na rodada com folga, a
   etapa 2 chegou ao piso entre 18 e 81 s e gastou o resto do tempo tentando provar.
@@ -374,3 +377,15 @@ Enquanto não houver decisão, a ferramenta diz no alerta que houve empate, nome
 conta com o maior percentual dos empatados, declarando isso. Saídas possíveis: maior
 percentual (conservador); maior número de pacientes ("prevalência", a palavra dos exercícios);
 ou exigir que o usuário escolha.
+
+---
+
+## 2026-10-06 — P10: validação de face com quem monta escala
+
+**Status: DESCARTADA em 06/10 pelo Otávio** — sem contato viável no prazo. Não será feita no
+TCC. Vai para trabalhos futuros (P3) como "teste da ferramenta com quem monta escala"; no texto,
+entra como **limitação declarada**.
+
+*Nota de numeração:* a P10 foi proposta no projeto de redação e não tinha entrada neste arquivo
+(aqui não há P9). É o mesmo tema da P5 (teste de uso qualitativo com 1 ou 2 profissionais, não
+executada por decisão de 02/10); as duas levam à mesma limitação declarada.
