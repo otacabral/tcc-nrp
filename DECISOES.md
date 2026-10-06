@@ -1562,6 +1562,60 @@ só existem nela (lista no `resultados/relatorio_2026-10-06a.md`, item 2). Fecha
 
 ---
 
+## 2026-10-06 — Padrão das 36 h fica no XML (opção (a) da P13)
+
+**Status: vigente.** Decidido pelo Otávio em 06/10. **Decisão registrada em 06/10 sobre um
+comportamento que o código já aplicava antes de 23/09:** os padrões `clt_36h_*` continuam
+escritos no XML das instâncias brasileiras (`instancia_br._padroes_de`, que gera os padrões, e
+`instancia_br.escrever_xml`, que os escreve em `<Patterns>` e no `<UnwantedPatterns>` do
+contrato) — a opção (a) da P13. No modelo, os mesmos pares continuam rígidos.
+
+**Motivo.** A opção (b), tirar os padrões do XML, alteraria os 544 XML da conferência e
+exigiria refazer os experimentos. E nas instâncias brasileiras a regra das 36 h não depende do
+avaliador oficial: é conferida por **medição direta do descanso** na escala
+(`docs/conferencia_descanso_escala.py`), porque o avaliador lê o padrão como (noturno, folga,
+folga) e cobra violações que não existem (P13; `ESTADO_ATUAL.md`, achado metodológico).
+
+Fecha a P13 (`historico/escopo-comparacao-regimes/PROPOSTAS.md`).
+
+---
+
+## 2026-10-06 — Correção de defeito: `src/validar.py` não conseguia chamar o avaliador
+
+**Status: vigente.** Correção de defeito, permitida pelo congelamento das funcionalidades.
+
+**O defeito, presente desde a criação do arquivo** (commit `603d1f7`, 15/09; nenhuma linha
+mudou depois):
+- o classpath tinha só `avaliador/evaluator.jar`, sem as dependências (dom4j, jaxen,
+  jaxb-api): o Java falha com `NoClassDefFoundError` (linha 56);
+- a chamada resumida passava `-p` **depois** dos arquivos (linha 94): o avaliador responde
+  "Syntax error", como o próprio README avisa desde 15/09;
+- a penalidade é lida só da chamada resumida; quebrada, ela sai `None` ("não interpretado"), e
+  o script acusa divergência.
+
+Achado em 06/10, ao rodar o `medium_late05` (`resultados/relatorio_2026-10-06b.md`). Caminho
+absoluto com contrabarra também é recusado pelo avaliador ("Invalid file path"); com barra
+normal, funciona.
+
+**Nenhum resultado registrado passou por ele** (verificado em 06/10). O `validar.py` nunca
+podia devolver um número do avaliador. Os scripts que gravam conferências chamam o Java
+direto, do jeito certo (`java -cp "avaliador/*"`): `experimento_a.py`,
+`docs/conferencia_piso_forcado.py` e `docs/conferencia_padrao_avaliador.py`. Nenhum script
+importa o `validar.py`. A coluna `avaliador_oficial` do `resultados/consolidado.csv` (18/09)
+não tem origem documentada, mas o `validar.py` não teria como produzir aqueles números (56,
+58, 197, 219).
+
+**Correção** (como no README): classpath `avaliador/*`; `-p` antes dos arquivos; caminhos
+passados com barra normal.
+
+**Esperado registrado ANTES de rodar** (06/10): o `validar.py` dá 56, 58, 197 e 219 nas escalas
+ótimas da regressão (`resultados/sprint01_completo.xml`, `sprint02_completo.xml`,
+`long01_completo.xml`, `long02_completo.xml`, de 22/09) e 224 na escala do `medium_late05`
+(`resultados/medium_late05_2026-10-06/medium_late05_escala.xml`), com "os dois valores batem"
+em cada uma.
+
+---
+
 ## Modelo de entrada
 
 ```

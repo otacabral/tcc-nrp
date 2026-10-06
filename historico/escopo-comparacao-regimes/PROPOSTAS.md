@@ -1166,6 +1166,8 @@ aprovada, o custo é da ordem do Experimento B numa instância de 36 pessoas —
 
 ## 2026-09-23 — P13: o avaliador oficial não lê o padrão das 36 h como nós o escrevemos
 
+**Status: FECHADA em 06/10** — vale a opção (a): o padrão fica no XML. Ver `DECISOES.md`,
+"2026-10-06 — Padrão das 36 h fica no XML (opção (a) da P13)". *Registro anterior:*
 **Status: aguardando validação. Não implementei nada.** O que existe é a evidência, em
 `docs/conferencia_padrao_avaliador.py`, que reproduz tudo abaixo em três comandos de Java.
 
