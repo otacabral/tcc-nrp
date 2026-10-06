@@ -1,0 +1,17 @@
+{
+ "instancia": "medium_late05",
+ "publicado": 107,
+ "solver": "appsi_highs",
+ "limite_s": 3600,
+ "relogio_s": 3604.1,
+ "estado": "maxTimeLimit",
+ "provou_otimo": false,
+ "gap": 0.71875,
+ "limite_inferior_log": "63",
+ "melhor_valor_log": "224",
+ "maquina": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel | Windows-10-10.0.26200-SP0 | Python 3.11.9",
+ "valor_modelo": 224,
+ "valor_avaliacao_py": 224,
+ "validar_saida": "instancia : medium_late05.xml\nsolucao   : medium_late05_escala.xml\navaliador : (nao interpretado)\n  saida crua do avaliador, para leitura:\n  Syntax error.\n  \n  NRP Competition Solution Evaluator\n  \n  java -jar nrpevaluator.jar [-h] [-p] instance solution\n  \n  \n      instance    the xml file representing the problem instance\n      solution    the xml or txt file representing the solution of the instance\n      -h          print this help information\n      -p    only print the penalty value\nmodelo    : 224\n[FALHA] divergencia de 224\n  a saida detalhada esta no arquivo _avaliador.txt, com as violacoes por restricao e por profissional",
+ "validar_codigo": 1
+}
