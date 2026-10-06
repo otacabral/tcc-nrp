@@ -231,6 +231,8 @@ A P1 está desbloqueada: objetivo decidido.
   no formato INRC mais o complemento com o que o formato não representa (indisponibilidades),
   para baixar e carregar na tela, com validação e resumo em português. Ver `DECISOES.md`,
   "2026-10-05 — Arquivo de configuração vira trabalho futuro".
+- **Fechar o `medium_late05`** (acrescentado em 06/10, P9): provar o ótimo de 107 exigiria
+  formulação reforçada ou solver comercial. Ver P9.
 - **Teste da ferramenta com quem monta escala** (acrescentado em 06/10, da P10 descartada):
   validação de face com enfermeiros que montam escala de verdade. No texto, entra como
   limitação declarada. Ver P10 e P5.
@@ -377,6 +379,28 @@ Enquanto não houver decisão, a ferramenta diz no alerta que houve empate, nome
 conta com o maior percentual dos empatados, declarando isso. Saídas possíveis: maior
 percentual (conservador); maior número de pacientes ("prevalência", a palavra dos exercícios);
 ou exigir que o usuário escolha.
+
+---
+
+## 2026-10-06 — P9: fechar o `medium_late05`
+
+**Status: decidida em 06/10 pelo Otávio — NÃO executar antes de 04/11.** Recomendação de não
+executar, acatada; vai para trabalhos futuros (P3).
+
+**O que se sabe.** Em 06/10, com limite de 3.600 s, `appsi_highs`: melhor escala de **224**,
+limite inferior **63**, gap **71,88%**, sem prova; o ótimo publicado é 107 (Tabela 6). O
+avaliador oficial e o `avaliacao.py` confirmam 224 na escala obtida
+(`resultados/medium_late05_2026-10-06/`; `resultados/relatorio_2026-10-06b.md`).
+
+**Por que não executar.** Mais tempo e ajuste de parâmetros do HiGHS têm efeito marginal: o gap
+de 71,88% vem do **limite inferior fraco** (63 contra 107), não de falta de busca por escala.
+Fechar exigiria **formulação reforçada** — mudança de formulação, fora do congelamento — ou
+**solver comercial**, o que muda o solver da validação.
+
+**O que a validação do modelo já tem sem isso:** os 4 ótimos provados (56, 58, 197, 219 =
+Tabela 6) e, no `medium_late05`, a concordância modelo = `avaliacao.py` = avaliador oficial
+em 224 — que confere a semântica das restrições e dos pesos que só essa instância exercita,
+mesmo sem o ótimo.
 
 ---
 
