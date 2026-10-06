@@ -16,6 +16,12 @@ estamos** e **o que vem depois**.
 > em `resultados/suite_2026-10-06/` e no `resultados/relatorio_2026-10-06a.md`. Funcionalidades
 > congeladas desde 05/10; daqui em diante, só correção de defeito, com esperado registrado
 > antes. Inventário dos números citáveis: `resultados/NUMEROS_TCC.md`.
+>
+> **06/10/2026 — v1.0.1: VERSÃO CITÁVEL DO TCC.** Tag `v1.0.1` no commit desta nota. Diferença
+> para a `v1.0`: a correção de defeito do `src/validar.py` (classpath `avaliador/*`, `-p` antes
+> dos arquivos, barra normal; `DECISOES.md`, "Correção de defeito: `src/validar.py`"), com as
+> cinco conferências refeitas no avaliador oficial (56, 58, 197, 219 e 224). A suíte não foi
+> rodada de novo: nenhum teste usa o `validar.py`.
 
 ---
 

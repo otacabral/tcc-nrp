@@ -21,16 +21,34 @@ Os comandos rodam da raiz, com a `.venv` ativa.
 
 | Valor | O que mede | Origem | Comando | Conferência | Ressalva |
 |---|---|---|---|---|---|
-| 56 | ótimo de `sprint01` (sprint_early01) | `resultados/consolidado.csv`; saída do `regressao.py` | `python src\regressao.py --todos` | Tabela 6 de Santos et al. (2016) e avaliador oficial (coluna `avaliador_oficial`) | — |
-| 58 | ótimo de `sprint02` | idem | idem | Tabela 6 e avaliador | — |
-| 197 | ótimo de `long01` | idem | idem | Tabela 6 e avaliador | — |
-| 219 | ótimo de `long02` | idem | idem | Tabela 6 e avaliador | — |
+| 56 | ótimo de `sprint01` (sprint_early01) | `resultados/consolidado.csv`; saída do `regressao.py` | `python src\regressao.py --todos` | Tabela 6 de Santos et al. (2016); **avaliador oficial reconfirmado em 06/10** com `src/validar.py` corrigido (commit `e9e0da4`): `python src\validar.py instancias/sprint/sprint/sprint01.xml resultados/sprint01_completo.xml --objetivo 56` → "os dois valores batem" | a coluna `avaliador_oficial` do `consolidado.csv` (18/09) não tem origem documentada; a reconfirmação de 06/10 a substitui |
+| 58 | ótimo de `sprint02` | idem | idem | Tabela 6; **avaliador oficial reconfirmado em 06/10** com `src/validar.py` corrigido (commit `e9e0da4`): `python src\validar.py instancias/sprint/sprint/sprint02.xml resultados/sprint02_completo.xml --objetivo 58` → "os dois valores batem" | idem |
+| 197 | ótimo de `long01` | idem | idem | Tabela 6; **avaliador oficial reconfirmado em 06/10** com `src/validar.py` corrigido (commit `e9e0da4`): `python src\validar.py instancias/long/long/long01.xml resultados/long01_completo.xml --objetivo 197` → "os dois valores batem" | idem |
+| 219 | ótimo de `long02` | idem | idem | Tabela 6; **avaliador oficial reconfirmado em 06/10** com `src/validar.py` corrigido (commit `e9e0da4`): `python src\validar.py instancias/long/long/long02.xml resultados/long02_completo.xml --objetivo 219` → "os dois valores batem" | idem |
 | ~~107 (publicado) contra 716 (obtido)~~ **SUPERADA em 06/10** pela linha seguinte | ~~`medium_late05` não fechou no limite (520 s)~~ | `resultados/consolidado.csv` | ORIGEM NÃO ENCONTRADA (comando da rodada) | avaliador dá 716 à escala obtida | ambiente "HiGHS via SciPy, container de desenvolvimento", 15/09 |
-| 107 (publicado) contra **224** (obtido); limite inferior 63; gap 71,88%; estado `maxTimeLimit` (sem prova) | `medium_late05`, alvo de validação, rodado de novo em 06/10 com limite de 3.600 s | `resultados/medium_late05_2026-10-06/` (`resumo.json`, `highs.log`, `medium_late05_escala.xml`) | `python docsodar_medium_late05.py` (esperado registrado antes, commit `b9921fb`) | **avaliador oficial: 224** na escala gravada (`java -cp "avaliador/*" dds.nrp.core.evaluation.ScheduleEvaluator ...`); `avaliacao.py`: 224 | não reproduz o ótimo de 107: entra como limite declarado. 3.604 s de relógio é **limite operacional** (i5-10210U, `appsi_highs`, HiGHS 1.15.1). 15.320 variáveis e 13.060 restrições |
+| 107 (publicado) contra **224** (obtido); limite inferior 63; gap 71,88%; estado `maxTimeLimit` (sem prova) | `medium_late05`, alvo de validação, rodado de novo em 06/10 com limite de 3.600 s | `resultados/medium_late05_2026-10-06/` (`resumo.json`, `highs.log`, `medium_late05_escala.xml`) | `python docs\rodar_medium_late05.py` (esperado registrado antes, commit `b9921fb`) | **avaliador oficial: 224**, reconfirmado em 06/10 com `src/validar.py` corrigido (commit `e9e0da4`): `python src\validar.py instancias/medium/medium_late_xml/medium_late05.xml resultados/medium_late05_2026-10-06/medium_late05_escala.xml --objetivo 224` → "os dois valores batem"; `avaliacao.py`: 224 | não reproduz o ótimo de 107: entra como limite declarado (P9: não fechar antes de 04/11). 3.604 s de relógio é **limite operacional** (i5-10210U, `appsi_highs`, HiGHS 1.15.1). 15.320 variáveis e 13.060 restrições |
+odar_medium_late05.py` (esperado registrado antes, commit `b9921fb`) | **avaliador oficial: 224** na escala gravada (`java -cp "avaliador/*" dds.nrp.core.evaluation.ScheduleEvaluator ...`); `avaliacao.py`: 224 | não reproduz o ótimo de 107: entra como limite declarado. 3.604 s de relógio é **limite operacional** (i5-10210U, `appsi_highs`, HiGHS 1.15.1). 15.320 variáveis e 13.060 restrições |
 | 207 escalas em 69 instâncias | penalidade de `avaliacao.py` idêntica à do avaliador, par a par (profissional × restrição) | `DECISOES.md`, "2026-09-18 — Semântica das flexíveis validada fora do modelo" | ORIGEM NÃO ENCONTRADA (o script das escalas heurísticas não está no repositório) | avaliador oficial | escalas heurísticas, não do modelo |
 | 36 escalas adversárias em 6 instâncias | idem, casos construídos | idem | ORIGEM NÃO ENCONTRADA (script) | avaliador oficial | 207 + 36 = as "243 escalas de teste" da especificação |
 | 116 contra 0 | cobranças do avaliador ao padrão (noturno, folga, diurno) contra violações reais | `ESTADO_ATUAL.md` (P13); `docs/para_orientacao_2026-09-23.md` | `python docs\conferencia_padrao_avaliador.py` | o próprio avaliador | demonstra o comportamento, não o código do avaliador |
 | 304 padrões em 59 arquivos, nenhum no formato | varredura do INRC pelo formato lido errado | idem | idem | aritmética sobre os arquivos | — |
+
+**Caracterização do `medium_late05`** (lida do arquivo em 06/10, sem solver; detalhe no
+`resultados/relatorio_2026-10-06c.md`, item 3):
+
+| Valor | O que é | Origem |
+|---|---|---|
+| 30 | profissionais, em 3 contratos com gente (15, 10 e 5); um quarto contrato, `night`, não tem ninguém | `instancias/medium/medium_late_xml/medium_late05.xml`, lido por `src/parser.py` |
+| 28 | dias do horizonte (01/01/2010 a 28/01/2010) | idem |
+| 5 | tipos de turno, todos de 8 h (E, D, DH, L, N); `DH` exige `HeadNurse`, que 3 pessoas têm | idem |
+| 390 | pedidos de folga (300 por turno, 90 por dia) | idem |
+| quase todas | restrições flexíveis ativas, com pesos de 1 a 10 | idem |
+| 7 | padrões indesejados por contrato | idem |
+
+**Ressalva.** É **comparação de estrutura** com a instância da demonstração (30 pessoas em
+12×36, 2 turnos de 12 h, CLT rígida, só os pedidos de folga flexíveis). Ter quase tudo flexível e
+com peso é **explicação provável** da diferença de dificuldade, **não causa demonstrada**:
+nenhum experimento isolou os fatores.
 
 ## 2. Experimento A (efetivo mínimo; escopo anterior, hoje validação)
 
