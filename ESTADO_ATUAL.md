@@ -9,6 +9,14 @@ trabalho em `CLAUDE.md`, o inventário de código em `MAPA_CODIGO.md`, as decis�
 em `DECISOES.md`. Este arquivo diz **em que ponto
 estamos** e **o que vem depois**.
 
+> **06/10/2026 — FERRAMENTA FECHADA, v1.0** (tag `v1.0` no commit desta nota). Suíte completa
+> final de 06/10, um teste por processo: 17 de 17 OK — `regressao.py --todos` (56, 58, 197,
+> 219 = Tabela 6), `testes_entrada.py`, todos os testes da tela (1–5, 4b, 7.1–7.4, 8a–8d,
+> 9a–9d, 9b-sem-teto, 9c-tela) e os 544 XML idênticos byte a byte. Tempos e picos de memória
+> em `resultados/suite_2026-10-06/` e no `resultados/relatorio_2026-10-06a.md`. Funcionalidades
+> congeladas desde 05/10; daqui em diante, só correção de defeito, com esperado registrado
+> antes. Inventário dos números citáveis: `resultados/NUMEROS_TCC.md`.
+
 ---
 
 ## 1. O que é o trabalho, em três frases
