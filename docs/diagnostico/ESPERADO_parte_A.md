@@ -34,3 +34,14 @@ Ocupados por dia = 5 (descansando do N da véspera) + 5 (no N) + 6 (M e T) = **1
   - nada calculado como se todos os turnos tivessem 12 h.
 - **e) 10 + 5:** confirmar no log o que foi "o solver falhou" em 16 (11 + 5) e explicar a duração total.
 - **f)** Classificar o caso: entrada problemática, defeito (arquivo e linha) ou dificuldade do solver.
+
+## Reprodução pelo caminho da tela (registrada antes de rodar, 07/10)
+
+**Resultado do A3a, que motiva esta reprodução:** 15 + 5, limite de 3.600 s. Ótimo **provado**, valor 18, em 1.077,7 s. A primeira escala saiu aos 0,4 s (heurística "J" do HiGHS).
+
+**Esperado** para `python docs\diagnostico\caso_parte_a.py verificar --enf 15 --tec 5`, que passa por `ferramenta.verificar` com os limites da tela (600 s e 180 s):
+- veredito "admite", escala gerada sem prova: "pode haver uma melhor", com gap;
+- tentativas `[(20, 'viavel', 15, 5)]`;
+- etapa 2 "não rodou", porque a etapa 1 não prova o ótimo em 600 s.
+
+Se sair "erro" ("o solver falhou"), o defeito está na orquestração, e o print `[ERRO] ...` da `ferramenta.resolver` diz qual.
