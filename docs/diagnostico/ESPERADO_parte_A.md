@@ -45,3 +45,15 @@ Ocupados por dia = 5 (descansando do N da véspera) + 5 (no N) + 6 (M e T) = **1
 - etapa 2 "não rodou", porque a etapa 1 não prova o ótimo em 600 s.
 
 Se sair "erro" ("o solver falhou"), o defeito está na orquestração, e o print `[ERRO] ...` da `ferramenta.resolver` diz qual.
+
+**Resultado (07/10):** igual ao esperado. Veredito "admite", com "Escala gerada; pode haver uma melhor (gap 15,8% …)", tentativas `[(20, 'viavel', 15, 5)]`, em 601,5 s. A etapa 2 não rodou. **O "o solver falhou" do Otávio não se reproduz** com a entrada descrita, nesta máquina.
+
+## A3e — 10 + 5 pelo caminho da tela (registrado antes de rodar, 07/10)
+
+**Esperado:**
+- 15: "piso" (inviável pela aritmética, por horas);
+- 16 (10 + 6): "inviavel", provado pelo solver;
+- 16 (11 + 5): é a **fronteira** da conta dos ocupados por dia (folga 0), então qualquer uma das três respostas legítimas pode sair: "viavel", "inviavel" ou "indeterminado" (sem escala no tempo);
+- "erro" ("o solver falhou") **não** é resposta legítima: indicaria defeito de orquestração, com o motivo no print `[ERRO]`.
+
+**Duração esperada:** até cerca de 600 s por resolução que não fecha, mais 180 s de etapa 2 se houver prova.
