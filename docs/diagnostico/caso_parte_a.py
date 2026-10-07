@@ -62,10 +62,13 @@ def inspecionar() -> None:
 def etapa1(n_enf: int, n_tec: int, tempo: int, log: str, relaxar: str | None = None) -> None:
     inst = fe.montar(entrada(n_enf, n_tec))
     inst, custo, W = fe.pesos(inst)
-    m = ea.modelo_br(inst, custo)
     if relaxar:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
         import relaxar as rx
-        print("relaxado:", rx.aplicar(m, inst, relaxar))
+        m = rx.montar(inst, custo, relaxar)
+        print("relaxado:", relaxar, "->", rx.REGRAS[relaxar] or "carga_horaria desativada")
+    else:
+        m = ea.modelo_br(inst, custo)
     d = modelo.dimensao(m)
     print(f"{n_enf}+{n_tec}: {d['variaveis']} variaveis, {d['restricoes']} restricoes; "
           f"limite {tempo} s", flush=True)
@@ -77,9 +80,25 @@ def etapa1(n_enf: int, n_tec: int, tempo: int, log: str, relaxar: str | None = N
           f"{time.time() - t0:.1f} s", flush=True)
 
 
+def verificar(n_enf: int, n_tec: int) -> None:
+    """O caminho completo da tela (`ferramenta.verificar`), com hora de cada tentativa."""
+    t0 = time.time()
+
+    def progresso(frac, msg):
+        print(f"[{time.time() - t0:7.1f} s] {msg}", flush=True)
+
+    r = fe.verificar(entrada(n_enf, n_tec), progresso=progresso)
+    print(f"[{time.time() - t0:7.1f} s] veredito: {r.veredito} | frase: {r.frase()}")
+    print("tentativas:", r.tentativas)
+    print("diagnostico:", r.diagnostico[0] if r.diagnostico else None)
+    if r.indicadores:
+        print({k: r.indicadores.get(k) for k in ("provado", "gap", "tempo_etapa1",
+                                                  "tempo_etapa2", "etapa2")})
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("acao", choices=["inspecionar", "etapa1"])
+    ap.add_argument("acao", choices=["inspecionar", "etapa1", "verificar"])
     ap.add_argument("--enf", type=int, default=15)
     ap.add_argument("--tec", type=int, default=5)
     ap.add_argument("--tempo", type=int, default=600)
@@ -88,6 +107,8 @@ def main() -> int:
     a = ap.parse_args()
     if a.acao == "inspecionar":
         inspecionar()
+    elif a.acao == "verificar":
+        verificar(a.enf, a.tec)
     else:
         etapa1(a.enf, a.tec, a.tempo, a.log, a.relaxar)
     return 0
