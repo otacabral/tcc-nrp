@@ -1,0 +1,66 @@
+MIP has 7566 rows; 2632 cols; 26724 nonzeros; 2632 integer variables (2632 binary)
+Coefficient ranges:
+  Matrix  [1e+00, 1e+01]
+  Cost    [1e+00, 1e+00]
+  Bound   [1e+00, 1e+00]
+  RHS     [1e+00, 2e+02]
+Presolving model
+7550 rows, 2632 cols, 26276 nonzeros 0s
+3830 rows, 2632 cols, 18642 nonzeros 0s
+3808 rows, 2632 cols, 18518 nonzeros 0s
+Presolve reductions: rows 3808(-3758); columns 2632(-0); nonzeros 18518(-8206) 
+Objective function is integral with scale 1
+
+Solving MIP model with:
+   3808 rows
+   2632 cols (2632 binary, 0 integer, 0 implied int., 0 continuous, 0 domain fixed)
+   18518 nonzeros
+   Thread count 4 (of 8 threads). Using 1 max workers. Parallel search off
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   0               inf                  inf        0      0      0         0     0.6s
+         0       0         0   0.00%   0               inf                  inf        0      0      2      1682     0.8s
+
+31.2% inactive integer columns, restarting
+Model after restart has 2246 rows, 1811 cols (1811 bin., 0 int., 0 impl., 0 cont., 0 dom.fix.), and 9983 nonzeros
+
+         0       0         0   0.00%   0               inf                  inf       62      0      0      9511     5.0s
+         0       0         0   0.00%   0               inf                  inf       62     48     10      9830     5.1s
+         0       0         0   0.00%   0               inf                  inf     4609    155    752     18660    11.4s
+
+Symmetry detection completed in 0.0s
+Found 63 generator(s)
+
+       110       0        53 100.00%   inf             inf                  inf     5150    185   1634     29374    15.0s
+
+Solving report
+  Status            Infeasible
+  Primal bound      inf
+  Dual bound        inf
+  Gap               inf
+  P-D integral      0
+  Solution status   -
+  Timing            15.02
+                    0.59 (Presolve)
+                        MIP    time [calls] = 0.21 [1]
+                        subMIP time [calls] = 0.37 [3]
+                    14.43 (Solve)
+                        MIP    time [calls] = 14.02 [1]
+                        subMIP time [calls] = 0.41 [2]
+                    0.00 (Postsolve)
+                        MIP    time [calls] = 0.00 [1]
+                        subMIP time [calls] = 0.00 [3]
+  Max sub-MIP depth 2
+  Nodes             110
+  Repair LPs        0
+  LP iterations     29374
+                    0 (strong br.)
+                    4905 (separation)
+                    12143 (heuristics)

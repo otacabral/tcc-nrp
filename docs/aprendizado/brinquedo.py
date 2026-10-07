@@ -4,16 +4,16 @@
 
 O que monta: 12x36 (D 7-19, N 19-7), 3 dias (segunda a quarta), 2 enfermeiros + 1 tecnico,
 1 pedido de folga.
-- Demanda: D com 1 enfermeiro todos os dias; N com 1 tecnico na segunda e na quarta, e
-  nenhum na terca (grade por data).
-- No 12x36 quem trabalha num dia folga no seguinte. Entao, a cada dois dias seguidos, os
-  postos tem de caber em 3 pessoas: seg + ter = 2 + 1 = 3 e ter + qua = 1 + 2 = 3. Cabe
-  justinho.
-- Pedido de folga: Enf 2 na segunda. Pode ser atendido: Enf 1 faz o D de segunda e de quarta,
-  Enf 2 o de terca, e o tecnico o N de segunda e de quarta.
+- ATENCAO, achado ao rodar a primeira versao (07/10): com 3 dias, o teto de horas de cada um e
+  a carga nos dias disponiveis, 44 x 3 / 7 = 18,9 h — UM plantao de 12 h por pessoa no
+  periodo inteiro. A tela usa sempre 28 dias (176 h), entao isso so aparece no brinquedo.
+- Demanda (grade por data): D com 1 enfermeiro na segunda e na quarta; N com 1 tecnico na
+  terca; nada mais. Sao 3 postos para 3 pessoas, um plantao cada.
+- Pedido de folga: Enf 2 na segunda. Pode ser atendido: Enf 1 faz o D de segunda, o tecnico o
+  N de terca e Enf 2 o D de quarta.
 
-A VARIANTE INVIAVEL poe 1 tecnico tambem no N de terca: seg + ter passa a pedir 4 pessoas
-diferentes, e so ha 3.
+A VARIANTE INVIAVEL poe 1 enfermeiro tambem no D de terca: 4 postos para 3 pessoas que so
+podem fazer um plantao cada.
 
 Monta pelo mesmo caminho da tela: `ferramenta.Entrada` e a mesma chamada que
 `ferramenta.montar` faz (`instancia_br.construir`), com uma diferenca so, `dias=3` — a tela
@@ -40,12 +40,14 @@ SEG = br.primeira_segunda()
 
 
 def instancia(inviavel: bool = False):
-    ter = SEG + timedelta(days=1)
+    ter, qua = SEG + timedelta(days=1), SEG + timedelta(days=2)
+    grade = {(SEG, "N", "tec"): 0, (qua, "N", "tec"): 0}
+    if not inviavel:
+        grade[(ter, "D", "enf")] = 0
     e = fe.Entrada(turnos=[("D", 7, 19), ("N", 19, 7)], grau="intermediario",
                    n_enfermeiros=2, n_tecnicos=1,
                    demanda_turno={"D": (1, 0), "N": (0, 1)},
-                   demanda_data={} if inviavel else {(ter, "N", "tec"): 0},
-                   inicio=SEG, pedidos=[("Enf 2", SEG)])
+                   demanda_data=grade, inicio=SEG, pedidos=[("Enf 2", SEG)])
     # a mesma chamada de `ferramenta.montar`, com dias=3
     return br.construir(
         turnos=[(nome, ini, fe.duracao(ini, fim), nome) for nome, ini, fim in e.turnos],
@@ -56,6 +58,7 @@ def instancia(inviavel: bool = False):
 
 
 def resolver(inst, log: Path, lp: Path | None = None):
+    log.unlink(missing_ok=True)          # o HiGHS acrescenta ao arquivo; cada rodada do zero
     inst, custo, W = fe.pesos(inst)
     m = ea.modelo_br(inst, custo)
     if lp is not None:
