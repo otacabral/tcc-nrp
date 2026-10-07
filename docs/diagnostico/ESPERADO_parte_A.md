@@ -57,3 +57,18 @@ Se sair "erro" ("o solver falhou"), o defeito está na orquestração, e o print
 - "erro" ("o solver falhou") **não** é resposta legítima: indicaria defeito de orquestração, com o motivo no print `[ERRO]`.
 
 **Duração esperada:** até cerca de 600 s por resolução que não fecha, mais 180 s de etapa 2 se houver prova.
+
+**Resultado do A3e (07/10):**
+- tentativas `[(15, 'piso'), (16, 'inviavel', 10, 6), (16, 'indeterminado', 11, 5)]`, em 613,5 s;
+- frase: "Não foi possível gerar a escala no tempo disponível com mais profissionais; o menor quadro viável não foi determinado";
+- diagnóstico do 15: "horas".
+
+**Nenhum "erro".** O "o solver falhou" e os ~30 min do Otávio não se reproduzem.
+
+## A3b e A3c — esperado revisto ANTES de rodar (07/10)
+
+Como a base (20 = 15 + 5) acha escala em 0,4 s e prova o ótimo de 18 em 1.078 s (A3a), o esperado agora é:
+- **A3b** (22, 24 e 26, acréscimos como enfermeiros, 600 s cada): **todos acham escala**, e rápido;
+- **A3c** (uma regra relaxada por vez, 15 + 5, 600 s cada): **todos acham escala**. Nenhuma remoção é necessária para destravar, porque nada trava.
+
+Se algum não achar escala, essa é a novidade.

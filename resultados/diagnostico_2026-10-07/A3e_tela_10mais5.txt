@@ -1,0 +1,6 @@
+[    0.0 s] testando quadro de 15 profissionais
+[    0.0 s] testando quadro de 16 profissionais
+[  613.5 s] concluido
+[  613.5 s] veredito: nao_decidido | frase: Não foi possível gerar a escala no tempo disponível com mais profissionais; o menor quadro viável não foi determinado.
+tentativas: [(15, 'piso', None, None), (16, 'inviavel', 10, 6), (16, 'indeterminado', 11, 5)]
+diagnostico: horas
