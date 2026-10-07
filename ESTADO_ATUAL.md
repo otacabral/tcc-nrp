@@ -42,7 +42,10 @@ colunas. Warm start heurístico só como partida, e só se a escala exigir.
 |---|---|
 | 24/09/2026 | Virada de escopo (comparação de regimes → ferramenta). Feita. |
 | ~~10/10/2026~~ **05/10/2026** | **Congelamento das funcionalidades — antecipado para 05/10** (decisão do Otávio, `DECISOES.md`, "2026-10-05 — Congelamento das funcionalidades antecipado"). Até 10/10 só entra correção de defeito, com esperado registrado antes. Nenhuma função nova. |
-| **14/10/2026** | **Congelamento de resultado numérico.** Depois disso, nenhum número novo entra. |
+| 08–12/10/2026 | **Semana de testes**: diagnóstico e bateria de entradas variadas (`DECISOES.md`, "2026-10-06 — Cronograma"). |
+| ~~14/10/2026~~ **16/10/2026** | **Congelamento de resultado numérico — adiado para 16/10** (decisão do Otávio, 06/10), para acomodar a semana de testes. Até lá, fechamento técnico (suíte, demonstração refeita se preciso, `v1.1`) e só correção de defeito, com esperado registrado antes. Depois, nenhum número novo entra. |
+| 13–25/10/2026 | Texto do TCC. |
+| 26–29/10/2026 | Melhoria de tela e textos de ajuda, com o rascunho com o orientador — sem mudar comportamento nem número; capturas finais refeitas no fim. |
 | **04/11/2026** | **Entrega.** |
 
 Em 02/10: oito dias até o congelamento das funcionalidades, doze até o de resultado numérico e cerca de cinco semanas até a entrega.

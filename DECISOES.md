@@ -1620,6 +1620,25 @@ com caminho absoluto e contrabarra, de propósito, para pôr à prova a troca pa
 
 ---
 
+## 2026-10-06 — Cronograma: semana de testes e congelamento dos números em 16/10
+
+**Status: vigente.** Decidido pelo Otávio em 06/10.
+
+- **E1. O congelamento dos números passa de 14/10 para 16/10**, para acomodar a semana de
+  testes. Motivo: uma correção de defeito achado na bateria pode mudar a demonstração.
+- **E2. Ordem do trabalho:**
+  1. semana de testes, de 08 a 12/10: diagnóstico e bateria de entradas variadas;
+  2. fechamento técnico até 16/10: suíte, demonstração refeita se preciso, `v1.1`;
+  3. texto do TCC, de 13 a 25/10;
+  4. melhoria de tela e textos de ajuda, de 26 a 29/10, enquanto o rascunho está com o
+     orientador — sem mudar comportamento nem número, com as capturas finais refeitas no fim.
+- **E3. Até 16/10, só correção de defeito**, com esperado registrado antes.
+
+Altera a data de 14/10 do `ESTADO_ATUAL.md` (seção 2) e da entrada "2026-10-05 —
+Congelamento das funcionalidades antecipado para 05/10", que mantinha 14/10.
+
+---
+
 ## Modelo de entrada
 
 ```
