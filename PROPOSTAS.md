@@ -227,6 +227,10 @@ A P1 está desbloqueada: objetivo decidido.
 - **Continuidade entre períodos** (acrescentado em 29/09): receber os últimos dias do
   período anterior como entrada, para conferir interjornada e descanso na virada entre uma
   escala e a seguinte. Ver `DECISOES.md`, "2026-09-29 — Ajustes da Etapa 2".
+  *Acrescentado em 06/10:* **replanejamento no meio do período** — receber a escala em vigor,
+  fixar os dias já cumpridos e minimizar mudanças. Recalcular do zero com novo início não
+  substitui isso.
+- **Critério de parada por estagnação do gap** (acrescentado em 06/10, P11). Ver P11.
 - **Arquivo de configuração** (acrescentado em 05/10, decisão do Otávio): o pacote com o XML
   no formato INRC mais o complemento com o que o formato não representa (indisponibilidades),
   para baixar e carregar na tela, com validação e resumo em português. Ver `DECISOES.md`,
@@ -413,3 +417,41 @@ entra como **limitação declarada**.
 *Nota de numeração:* a P10 foi proposta no projeto de redação e não tinha entrada neste arquivo
 (aqui não há P9). É o mesmo tema da P5 (teste de uso qualitativo com 1 ou 2 profissionais, não
 executada por decisão de 02/10); as duas levam à mesma limitação declarada.
+
+---
+
+## 2026-10-06 — P11: critério de parada por estagnação do gap
+
+**Status: trabalho futuro** (decisão do Otávio, 06/10; não implementar). Entra na P3.
+
+**A ideia.** Parar a etapa 1 quando nem a melhor escala nem o limite inferior melhoram em T
+segundos; ou aceitar uma tolerância de gap declarada.
+
+**Validação proposta.** Medir nos logs do HiGHS o tempo até a escala final, até a prova e as
+estagnações, como foi feito para os 180 s da etapa 2 (P1, rodada com folga).
+
+**Limite.** Não acelera a prova de inviabilidade na busca do menor quadro, e aumentaria os
+"não determinado".
+
+**Risco.** Gap parado que fecha de repente: a parada cortaria a prova logo antes de ela sair.
+
+---
+
+## 2026-10-06 — P12: orçamento total de tempo por clique
+
+**Status: aguardando decisão do Otávio.** Nada implementado.
+
+**A proposta:**
+- um limite total por clique em "Gerar escala" (por exemplo, 15 min). Esgotado, a tela mostra
+  só o que foi provado: nunca "faltam N" sem prova de inviabilidade;
+- um indicador de progresso: o quadro em teste e o tempo decorrido;
+- trocar "o solver falhou" por um texto que diga o que houve (por exemplo, "sem resposta em
+  10 min").
+
+**Item adicional:** usar em `ferramenta.piso` os tetos do diagnóstico de 05/10
+(`ferramenta.teto_horas`: carga nos dias disponíveis e alternância do 12×36), para descartar
+por conta os tamanhos que a aritmética prova insuficientes, sem gastar solver neles.
+
+**Condição, se aprovada:** a demonstração da clínica sai idêntica, com esperado registrado
+antes.
+
