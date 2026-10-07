@@ -455,3 +455,29 @@ por conta os tamanhos que a aritmética prova insuficientes, sem gastar solver n
 **Condição, se aprovada:** a demonstração da clínica sai idêntica, com esperado registrado
 antes.
 
+---
+
+## 2026-10-07 — P13: conta de "ocupados por dia" no piso e no diagnóstico, para turnos de 12 h ou mais
+
+**Status: candidata a melhoria — NÃO implementar** (parte A do diagnóstico de 07/10). *Não
+confundir com a P13 do escopo anterior, que está no histórico e foi fechada em 06/10.*
+
+**O que falta hoje.** Com turnos de 12 h ou mais misturados a turnos curtos (o modelo "6 h de dia
++ noturno de 12 h"), nem o `ferramenta.piso` nem o diagnóstico da trava (`motivos_da_trava`)
+fazem a conta do descanso pós-noturno. Quem faz o noturno de 12 h no dia d não trabalha em
+d + 1. Então, em cada dia, os postos do dia **mais** os postos do noturno da véspera têm de
+caber nas pessoas disponíveis.
+
+**O caso que mostrou isso.** No caso do Otávio (M 2 + 1, T 2 + 1, N 3 + 2), a conta dá 16
+ocupados por dia, com pelo menos 10 enfermeiros: 16 é fronteira (`docs/diagnostico/`). O piso
+da ferramenta dá 13, por horas, e o diagnóstico não vê motivo simples. A regra dos dois dias
+seguidos só existe hoje para o 12×36 puro (`limite_efetivo` = 1).
+
+**Proposta.** Generalizar a conta dos dois dias seguidos para "turnos que bloqueiam o dia
+seguinte", medidos dos horários, nas duas condições: todos e só enfermeiros. A conta já está
+escrita, independente da ferramenta, em `docs/diagnostico/bateria_desenho.py` (`conta`).
+
+**Condição, se aprovada:** é mudança de funcionalidade (piso e diagnóstico), fora do
+congelamento, salvo se for tratada como correção de defeito. Tem de passar com esperado
+registrado antes, e a demonstração da clínica tem de sair idêntica.
+
