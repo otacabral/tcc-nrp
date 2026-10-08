@@ -37,14 +37,31 @@ pedidos, prova aos ~14 s. Numa maquina muito diferente, os limites podem precisa
     melhor (gap", nenhum success; escala e planilha na tela; equilibrio "nao rodou".
     Pedidos entram por fora da tela (o AppTest nao edita a tabela): `fe.verificar` e
     embrulhado para acrescenta-los a entrada que a tela montou.
-8c. Tempo esgotado sem escala: o 40 sem pedidos, limite de 3 s. Tela: error "Nao foi possivel
-    gerar a escala no tempo disponivel."; nenhum "Faltam" em lugar nenhum; sem diagnostico,
-    sem escala, sem botao de planilha.
+8c. Tempo esgotado sem escala: o 40 sem pedidos, limite de 3 s. Tela: error "Sem resposta em
+    3 s com 40 profissionais: o solver nao achou escala nem provou que ela nao existe.";
+    nenhum "Faltam" em lugar nenhum; sem diagnostico, sem escala, sem botao de planilha.
+    (Texto ate 08/10: "Nao foi possivel gerar a escala no tempo disponivel." — trocado pela
+    P12, DECISOES.md, "2026-10-08 — P12 aprovada"; esperado novo registrado antes.)
 8d. Quadro provado curto pela conta, e o seguinte sem escala no tempo: o 39, limite de 3 s.
     O 39 cai no piso (alternancia), o 40 esgota o tempo. Tela: o diagnostico de alternancia
-    aparece (provado pela conta); a frase e "Nao foi possivel gerar a escala no tempo
-    disponivel com mais profissionais; o menor quadro viavel nao foi determinado."; nenhum
-    "Faltam 1".
+    aparece (provado pela conta); a frase e "O quadro informado e insuficiente. Sem resposta
+    em 3 s com 40 profissionais: o menor quadro viavel nao foi determinado."; nenhum
+    "Faltam 1". (Texto ate 08/10: "Nao foi possivel gerar a escala no tempo disponivel com
+    mais profissionais; o menor quadro viavel nao foi determinado.")
+
+P12 (08/10), esperado registrado ANTES de implementar (`resultados/relatorio_2026-10-08b.md`):
+
+12a. Escala da etapa 1 mostrada ja: no caso 5, a ferramenta avisa a escala da etapa 1 ANTES de
+     comecar a etapa 2, e essa escala cumpre o descanso. Pela tela, a linha "Escala desta
+     tela: ..." concorda com o desfecho da etapa 2, e a grade da tela e igual a da planilha e
+     a `r.escala`, celula a celula.
+12c. Erro tecnico: com o solver trocado por um que levanta excecao, o caso 5 mostra "Erro
+     tecnico ao resolver com 13 profissionais; detalhes no console.", nenhum "o solver falhou"
+     em lugar nenhum, e o console recebe o traceback com a mensagem da excecao.
+12d. Orcamento do clique: o 8d com o orcamento reduzido a 3 s (limite por resolucao de 600 s).
+     O 39 cai no piso; o 40 fica sem resposta, ou nem e tentado, porque o orcamento acaba.
+     Tela: "O quadro informado e insuficiente; o menor quadro viavel nao foi determinado em
+     3 s.", diagnostico de alternancia, nenhum "Falta".
 """
 
 from __future__ import annotations
@@ -288,7 +305,8 @@ def casos_tempo() -> None:
         print("8c. tempo esgotado sem escala: 40 sem pedidos, limite 3 s")
         fe.TEMPO = 3
         at = pela_tela(M12, 14, 26, demanda, fds)
-        confere(textos(at, "error") == ["Não foi possível gerar a escala no tempo disponível."],
+        confere(textos(at, "error") == ["Sem resposta em 3 s com 40 profissionais: o solver "
+                                        "não achou escala nem provou que ela não existe."],
                 f"tela: {textos(at, 'error')}")
         confere(not any("Falta" in t for t in _todos_textos(at)), "nenhum 'Falta'")
         r, _ = at.session_state["resultado"]
@@ -302,8 +320,8 @@ def casos_tempo() -> None:
                 f"tentativas {r.tentativas}")
         confere(r.diagnostico is not None and r.diagnostico[0] == fe.ALTERNANCIA,
                 f"diagnostico de alternancia: {r.diagnostico}")
-        esperado = ("Não foi possível gerar a escala no tempo disponível com mais "
-                    "profissionais; o menor quadro viável não foi determinado.")
+        esperado = ("O quadro informado é insuficiente. Sem resposta em 3 s com 40 "
+                    "profissionais: o menor quadro viável não foi determinado.")
         confere(esperado in textos(at, "error"), f"tela: {textos(at, 'error')}")
         confere(not any("Falta" in t for t in _todos_textos(at)), "nenhum 'Falta'")
     finally:
@@ -724,11 +742,94 @@ def casos_diagnostico() -> None:
             confere(r.menor_viavel == menor, f"   {r.frase()} tentativas {r.tentativas}")
 
 
+# --- P12 (08/10): escala da etapa 1 ja, mensagens de falha, orcamento do clique -----------
+
+def casos_p12() -> None:
+    """12a, 12c e 12d — esperado no docstring do modulo, registrado antes de implementar."""
+    import contextlib
+    import modelo
+    caso5 = (M8, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)})
+
+    print("12a. escala da etapa 1 avisada antes da etapa 2 (caso 5)")
+    eventos = []
+    e = _entrada(M8_TURNOS, 8, 5, caso5[3])
+    fe.verificar(e, aviso=lambda evento, **d: eventos.append((evento, d)))
+    nomes = [ev for ev, _ in eventos]
+    confere("escala_etapa1" in nomes and "etapa2" in nomes
+            and nomes.index("escala_etapa1") < nomes.index("etapa2"),
+            f"ordem dos avisos: {nomes}")
+    d1 = dict(eventos)["escala_etapa1"]
+    confere(fe.cumpre(d1["inst"], fe.medir(d1["inst"], d1["escala"])),
+            "a escala da etapa 1 cumpre o descanso")
+    at = pela_tela(*caso5)
+    r, e = at.session_state["resultado"]
+    linha = [t for t in textos(at, "caption") if t.startswith("Escala desta tela:")]
+    etapa2 = r.indicadores.get("etapa2")
+    if etapa2 == "ok":
+        confere(linha == ["Escala desta tela: a da etapa 2, com a carga equilibrada entre "
+                          "colegas."], f"linha da escala vigente: {linha} (etapa 2 {etapa2})")
+    else:
+        confere(len(linha) == 1 and "a da etapa 1" in linha[0],
+                f"linha da escala vigente: {linha} (etapa 2 {etapa2})")
+    grade_planilha = fe.grade(r.inst, r.escala)
+    grade_tela = at.dataframe[0].value
+    confere(grade_tela.fillna("").astype(str).values.tolist()
+            == grade_planilha.fillna("").astype(str).values.tolist(),
+            "grade da tela = grade da planilha")
+    planilha = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))["Escala"]
+    celulas = {(row[0], col): v for row in planilha.iter_rows(min_row=2, values_only=True)
+               for col, v in enumerate(row[3:])}
+    rot = {s: (t.id[:-1] + "*" if br.HABILIDADE_ENF in t.habilidades else t.id)
+           for s, t in r.inst.turnos.items()}
+    confere(all(celulas.get((r.inst.profissionais[n].nome, r.inst.indice(d))) == rot[s]
+                for d, n, s in r.escala)
+            and sum(1 for v in celulas.values() if v and v != "indisp.") == len(r.escala),
+            "planilha = r.escala, celula a celula")
+
+    print("12c. erro tecnico: solver que levanta excecao (caso 5)")
+    original = modelo.resolver
+
+    def quebrado(*a, **k):
+        raise RuntimeError("falha simulada do solver (teste 12c)")
+
+    console = io.StringIO()
+    modelo.resolver = quebrado
+    try:
+        with contextlib.redirect_stdout(console), contextlib.redirect_stderr(console):
+            at = pela_tela(*caso5)
+    finally:
+        modelo.resolver = original
+    confere(textos(at, "error") == ["Erro técnico ao resolver com 13 profissionais; detalhes "
+                                    "no console."], f"tela: {textos(at, 'error')}")
+    confere(not any("solver falhou" in t for t in _todos_textos(at)), "nenhum 'o solver falhou'")
+    saida = console.getvalue()
+    confere("Traceback" in saida and "falha simulada do solver (teste 12c)" in saida,
+            f"console com o traceback: {saida[-300:]!r}")
+
+    print("12d. orcamento do clique de 3 s: o 39 cai no piso, o 40 nao e decidido")
+    demanda, fds = {"D": (1, 9), "N": (1, 9)}, {"D": (1, 6), "N": (1, 6)}
+    original_orc = fe.ORCAMENTO
+    fe.ORCAMENTO = 3
+    try:
+        at = pela_tela(M12, 13, 26, demanda, fds)
+    finally:
+        fe.ORCAMENTO = original_orc
+    r, _ = at.session_state["resultado"]
+    confere(r.tentativas[0] == (39, "piso", None, None)
+            and all(t[0] == 40 for t in r.tentativas[1:]) and not r.escala,
+            f"tentativas {r.tentativas}")
+    confere("O quadro informado é insuficiente; o menor quadro viável não foi determinado em "
+            "3 s." in textos(at, "error"), f"tela: {textos(at, 'error')}")
+    confere(r.diagnostico is not None and r.diagnostico[0] == fe.ALTERNANCIA,
+            f"diagnostico de alternancia: {r.diagnostico}")
+    confere(not any("Falta" in t for t in _todos_textos(at)), "nenhum 'Falta'")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
          "9b-sem-teto": caso_9b_sem_teto, "9c-tela": caso_9c_tela,
-         "7.4": casos_diagnostico_p7, "4b": casos_grau_alerta}
+         "7.4": casos_diagnostico_p7, "4b": casos_grau_alerta, "12": casos_p12}
 
 
 def main() -> int:
