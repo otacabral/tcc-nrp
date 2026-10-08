@@ -30,6 +30,12 @@ STATUS=$?
 
 kill $VIGIA 2>/dev/null
 powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='python.exe' AND CommandLine LIKE '%streamlit run%8599%'\" | ForEach-Object { Stop-Process -Id \$_.ProcessId -Force }"
+# conferidor independente da entrada (08/10): a planilha baixada contra os dados DECLARADOS
+# do caso — cobertura dia a dia, rigidas, descanso no relogio, teto e ferias
+if [ $STATUS -eq 0 ]; then
+    .venv/Scripts/python.exe docs/demonstracao/conferir_planilhas.py "$NOME" >> "$OUT" 2>&1
+    STATUS=$?
+fi
 echo "status $STATUS" >> "$OUT"
 echo "menor memoria livre: $(sort -t= -k2 -n "$MEM" | head -1)" >> "$OUT"
 exit $STATUS

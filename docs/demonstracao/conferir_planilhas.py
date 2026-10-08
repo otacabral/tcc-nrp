@@ -40,6 +40,21 @@ def instancia(e, nomes: list[str]):
     raise ValueError("nenhuma composicao tem os nomes da planilha")
 
 
+def cobertura_declarada(e, inst, tab) -> list:
+    """Dias e turnos em que a planilha cobre diferente da demanda DECLARADA no caso. Pega
+    entrada digitada errada na tela (o feriado de 20/11 colado em 24/11 ate 08/10), que
+    `conferir_rigidas` nao pega se a instancia vier do que a tela recebeu."""
+    declarada = fe.montar(e)
+    rot = fe.rotulos(inst)
+    dif = []
+    for k, d in enumerate(inst.dias):
+        cont = tab[tab.columns[2 + k]].dropna().value_counts().to_dict()
+        for s in inst.turnos:
+            if cont.get(rot[s], 0) != declarada.demanda_de(d, s):
+                dif.append((fe.rotulo_dia(d), s, declarada.demanda_de(d, s), cont.get(rot[s], 0)))
+    return dif
+
+
 def conferir(rodada: str, tec: int | None) -> bool:
     arq = AQUI / f"{rodada}_escala.xlsx"
     tab = pd.read_excel(arq, sheet_name="Escala", index_col=0)
@@ -61,6 +76,9 @@ def conferir(rodada: str, tec: int | None) -> bool:
     acima = [n for n, h in horas.items() if h > inst.horas_devidas(n) + 1e-6]
     ferias = [(d, n) for d, n, _ in escala if (n, d) in inst.indisponiveis]
     ok = not rigidas and fe.cumpre(inst, m) and not acima and not ferias
+    dif = cobertura_declarada(e, inst, tab)
+    ok = ok and not dif
+    print(f"{rodada}: cobertura contra a demanda DECLARADA no caso: {dif or 'igual em todos os dias'}")
     print(f"{rodada}: {len(tab)} profissionais, {len(escala)} atribuicoes | rigidas "
           f"{rigidas[:2] or 'ok'} | descanso {'cumpre' if fe.cumpre(inst, m) else 'NAO CUMPRE'} "
           f"(menor folga {m['menor_folga']:.0f} h, semanal {fe.fmt_semanal(m['menor_semanal'])}, "
@@ -69,7 +87,10 @@ def conferir(rodada: str, tec: int | None) -> bool:
 
 
 def main() -> int:
-    ok = all([conferir(r, t) for r, t in RODADAS.items()])
+    """Sem argumento, as tres rodadas; com argumentos, so as nomeadas (o `rodar_rodada.sh`
+    chama uma por vez, no fim de cada rodada)."""
+    nomes = sys.argv[1:] or list(RODADAS)
+    ok = all([conferir(r, RODADAS[r]) for r in nomes])
     print("planilhas da demonstracao: OK" if ok else "planilhas da demonstracao: FALHA")
     return 0 if ok else 1
 

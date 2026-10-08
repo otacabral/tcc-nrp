@@ -48,3 +48,30 @@ depois da conta acima, dá o mesmo: nenhum motivo em 20 e 19; "alternância" em 
 | 20 (rodada 1) | admite; 0 alertas; enf. em posto de téc. ≥ 24 | admite; **0 alertas**; **24** — o mínimo da conta |
 | 19 | admite; 1 alerta (QP 29,85); ≥ 36 | admite; **1 alerta**, texto idêntico ao esperado; **36** — o mínimo da conta |
 | 18 | trava; "Falta 1; o menor quadro viável é 29"; diagnóstico só "Alternância" (ter 03/11 e qua 04/11, 28 plantões, 27 pessoas); 1 alerta (QP 29,70) | **igual**, palavra por palavra. A escala de 29 é 10 enfermeiros + 19 técnicos, com 34 turnos de enfermeiro em posto de técnico |
+
+---
+
+## Esperado de 08/10 — demonstração refeita com o roteiro corrigido
+
+**Registrado em 08/10, ANTES de refazer as três rodadas**, depois de achado e corrigido o
+defeito do roteiro (`capturas.py` colava a demanda de feriado de 20/11 em 24/11; ver
+`DECISOES.md`, "2026-10-08 — Demonstração: feriado de 20/11 digitado em 24/11").
+Conta com os dados DECLARADOS do caso (feriado em 20/11), sem solver:
+`python docs\demonstracao\conta_cortes.py` e `ferramenta.teto_horas` (contrato nos dias
+disponíveis e, no 12×36, no máximo um plantão a cada dois dias).
+
+| Rodada | Veredito e cortes | Alertas COFEN | Mínimo de turnos de enfermeiro em posto de técnico |
+|---|---|---|---|
+| 20 técnicos (30) | **admite** | 0 | **≥ 24** (3.420 h de posto de técnico; tetos dos técnicos 3.132 h) |
+| 19 técnicos (29) | **admite** | 1 (QP completo 29,85) | **≥ 36** (tetos 2.988 h) |
+| 18 técnicos (28) | **"Falta 1; o menor quadro viável é 29"**; diagnóstico só "Alternância do plantão de 12 h", ter 03/11 e qua 04/11, 28 plantões, 27 pessoas | 1 | **≥ 34 na escala de 29** (10 enf + 19 téc, o acrescentado "Téc 19" com 44 h: tetos 3.012 h); ≥ 48 no quadro de 28, que não tem escala |
+
+- Os cortes não mudam em relação às rodadas anteriores: as horas de demanda (4.308 h), o pior
+  par (28 plantões, primeiro em 03–04/11), o piso (28) e os motivos são os mesmos com o
+  feriado em 20/11 ou em 24/11.
+- Os mínimos também são os mesmos: dependem só das horas, que o deslocamento do feriado não
+  muda. Os números que o solver devolve acima do mínimo (e as frações, horas não utilizadas,
+  diferença entre colegas) podem mudar.
+- O conferidor (`conferir_planilhas.py`, chamado no fim de cada rodada) **tem de passar nas
+  três**: cobertura igual à declarada em todos os dias, rígidas, descanso no relógio, teto e
+  férias.

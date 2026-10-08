@@ -119,6 +119,61 @@ def valor_celula(pg, indice_grade, coluna, linha) -> str | None:
     return c.first.text_content() if c.count() else None
 
 
+GRADE_DATAS = 4      # a grade "Demanda especifica por data", na ordem das tabelas da tela
+
+
+def selecionada(pg, indice_grade) -> tuple[int, int] | None:
+    """(coluna, linha) da celula selecionada, pela tabela de acessibilidade da grade."""
+    c = grade(pg, indice_grade).locator("[aria-selected='true']")
+    if not c.count():
+        return None
+    _, _, col, lin = c.first.get_attribute("data-testid").split("-")
+    return int(col), int(lin)
+
+
+def colar_na_data(pg, d, valores, tentativas=4):
+    """Cola `valores` (enf e tec de cada turno) na linha da data `d` da grade de demanda por
+    data, ACHANDO A LINHA PELA DATA (08/10). Ate 08/10 descia k linhas com a seta a partir da
+    primeira linha visivel; com a grade rolada pela colagem anterior, o 20/11 caiu no 24/11.
+    Agora: seleciona uma celula, le a data da linha selecionada (coluna 0), anda a diferenca
+    de dias, confere que a linha selecionada e a da data, cola, e confere os valores colados
+    nessa linha. Qualquer divergencia: tenta de novo; esgotadas as tentativas, para."""
+    from datetime import timedelta
+    alvo = caso.fe.rotulo_dia(d)
+    datas = {caso.fe.rotulo_dia(caso.INICIO + timedelta(days=k)):
+             caso.INICIO + timedelta(days=k) for k in range(28)}
+    texto = "\t".join(str(v) for v in valores)
+    for _ in range(tentativas):
+        caixa = grade(pg, GRADE_DATAS).bounding_box()
+        pg.mouse.click(caixa["x"] + 20, caixa["y"] + CABECALHO + LINHA / 2)
+        pg.wait_for_timeout(800)
+        for _ in range(3):                     # anda ate a linha cuja data e a procurada
+            sel = selecionada(pg, GRADE_DATAS)
+            rotulo = valor_celula(pg, GRADE_DATAS, 0, sel[1]) if sel else None
+            if rotulo == alvo or rotulo not in datas:
+                break
+            passo = (d - datas[rotulo]).days
+            for _ in range(abs(passo)):
+                pg.keyboard.press("ArrowDown" if passo > 0 else "ArrowUp")
+            pg.wait_for_timeout(600)
+        sel = selecionada(pg, GRADE_DATAS)
+        if not sel or sel[0] != 0 or valor_celula(pg, GRADE_DATAS, 0, sel[1]) != alvo:
+            pg.keyboard.press("Escape")
+            continue
+        linha = sel[1]
+        pg.keyboard.press("ArrowRight")
+        pg.evaluate("t => navigator.clipboard.writeText(t)", texto)
+        pg.keyboard.press("Control+V")
+        esperar(pg, 2500)
+        lidos = [valor_celula(pg, GRADE_DATAS, c, linha) for c in range(len(valores) + 1)]
+        if lidos == [alvo] + [str(v) for v in valores]:
+            print(f"demanda de {alvo} colada e conferida na linha {linha}: {valores}")
+            return
+        print(f"colagem em {alvo} nao conferiu (lido {lidos}); tentando de novo")
+    pg.screenshot(path=str(AQUI / "erro_preenchimento.png"))
+    raise RuntimeError(f"nao foi possivel colar a demanda de {alvo} na linha certa")
+
+
 def carga(pg, linha, valor, tentativas=4):
     """Carga semanal da pessoa na `linha` da tabela de cargas (grade 1, coluna 2). A cada
     tentativa: seleciona uma celula visivel da coluna, sobe ao topo pelo teclado, desce ate a
@@ -211,16 +266,8 @@ def preencher(pg, n_tec: int | None):
     pg.get_by_text("Demanda específica por data").click()
     esperar(pg, 1500)
     for d in caso.FERIADOS:
-        k = (d - caso.INICIO).days
-        valores = "\t".join(str(caso.DEMANDA_FERIADO[t][i]) for t in ("D", "N")
-                            for i in (0, 1))
-        colar(pg, 4, 0, 20, "", 0)                 # foca a grade na primeira linha
-        for _ in range(k):
-            pg.keyboard.press("ArrowDown")
-        pg.keyboard.press("ArrowRight")
-        pg.evaluate("t => navigator.clipboard.writeText(t)", valores)
-        pg.keyboard.press("Control+V")
-        esperar(pg, 2500)
+        valores = [caso.DEMANDA_FERIADO[t][i] for t in ("D", "N") for i in (0, 1)]
+        colar_na_data(pg, d, valores)
 
     # 4. COFEN
     pg.get_by_text("4. Conferir com o COFEN").click()
