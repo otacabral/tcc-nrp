@@ -1676,6 +1676,41 @@ conta independente, registrado antes no commit `62bbf4d`; a tradução de cada c
 
 ---
 
+## 2026-10-08 — Demonstração: feriado de 20/11 digitado em 24/11 (defeito do roteiro, corrigido)
+
+**Status: vigente.** Correção de defeito antes do congelamento dos números (16/10),
+autorizada pelo Otávio em 08/10.
+
+**O defeito.** O roteiro que digita a demonstração na tela (`docs/demonstracao/capturas.py`)
+colava a demanda de feriado na grade "Demanda específica por data" clicando na **primeira linha
+visível** e descendo `k` linhas com a seta. Depois da colagem do 15/11, a grade ficava rolada:
+a primeira linha visível já não era a do 02/11, e a do **20/11 caiu em ter 24/11**. Aconteceu
+nas três rodadas de 05/10 e de novo nas de 08/10 (manhã). O 02/11 e o 15/11 entraram certos.
+A ferramenta cobriu exatamente o que recebeu; o erro foi da entrada.
+
+**Como foi achado.** Por um conferidor **independente da entrada**
+(`docs/demonstracao/conferir_planilhas.py`, 08/10): lê a planilha baixada, remonta a escala e
+compara a cobertura, dia a dia, com a demanda **declarada** em `caso_clinica_medica.py` — não
+com a que a tela recebeu.
+
+**Por que as conferências de 05/10 não o pegaram.** Todas partiam da entrada que a tela
+recebeu: a conferência de descanso, a cobertura do modelo e o texto da tela concordavam entre
+si porque compartilhavam a mesma entrada errada. É o padrão do `CLAUDE.md`: "conferência que
+compartilha premissa com o que confere não confere nada". A conta dos cortes
+(`cortes_esperados.md`) usava os dados declarados, mas não olhava a planilha.
+
+**Consequência.** Pela conta, as duas entradas têm as mesmas horas (4.308 h), o mesmo pior par
+de dias (28, em 03–04/11), o mesmo piso e os mesmos motivos: vereditos, cortes e diagnóstico
+não mudam. Os números que saem do solver (enfermeiro em posto de técnico acima do mínimo,
+frações, horas não utilizadas, diferença entre colegas) vinham da entrada errada.
+
+**Correção.** O roteiro acha a linha pela **data**: lê a data da linha selecionada, anda a
+diferença de dias, confere que a linha é a da data antes de colar e confere os valores colados
+nela. O conferidor roda no fim de cada rodada (`rodar_rodada.sh`), e a rodada falha se ele
+falhar. Esperado registrado antes de refazer (`cortes_esperados.md`, seção de 08/10).
+
+---
+
 ## 2026-10-08 — P12 aprovada: progresso na tela, escala da etapa 1 mostrada já, orçamento de 20 min por clique
 
 **Status: vigente.** Aprovada pelo Otávio em 07/10; implementada em 08/10 como **correção de
