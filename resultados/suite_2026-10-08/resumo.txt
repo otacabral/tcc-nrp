@@ -14,3 +14,4 @@ tela_7.4 | codigo 0 | 2 s | ponta a ponta pela tela OK
 tela_9 | codigo 0 | 490 s | ponta a ponta pela tela OK
 tela_9b-sem-teto | codigo 0 | 11 s | ponta a ponta pela tela OK
 tela_9c-tela | codigo 0 | 25 s | ponta a ponta pela tela OK
+tela_12_corrigido | codigo 0 | 386 s | ponta a ponta pela tela OK

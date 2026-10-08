@@ -1,3 +1,5 @@
+ESCALA DA ETAPA 1 NA TELA aos 12 s do clique
+TEMPO DO CLIQUE ATE O RESULTADO: 199 s
 Escala de enfermagem
 
 A CLT trava a escala; o COFEN só alerta. Horizonte de 28 dias, começando numa segunda-feira.
@@ -114,6 +116,8 @@ Conferência de descanso
 
 cumpre
 
+Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.
+
 Descanso mínimo entre turnos 36 h · descanso semanal 36 h · no máximo 1 dia seguido
 
 Enfermeiros: 68%–75% do contrato cumprido · 432 h de contrato não utilizadas (de 1608 h contratadas nos dias disponíveis).
@@ -140,13 +144,13 @@ keyboard_arrow_right
 
 Como o veredito foi obtido
 
+Baixar planilha (.xlsx)
+
 keyboard_arrow_right
 
 Como o veredito foi obtido
 
-Baixar planilha (.xlsx)
-
 Código com * = posto de enfermeiro.
-PICO DE MEMORIA (MB): servidor Streamlit + solver 301; Chrome do Playwright (soma dos processos) 569; este roteiro 58
+PICO DE MEMORIA (MB): servidor Streamlit + solver 295; Chrome do Playwright (soma dos processos) 561; este roteiro 56
 status 0
-menor memoria livre: 20:56:47 livre_MB=2638
+menor memoria livre: 18:39:34 livre_MB=273

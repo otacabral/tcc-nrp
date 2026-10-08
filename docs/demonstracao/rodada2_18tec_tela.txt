@@ -1,3 +1,5 @@
+ESCALA DA ETAPA 1 NA TELA aos 17 s do clique
+TEMPO DO CLIQUE ATE O RESULTADO: 201 s
 Escala de enfermagem
 
 A CLT trava a escala; o COFEN só alerta. Horizonte de 28 dias, começando numa segunda-feira.
@@ -122,6 +124,8 @@ Conferência de descanso
 
 cumpre
 
+Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.
+
 Descanso mínimo entre turnos 36 h · descanso semanal 36 h · no máximo 1 dia seguido
 
 Enfermeiros: 75%–82% do contrato cumprido · 312 h de contrato não utilizadas (de 1608 h contratadas nos dias disponíveis).
@@ -131,8 +135,6 @@ Técnicos: 95%–100% do contrato cumprido · 116 h de contrato não utilizadas 
 Diferença entre categorias: técnicos cumprem em média +16 pontos percentuais do contrato em relação aos enfermeiros. Ela não é otimizada: vem da demanda de cada posto frente ao tamanho de cada categoria.
 
 Equilíbrio de carga dentro de cada categoria, entre as escalas de mesmo custo. Diferença máxima de carga entre colegas — enfermeiros: 0,9 plantão (10,2 h) · técnicos: 0,6 plantão (6,8 h).
-
-Todos os 6 pedidos de folga foram atendidos.
 
 Todos os 6 pedidos de folga foram atendidos.
 
@@ -150,9 +152,15 @@ keyboard_arrow_right
 
 Como o veredito foi obtido
 
+CHS usada no QP: 42,3 h por semana, a média das cargas contratuais da equipe.
+
+keyboard_arrow_right
+
+Como o veredito foi obtido
+
 Baixar planilha (.xlsx)
 
 Código com * = posto de enfermeiro.
-PICO DE MEMORIA (MB): servidor Streamlit + solver 331; Chrome do Playwright (soma dos processos) 580; este roteiro 59
+PICO DE MEMORIA (MB): servidor Streamlit + solver 308; Chrome do Playwright (soma dos processos) 541; este roteiro 60
 status 0
-menor memoria livre: 21:06:44 livre_MB=2958
+menor memoria livre: 18:56:42 livre_MB=737

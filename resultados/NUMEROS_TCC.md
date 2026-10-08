@@ -163,6 +163,18 @@ Configuração: equipe 10 + 20, 12×36, de 02/11 a 29/11/2026.
 | 1 e 0,6 plantão; 0,2 e 0,6; 0,9 e 0,6 | diferença máxima entre colegas (enf. e téc.) | SEM CONFERÊNCIA | a etapa 2 tem tempo limitado e pode variar entre rodadas |
 | 301–331 MB (servidor + solver); 569–600 MB (Chrome) | pico de memória por rodada | — | **limite operacional** |
 
+**Ressalva de 08/10 sobre esta seção inteira.** A entrada digitada pela tela (roteiro
+`docs/demonstracao/capturas.py`) pôs a demanda de feriado de **sex 20/11 em ter 24/11**, nas
+três rodadas de 05/10 e de novo nas de 08/10. Achado por `docs/demonstracao/conferir_planilhas.py`,
+que compara a planilha baixada com a demanda declarada no caso. As demais datas especiais
+(02/11, 15/11) entraram certas. **Não mudam com isso** (conta, sem solver): horas de demanda
+(4.308 h), maior par de dias seguidos (28, primeiro em 03–04/11), piso e motivos da trava —
+portanto vereditos, cortes e texto do diagnóstico. **Podem mudar** os números que saem do solver
+(turnos de enfermeiro em posto de técnico, contrato cumprido, horas não utilizadas, diferença
+entre colegas). Os mínimos da conta (≥ 24, ≥ 36) valem nas duas entradas. Em 08/10, com a P12,
+as três rodadas refeitas deram exatamente os mesmos números de 05/10 (24, 36, 34; 6 de 6),
+com a mesma entrada defeituosa. Decisão pendente: corrigir o roteiro e refazer.
+
 ## 10. Escalabilidade de 28/09 (objetivo trivial)
 
 Origem: `resultados/escalabilidade.csv`. Comando: `python src\escalabilidade.py`.
@@ -190,3 +202,4 @@ commitados antes de rodar.
 | escala legal com 17 (12 + 5) existe no K4 | escala achada para 11 + 6 (K3 + 1 técnico) fixada no modelo do K4: `conferir_rigidas` ok, descanso cumpre, teto ok, modelo "optimal" | esperado registrado antes (commit `57de0c4`) | as duas instâncias diferem só na pessoa "11" (técnico numa, enfermeiro na outra); enfermeiro cobre todo posto de técnico |
 | K4 sem escala em 600 s (07/10), em ~1.909 s (08/10) e K4/embaralhado sem escala em 600 s | **variação de desempenho do solver na fronteira** (folga 1 pela conta), não defeito: a escala existe | idem | **limite operacional**; o de ~1.909 s foi interrompido por falta de memória. Vai para as limitações: casos de fronteira podem não ser decididos no tempo e na memória disponíveis |
 | K3 (16): não determinado | sem escala em 600 s (07/10 e 08/10, 4 derivados) | — | não rodado de novo com tempo longo (decisão do Otávio, 08/10) |
+| 100 casos, estratificados pela conta: 40 folga clara, 30 fronteira, 30 inviáveis | nível 3 sorteado em 08/10 (semente 20261008), **ainda não rodado** | esperados da conta commitados antes (`b8ce2ae`) | **a folga clara ficou concentrada no 8 h (26 de 40; 12×36 9, 6 h + 12 h 5)**: a propriedade 5 (folga clara não termina sem escala) fica mais testada nesse modelo; a fronteira concentra-se no 12×36 (14) e no 6 h + 12 h (14) |

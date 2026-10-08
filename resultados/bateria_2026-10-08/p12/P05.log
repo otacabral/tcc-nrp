@@ -1,0 +1,9 @@
+P05: 12x36, 4+10; esperado pela conta: INVIAVEL pela conta {'horas': 5.714285714285779, 'horas_enf': -18.28571428571422, 'ocupados_dia': -1, 'ocupados_dia_enf': -1}
+P05 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+P05 [    0.0 s] Quadro informado, 14 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+P05 [    2.6 s] Busca do menor quadro, 15 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+P05 [   17.3 s] Escala pronta com 15 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+P05 [  197.9 s] concluido
+P05: Falta 1; o menor quadro viável é 15. Escala gerada. | 198 s | falhas: nenhuma

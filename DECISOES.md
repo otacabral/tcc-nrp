@@ -1705,6 +1705,16 @@ quadros vão ao solver; fica para decisão depois.
 vereditos e textos de diagnóstico; P05, P08 e K1 da bateria, com o mesmo veredito e o mesmo
 menor quadro. Esperado registrado antes de implementar (`resultados/relatorio_2026-10-08b.md`).
 
+**Defeito do teste 12a, corrigido com autorização do Otávio (08/10).** Na primeira suíte, o item
+"grade da tela = grade da planilha" falhou. Causa: o teste lia `at.dataframe[0]`, que é a
+tabela de **turnos** do formulário; a tela tem seis tabelas, e a escala é a única cujas colunas
+começam por "Categoria" e "Turnos". A ferramenta estava certa: a grade da tela era idêntica à
+da planilha, célula a célula. Correção: o teste acha a grade pela característica (colunas
+Categoria e Turnos), exigindo **exatamente uma** — pega também uma grade provisória que não
+tenha sido apagada —; o esperado não mudou. Teste do teste
+(`docs/diagnostico/teste_do_teste_12a.py`, esperado commitado antes): com uma atribuição trocada
+em memória, a conferência **falha**; com a escala real, **passa**.
+
 ---
 
 ## Modelo de entrada

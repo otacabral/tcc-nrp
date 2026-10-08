@@ -1,0 +1,15 @@
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+1. resultado alterado em memoria: 0 em 2027-01-04, TE -> ME
+   ok    uma so grade de escala na tela: 1
+   FALHA grade da tela = grade da planilha
+   ok    planilha = r.escala, celula a celula
+2. resultado como a tela o guardou
+   ok    uma so grade de escala na tela: 1
+   ok    grade da tela = grade da planilha
+   ok    planilha = r.escala, celula a celula
+
+falhas em 1: ['grade da tela = grade da planilha']
+falhas em 2: []
+TESTE DO TESTE OK: pega a diferenca e passa sem ela
+codigo 0

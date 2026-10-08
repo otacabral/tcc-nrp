@@ -1,0 +1,4 @@
+rodada1: 30 profissionais, 359 atribuicoes | rigidas ['cobertura 2026-11-20 turno D: 6 alocados, 4 exigidos', 'cobertura 2026-11-20 turno DE: 2 alocados, 1 exigidos'] | descanso cumpre (menor folga 0 h, semanal 36 h, 1 dias seguidos) | teto ok | ferias ok
+rodada2_19tec: 29 profissionais, 359 atribuicoes | rigidas ['cobertura 2026-11-20 turno D: 6 alocados, 4 exigidos', 'cobertura 2026-11-20 turno DE: 2 alocados, 1 exigidos'] | descanso cumpre (menor folga 0 h, semanal 36 h, 1 dias seguidos) | teto ok | ferias ok
+rodada2_18tec: 29 profissionais, 359 atribuicoes | rigidas ['cobertura 2026-11-20 turno D: 6 alocados, 4 exigidos', 'cobertura 2026-11-20 turno DE: 2 alocados, 1 exigidos'] | descanso cumpre (menor folga 0 h, semanal 36 h, 1 dias seguidos) | teto ok | ferias ok
+planilhas da demonstracao: FALHA

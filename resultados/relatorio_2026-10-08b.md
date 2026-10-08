@@ -304,3 +304,167 @@ O lote usa o código atual de `src/`, já com a P12; com cada caso limitado a 15
 orçamento de 20 min do clique nunca é atingido. O `--lote` pula os casos que já têm resultado: se cair, é só rodar de novo. Cada caso tem no
 máximo 15 min; o lote inteiro, no pior caso, 25 h, mas a maioria dos casos leva segundos ou
 poucos minutos.
+
+---
+
+# Continuação (08/10, tarde) — correção do teste 12a autorizada; B4; nova parada antes do B5
+
+## Para o Otávio (continuação)
+
+- **Teste 12a corrigido e conferido.** Ele acha a escala pelas colunas, não pela posição. O
+  teste do teste falha com uma escala alterada e passa com a real. O 12 inteiro passou.
+- **B2f passou:** P05, P08 e K1 com o mesmo veredito e o mesmo menor quadro de 07/10.
+- **B2e passou nos números:** a demonstração refeita deu os mesmos vereditos, diagnóstico e
+  números de 05/10 (24, 36, 34; 6 de 6), e a escala da etapa 1 apareceu aos 12–17 s.
+- **NOVA PARADA, antes do B5.** A conferência nova das planilhas achou um **defeito do roteiro
+  de capturas, que já estava em 05/10**: o feriado de **20/11 foi digitado em 24/11** nas três
+  rodadas, então e agora. Vereditos, cortes e diagnóstico não dependem disso (conferido pela
+  conta); os números que saem do solver vêm dessa entrada errada.
+- **Para decidir:** corrigir o roteiro (`docs/demonstracao/capturas.py`) e refazer a
+  demonstração, com esperado registrado antes. Só depois: guia, capturas finais, `ESTADO_ATUAL`
+  e tag `v1.1`.
+
+## Condição 1 — a tabela da escala, pela característica
+
+A tela tem seis tabelas (`resultados/suite_2026-10-08/diagnostico_12a_ultima_tabela.log`):
+
+| Posição | Colunas | O que é |
+|---|---|---|
+| 0 | Nome, Início, Fim | turnos (formulário) |
+| 1 | Profissional, Carga semanal (h) | cargas (formulário) |
+| 2 | Profissional, De, Até | férias (formulário) |
+| 3 | Profissional, Data | pedidos (formulário) |
+| 4 | M enf, M téc, T enf, … | demanda por data (formulário) |
+| 5 | **Categoria, Turnos, seg 04/01, …** | **a escala** |
+
+A posição pode mudar (outra tabela no formulário; ou a grade provisória da etapa 1, que tem as
+mesmas colunas, se não fosse apagada). Por isso o teste **localiza pela característica** —
+colunas começando por "Categoria", "Turnos" — e **exige exatamente uma**. O esperado ("grade da
+tela = grade da planilha") não mudou; a comparação passou a ser com a planilha baixada lida de
+volta, inclusive os nomes das linhas. Commit `f3e07f2`.
+
+## Condição 2 — teste do teste
+
+`docs/diagnostico/teste_do_teste_12a.py`, esperado commitado antes (`f3e07f2`); saída em
+`resultados/suite_2026-10-08/teste_do_teste_12a.log`:
+
+```
+1. resultado alterado em memoria: 0 em 2027-01-04, TE -> ME
+   ok    uma so grade de escala na tela: 1
+   FALHA grade da tela = grade da planilha
+   ok    planilha = r.escala, celula a celula
+2. resultado como a tela o guardou
+   ok    uma so grade de escala na tela: 1
+   ok    grade da tela = grade da planilha
+   ok    planilha = r.escala, celula a celula
+TESTE DO TESTE OK: pega a diferenca e passa sem ela
+```
+
+Depois, `python src\testes_ferramenta.py 12`, um processo: **código 0, 386 s, todos os itens
+ok** (`tela_12_corrigido.log`). A suíte fica **16 de 16**.
+
+## Condição 3 — registro
+
+`DECISOES.md`, entrada "2026-10-08 — P12 aprovada": parágrafo "Defeito do teste 12a, corrigido
+com autorização do Otávio (08/10)", com causa, correção e teste do teste.
+
+## B2f — P05, P08 e K1 (com a etapa 2, como em 07/10)
+
+`python docs\diagnostico\bateria_rodar.py <caso> --saida resultados\bateria_2026-10-08\p12`
+
+| Caso | 07/10 | 08/10, com a P12 | Falhas nas conferências |
+|---|---|---|---|
+| P08 | admite, 12 | admite, 12 (184 s) | nenhuma |
+| P05 | faltam 1, menor 15 | faltam 1, menor 15 (198 s) | nenhuma |
+| K1 | admite, 16 | admite, 16 (182 s) | nenhuma |
+
+## B2e — demonstração refeita pela tela
+
+`bash docs/demonstracao/rodar_rodada.sh rodada1` (e `rodada2_19tec --tec 19`,
+`rodada2_18tec --tec 18`), um processo por rodada, servidor reiniciado entre elas.
+
+| Rodada | Veredito (05/10 = 08/10) | Enf. em posto de técnico | Pedidos | Escala da etapa 1 na tela | Clique até o resultado |
+|---|---|---|---|---|---|
+| 20 téc. (30) | admite | 24 = 24 | 6 de 6 | 12 s | 199 s |
+| 19 téc. (29) | admite, alerta de QP | 36 = 36 | 6 de 6 | 17 s | 202 s |
+| 18 téc. (28) | falta 1, menor 29; "Alternância do plantão de 12 h" | 34 = 34 | 6 de 6 | 17 s | 201 s |
+
+Diferenças no texto da tela, linha a linha contra 05/10: só as linhas novas da P12 ("Escala
+desta tela: a da etapa 2, …", o botão de planilha numa posição diferente) e artefatos da
+extração do texto da página (em 05/10 a frase dos pedidos saiu duplicada, agora uma vez; o
+título "Como o veredito foi obtido" e a linha da CHS aparecem agora). A aba Resumo das planilhas
+confirma: 6 de 6, 24/36/34, "cumpre". **O B1 fica medido:** clique de ~200 s, bem abaixo dos
+13 min. A memória livre chegou a 273 MB na rodada 1 (Chrome do Playwright ~560 MB).
+
+**Conferência de descanso nas planilhas baixadas** (`docs/demonstracao/conferir_planilhas.py`,
+novo; lê o `.xlsx`, remonta a escala e confere sem usar o que a tela calculou): **descanso
+cumpre nas três** (menor folga 0 h, semanal 36 h, 1 dia seguido); teto e férias ok.
+
+## O achado que parou o B5: o feriado de 20/11 foi digitado em 24/11
+
+A mesma conferência acusa cobertura diferente da **declarada no caso**, nas três rodadas, de
+08/10 **e de 05/10** (`demonstracao_cobertura_por_dia.log`):
+
+| Dia | Turno | Declarado no caso | Na planilha |
+|---|---|---|---|
+| sex 20/11 | D (téc.) / D (enf.) / N (téc.) | 4 / 1 / 4 (feriado) | 6 / 2 / 5 (dia útil) |
+| ter 24/11 | D (téc.) / D (enf.) / N (téc.) | 6 / 2 / 5 (dia útil) | 4 / 1 / 4 (feriado) |
+
+A ferramenta cobriu exatamente o que recebeu; quem errou foi o **roteiro**, que cola a demanda
+de feriado na grade "Demanda específica por data" descendo `k` linhas com a seta. Para o 02/11
+(k = 0) e o 15/11 (k = 13) acertou; para o 20/11 (k = 18) caiu 4 linhas abaixo. **Camada:
+roteiro da demonstração (entrada), não a ferramenta.**
+
+Por que nenhuma conferência pegou em 05/10: todas liam a entrada que a tela recebeu (é o padrão
+"conferência que compartilha premissa com o que confere não confere nada", do `CLAUDE.md`). A
+nova compara com os dados declarados do caso.
+
+**O que muda e o que não muda** (conta, sem solver; as duas entradas):
+
+| | Declarada (20/11) | Recebida pela tela (24/11) |
+|---|---|---|
+| horas de demanda | 4.308 h | 4.308 h |
+| maior par de dias seguidos | 28 (primeiro em 03–04/11) | 28 (primeiro em 03–04/11) |
+| piso | 28 | 28 |
+| motivos da trava com 18 téc. | alternância | alternância |
+
+Vereditos, cortes e texto do diagnóstico **não dependem** do erro. Os números que vêm do solver
+(enfermeiro em posto de técnico, contrato cumprido, horas não utilizadas, diferença entre
+colegas) **são da entrada errada**; só uma rodada correta diz se mudam. Ressalva registrada no
+`resultados/NUMEROS_TCC.md`, seção 9.
+
+**Proposta, não executada:** corrigir o roteiro para localizar a linha pela data (e não
+contando setas), acrescentar `conferir_planilhas.py` ao fim de `rodar_rodada.sh`, registrar
+antes o esperado (os de `cortes_esperados.md`, que já foram calculados com o 20/11 feriado) e
+refazer as três rodadas. Muda números da demonstração: precisa de decisão sua antes do
+congelamento de 16/10.
+
+**Não feito por causa da parada:** B5 (GUIA_DE_USO, capturas finais, ESTADO_ATUAL, tag `v1.1`).
+As capturas de 08/10 (com a P12 e com o mesmo defeito de entrada) ficam commitadas como
+evidência do B2e, inclusive as novas `*_equilibrando.png` (a tela durante a etapa 2).
+
+## Nível 3 — registro pedido
+
+No sorteio estratificado, **a folga clara ficou concentrada no modelo de 8 h (26 de 40;
+12×36: 9; 6 h + 12 h: 5)**: a propriedade 5 fica mais testada nesse modelo. A fronteira ficou no
+12×36 (14) e no 6 h + 12 h (14). Registrado também no `NUMEROS_TCC.md`, seção 11.
+
+## Comandos para rodar o nível 3 de madrugada
+
+**ANTES: feche o Chrome** (na madrugada de 08/10 a falta de memória matou o K4; na
+demonstração de hoje a memória livre caiu a 273 MB). No PowerShell, na raiz do repositório:
+
+```
+.\.venv\Scripts\Activate.ps1
+python docs\diagnostico\bateria_nivel3.py N001
+python docs\diagnostico\bateria_nivel3.py --lote
+python docs\diagnostico\bateria_nivel3.py --resumo > resultados\bateria_2026-10-08\nivel3_resumo.md
+git add -f resultados/bateria_2026-10-08
+git commit -m "Nivel 3 rodado"
+git push
+```
+
+- O primeiro comando roda um caso só, até o fim (regra de 03/10); confira que gravou
+  `resultados\bateria_2026-10-08\parte4\N001.json` antes do `--lote`.
+- O `--lote` pula o que já tem resultado: se cair, rode de novo. No máximo 15 min por caso.
+- O lote usa o código atual de `src/`, já com a P12.
