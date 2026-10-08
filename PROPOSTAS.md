@@ -243,6 +243,11 @@ A P1 está desbloqueada: objetivo decidido.
 - **Parar a etapa 2 ao atingir o piso aritmético da amplitude** (acrescentado em 05/10, P1):
   simples só com contrato e turno homogêneos e sem indisponibilidade. Na rodada com folga, a
   etapa 2 chegou ao piso entre 18 e 81 s e gastou o resto do tempo tentando provar.
+- **Recuperar o resultado na tela quando a conexão do navegador cai durante o cálculo**
+  (acrescentado em 08/10, da P12): guardar o resultado no servidor, indexado pela entrada,
+  para que a sessão nova, depois de reconectar, mostre o que já foi calculado em vez do
+  formulário vazio. Motivo: em 07/10, uma queda de conexão (`ConnectionResetError` 10054 no
+  console do Streamlit) fez a tela voltar ao formulário sem resultado.
 
 ---
 
@@ -439,7 +444,10 @@ estagnações, como foi feito para os 180 s da etapa 2 (P1, rodada com folga).
 
 ## 2026-10-06 — P12: orçamento total de tempo por clique
 
-**Status: aguardando decisão do Otávio.** Nada implementado.
+**Status: DECIDIDA em 07/10 pelo Otávio — aprovada, exceto o item adicional** (tetos do
+diagnóstico no piso), que fica para decisão depois porque muda quais quadros vão ao solver.
+Ver `DECISOES.md`, "2026-10-08 — P12 aprovada". *Status anterior: aguardando decisão do
+Otávio.*
 
 **A proposta:**
 - um limite total por clique em "Gerar escala" (por exemplo, 15 min). Esgotado, a tela mostra

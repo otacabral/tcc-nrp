@@ -171,3 +171,22 @@ Origem: `resultados/escalabilidade.csv`. Comando: `python src\escalabilidade.py`
 |---|---|---|---|
 | ótimo provado em 6 de 6 (N de 36 a 200) | viabilidade, com objetivo degenerado (ótimo = 0) | SEM CONFERÊNCIA (estado do solver); descanso medido `ok` | mede viabilidade, não otimização (P1) |
 | 549,2 s (N = 200) | tempo de CPU | — | **limite operacional**; a P1 substitui esta curva como medida do produto |
+
+## 11. Bateria de entradas (07 e 08/10)
+
+Origem: `resultados/bateria_2026-10-07/` e `resultados/bateria_2026-10-08/`; relatórios
+`resultados/relatorio_2026-10-07a.md`, `relatorio_2026-10-08a.md` e `relatorio_2026-10-08b.md`.
+Comandos: `python docs\diagnostico\bateria_rodar.py <caso>`,
+`python docs\diagnostico\bateria_propriedades.py <caso> <derivado>`,
+`python docs\diagnostico\k4_dominancia.py`. Esperado: a conta independente de
+`docs/diagnostico/bateria_desenho.py` (commit `62bbf4d`) e os cabeçalhos dos scripts,
+commitados antes de rodar.
+
+| Valor | O que mede | Conferência | Ressalva |
+|---|---|---|---|
+| 24 casos, 0 falhas | nível 1 (P01–P18) e nível 2 (K1–K6): toda escala passa em cobertura, descanso no relógio, teto de horas e férias, conferidos fora do modelo | conta registrada antes (`62bbf4d`) | cobertura de pares de áreas da tela, não de todas as entradas possíveis |
+| 3 de 3 | casos inviáveis pela conta (P05, P11, K2) que dão "faltam N", com menor quadro coerente com a conta | conta registrada antes | — |
+| 96 derivados, 0 violações (88 ok, 8 inconclusivos) | propriedades 2 (monotonia: +1 pessoa, +1 posto, +1 dia de férias) e 3 (ordem dos profissionais), só etapa 1, 600 s | o que cada derivado exige foi registrado antes (`bateria_propriedades.py`, commit `ff54b2b`) | os 8 inconclusivos são todos de K3 e K4, cuja base terminou "não decidido": sem veredito na base, não há o que comparar |
+| escala legal com 17 (12 + 5) existe no K4 | escala achada para 11 + 6 (K3 + 1 técnico) fixada no modelo do K4: `conferir_rigidas` ok, descanso cumpre, teto ok, modelo "optimal" | esperado registrado antes (commit `57de0c4`) | as duas instâncias diferem só na pessoa "11" (técnico numa, enfermeiro na outra); enfermeiro cobre todo posto de técnico |
+| K4 sem escala em 600 s (07/10), em ~1.909 s (08/10) e K4/embaralhado sem escala em 600 s | **variação de desempenho do solver na fronteira** (folga 1 pela conta), não defeito: a escala existe | idem | **limite operacional**; o de ~1.909 s foi interrompido por falta de memória. Vai para as limitações: casos de fronteira podem não ser decididos no tempo e na memória disponíveis |
+| K3 (16): não determinado | sem escala em 600 s (07/10 e 08/10, 4 derivados) | — | não rodado de novo com tempo longo (decisão do Otávio, 08/10) |

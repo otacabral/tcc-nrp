@@ -1,0 +1,13 @@
+K3/mais_pessoa: 11 enf + 6 tec
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+etapa 1 de K3/mais_pessoa, 600 s: viavel | provado False | gap 0.8571428571428571
+conferir_rigidas em K3/mais_pessoa: ok
+K4: 12 enf + 5 tec
+pessoas que diferem entre as duas instancias: ['11']
+demanda identica: True | turnos identicos: True
+conferir_rigidas no K4 (habilidade rigida): ok
+descanso no relogio: cumpre {'menor_folga': 0.0, 'menor_semanal': 36.0, 'max_consec': 6}
+acima do teto: ninguem
+fora do dominio do modelo do K4: nenhuma
+modelo da etapa 1 do K4 com a escala fixada: optimal | tem solucao True

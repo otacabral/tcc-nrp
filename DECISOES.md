@@ -1657,6 +1657,56 @@ conta independente, registrado antes no commit `62bbf4d`; a tradução de cada c
 
 ---
 
+## 2026-10-08 — Bateria: K3/K4 longos não rodam de novo; nível 3 estratificado
+
+**Status: vigente.** Decidido pelo Otávio em 08/10.
+
+- **K3 e K4 com 3.600 s não rodam de novo.** O K4 com ~1.909 s foi interrompido por falta de
+  memória (`resultados/relatorio_2026-10-08a.md`). Em 08/10 a escala com 17 do K4 foi
+  confirmada por outro caminho: a escala achada para K3 + 1 técnico (11 + 6), fixada no modelo
+  do K4 (12 + 5), passa em todas as conferências e o modelo a aceita (`k4_dominancia.py`).
+  Registro: **a escala com 17 existe; o solver nem sempre a acha em 600 s (variação de
+  desempenho na fronteira)**. O K3 (16) fica não determinado. **Vai para as limitações:**
+  casos de fronteira podem não ser decididos no tempo e na memória disponíveis.
+- **Nível 3 resorteado antes de rodar, estratificado pela conta:** 40 casos de folga clara,
+  30 de fronteira e 30 inviáveis (semente 20261008). O sorteio de 07/10 (semente 81026) fica
+  registrado como **descartado antes de rodar**: 78 de 100 casos nasciam inviáveis pela conta,
+  e a propriedade 5 (folga clara) valeria em só 17. Só etapa 1, 600 s por resolução, no
+  máximo 15 min por caso; esgotado, o caso é "não determinado" e o lote segue.
+
+---
+
+## 2026-10-08 — P12 aprovada: progresso na tela, escala da etapa 1 mostrada já, orçamento de 20 min por clique
+
+**Status: vigente.** Aprovada pelo Otávio em 07/10; implementada em 08/10 como **correção de
+usabilidade na semana de testes**: nenhuma regra, nenhum modelo e nenhum número muda.
+`modelo.py` e `instancia_br.py` não são alterados.
+
+**Por quê.** Na bateria de 07/10 (`resultados/relatorio_2026-10-07a.md`), em 19 de 20 casos
+a escala ficou pronta em até 21 s e, em 15, a etapa 2 usou os 180 s inteiros: o usuário
+esperava ~3 min com a escala pronta e a barra parada, sem sinal de progresso. Duas tentativas
+do Otávio pela tela terminaram sem resultado, e a tela não dizia o que estava acontecendo.
+
+**O que entra:**
+- a escala da etapa 1 aparece assim que a etapa 1 termina, marcada como "escala pronta;
+  equilibrando a carga entre colegas (até 3 min)"; quando a etapa 2 termina, a tela diz qual
+  escala vale; a planilha é sempre a escala da tela;
+- durante o cálculo, a tela mostra a fase, o quadro em teste e o limite de tempo da fase;
+- "o solver falhou" deixa de existir: tempo esgotado sem escala → "sem resposta em 10 min com
+  N profissionais"; erro técnico → "erro técnico ao resolver; detalhes no console", com a
+  exceção no console;
+- orçamento total de **20 min por clique**: esgotado, a busca para e a tela mostra só o que
+  foi provado; nunca "faltam N" sem prova.
+
+**O que não entra:** o item adicional da P12 (tetos do diagnóstico no piso) — muda quais
+quadros vão ao solver; fica para decisão depois.
+
+**Condição:** a demonstração da clínica (20/19/18 técnicos) sai com os mesmos números,
+vereditos e textos de diagnóstico; P05, P08 e K1 da bateria, com o mesmo veredito e o mesmo
+menor quadro. Esperado registrado antes de implementar (`resultados/relatorio_2026-10-08b.md`).
+
+---
+
 ## Modelo de entrada
 
 ```
