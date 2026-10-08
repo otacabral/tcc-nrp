@@ -744,6 +744,41 @@ def casos_diagnostico() -> None:
 
 # --- P12 (08/10): escala da etapa 1 ja, mensagens de falha, orcamento do clique -----------
 
+def tabela_da_escala(at):
+    """A grade da escala na tela, achada pelas colunas (Categoria, Turnos), nao pela posicao:
+    o formulario tem outras cinco tabelas antes dela (turnos, cargas, ferias, pedidos, demanda
+    por data). Exige exatamente uma: se a grade provisoria da etapa 1 nao tivesse sido apagada,
+    seriam duas. Correcao de 08/10 (autorizada pelo Otavio): ate entao o 12a lia
+    `at.dataframe[0]`, que e a tabela de turnos — defeito do teste, nao da ferramenta."""
+    escalas = [t.value for t in at.dataframe
+               if list(t.value.columns[:2]) == ["Categoria", "Turnos"]]
+    confere(len(escalas) == 1, f"uma so grade de escala na tela: {len(escalas)}")
+    return escalas[0] if escalas else None
+
+
+def confere_tela_e_planilha(at, r, e) -> None:
+    """12a: a grade da tela e a da planilha baixada, e a planilha e `r.escala`, celula a
+    celula. Separado para o teste do teste rodar a mesma conferencia com uma escala alterada."""
+    import pandas as pd
+    grade_tela = tabela_da_escala(at)
+    grade_planilha = pd.read_excel(io.BytesIO(fe.planilha(r, e)), sheet_name="Escala",
+                                   index_col=0)
+    confere(grade_tela is not None
+            and list(grade_tela.index) == list(grade_planilha.index)
+            and grade_tela.fillna("").astype(str).values.tolist()
+            == grade_planilha.fillna("").astype(str).values.tolist(),
+            "grade da tela = grade da planilha")
+    planilha = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))["Escala"]
+    celulas = {(row[0], col): v for row in planilha.iter_rows(min_row=2, values_only=True)
+               for col, v in enumerate(row[3:])}
+    rot = {s: (t.id[:-1] + "*" if br.HABILIDADE_ENF in t.habilidades else t.id)
+           for s, t in r.inst.turnos.items()}
+    confere(all(celulas.get((r.inst.profissionais[n].nome, r.inst.indice(d))) == rot[s]
+                for d, n, s in r.escala)
+            and sum(1 for v in celulas.values() if v and v != "indisp.") == len(r.escala),
+            "planilha = r.escala, celula a celula")
+
+
 def casos_p12() -> None:
     """12a, 12c e 12d — esperado no docstring do modulo, registrado antes de implementar."""
     import contextlib
@@ -771,20 +806,7 @@ def casos_p12() -> None:
     else:
         confere(len(linha) == 1 and "a da etapa 1" in linha[0],
                 f"linha da escala vigente: {linha} (etapa 2 {etapa2})")
-    grade_planilha = fe.grade(r.inst, r.escala)
-    grade_tela = at.dataframe[0].value
-    confere(grade_tela.fillna("").astype(str).values.tolist()
-            == grade_planilha.fillna("").astype(str).values.tolist(),
-            "grade da tela = grade da planilha")
-    planilha = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))["Escala"]
-    celulas = {(row[0], col): v for row in planilha.iter_rows(min_row=2, values_only=True)
-               for col, v in enumerate(row[3:])}
-    rot = {s: (t.id[:-1] + "*" if br.HABILIDADE_ENF in t.habilidades else t.id)
-           for s, t in r.inst.turnos.items()}
-    confere(all(celulas.get((r.inst.profissionais[n].nome, r.inst.indice(d))) == rot[s]
-                for d, n, s in r.escala)
-            and sum(1 for v in celulas.values() if v and v != "indisp.") == len(r.escala),
-            "planilha = r.escala, celula a celula")
+    confere_tela_e_planilha(at, r, e)
 
     print("12c. erro tecnico: solver que levanta excecao (caso 5)")
     original = modelo.resolver
