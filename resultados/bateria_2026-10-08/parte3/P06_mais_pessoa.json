@@ -1,0 +1,26 @@
+{
+ "caso": "P06",
+ "variante": "mais_pessoa",
+ "quadro": 15,
+ "veredito": "admite",
+ "menor_viavel": 15,
+ "tentativas": [
+  [
+   15,
+   "viavel",
+   10,
+   5
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 1.629598617553711,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 5,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

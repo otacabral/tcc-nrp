@@ -1,0 +1,62 @@
+{
+ "caso": "K2",
+ "variante": "mais_pessoa",
+ "quadro": 10,
+ "veredito": "faltam",
+ "menor_viavel": 16,
+ "tentativas": [
+  [
+   10,
+   "piso",
+   null,
+   null
+  ],
+  [
+   11,
+   "piso",
+   null,
+   null
+  ],
+  [
+   12,
+   "piso",
+   null,
+   null
+  ],
+  [
+   13,
+   "piso",
+   null,
+   null
+  ],
+  [
+   14,
+   "piso",
+   null,
+   null
+  ],
+  [
+   15,
+   "piso",
+   null,
+   null
+  ],
+  [
+   16,
+   "viavel",
+   6,
+   10
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 18.640005588531494,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 1,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

@@ -1,0 +1,18 @@
+{
+ "caso": "K3",
+ "variante": "embaralhado",
+ "quadro": 16,
+ "veredito": "nao_decidido",
+ "menor_viavel": null,
+ "tentativas": [
+  [
+   16,
+   "indeterminado",
+   11,
+   5
+  ]
+ ],
+ "provado": null,
+ "gap": null,
+ "tempo_total": 600.5665504932404
+}

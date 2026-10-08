@@ -1,0 +1,26 @@
+{
+ "caso": "P12",
+ "variante": "mais_posto",
+ "quadro": 13,
+ "veredito": "admite",
+ "menor_viavel": 13,
+ "tentativas": [
+  [
+   13,
+   "viavel",
+   7,
+   6
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 0.6224253177642822,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 5.0,
+  "max_consec": 5,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

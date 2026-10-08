@@ -1,0 +1,26 @@
+{
+ "caso": "P06",
+ "variante": "embaralhado",
+ "quadro": 14,
+ "veredito": "admite",
+ "menor_viavel": 14,
+ "tentativas": [
+  [
+   14,
+   "viavel",
+   10,
+   4
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 2.4524056911468506,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

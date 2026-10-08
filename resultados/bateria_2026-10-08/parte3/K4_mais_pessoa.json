@@ -1,0 +1,26 @@
+{
+ "caso": "K4",
+ "variante": "mais_pessoa",
+ "quadro": 18,
+ "veredito": "admite",
+ "menor_viavel": 18,
+ "tentativas": [
+  [
+   18,
+   "viavel",
+   12,
+   6
+  ]
+ ],
+ "provado": false,
+ "gap": 0.9999999999999988,
+ "tempo_total": 600.756356716156,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

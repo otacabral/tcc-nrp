@@ -1,0 +1,26 @@
+{
+ "caso": "K6",
+ "variante": "mais_ferias",
+ "quadro": 20,
+ "veredito": "admite",
+ "menor_viavel": 20,
+ "tentativas": [
+  [
+   20,
+   "viavel",
+   15,
+   5
+  ]
+ ],
+ "provado": false,
+ "gap": 0.1666666666666664,
+ "tempo_total": 600.7509236335754,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

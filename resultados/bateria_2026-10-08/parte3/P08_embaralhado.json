@@ -1,0 +1,26 @@
+{
+ "caso": "P08",
+ "variante": "embaralhado",
+ "quadro": 12,
+ "veredito": "admite",
+ "menor_viavel": 12,
+ "tentativas": [
+  [
+   12,
+   "viavel",
+   8,
+   4
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 1.5055763721466064,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 1,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

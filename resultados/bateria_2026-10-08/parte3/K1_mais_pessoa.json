@@ -1,0 +1,26 @@
+{
+ "caso": "K1",
+ "variante": "mais_pessoa",
+ "quadro": 17,
+ "veredito": "admite",
+ "menor_viavel": 17,
+ "tentativas": [
+  [
+   17,
+   "viavel",
+   6,
+   11
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 0.6147480010986328,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 5.0,
+  "max_consec": 5,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

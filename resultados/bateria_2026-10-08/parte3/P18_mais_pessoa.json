@@ -1,0 +1,26 @@
+{
+ "caso": "P18",
+ "variante": "mais_pessoa",
+ "quadro": 18,
+ "veredito": "admite",
+ "menor_viavel": 18,
+ "tentativas": [
+  [
+   18,
+   "viavel",
+   12,
+   6
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 1.9283864498138428,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

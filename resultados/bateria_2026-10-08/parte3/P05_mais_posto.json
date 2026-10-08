@@ -1,0 +1,32 @@
+{
+ "caso": "P05",
+ "variante": "mais_posto",
+ "quadro": 14,
+ "veredito": "faltam",
+ "menor_viavel": 15,
+ "tentativas": [
+  [
+   14,
+   "piso",
+   null,
+   null
+  ],
+  [
+   15,
+   "viavel",
+   5,
+   10
+  ]
+ ],
+ "provado": true,
+ "gap": 1.6520118606419237e-13,
+ "tempo_total": 5.222330331802368,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 1,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

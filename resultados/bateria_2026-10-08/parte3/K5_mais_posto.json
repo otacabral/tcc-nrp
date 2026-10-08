@@ -1,0 +1,26 @@
+{
+ "caso": "K5",
+ "variante": "mais_posto",
+ "quadro": 18,
+ "veredito": "admite",
+ "menor_viavel": 18,
+ "tentativas": [
+  [
+   18,
+   "viavel",
+   13,
+   5
+  ]
+ ],
+ "provado": false,
+ "gap": 0.2,
+ "tempo_total": 600.7728111743927,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

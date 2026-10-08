@@ -1,0 +1,18 @@
+{
+ "caso": "K4",
+ "variante": "mais_ferias",
+ "quadro": 17,
+ "veredito": "nao_decidido",
+ "menor_viavel": null,
+ "tentativas": [
+  [
+   17,
+   "indeterminado",
+   12,
+   5
+  ]
+ ],
+ "provado": null,
+ "gap": null,
+ "tempo_total": 600.6853098869324
+}

@@ -1,0 +1,26 @@
+{
+ "caso": "P02",
+ "variante": "mais_ferias",
+ "quadro": 12,
+ "veredito": "admite",
+ "menor_viavel": 12,
+ "tentativas": [
+  [
+   12,
+   "viavel",
+   6,
+   6
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 0.882718563079834,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

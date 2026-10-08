@@ -1,0 +1,24 @@
+{
+ "caso": "K3",
+ "variante": "mais_posto",
+ "quadro": 16,
+ "veredito": "nao_decidido",
+ "menor_viavel": null,
+ "tentativas": [
+  [
+   16,
+   "inviavel",
+   11,
+   5
+  ],
+  [
+   17,
+   "indeterminado",
+   11,
+   6
+  ]
+ ],
+ "provado": null,
+ "gap": null,
+ "tempo_total": 601.9137372970581
+}

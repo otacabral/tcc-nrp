@@ -1,0 +1,32 @@
+{
+ "caso": "P11",
+ "variante": "embaralhado",
+ "quadro": 13,
+ "veredito": "faltam",
+ "menor_viavel": 14,
+ "tentativas": [
+  [
+   13,
+   "piso",
+   null,
+   null
+  ],
+  [
+   14,
+   "viavel",
+   5,
+   9
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 4.870662450790405,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 1,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}
