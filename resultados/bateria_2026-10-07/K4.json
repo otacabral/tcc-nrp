@@ -1,0 +1,35 @@
+{
+ "caso": "K4",
+ "modelo": "6+12",
+ "equipe": "12+5",
+ "esperado": "GERA ESCALA (esperado)",
+ "folgas": {
+  "horas": 304.0,
+  "horas_enf": 432.0,
+  "ocupados_dia": 1,
+  "ocupados_dia_enf": 2
+ },
+ "veredito": "nao_decidido",
+ "frase": "Não foi possível gerar a escala no tempo disponível.",
+ "menor_viavel": null,
+ "tentativas": [
+  [
+   17,
+   "indeterminado",
+   12,
+   5
+  ]
+ ],
+ "diagnostico": null,
+ "provado": null,
+ "gap": null,
+ "tempo_etapa1": null,
+ "tempo_etapa2": null,
+ "etapa2": null,
+ "tempo_total": 601.0972356796265,
+ "progresso": [
+  "[    0.0 s] testando quadro de 17 profissionais",
+  "[  601.1 s] concluido"
+ ],
+ "falhas": []
+}

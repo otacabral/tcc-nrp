@@ -1,0 +1,6 @@
+P08: 12x36, 8+4; esperado pela conta: GERA ESCALA (esperado) {'horas': 692.0, 'horas_enf': 660.0, 'ocupados_dia': 3, 'ocupados_dia_enf': 3}
+P08 [    0.0 s] testando quadro de 12 profissionais
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+P08 [  182.6 s] concluido
+P08: O quadro informado admite escala legal. Escala gerada. | 183 s | falhas: nenhuma

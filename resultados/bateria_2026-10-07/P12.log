@@ -1,0 +1,4 @@
+P12: 8h, 7+6; esperado pela conta: GERA ESCALA (esperado) {'horas': 952.0, 'horas_enf': 560.0, 'ocupados_dia': 7, 'ocupados_dia_enf': 4}
+P12 [    0.0 s] testando quadro de 13 profissionais
+P12 [   89.0 s] concluido
+P12: O quadro informado admite escala legal. Escala gerada. | 89 s | falhas: nenhuma

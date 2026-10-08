@@ -1,0 +1,6 @@
+P01: 8h, 5+9; esperado pela conta: GERA ESCALA (esperado) {'horas': 448.0, 'horas_enf': 208.0, 'ocupados_dia': 5, 'ocupados_dia_enf': 2}
+P01 [    0.0 s] testando quadro de 14 profissionais
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+P01 [  181.1 s] concluido
+P01: O quadro informado admite escala legal. Escala gerada. | 181 s | falhas: nenhuma

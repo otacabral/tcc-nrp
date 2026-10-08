@@ -1639,6 +1639,24 @@ Congelamento das funcionalidades antecipado para 05/10", que mantinha 14/10.
 
 ---
 
+## 2026-10-07 — Bateria de entradas começa em 07/10, antes de fechar a parte A
+
+**Status: vigente.** Decidido pelo Otávio em 07/10.
+
+A bateria (`docs/bateria_entradas.md`), que só rodaria depois de resolvida a parte A do
+diagnóstico, começa já em 07/10, pelo nível 1 e pelos casos conhecidos (K1–K6), por script
+(`docs/diagnostico/bateria_rodar.py`), sem navegador.
+
+Por quê: duas tentativas do Otávio pela tela terminaram sem resultado. A segunda foi queda de
+conexão do navegador (`ConnectionResetError` 10054 no console do Streamlit, sem "[ERRO]" e
+sem queda do processo). Rodar por script tira a conexão do caminho e grava tempos por caso.
+
+A parte A continua aberta (console e captura do caso 15 + 5). O esperado de cada caso é o da
+conta independente, registrado antes no commit `62bbf4d`; a tradução de cada caso para a
+`Entrada` foi declarada no cabeçalho do script antes de rodar.
+
+---
+
 ## Modelo de entrada
 
 ```

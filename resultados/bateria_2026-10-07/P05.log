@@ -1,0 +1,7 @@
+P05: 12x36, 4+10; esperado pela conta: INVIAVEL pela conta {'horas': 5.714285714285779, 'horas_enf': -18.28571428571422, 'ocupados_dia': -1, 'ocupados_dia_enf': -1}
+P05 [    0.0 s] testando quadro de 14 profissionais
+P05 [    0.9 s] testando quadro de 15 profissionais
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+P05 [  190.0 s] concluido
+P05: Falta 1; o menor quadro viável é 15. Escala gerada. | 190 s | falhas: nenhuma

@@ -1,0 +1,43 @@
+{
+ "caso": "P14",
+ "modelo": "6+12",
+ "equipe": "11+5",
+ "esperado": "GERA ESCALA (esperado)",
+ "folgas": {
+  "horas": 1048.0,
+  "horas_enf": 872.0,
+  "ocupados_dia": 6,
+  "ocupados_dia_enf": 5
+ },
+ "veredito": "admite",
+ "frase": "O quadro informado admite escala legal. Escala gerada.",
+ "menor_viavel": 16,
+ "tentativas": [
+  [
+   16,
+   "viavel",
+   11,
+   5
+  ]
+ ],
+ "diagnostico": null,
+ "provado": true,
+ "gap": 0.0,
+ "tempo_etapa1": 2.616199493408203,
+ "tempo_etapa2": 180.5554268360138,
+ "etapa2": "ok",
+ "tempo_total": 183.30415320396423,
+ "progresso": [
+  "[    0.0 s] testando quadro de 16 profissionais",
+  "[  183.3 s] concluido"
+ ],
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ },
+ "falhas": []
+}

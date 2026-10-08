@@ -2,6 +2,14 @@
 
 **Desenhado em 07/10/2026. NÃO RODADO.** Só roda depois que a parte A do diagnóstico estiver resolvida, e por decisão do Otávio (`DECISOES.md`, "2026-10-06 — Cronograma": semana de testes de 08 a 12/10).
 
+> **Nota de 07/10/2026 (corrigida em 08/10):** nível 1 (P01–P18) e nível 2 (K1–K6)
+> **rodados em 07/10**, antes de fechar a parte A, por decisão do Otávio (`DECISOES.md`,
+> "2026-10-07 — Bateria de entradas começa em 07/10"). Zero falhas nas conferências; achado na
+> família da parte A (K3 e K4 sem escala em 600 s). Ver `resultados/relatorio_2026-10-07a.md`.
+> Faltavam, em 07/10: as propriedades 2 (monotonia) e 3 (ordem) da C3 e o nível 3. *A versão
+> de 07/10 desta nota dizia "níveis 2 e 3 ainda não rodados", trocando o nível 2 pelas
+> propriedades 2 e 3.*
+
 Os casos e o esperado de cada um saem de `docs/diagnostico/bateria_desenho.py`, que só faz conta, sem solver.
 
 ---
