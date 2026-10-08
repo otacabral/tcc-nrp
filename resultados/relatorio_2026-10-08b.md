@@ -3,7 +3,19 @@
 Máquina: i5-10210U, 12 GB, `appsi_highs` (HiGHS 1.15.1). Tempos são limite operacional, não
 resultado.
 
-<!-- PARA_O_OTAVIO -->
+## Para o Otávio
+
+- **Parte A feita.** Propriedades 2 e 3: 96 derivados, 0 violações. **A escala com 17 do K4
+  existe** (conferida); as falhas dele em 600 s e ~1.909 s são do solver. Nível 3 resorteado
+  (40/30/30), commitado, **não rodado**: comandos no fim, com o Chrome fechado.
+- **Parte B: P12 implementada, mas PARADA no B4.** Suíte com 15 de 16 OK; a falha é do **teste
+  novo 12a**, que olhava a tabela errada da tela (a de turnos, não a escala). A escala da tela
+  é idêntica à da planilha; o diagnóstico está abaixo.
+- **Para decidir:** autorizar a correção do seletor do 12a (`at.dataframe[0]` →
+  `at.dataframe[-1]`), sem mudar o esperado. Depois disso: demonstração refeita, P05/P08/K1,
+  guia, capturas e tag `v1.1`.
+- Nada de `modelo.py` nem `instancia_br.py` mudou; a regressão passou.
+
 
 ## Parte A — bateria: registros e decisões
 
@@ -175,3 +187,120 @@ veredito e o mesmo menor quadro de 07/10.
 
 **Testes afetados:** 8c e 8d (texto do tempo esgotado). Os demais testes da tela não leem os
 textos que mudam.
+
+## B3 — implementação (só `src/ferramenta.py` e `src/app.py`)
+
+`modelo.py` e `instancia_br.py` **não mudaram** (`git diff --stat`: só os dois arquivos da tela
+em `src/`). O item adicional da P12 (tetos do diagnóstico no piso) **não** foi implementado.
+
+- `ferramenta.ORCAMENTO = 20 * 60`, lido na chamada. Em `verificar`, cada resolução recebe
+  `min(limite, o que resta do orçamento)`; acabado, a busca para (tentativa "orcamento").
+- `Resultado.parada` = (motivo, quadro, segundos que a resolução teve); `Resultado.frase()`
+  monta os textos do item c e do d a partir dela. "Faltam N" continua só com prova.
+- `Resultado.frase_vigente()`: a linha "Escala desta tela: …".
+- `resolver_com_objetivo(..., aviso, prazo)`: avisa "escala_etapa1" e "etapa2" antes da etapa
+  2, e corta o limite da etapa 2 pelo orçamento.
+- `resolver`: com exceção do solver, além da linha "[ERRO] …", imprime o traceback.
+- `ferramenta.grade(inst, escala)`: a grade profissional × dia saiu de dentro de `planilha`
+  para uma função só, que a planilha e a tela provisória usam.
+- `verificar` manda à barra a fase, o quadro, o limite da fase e o orçamento.
+- `app.py`: área provisória com a escala da etapa 1 (sem botão de planilha), apagada quando o
+  resultado final chega; linha "Escala desta tela"; textos novos em "Como o veredito foi
+  obtido" (o "o solver falhou" saiu).
+
+**Tempo decorrido ao vivo: não feito (proposta).** O Streamlit só redesenha a tela quando o
+script chama um elemento; durante o `solve` do HiGHS o script está parado dentro do solver.
+Para um relógio ao vivo, o solver teria de rodar em outra thread (ou processo) e a tela num
+laço que atualiza a barra a cada segundo até ele terminar. Não é mudança de modelo, mas muda a
+forma de execução, o tratamento de erro e o consumo de memória; fica para decisão.
+
+## B4 — testes, um por processo — **PARADO: 1 falha, no teste novo 12a**
+
+**Esperados de texto atualizados e commitados antes** (`3caa14f`). **Controle:** o caso 8 com
+os esperados **antigos** contra o código novo **falha** no 8c e no 8d, e a tela mostra
+exatamente os textos novos (`resultados/suite_2026-10-08/controle_8_esperado_antigo.log`).
+
+Suíte (`bash docs/diagnostico/suite_p12.sh`; logs em `resultados/suite_2026-10-08/`):
+
+| Teste | Código | Tempo | Resultado |
+|---|---|---|---|
+| regressão `--todos` | 0 | 59 s | OK (56, 58, 197, 219; espelho; decomposição) |
+| testes_entrada | 0 | 8 s | OK |
+| **tela 12 (novo)** | **1** | 377 s | **1 falha** (abaixo); 12c e 12d OK |
+| tela 8 (8a–8d, textos novos) | 0 | 222 s | OK |
+| tela 1-2 | 0 | 389 s | OK |
+| tela 3 | 0 | 188 s | OK |
+| tela 4 | 0 | 184 s | OK |
+| tela 4b | 0 | 2 s | OK |
+| tela 5 | 0 | 187 s | OK |
+| tela 7.1 | 0 | 186 s | OK |
+| tela 7.2 | 0 | 213 s | OK |
+| tela 7.3 | 0 | 926 s | OK |
+| tela 7.4 | 0 | 2 s | OK |
+| tela 9 | 0 | 490 s | OK |
+| tela 9b-sem-teto | 0 | 11 s | OK |
+| tela 9c-tela | 0 | 25 s | OK |
+
+Os 544 XML não foram comparados: o caminho que os gera não passa por `ferramenta.py` nem
+`app.py`, e `instancia_br.py`/`modelo.py` não mudaram.
+
+**A falha.** No 12a, o item "grade da tela = grade da planilha" falhou. Os outros itens do 12a
+passaram: avisos na ordem certa (`escala_etapa1` antes de `etapa2`), escala da etapa 1 cumpre
+o descanso, linha "Escala desta tela: a da etapa 2, …" coerente com a etapa 2 ("ok"),
+planilha = `r.escala` célula a célula.
+
+**Diagnóstico (só leitura, sem mexer no teste nem no código;**
+`resultados/suite_2026-10-08/diagnostico_12a*.log`**):** o teste compara com
+`at.dataframe[0]`, mas a tela tem **6** tabelas, e a 0 é a **tabela de turnos** da configuração
+(Nome, Início, Fim). A escala é a **última** (a 5; 13 × 30). Comparada a ela: **tela =
+`fe.grade` = planilha lida de volta, célula a célula, 0 diferenças.**
+
+**Camada:** o próprio **teste** (seletor da tabela), não a ferramenta. **Proposta de correção,
+não aplicada (regra: parar e relatar, sem ajustar):** no 12a, trocar `at.dataframe[0]` por
+`at.dataframe[-1]`, ou pela tabela cuja primeira coluna é "Categoria". O esperado não muda:
+"grade da tela = grade da planilha". **Esperado da correção:** o 12a passa inteiro.
+
+**Não rodados, por causa da parada:** B2e (demonstração refeita pela tela, com as conferências
+de descanso), B2f (P05, P08, K1), B5 (guia, capturas, `ESTADO_ATUAL.md`, tag `v1.1`). Já estão
+prontos para rodar: `docs/demonstracao/capturas.py` agora mede o tempo do clique e fotografa a
+tela de "equilibrando"; `docs/diagnostico/bateria_rodar.py` aceita `--saida` (para não
+sobrescrever 07/10).
+
+## B6 — registros
+
+- **P3 (trabalho futuro):** "Recuperar o resultado na tela quando a conexão do navegador cai
+  durante o cálculo" — acrescentado ao `PROPOSTAS.md` (commit `6a40925`).
+- **Hipótese da parte A do diagnóstico:** os erros do Otávio na tela em 06/10 e 07/10 vieram de
+  **queda de conexão do navegador** (console do Streamlit com `ConnectionResetError` WinError
+  10054, sem nenhuma linha "[ERRO]" e sem queda do processo), não do modelo. Sustentação: pelo
+  caminho da tela, sem navegador, o caso 15 + 5 gera escala (parte A, 07/10; K6 em 07/10).
+  **Continua hipótese:** a captura da tela de 06/10 não existe.
+
+## Comandos
+
+**Commit** (feito nesta sessão; para referência):
+
+```
+git add src/app.py src/ferramenta.py docs/demonstracao/capturas.py docs/diagnostico/bateria_rodar.py docs/diagnostico/suite_p12.sh
+git add -f resultados/suite_2026-10-08 resultados/relatorio_2026-10-08b.md
+git commit -m "P12 implementada; suite 15/16, falha no seletor do teste 12a"
+git push
+```
+
+**Nível 3, de madrugada.** **Feche o Chrome antes** (em 08/10 a falta de memória matou o K4).
+No PowerShell, na raiz do repositório:
+
+```
+.\.venv\Scripts\Activate.ps1
+python docs\diagnostico\bateria_nivel3.py N001
+python docs\diagnostico\bateria_nivel3.py --lote
+python docs\diagnostico\bateria_nivel3.py --resumo > resultados\bateria_2026-10-08\nivel3_resumo.md
+git add -f resultados/bateria_2026-10-08
+git commit -m "Nivel 3 rodado"
+git push
+```
+
+O lote usa o código atual de `src/`, já com a P12; com cada caso limitado a 15 min, o
+orçamento de 20 min do clique nunca é atingido. O `--lote` pula os casos que já têm resultado: se cair, é só rodar de novo. Cada caso tem no
+máximo 15 min; o lote inteiro, no pior caso, 25 h, mas a maioria dos casos leva segundos ou
+poucos minutos.

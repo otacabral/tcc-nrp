@@ -1,0 +1,13 @@
+7.4a. P7: clinica medica, 8 + 20
+      ['horas', 'alternancia']: Os turnos de técnico somam 3456 h. Pelo teto de cada um — a carga contratual nos dias disponíveis e a alternância do plantão de 12 h (ninguém trabalha dois dias seguidos) —, 20 técnicos trabalham no máximo 3132 h: faltam 324 h, que só enfermeiro pode cobrir. Depois do posto de enfermeiro, os enfermeiros têm 312 h de folga. Pela conta, falta pelo menos 1 profissional de 44 h. Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). ter 03/11 e qua 04/11 somam 28 plantões, que precisam de 28 pessoas diferentes; descontadas férias e licenças, 27 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.
+   ok    motivos ['horas', 'alternancia'] (esperado horas, alternancia)
+   ok    horas: 324 h contra 312 h no texto
+   ok    par ter 03/11 e qua 04/11: 28 plantoes, 27 pessoas
+   ok    diagnosticar: motivo horas, todos ['horas', 'alternancia']
+7.4b. P7: clinica medica, 8 + 21
+   ok    nenhum motivo simples: []
+7.4c. P7: teto de cada pessoa
+   ok    tetos {'Ana Ribeiro': 168.0, 'Karen Dias': 84.0, 'Gabriela Pires': 144.0} (esperado 168, 84, 144)
+   ok    na escala da rodada 1, ninguem acima do teto: []
+
+ponta a ponta pela tela OK

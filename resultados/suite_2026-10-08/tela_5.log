@@ -1,0 +1,9 @@
+2026-10-08 13:46:54.664 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+5. enfermeiro em posto de tecnico: 8 h, 8 + 5
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    sem excecao na tela []
+   ok    veredito: ['O quadro informado admite escala legal. Escala gerada.']
+   ok    contagem na tela: 30 turnos de enfermeiro em posto de tecnico (>= 30)
+
+ponta a ponta pela tela OK

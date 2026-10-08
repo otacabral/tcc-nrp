@@ -1,0 +1,10 @@
+2026-10-08 14:20:30.239 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+9c-tela. 9c pela tela, etapa 2 com limite de 20 s: nada pode dizer 'provado'
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    sem excecao na tela []
+   ok    cenario do teste: etapa 2 ok, provada: False (esperado: ok, sem prova)
+   ok    nenhum 'provado' na tela nem na planilha: []
+   ok    a tela mostra a diferenca maxima de carga entre colegas
+
+ponta a ponta pela tela OK

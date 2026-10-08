@@ -34,6 +34,8 @@ import dataclasses
 import io
 import math
 import sys
+import time
+import traceback
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from pathlib import Path
@@ -54,6 +56,10 @@ TEMPO = 600          # limite da etapa 1, em segundos (decidido em 05/10)
 # arredondado para cima ao minuto: max(120; 121,7) -> 180 s. Ver PROPOSTAS.md, P1. A etapa 2
 # usa o menor entre este e o limite da etapa 1 (os testes encurtam `TEMPO`).
 TEMPO_ETAPA2 = 180
+# Orcamento total de um clique em "Gerar escala" (P12, DECISOES.md, "2026-10-08 — P12
+# aprovada"): cada resolucao recebe o menor entre o seu limite e o que resta dele; acabado, a
+# busca para e a tela mostra so o que foi provado. Lido na chamada: os testes o encurtam.
+ORCAMENTO = 20 * 60
 
 ADMITE, FALTAM, NAO_DECIDIDO, SEM_VIAVEL = "admite", "faltam", "nao_decidido", "sem_viavel"
 
@@ -67,6 +73,14 @@ MODELOS = {
 
 def duracao(inicio: int, fim: int) -> int:
     return (fim - inicio) % 24 or 24
+
+
+def fmt_tempo(segundos: float | None) -> str:
+    """"10 min", "3 min", "3 s" — o limite como a tela o diz."""
+    if segundos is None:
+        return "sem limite"
+    s = int(round(segundos))
+    return f"{s // 60} min" if s >= 60 and s % 60 == 0 else f"{s} s"
 
 
 @dataclass
@@ -108,6 +122,10 @@ class Resultado:
     indicadores: dict = field(default_factory=dict)
     diagnostico: tuple | None = None   # (motivo, explicacao, todos os motivos), sem escala legal
     chs: float | None = None               # CHS do QP: media das cargas contratuais
+    # P12: por que a busca parou sem decidir — (motivo, quadro, segundos que a resolucao teve);
+    # motivo em ea.INDETERMINADO, ea.ERRO ou ORCAMENTO_ESGOTADO
+    parada: tuple | None = None
+    orcamento: float | None = None
 
     @property
     def faltam(self) -> int | None:
@@ -139,11 +157,36 @@ class Resultado:
         if self.veredito == SEM_VIAVEL:
             return (f"Não há escala legal até {self.quadro_informado + MARGEM} profissionais; "
                     f"o menor quadro viável está acima disso.")
-        # (c) tempo esgotado sem escala. NUNCA "faltam N": falta so se afirma com prova.
-        if self.diagnostico:
-            return ("Não foi possível gerar a escala no tempo disponível com mais "
-                    "profissionais; o menor quadro viável não foi determinado.")
-        return "Não foi possível gerar a escala no tempo disponível."
+        # (c) sem decisao. NUNCA "faltam N": falta so se afirma com prova. `diagnostico` so
+        # existe com o quadro informado provado insuficiente (pela conta ou pelo solver).
+        insuficiente = "O quadro informado é insuficiente" if self.diagnostico else ""
+        motivo, quadro, segundos = self.parada or (ea.INDETERMINADO, None, None)
+        if motivo == ORCAMENTO_ESGOTADO and insuficiente:
+            return (f"{insuficiente}; o menor quadro viável não foi determinado em "
+                    f"{fmt_tempo(self.orcamento)}.")
+        antes = f"{insuficiente}. " if insuficiente else ""
+        if motivo == ea.ERRO:
+            return (f"{antes}Erro técnico ao resolver com {quadro} profissionais; detalhes no "
+                    f"console.")
+        if quadro is None:
+            return f"{antes}Não foi possível gerar a escala no tempo disponível."
+        if insuficiente:
+            return (f"{antes}Sem resposta em {fmt_tempo(segundos)} com {quadro} profissionais: "
+                    f"o menor quadro viável não foi determinado.")
+        return (f"Sem resposta em {fmt_tempo(segundos)} com {quadro} profissionais: o solver "
+                f"não achou escala nem provou que ela não existe.")
+
+    def frase_vigente(self) -> str:
+        """Qual escala a tela (e a planilha) mostra: a da etapa 2 ou a da etapa 1 (P12)."""
+        etapa2 = self.indicadores.get("etapa2", "")
+        if etapa2 == "ok":
+            return "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas."
+        if etapa2.startswith("não rodou") or etapa2.startswith("nao rodou"):
+            return "Escala desta tela: a da etapa 1; o equilíbrio de carga não rodou."
+        return "Escala desta tela: a da etapa 1; o equilíbrio de carga não terminou no tempo."
+
+
+ORCAMENTO_ESGOTADO = "orcamento"
 
 
 # --- montagem -----------------------------------------------------------------------------
@@ -304,7 +347,8 @@ def resolver(m, tempo: int | None) -> tuple[str, object, bool, float | None]:
         resultado = modelo.resolver(m, solver=modelo.SOLVER_PADRAO, tempo_limite=tempo,
                                     carregar=False)
     except Exception as e:  # noqa: BLE001
-        print(f"      [ERRO] o solver levantou {type(e).__name__}: {e}")
+        print(f"      [ERRO] o solver levantou {type(e).__name__}: {e}", flush=True)
+        traceback.print_exc()   # a tela diz "detalhes no console": os detalhes sao estes
         return ea.ERRO, None, False, None
     veredito = ea.classificar(resultado)
     if veredito != ea.VIAVEL:
@@ -439,14 +483,19 @@ def diferenca_entre_categorias(inst, escala) -> float | None:
     return c[TEC]["fracao_media"] - c[ENF]["fracao_media"] if ENF in c and TEC in c else None
 
 
-def resolver_com_objetivo(inst, tempo: int | None) -> tuple[str, object, object, dict]:
+def resolver_com_objetivo(inst, tempo: int | None, aviso=None,
+                          prazo: float | None = None) -> tuple[str, object, object, dict]:
     """Etapa 1 (pesos) e, havendo escala provada otima, etapa 2 (equilibrio de horas).
 
     A etapa 2 so roda com a etapa 1 provada OTIMA: fixar num valor que nao e o otimo mediria
     o equilibrio de outra coisa. Roda tambem com penalidade zero — a carga pode estar
     desequilibrada mesmo sem pedido negado. `info["provado"]` e `info["gap"]` sao os da
-    etapa 1, que e o que diz se pode haver escala melhor."""
-    import time
+    etapa 1, que e o que diz se pode haver escala melhor.
+
+    P12: `aviso(evento, **dados)` recebe "escala_etapa1" (inst, escala, limite) e "etapa2"
+    (limite) antes de a etapa 2 comecar, para a tela mostrar a escala da etapa 1 ja. `prazo`
+    (instante, em `time.time()`) corta o limite da etapa 2 pelo orcamento do clique; o da
+    etapa 1 quem corta e `verificar`, no `tempo` que passa."""
     inst, custo, W = pesos(inst)
     m = ea.modelo_br(inst, custo)
     t0 = time.time()
@@ -461,8 +510,16 @@ def resolver_com_objetivo(inst, tempo: int | None) -> tuple[str, object, object,
     if not provado:
         info["etapa2"] = "não rodou: a etapa 1 não provou o ótimo no tempo disponível"
         return veredito, inst, escala, info
-    t0 = time.time()
     tempo2 = TEMPO_ETAPA2 if tempo is None else min(TEMPO_ETAPA2, tempo)
+    if prazo is not None:
+        tempo2 = min(tempo2, int(prazo - time.time()))
+        if tempo2 < 1:
+            info["etapa2"] = "não rodou: o orçamento do clique acabou"
+            return veredito, inst, escala, info
+    if aviso:
+        aviso("escala_etapa1", inst=inst, escala=escala, limite=tempo2)
+        aviso("etapa2", limite=tempo2)
+    t0 = time.time()
     v2, escala2, provado2, gap2 = equilibrar(m, inst, z, tempo2)
     info["tempo_etapa2"] = time.time() - t0
     if v2 == ea.VIAVEL:
@@ -616,14 +673,22 @@ def _faltam(k: int, singular: str, plural_: str) -> str:
 # --- veredito -----------------------------------------------------------------------------
 
 def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = None,
-              margem: int = MARGEM) -> Resultado:
+              margem: int = MARGEM, aviso=None, orcamento: float | None = None) -> Resultado:
     """Veredito do quadro, com a escala do menor quadro viavel encontrado.
 
     Cada quadro acima do informado e tentado com a composicao da regra (`equipe`) e, se der
     inviavel, com todos os acrescimos como enfermeiros: enfermeiro cobre tudo o que tecnico
     cobre, entao se esta segunda tambem e inviavel, nenhuma composicao desse tamanho fecha.
+
+    P12: `progresso` recebe a fase, o quadro em teste e o limite da fase; `aviso` recebe a
+    escala da etapa 1 antes da etapa 2 (ver `resolver_com_objetivo`); `orcamento` (padrao
+    `ORCAMENTO`, lido na chamada) limita o clique inteiro.
     """
     tempo = TEMPO if tempo is None else tempo  # lido na chamada: os testes o encurtam
+    orcamento = ORCAMENTO if orcamento is None else orcamento
+    prazo = time.time() + orcamento
+    sufixo = f" · orçamento do clique: {fmt_tempo(orcamento)}"
+    progresso(0.0, "Conta: piso aritmético e alertas do COFEN" + sufixo)
     base = montar(e)                          # valida a entrada antes de gastar solver
     horas_enf = _horas_enfermeiro(e)
     alertas = br.alertas_cofen(base, e.grau, e.pacientes)
@@ -631,13 +696,16 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
     qp = br.quadro_pessoal(br.horas_por_dia(e.pacientes), chs) if e.pacientes else None
     minimo = piso(base)
     r = Resultado(veredito=NAO_DECIDIDO, quadro_informado=e.quadro, menor_viavel=None,
-                  alertas=alertas, tentativas=[], qp=qp, chs=chs)
+                  alertas=alertas, tentativas=[], qp=qp, chs=chs, orcamento=orcamento)
 
     decidido = True
     for acrescimo in range(0, margem + 1):
         quadro = e.quadro + acrescimo
-        progresso(acrescimo / (margem + 1), f"testando quadro de {quadro} profissionais")
+        frac = acrescimo / (margem + 1)
+        rotulo = "Quadro informado" if acrescimo == 0 else "Busca do menor quadro"
         if quadro < minimo:
+            progresso(frac, f"{rotulo}, {quadro} profissionais: inviável pela conta, sem "
+                            f"solver" + sufixo)
             r.tentativas.append((quadro, "piso", None, None))   # aritmetica, sem solver
             continue
         candidatas = [montar(e, acrescimo, horas_enf)]
@@ -646,10 +714,33 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
             if so_enf.profissionais.keys() != candidatas[0].profissionais.keys() or \
                     _n_enf(so_enf) != _n_enf(candidatas[0]):
                 candidatas.append(so_enf)
-        for inst in candidatas:
-            veredito, inst, escala, info = resolver_com_objetivo(inst, tempo)
+        for k, inst in enumerate(candidatas):
+            resta = int(prazo - time.time())
+            if resta < 1:
+                veredito = ORCAMENTO_ESGOTADO
+                r.tentativas.append((quadro, ORCAMENTO_ESGOTADO, None, None))
+                r.parada = (ORCAMENTO_ESGOTADO, quadro, 0)
+                break
+            limite = resta if tempo is None else min(tempo, resta)
+            segunda = " — 2ª composição: acréscimos como enfermeiros" if k else ""
+            progresso(frac, f"{rotulo}, {quadro} profissionais: etapa 1 (procurando escala "
+                            f"legal), até {fmt_tempo(limite)}{segunda}" + sufixo)
+
+            def aviso_quadro(evento, quadro=quadro, frac=frac, **d):
+                if evento == "etapa2":
+                    progresso(frac, f"Escala pronta com {quadro} profissionais: etapa 2 "
+                                    f"(equilibrando a carga entre colegas), até "
+                                    f"{fmt_tempo(d['limite'])}" + sufixo)
+                if aviso:
+                    aviso(evento, quadro=quadro, **d)
+
+            veredito, inst, escala, info = resolver_com_objetivo(inst, limite, aviso_quadro,
+                                                                 prazo)
             r.tentativas.append((quadro, veredito, _n_enf(inst),
                                  len(inst.profissionais) - _n_enf(inst)))
+            if veredito in (ea.INDETERMINADO, ea.ERRO):
+                cortado = veredito == ea.INDETERMINADO and tempo is not None and limite < tempo
+                r.parada = (ORCAMENTO_ESGOTADO if cortado else veredito, quadro, limite)
             if veredito != ea.INVIAVEL:
                 break
         if veredito == ea.VIAVEL:
@@ -683,26 +774,42 @@ def rotulo_dia(d: date) -> str:
     return f"{DIAS_PT[d.weekday()]} {d:%d/%m}"
 
 
+def rotulos(inst) -> dict[str, str]:
+    """Codigo de cada turno na grade: o id, com * no posto de enfermeiro."""
+    return {s: (t.id[:-1] + "*" if br.HABILIDADE_ENF in t.habilidades else t.id)
+            for s, t in inst.turnos.items()}
+
+
+def grade(inst, escala):
+    """A escala como tabela profissional x dia — a aba Escala da planilha, e a grade que a
+    tela mostra (inclusive a provisoria da etapa 1, P12)."""
+    import pandas as pd
+
+    rotulo = rotulos(inst)
+    dias = inst.dias
+    linhas = {p.nome: [""] * len(dias) for p in inst.profissionais.values()}
+    for d, n, s in escala:
+        linhas[inst.profissionais[n].nome][inst.indice(d)] = rotulo[s]
+    for n, d in inst.indisponiveis:
+        linhas[inst.profissionais[n].nome][inst.indice(d)] = "indisp."
+    categoria = {p.nome: ("Enfermeiro" if br.HABILIDADE_ENF in p.habilidades else "Técnico")
+                 for p in inst.profissionais.values()}
+    tabela = pd.DataFrame.from_dict(linhas, orient="index",
+                                    columns=[rotulo_dia(d) for d in dias])
+    tabela.insert(0, "Categoria", [categoria[n] for n in tabela.index])
+    tabela.insert(1, "Turnos", [sum(1 for c in linha if c and c != "indisp.")
+                                for linha in linhas.values()])
+    tabela.index.name = "Profissional"
+    return tabela
+
+
 def planilha(r: Resultado, e: Entrada) -> bytes:
     """A escala em .xlsx: aba Escala (profissional x dia), Resumo e Legenda."""
     import pandas as pd
 
     inst = r.inst
-    rotulo = {s: (t.id[:-1] + "*" if br.HABILIDADE_ENF in t.habilidades else t.id)
-              for s, t in inst.turnos.items()}
-    dias = inst.dias
-    grade = {p.nome: [""] * len(dias) for p in inst.profissionais.values()}
-    for d, n, s in r.escala:
-        grade[inst.profissionais[n].nome][inst.indice(d)] = rotulo[s]
-    for n, d in inst.indisponiveis:
-        grade[inst.profissionais[n].nome][inst.indice(d)] = "indisp."
-    categoria = {p.nome: ("Enfermeiro" if br.HABILIDADE_ENF in p.habilidades else "Técnico")
-                 for p in inst.profissionais.values()}
-    escala = pd.DataFrame.from_dict(grade, orient="index", columns=[rotulo_dia(d) for d in dias])
-    escala.insert(0, "Categoria", [categoria[n] for n in escala.index])
-    escala.insert(1, "Turnos", [sum(1 for c in linha if c and c != "indisp.")
-                                for linha in grade.values()])
-    escala.index.name = "Profissional"
+    rotulo = rotulos(inst)
+    escala = grade(inst, r.escala)
 
     c, ind = r.conformidade or {}, r.indicadores
     linhas = [

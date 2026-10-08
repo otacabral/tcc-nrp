@@ -1,0 +1,14 @@
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+quantos st.dataframe na arvore: 6
+--- tela: shape (3, 3); index [0, 1, 2]; colunas ['Nome', 'Início', 'Fim']
+{dtype('int64'): 2, <StringDtype(na_value=nan)>: 1}
+[{'Nome': 'M', 'Início': 7, 'Fim': 15}, {'Nome': 'T', 'Início': 15, 'Fim': 23}]
+--- fe.grade: shape (13, 30); index ['Enf 1', 'Enf 2', 'Enf 3']; colunas ['Categoria', 'Turnos', 'seg 04/01', 'ter 05/01']
+{<StringDtype(na_value=nan)>: 29, dtype('int64'): 1}
+[{'Categoria': 'Enfermeiro', 'Turnos': 15, 'seg 04/01': 'M*', 'ter 05/01': 'M*', 'qua 06/01': '', 'qui 07/01': ''}, {'Categoria': 'Enfermeiro', 'Turnos': 14, 'seg 04/01': '', 'ter 05/01': 'N*', 'qua 06/01': '', 'qui 07/01': 'T*'}]
+--- planilha lida: shape (13, 30); index ['Enf 1', 'Enf 2', 'Enf 3']; colunas ['Categoria', 'Turnos', 'seg 04/01', 'ter 05/01']
+{<StringDtype(na_value=nan)>: 29, dtype('int64'): 1}
+[{'Categoria': 'Enfermeiro', 'Turnos': 15, 'seg 04/01': 'M*', 'ter 05/01': 'M*', 'qua 06/01': nan, 'qui 07/01': nan}, {'Categoria': 'Enfermeiro', 'Turnos': 14, 'seg 04/01': nan, 'ter 05/01': 'N*', 'qua 06/01': nan, 'qui 07/01': 'T*'}]
+tela == fe.grade: False | tela == planilha lida: False | fe.grade == lida: True
+celulas diferentes (tela x fe.grade), primeiras 10: [(0, 0, 'M', 'Enfermeiro'), (0, 1, '7', '15'), (0, 2, '15', 'M*'), (1, 0, 'T', 'Enfermeiro'), (1, 1, '15', '14'), (1, 2, '23', ''), (2, 0, 'N', 'Enfermeiro'), (2, 1, '23', '14'), (2, 2, '7', '')] total 9

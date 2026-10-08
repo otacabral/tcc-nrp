@@ -160,7 +160,11 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("caso", nargs="?")
     ap.add_argument("--resumo", action="store_true")
+    ap.add_argument("--saida", help="pasta dos JSON (padrao: a da rodada de 07/10)")
     a = ap.parse_args()
+    if a.saida:
+        global SAIDA
+        SAIDA = Path(a.saida)
     return resumo() if a.resumo else rodar(a.caso)
 
 

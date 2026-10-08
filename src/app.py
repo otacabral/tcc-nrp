@@ -207,9 +207,25 @@ if gerar:
         st.error(f"Entrada inválida: {erro}")
     else:
         barra = st.progress(0.0, text="preparando")
+        # P12: a escala da etapa 1 aparece aqui enquanto a etapa 2 equilibra a carga. Sem
+        # botao de planilha neste intervalo: um clique reexecutaria a tela e interromperia
+        # o calculo. A planilha vem com o resultado final, e e a escala que a tela mostra.
+        provisoria = st.empty()
+
+        def aviso(evento, **d):
+            if evento != "escala_etapa1":
+                return
+            with provisoria.container(border=True):
+                st.info(f"Escala pronta; equilibrando a carga entre colegas (até "
+                        f"{fe.fmt_tempo(d['limite'])}).")
+                st.caption("A planilha fica disponível quando o equilíbrio terminar.")
+                st.dataframe(fe.grade(d["inst"], d["escala"]).fillna(""), width="stretch")
+
         resultado = fe.verificar(entrada,
-                                 progresso=lambda f, msg: barra.progress(f, text=msg))
+                                 progresso=lambda f, msg: barra.progress(f, text=msg),
+                                 aviso=aviso)
         barra.empty()
+        provisoria.empty()
         st.session_state["resultado"] = (resultado, entrada)
 
 # --- e) resultado -------------------------------------------------------------------------
@@ -245,6 +261,7 @@ if "resultado" in st.session_state:
                     help=f"Horas trabalhadas ÷ horas contratadas nos dias disponíveis. Em "
                          f"horas: {ind['horas_min']:g}–{ind['horas_max']:g} h no período.")
         m[4].metric("Conferência de descanso", "cumpre" if c["ok"] else "NÃO CUMPRE")
+        st.caption(r.frase_vigente())
         st.caption(f"Descanso mínimo entre turnos {c['menor_geral']:.0f} h · descanso "
                    f"semanal {fe.fmt_semanal(c['menor_semanal'])} · no máximo "
                    f"{br.plural(c['max_consec'], 'dia seguido', 'dias seguidos')}")
@@ -289,8 +306,10 @@ if "resultado" in st.session_state:
                            "cobrem a demanda",
                    "inviavel": "inviável, provado pelo solver",
                    "viavel": "viável — escala encontrada e conferida",
-                   "indeterminado": "sem escala no tempo disponível — nem provado inviável",
-                   "erro": "o solver falhou"}
+                   "indeterminado": f"sem resposta em {fe.fmt_tempo(fe.TEMPO)} — nem provado "
+                                    f"inviável",
+                   "erro": "erro técnico ao resolver; detalhes no console",
+                   fe.ORCAMENTO_ESGOTADO: "não testado: o orçamento do clique acabou"}
         for quadro, v, n_enf_t, n_tec_t in r.tentativas:
             composicao = f" ({n_enf_t} enf. + {n_tec_t} téc.)" if n_enf_t is not None else ""
             st.write(f"{quadro} profissionais{composicao}: {explica.get(v, v)}")

@@ -1,0 +1,30 @@
+2026-10-08 13:19:12.343 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+8a. otimo provado: caso 5, limite 600 s
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+2026-10-08 13:22:21.037 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+   ok    tela: ['O quadro informado admite escala legal. Escala gerada.']
+   ok    sem 'pode haver'
+8b. escala sem prova: 40 com 20 pedidos, limite 25 s
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+2026-10-08 13:22:47.325 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+   ok    tela: ['O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 1,0%: distância máxima até a melhor possível).']
+   ok    sem success: []
+   ok    escala e planilha na tela
+   ok    equilibrio nao rodou
+   ok    pedidos: ['Pedidos de folga — atendidos quando possível; nunca impedem a escala.', 'Todos os 20 pedidos de folga foram atendidos.']
+      gap 1.03% | pedidos 20/20
+8c. tempo esgotado sem escala: 40 sem pedidos, limite 3 s
+2026-10-08 13:22:51.476 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+   FALHA tela: ['Sem resposta em 3 s com 40 profissionais: o solver não achou escala nem provou que ela não existe.']
+   ok    nenhum 'Falta'
+   ok    sem diagnostico, escala nem planilha
+8d. 39 provado curto pela conta, 40 sem escala no tempo: limite 3 s
+   ok    tentativas [(39, 'piso', None, None), (40, 'indeterminado', 14, 26)]
+   ok    diagnostico de alternancia: ('alternancia', 'Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). seg 04/01 e ter 05/01 somam 40 plantões, que precisam de 40 pessoas diferentes; descontadas férias e licenças, 39 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.', ['alternancia'])
+   FALHA tela: ['O quadro informado é insuficiente. Sem resposta em 3 s com 40 profissionais: o menor quadro viável não foi determinado.']
+   ok    nenhum 'Falta'
+
+2 FALHA(S)
+codigo 1

@@ -1,0 +1,11 @@
+7.1 objetivo: enfermeiro em posto de tecnico so quando necessario (8 + 5)
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    veredito admite
+      sem os pesos (Etapa 6): 63 turnos, pedidos 3/3
+   ok    com os pesos: 30 turnos de enfermeiro em posto de tecnico (minimo aritmetico 30 com 44 h; era 35 com 42 h)
+   ok    pedidos atendidos 3/3, sem piorar
+   ok    peso de cada pedido = 141 (140 postos de tecnico + 1)
+   ok    conferencia de descanso cumpre
+
+ponta a ponta pela tela OK

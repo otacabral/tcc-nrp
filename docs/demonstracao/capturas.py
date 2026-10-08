@@ -278,8 +278,19 @@ def main() -> int:
         if a.so_preencher:
             b.close()
             return 0
+        import time
+        t0 = time.time()
         pg.get_by_role("button", name="Gerar escala").click()
+        # P12 (08/10): a escala da etapa 1 aparece enquanto a etapa 2 equilibra a carga
+        try:
+            pg.wait_for_selector("text=Escala pronta; equilibrando", timeout=900000)
+            print(f"ESCALA DA ETAPA 1 NA TELA aos {time.time() - t0:.0f} s do clique")
+            esperar(pg, 1500)
+            foto(pg, AQUI / f"{a.rodada}_equilibrando.png")
+        except Exception as erro:  # noqa: BLE001
+            print(f"escala da etapa 1 nao apareceu na tela: {type(erro).__name__}")
         pg.wait_for_selector("text=5. Resultado", timeout=3600000)
+        print(f"TEMPO DO CLIQUE ATE O RESULTADO: {time.time() - t0:.0f} s")
         esperar(pg, 3000)
         foto(pg, AQUI / f"{a.rodada}_resultado.png")
         resultado = pg.locator("[data-testid='stHeading']", has_text="5. Resultado")
