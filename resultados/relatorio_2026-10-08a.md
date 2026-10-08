@@ -24,3 +24,19 @@ nível 3. A correção fica marcada na própria nota.
 - O esperado gravado em cada JSON da rodada é calculado pelo mesmo arquivo, na hora.
 
 **Nenhum caso muda; todos contam como teste.**
+
+## Parte 2 — K4 (17) e K3 (16), só a etapa 1, 3.600 s
+
+**Esperado registrado antes de rodar** (este parágrafo foi commitado antes do primeiro
+solver): a conta independente **não prova escala** em nenhum dos dois — folga 1 em ocupados
+por dia no K4 e 0 no K3 — e também **não prova inviabilidade** (nenhuma folga negativa).
+Qualquer dos três desfechos é possível: escala achada, inviabilidade provada ou tempo esgotado.
+O que separaria as camadas (C4): escala achada → a falha de 07/10 era de **solver** (tempo);
+inviabilidade provada → a conta da bateria é frouxa demais para esta família, e o caso passa a
+"inviável com prova".
+
+Como roda: `docs/diagnostico/caso_parte_a.py etapa1 --enf N --tempo 3600 --log <arq>`, o
+mesmo caminho da parte A (`ferramenta.montar` → `ferramenta.pesos` →
+`experimento_a.modelo_br`), com a entrada idêntica à de K3/K4 (6 h + noturno de 12 h, M 2+1,
+T 2+1, N 3+2, início 12/10/2026, grau intermediário, 5 técnicos). Um por vez, K4 primeiro,
+nada mais rodando na máquina.
