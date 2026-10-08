@@ -1,0 +1,5415 @@
+[
+ {
+  "nome": "N001",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2026-12-14",
+  "n_enf": 5,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {
+   "0": 36,
+   "2": 36,
+   "3": 36,
+   "4": 40,
+   "6": 36
+  },
+  "ferias": [
+   [
+    8,
+    0,
+    8
+   ],
+   [
+    6,
+    13,
+    14
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    2,
+    0
+   ],
+   "T": [
+    1,
+    0
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    5,
+    "N",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N002",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2026-11-16",
+  "n_enf": 5,
+  "n_tec": 12,
+  "nomes": true,
+  "cargas": {
+   "14": 40,
+   "15": 40,
+   "16": 36
+  },
+  "ferias": [
+   [
+    14,
+    25,
+    27
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N003",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-10-26",
+  "n_enf": 4,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {},
+  "ferias": [],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    7,
+    "M",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": {
+   "semi_intensivo": 11,
+   "alta": 10
+  },
+  "grau": "minimo"
+ },
+ {
+  "nome": "N004",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-11-02",
+  "n_enf": 7,
+  "n_tec": 4,
+  "nomes": true,
+  "cargas": {
+   "0": 40,
+   "2": 40,
+   "6": 36
+  },
+  "ferias": [],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    3
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    2,
+    "N",
+    [
+     1,
+     1
+    ]
+   ],
+   [
+    19,
+    "T",
+    [
+     1,
+     2
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N005",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2026-11-16",
+  "n_enf": 6,
+  "n_tec": 7,
+  "nomes": false,
+  "cargas": {
+   "2": 40,
+   "3": 30,
+   "11": 36
+  },
+  "ferias": [
+   [
+    8,
+    15,
+    19
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    2,
+    0
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    1
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "grade": [
+   [
+    17,
+    "N",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 7,
+   "minimo": 13
+  },
+  "grau": "minimo"
+ },
+ {
+  "nome": "N006",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-11-30",
+  "n_enf": 7,
+  "n_tec": 11,
+  "nomes": true,
+  "cargas": {
+   "0": 30,
+   "2": 30,
+   "5": 30,
+   "6": 40,
+   "10": 36,
+   "12": 40
+  },
+  "ferias": [
+   [
+    10,
+    17,
+    24
+   ],
+   [
+    8,
+    1,
+    4
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "M": [
+    2,
+    2
+   ],
+   "T": [
+    2,
+    2
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    22,
+    "T",
+    [
+     2,
+     4
+    ]
+   ]
+  ],
+  "pacientes": {
+   "semi_intensivo": 8,
+   "intensivo": 11
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N007",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2026-12-28",
+  "n_enf": 3,
+  "n_tec": 2,
+  "nomes": false,
+  "cargas": {
+   "2": 40
+  },
+  "ferias": [
+   [
+    1,
+    1,
+    4
+   ],
+   [
+    3,
+    2,
+    2
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "intermediario": 10
+  },
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N008",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2026-11-23",
+  "n_enf": 5,
+  "n_tec": 12,
+  "nomes": true,
+  "cargas": {
+   "3": 40,
+   "4": 30,
+   "8": 30,
+   "13": 30,
+   "14": 40
+  },
+  "ferias": [
+   [
+    10,
+    3,
+    8
+   ],
+   [
+    6,
+    7,
+    14
+   ]
+  ],
+  "pedidos": 2,
+  "demanda": {
+   "D": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "grade": [
+   [
+    2,
+    "D",
+    [
+     2,
+     4
+    ]
+   ],
+   [
+    6,
+    "D",
+    [
+     1,
+     4
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intermediario": 7
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N009",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-03-22",
+  "n_enf": 7,
+  "n_tec": 4,
+  "nomes": false,
+  "cargas": {
+   "0": 36,
+   "3": 40,
+   "4": 36,
+   "6": 36,
+   "8": 40
+  },
+  "ferias": [
+   [
+    5,
+    26,
+    27
+   ],
+   [
+    6,
+    27,
+    27
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    2,
+    2
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N010",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-03-22",
+  "n_enf": 5,
+  "n_tec": 7,
+  "nomes": true,
+  "cargas": {
+   "8": 36,
+   "10": 36
+  },
+  "ferias": [],
+  "pedidos": 6,
+  "demanda": {
+   "D": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    2,
+    "N",
+    [
+     2,
+     1
+    ]
+   ],
+   [
+    24,
+    "N",
+    [
+     1,
+     2
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N011",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-02-08",
+  "n_enf": 6,
+  "n_tec": 10,
+  "nomes": false,
+  "cargas": {
+   "1": 36,
+   "12": 36
+  },
+  "ferias": [
+   [
+    6,
+    18,
+    23
+   ],
+   [
+    0,
+    2,
+    10
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    2,
+    0
+   ],
+   "T": [
+    2,
+    4
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "alta": 11
+  },
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N012",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-02-01",
+  "n_enf": 5,
+  "n_tec": 10,
+  "nomes": false,
+  "cargas": {
+   "5": 30,
+   "7": 40,
+   "8": 36,
+   "11": 36,
+   "14": 40
+  },
+  "ferias": [
+   [
+    12,
+    18,
+    27
+   ],
+   [
+    9,
+    14,
+    16
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    2,
+    2
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "grade": [
+   [
+    24,
+    "T",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    25,
+    "M",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "minimo": 6,
+   "intermediario": 12
+  },
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N013",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-01-25",
+  "n_enf": 8,
+  "n_tec": 9,
+  "nomes": false,
+  "cargas": {
+   "0": 30,
+   "2": 30,
+   "3": 40,
+   "4": 36,
+   "8": 40,
+   "9": 36,
+   "11": 36,
+   "13": 30,
+   "15": 30,
+   "16": 40
+  },
+  "ferias": [],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    0,
+    "N",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "minimo": 8
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N014",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-03-22",
+  "n_enf": 4,
+  "n_tec": 4,
+  "nomes": true,
+  "cargas": {
+   "4": 36,
+   "7": 30
+  },
+  "ferias": [
+   [
+    6,
+    15,
+    19
+   ],
+   [
+    7,
+    15,
+    15
+   ]
+  ],
+  "pedidos": 6,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    20,
+    "N",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    14,
+    "T",
+    [
+     1,
+     4
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 15,
+   "alta": 15
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N015",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-01-04",
+  "n_enf": 6,
+  "n_tec": 9,
+  "nomes": true,
+  "cargas": {
+   "1": 30,
+   "3": 36,
+   "4": 30,
+   "7": 40,
+   "8": 40,
+   "10": 30,
+   "12": 40
+  },
+  "ferias": [],
+  "pedidos": 6,
+  "demanda": {
+   "D": [
+    2,
+    2
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    1,
+    3
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "grade": [
+   [
+    15,
+    "D",
+    [
+     2,
+     1
+    ]
+   ],
+   [
+    22,
+    "N",
+    [
+     2,
+     4
+    ]
+   ]
+  ],
+  "pacientes": {
+   "semi_intensivo": 2
+  },
+  "grau": "minimo"
+ },
+ {
+  "nome": "N016",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-03-22",
+  "n_enf": 6,
+  "n_tec": 11,
+  "nomes": true,
+  "cargas": {
+   "1": 40,
+   "4": 30,
+   "11": 36,
+   "13": 36,
+   "15": 36
+  },
+  "ferias": [
+   [
+    11,
+    7,
+    15
+   ]
+  ],
+  "pedidos": 2,
+  "demanda": {
+   "M": [
+    2,
+    4
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    2,
+    2
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "grade": [
+   [
+    17,
+    "T",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    17,
+    "M",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 5
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N017",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2026-11-30",
+  "n_enf": 7,
+  "n_tec": 12,
+  "nomes": false,
+  "cargas": {
+   "1": 30,
+   "3": 36,
+   "4": 36,
+   "5": 36,
+   "7": 30,
+   "9": 40,
+   "11": 40,
+   "15": 40,
+   "17": 30,
+   "18": 40
+  },
+  "ferias": [
+   [
+    11,
+    1,
+    1
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    2,
+    1
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    2,
+    3
+   ],
+   "T": [
+    1,
+    0
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "grade": [],
+  "pacientes": {
+   "intermediario": 9
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N018",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-11-23",
+  "n_enf": 3,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {
+   "4": 36
+  },
+  "ferias": [],
+  "pedidos": 0,
+  "demanda": {
+   "D": [
+    1,
+    3
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    23,
+    "N",
+    [
+     1,
+     2
+    ]
+   ]
+  ],
+  "pacientes": {
+   "alta": 13
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N019",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-01-18",
+  "n_enf": 4,
+  "n_tec": 4,
+  "nomes": true,
+  "cargas": {
+   "3": 36,
+   "5": 40
+  },
+  "ferias": [],
+  "pedidos": 2,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N020",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-02-01",
+  "n_enf": 3,
+  "n_tec": 2,
+  "nomes": false,
+  "cargas": {
+   "1": 30,
+   "4": 40
+  },
+  "ferias": [
+   [
+    1,
+    3,
+    12
+   ],
+   [
+    0,
+    11,
+    20
+   ]
+  ],
+  "pedidos": 6,
+  "demanda": {
+   "D": [
+    1,
+    2
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "grade": [
+   [
+    19,
+    "D",
+    [
+     1,
+     4
+    ]
+   ],
+   [
+    11,
+    "D",
+    [
+     2,
+     4
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N021",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-03-15",
+  "n_enf": 6,
+  "n_tec": 12,
+  "nomes": false,
+  "cargas": {
+   "6": 30,
+   "9": 36,
+   "10": 40,
+   "13": 36,
+   "16": 40
+  },
+  "ferias": [],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    1,
+    3
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    13,
+    "N",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    21,
+    "T",
+    [
+     2,
+     0
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 13,
+   "minimo": 6
+  },
+  "grau": "alta"
+ },
+ {
+  "nome": "N022",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2027-02-15",
+  "n_enf": 4,
+  "n_tec": 6,
+  "nomes": true,
+  "cargas": {
+   "7": 40,
+   "9": 40
+  },
+  "ferias": [
+   [
+    7,
+    8,
+    17
+   ],
+   [
+    9,
+    3,
+    6
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N023",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-12-21",
+  "n_enf": 3,
+  "n_tec": 2,
+  "nomes": false,
+  "cargas": {
+   "2": 36,
+   "4": 40
+  },
+  "ferias": [
+   [
+    1,
+    22,
+    27
+   ],
+   [
+    0,
+    14,
+    15
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    2,
+    3
+   ],
+   "N": [
+    2,
+    1
+   ]
+  },
+  "grade": [
+   [
+    7,
+    "D",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N024",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2026-11-16",
+  "n_enf": 6,
+  "n_tec": 3,
+  "nomes": true,
+  "cargas": {
+   "4": 36,
+   "5": 40
+  },
+  "ferias": [
+   [
+    4,
+    20,
+    27
+   ],
+   [
+    0,
+    20,
+    27
+   ]
+  ],
+  "pedidos": 6,
+  "demanda": {
+   "M": [
+    2,
+    4
+   ],
+   "T": [
+    2,
+    4
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    5,
+    "N",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    11,
+    "N",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N025",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-01-25",
+  "n_enf": 7,
+  "n_tec": 7,
+  "nomes": true,
+  "cargas": {
+   "0": 40,
+   "5": 30
+  },
+  "ferias": [
+   [
+    8,
+    6,
+    11
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "D": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    20,
+    "N",
+    [
+     2,
+     3
+    ]
+   ],
+   [
+    11,
+    "D",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N026",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-03-01",
+  "n_enf": 7,
+  "n_tec": 3,
+  "nomes": true,
+  "cargas": {
+   "0": 30,
+   "4": 40,
+   "8": 30
+  },
+  "ferias": [],
+  "pedidos": 3,
+  "demanda": {
+   "D": [
+    1,
+    4
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "semi_intensivo": 15
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N027",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-11-02",
+  "n_enf": 3,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {
+   "0": 40,
+   "1": 30,
+   "3": 40,
+   "4": 30,
+   "5": 36
+  },
+  "ferias": [
+   [
+    2,
+    24,
+    24
+   ],
+   [
+    0,
+    0,
+    9
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "D": [
+    1,
+    0
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    15,
+    "D",
+    [
+     1,
+     2
+    ]
+   ],
+   [
+    3,
+    "D",
+    [
+     1,
+     2
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N028",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2027-01-18",
+  "n_enf": 8,
+  "n_tec": 5,
+  "nomes": false,
+  "cargas": {
+   "1": 36,
+   "2": 40,
+   "5": 40,
+   "7": 40,
+   "10": 40
+  },
+  "ferias": [],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    8,
+    "N",
+    [
+     2,
+     4
+    ]
+   ],
+   [
+    15,
+    "M",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N029",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-02-08",
+  "n_enf": 7,
+  "n_tec": 4,
+  "nomes": false,
+  "cargas": {
+   "0": 30,
+   "1": 30,
+   "5": 40,
+   "8": 30,
+   "10": 30
+  },
+  "ferias": [],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    2,
+    0
+   ],
+   "T": [
+    2,
+    2
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    7,
+    "M",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 15,
+   "intermediario": 9
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N030",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2026-11-16",
+  "n_enf": 5,
+  "n_tec": 10,
+  "nomes": true,
+  "cargas": {
+   "0": 40,
+   "3": 36,
+   "8": 36,
+   "9": 40,
+   "10": 40,
+   "13": 36
+  },
+  "ferias": [],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    2,
+    1
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    2,
+    0
+   ],
+   "T": [
+    1,
+    0
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "grade": [
+   [
+    16,
+    "M",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    20,
+    "N",
+    [
+     1,
+     0
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 2,
+   "intermediario": 2
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N031",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-03-15",
+  "n_enf": 8,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {
+   "0": 36,
+   "6": 30,
+   "8": 40
+  },
+  "ferias": [
+   [
+    1,
+    15,
+    17
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    21,
+    "N",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N032",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2027-02-22",
+  "n_enf": 5,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {
+   "2": 30
+  },
+  "ferias": [],
+  "pedidos": 1,
+  "demanda": {
+   "D": [
+    2,
+    2
+   ],
+   "N": [
+    2,
+    1
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    1,
+    1
+   ],
+   "N": [
+    2,
+    4
+   ]
+  },
+  "grade": [
+   [
+    5,
+    "D",
+    [
+     1,
+     4
+    ]
+   ],
+   [
+    2,
+    "N",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N033",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-02-15",
+  "n_enf": 5,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {
+   "2": 40,
+   "6": 30
+  },
+  "ferias": [],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    25,
+    "N",
+    [
+     2,
+     1
+    ]
+   ],
+   [
+    6,
+    "N",
+    [
+     2,
+     4
+    ]
+   ]
+  ],
+  "pacientes": {
+   "semi_intensivo": 11,
+   "alta": 3
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N034",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-12-21",
+  "n_enf": 7,
+  "n_tec": 8,
+  "nomes": true,
+  "cargas": {
+   "2": 40,
+   "3": 30,
+   "8": 36,
+   "10": 40,
+   "11": 40
+  },
+  "ferias": [
+   [
+    14,
+    4,
+    11
+   ],
+   [
+    11,
+    19,
+    21
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    2,
+    2
+   ],
+   "N": [
+    2,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N035",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-12-07",
+  "n_enf": 5,
+  "n_tec": 8,
+  "nomes": true,
+  "cargas": {
+   "3": 30,
+   "5": 30,
+   "10": 40,
+   "11": 36
+  },
+  "ferias": [
+   [
+    4,
+    0,
+    1
+   ],
+   [
+    12,
+    20,
+    27
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    24,
+    "M",
+    [
+     2,
+     4
+    ]
+   ],
+   [
+    16,
+    "M",
+    [
+     1,
+     4
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N036",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-03-01",
+  "n_enf": 7,
+  "n_tec": 2,
+  "nomes": false,
+  "cargas": {
+   "4": 36,
+   "5": 36
+  },
+  "ferias": [
+   [
+    5,
+    0,
+    7
+   ]
+  ],
+  "pedidos": 6,
+  "demanda": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    1,
+    0
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    4,
+    "N",
+    [
+     1,
+     0
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N037",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-10-12",
+  "n_enf": 4,
+  "n_tec": 6,
+  "nomes": false,
+  "cargas": {
+   "0": 30,
+   "4": 30,
+   "5": 40,
+   "7": 30,
+   "9": 30
+  },
+  "ferias": [
+   [
+    9,
+    25,
+    27
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    2,
+    2
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    2,
+    1
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "grade": [
+   [
+    16,
+    "M",
+    [
+     2,
+     4
+    ]
+   ],
+   [
+    19,
+    "T",
+    [
+     2,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N038",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2026-10-26",
+  "n_enf": 3,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {},
+  "ferias": [
+   [
+    4,
+    8,
+    8
+   ],
+   [
+    0,
+    18,
+    23
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    23,
+    "M",
+    [
+     1,
+     4
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intermediario": 9,
+   "alta": 15
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N039",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-02-01",
+  "n_enf": 8,
+  "n_tec": 8,
+  "nomes": false,
+  "cargas": {
+   "2": 30,
+   "7": 36,
+   "14": 30
+  },
+  "ferias": [
+   [
+    2,
+    25,
+    27
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    2,
+    1
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    2,
+    2
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "grade": [],
+  "pacientes": {
+   "semi_intensivo": 6
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N040",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-01-11",
+  "n_enf": 8,
+  "n_tec": 8,
+  "nomes": true,
+  "cargas": {
+   "1": 36,
+   "12": 30
+  },
+  "ferias": [],
+  "pedidos": 5,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "alta": 15
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N041",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-11-16",
+  "n_enf": 5,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {
+   "1": 40,
+   "6": 36
+  },
+  "ferias": [
+   [
+    0,
+    16,
+    18
+   ],
+   [
+    2,
+    25,
+    27
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    2,
+    4
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    7,
+    "N",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N042",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-01-25",
+  "n_enf": 5,
+  "n_tec": 9,
+  "nomes": true,
+  "cargas": {
+   "1": 40,
+   "2": 40,
+   "8": 40,
+   "11": 40,
+   "12": 40
+  },
+  "ferias": [
+   [
+    13,
+    12,
+    14
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    2,
+    3
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    17,
+    "T",
+    [
+     1,
+     4
+    ]
+   ],
+   [
+    18,
+    "N",
+    [
+     1,
+     2
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N043",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2026-10-26",
+  "n_enf": 8,
+  "n_tec": 7,
+  "nomes": true,
+  "cargas": {
+   "9": 40,
+   "10": 30,
+   "12": 36,
+   "13": 40
+  },
+  "ferias": [],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    1,
+    3
+   ],
+   "N": [
+    2,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    17,
+    "N",
+    [
+     1,
+     4
+    ]
+   ],
+   [
+    27,
+    "D",
+    [
+     2,
+     4
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N044",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-11-16",
+  "n_enf": 6,
+  "n_tec": 11,
+  "nomes": false,
+  "cargas": {
+   "0": 30,
+   "1": 36,
+   "5": 40,
+   "10": 30,
+   "11": 30
+  },
+  "ferias": [],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    12,
+    "M",
+    [
+     2,
+     4
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N045",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2027-03-29",
+  "n_enf": 7,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {
+   "0": 36,
+   "3": 30,
+   "5": 30,
+   "6": 40,
+   "9": 30,
+   "10": 40
+  },
+  "ferias": [],
+  "pedidos": 4,
+  "demanda": {
+   "D": [
+    2,
+    2
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    3,
+    "D",
+    [
+     1,
+     3
+    ]
+   ],
+   [
+    21,
+    "N",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N046",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2026-11-30",
+  "n_enf": 4,
+  "n_tec": 10,
+  "nomes": false,
+  "cargas": {
+   "0": 30,
+   "1": 30,
+   "9": 36,
+   "11": 40
+  },
+  "ferias": [
+   [
+    6,
+    10,
+    10
+   ],
+   [
+    3,
+    9,
+    14
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    2,
+    2
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    3,
+    "N",
+    [
+     2,
+     1
+    ]
+   ],
+   [
+    18,
+    "T",
+    [
+     2,
+     2
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N047",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-11-02",
+  "n_enf": 6,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {
+   "2": 30,
+   "3": 36,
+   "8": 40
+  },
+  "ferias": [
+   [
+    2,
+    0,
+    9
+   ],
+   [
+    8,
+    27,
+    27
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "D": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    19,
+    "D",
+    [
+     2,
+     0
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N048",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-01-04",
+  "n_enf": 7,
+  "n_tec": 2,
+  "nomes": true,
+  "cargas": {
+   "8": 36
+  },
+  "ferias": [
+   [
+    4,
+    5,
+    11
+   ],
+   [
+    2,
+    8,
+    9
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    2,
+    4
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    8,
+    "M",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "semi_intensivo": 11,
+   "minimo": 9
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N049",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-01-25",
+  "n_enf": 5,
+  "n_tec": 12,
+  "nomes": true,
+  "cargas": {
+   "0": 36,
+   "2": 36,
+   "6": 36,
+   "12": 40,
+   "15": 36,
+   "16": 36
+  },
+  "ferias": [
+   [
+    0,
+    7,
+    11
+   ]
+  ],
+  "pedidos": 6,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N050",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-01-18",
+  "n_enf": 3,
+  "n_tec": 4,
+  "nomes": true,
+  "cargas": {
+   "1": 30,
+   "2": 30,
+   "4": 40,
+   "6": 30
+  },
+  "ferias": [],
+  "pedidos": 6,
+  "demanda": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    24,
+    "M",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    11,
+    "N",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "alta": 8,
+   "semi_intensivo": 10
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N051",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-12-07",
+  "n_enf": 7,
+  "n_tec": 7,
+  "nomes": false,
+  "cargas": {
+   "3": 30,
+   "5": 36,
+   "8": 36,
+   "12": 36,
+   "13": 40
+  },
+  "ferias": [
+   [
+    5,
+    24,
+    27
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    2,
+    2
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    2,
+    4
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "grade": [
+   [
+    4,
+    "M",
+    [
+     2,
+     3
+    ]
+   ],
+   [
+    2,
+    "N",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "alta": 5
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N052",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-02-08",
+  "n_enf": 8,
+  "n_tec": 2,
+  "nomes": true,
+  "cargas": {
+   "0": 36,
+   "7": 40,
+   "8": 30
+  },
+  "ferias": [
+   [
+    1,
+    25,
+    27
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    2,
+    1
+   ],
+   "N": [
+    2,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    22,
+    "N",
+    [
+     2,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N053",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-03-08",
+  "n_enf": 8,
+  "n_tec": 9,
+  "nomes": true,
+  "cargas": {
+   "4": 36,
+   "5": 36,
+   "10": 36,
+   "11": 36,
+   "12": 36,
+   "13": 40,
+   "15": 40
+  },
+  "ferias": [],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    1,
+    4
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    2,
+    1
+   ],
+   "N": [
+    2,
+    1
+   ]
+  },
+  "grade": [
+   [
+    15,
+    "N",
+    [
+     2,
+     2
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N054",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2027-02-08",
+  "n_enf": 5,
+  "n_tec": 11,
+  "nomes": true,
+  "cargas": {
+   "2": 30,
+   "4": 30,
+   "6": 30,
+   "7": 36,
+   "8": 36,
+   "10": 36,
+   "12": 36,
+   "14": 36
+  },
+  "ferias": [],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    2,
+    0
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    19,
+    "M",
+    [
+     2,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N055",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-02-15",
+  "n_enf": 5,
+  "n_tec": 10,
+  "nomes": false,
+  "cargas": {
+   "0": 40,
+   "8": 40,
+   "10": 36,
+   "11": 40
+  },
+  "ferias": [],
+  "pedidos": 6,
+  "demanda": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    2,
+    1
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    2,
+    4
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "grade": [
+   [
+    5,
+    "N",
+    [
+     2,
+     2
+    ]
+   ],
+   [
+    7,
+    "T",
+    [
+     1,
+     0
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N056",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-03-08",
+  "n_enf": 8,
+  "n_tec": 2,
+  "nomes": true,
+  "cargas": {
+   "0": 36,
+   "2": 30,
+   "3": 36,
+   "8": 30,
+   "9": 36
+  },
+  "ferias": [
+   [
+    1,
+    1,
+    8
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    2,
+    "N",
+    [
+     1,
+     4
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 13,
+   "minimo": 2
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N057",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-12-14",
+  "n_enf": 3,
+  "n_tec": 6,
+  "nomes": false,
+  "cargas": {
+   "2": 36,
+   "5": 30,
+   "7": 40
+  },
+  "ferias": [
+   [
+    1,
+    20,
+    24
+   ],
+   [
+    5,
+    20,
+    25
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    0
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "grade": [],
+  "pacientes": {
+   "alta": 5
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N058",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2026-11-30",
+  "n_enf": 3,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {
+   "0": 36,
+   "1": 30,
+   "5": 30,
+   "7": 36
+  },
+  "ferias": [
+   [
+    7,
+    15,
+    24
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    13,
+    "M",
+    [
+     2,
+     4
+    ]
+   ],
+   [
+    10,
+    "T",
+    [
+     2,
+     2
+    ]
+   ]
+  ],
+  "pacientes": {
+   "alta": 4,
+   "intermediario": 13
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N059",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-12-14",
+  "n_enf": 4,
+  "n_tec": 2,
+  "nomes": true,
+  "cargas": {
+   "1": 30
+  },
+  "ferias": [
+   [
+    4,
+    4,
+    8
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "M": [
+    2,
+    2
+   ],
+   "T": [
+    1,
+    0
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    2,
+    2
+   ],
+   "T": [
+    2,
+    2
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "grade": [],
+  "pacientes": {
+   "intermediario": 14
+  },
+  "grau": "minimo"
+ },
+ {
+  "nome": "N060",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-01-25",
+  "n_enf": 7,
+  "n_tec": 11,
+  "nomes": false,
+  "cargas": {
+   "1": 36,
+   "6": 40,
+   "7": 30,
+   "10": 40,
+   "15": 30
+  },
+  "ferias": [
+   [
+    0,
+    5,
+    6
+   ],
+   [
+    14,
+    22,
+    27
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    2,
+    1
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N061",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-02-22",
+  "n_enf": 3,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {
+   "2": 30
+  },
+  "ferias": [
+   [
+    7,
+    11,
+    14
+   ]
+  ],
+  "pedidos": 6,
+  "demanda": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    3,
+    "T",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N062",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2026-11-23",
+  "n_enf": 4,
+  "n_tec": 6,
+  "nomes": false,
+  "cargas": {
+   "1": 36,
+   "4": 40,
+   "5": 30,
+   "6": 40,
+   "7": 36,
+   "8": 36
+  },
+  "ferias": [
+   [
+    2,
+    12,
+    17
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    2,
+    3
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    13,
+    "M",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N063",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-01-18",
+  "n_enf": 8,
+  "n_tec": 6,
+  "nomes": true,
+  "cargas": {
+   "2": 30,
+   "13": 36
+  },
+  "ferias": [
+   [
+    0,
+    17,
+    24
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    22,
+    "T",
+    [
+     1,
+     4
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N064",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-02-08",
+  "n_enf": 6,
+  "n_tec": 8,
+  "nomes": true,
+  "cargas": {
+   "1": 36,
+   "3": 40,
+   "4": 40
+  },
+  "ferias": [
+   [
+    9,
+    9,
+    10
+   ],
+   [
+    10,
+    14,
+    21
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "D": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    0,
+    "N",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N065",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-12-21",
+  "n_enf": 5,
+  "n_tec": 8,
+  "nomes": false,
+  "cargas": {
+   "4": 40,
+   "9": 36
+  },
+  "ferias": [],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    1,
+    0
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "alta": 2
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N066",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-03-01",
+  "n_enf": 4,
+  "n_tec": 11,
+  "nomes": false,
+  "cargas": {
+   "0": 36,
+   "3": 30,
+   "6": 40,
+   "10": 36
+  },
+  "ferias": [],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    2,
+    0
+   ],
+   "T": [
+    2,
+    4
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "grade": [
+   [
+    15,
+    "T",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    5,
+    "N",
+    [
+     2,
+     2
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 13
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N067",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-03-01",
+  "n_enf": 7,
+  "n_tec": 10,
+  "nomes": false,
+  "cargas": {
+   "12": 40,
+   "13": 40,
+   "16": 36
+  },
+  "ferias": [
+   [
+    1,
+    27,
+    27
+   ],
+   [
+    0,
+    15,
+    22
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "D": [
+    1,
+    0
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    2,
+    1
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "grade": [
+   [
+    0,
+    "D",
+    [
+     2,
+     0
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N068",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2026-12-28",
+  "n_enf": 6,
+  "n_tec": 5,
+  "nomes": false,
+  "cargas": {
+   "0": 36,
+   "1": 40,
+   "4": 36,
+   "6": 30,
+   "9": 30
+  },
+  "ferias": [],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    1,
+    3
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    1,
+    3
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "grade": [
+   [
+    6,
+    "N",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    1,
+    "T",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N069",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2026-10-26",
+  "n_enf": 8,
+  "n_tec": 8,
+  "nomes": true,
+  "cargas": {
+   "12": 40,
+   "13": 40
+  },
+  "ferias": [
+   [
+    1,
+    2,
+    3
+   ],
+   [
+    10,
+    1,
+    10
+   ]
+  ],
+  "pedidos": 2,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N070",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2026-10-19",
+  "n_enf": 4,
+  "n_tec": 6,
+  "nomes": false,
+  "cargas": {
+   "4": 36,
+   "6": 36,
+   "8": 40
+  },
+  "ferias": [
+   [
+    7,
+    3,
+    5
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "M": [
+    2,
+    2
+   ],
+   "T": [
+    2,
+    1
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    26,
+    "N",
+    [
+     1,
+     0
+    ]
+   ],
+   [
+    7,
+    "T",
+    [
+     1,
+     4
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N071",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2027-01-25",
+  "n_enf": 8,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {
+   "4": 30,
+   "5": 40,
+   "7": 30,
+   "11": 40,
+   "12": 30
+  },
+  "ferias": [],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    2,
+    4
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    4,
+    "T",
+    [
+     2,
+     1
+    ]
+   ],
+   [
+    27,
+    "N",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N072",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2026-10-12",
+  "n_enf": 7,
+  "n_tec": 9,
+  "nomes": false,
+  "cargas": {
+   "0": 40,
+   "1": 30,
+   "4": 40,
+   "11": 30,
+   "12": 40,
+   "15": 40
+  },
+  "ferias": [],
+  "pedidos": 2,
+  "demanda": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "grade": [],
+  "pacientes": {
+   "intermediario": 13,
+   "intensivo": 5
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N073",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-11-30",
+  "n_enf": 5,
+  "n_tec": 4,
+  "nomes": true,
+  "cargas": {
+   "5": 30,
+   "6": 30,
+   "8": 30
+  },
+  "ferias": [
+   [
+    3,
+    3,
+    6
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    4,
+    "N",
+    [
+     1,
+     0
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N074",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2027-01-25",
+  "n_enf": 3,
+  "n_tec": 11,
+  "nomes": false,
+  "cargas": {
+   "0": 40,
+   "1": 40,
+   "3": 40,
+   "13": 30
+  },
+  "ferias": [
+   [
+    2,
+    26,
+    27
+   ],
+   [
+    12,
+    13,
+    22
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    2,
+    1
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    17,
+    "T",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N075",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2026-11-30",
+  "n_enf": 5,
+  "n_tec": 8,
+  "nomes": false,
+  "cargas": {
+   "7": 40,
+   "8": 40,
+   "10": 36
+  },
+  "ferias": [],
+  "pedidos": 4,
+  "demanda": {
+   "D": [
+    1,
+    3
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "intensivo": 10
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N076",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2027-01-18",
+  "n_enf": 8,
+  "n_tec": 8,
+  "nomes": false,
+  "cargas": {
+   "5": 40,
+   "11": 40,
+   "12": 30,
+   "14": 36,
+   "15": 40
+  },
+  "ferias": [
+   [
+    15,
+    27,
+    27
+   ],
+   [
+    7,
+    17,
+    21
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    2,
+    1
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "grade": [
+   [
+    7,
+    "N",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "alta": 9
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N077",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-01-11",
+  "n_enf": 3,
+  "n_tec": 10,
+  "nomes": false,
+  "cargas": {
+   "1": 30,
+   "2": 30,
+   "7": 40,
+   "8": 36
+  },
+  "ferias": [
+   [
+    8,
+    23,
+    25
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    2,
+    3
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "grade": [
+   [
+    16,
+    "N",
+    [
+     1,
+     2
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intermediario": 9,
+   "minimo": 14
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N078",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-02-15",
+  "n_enf": 5,
+  "n_tec": 9,
+  "nomes": false,
+  "cargas": {
+   "0": 30,
+   "3": 36,
+   "4": 36,
+   "6": 36,
+   "8": 36,
+   "9": 36,
+   "10": 30,
+   "13": 36
+  },
+  "ferias": [
+   [
+    1,
+    17,
+    19
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "D": [
+    2,
+    3
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    5,
+    "D",
+    [
+     2,
+     3
+    ]
+   ],
+   [
+    7,
+    "N",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "minimo": 12,
+   "alta": 12
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N079",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-02-08",
+  "n_enf": 8,
+  "n_tec": 2,
+  "nomes": false,
+  "cargas": {
+   "0": 36,
+   "1": 36,
+   "6": 36,
+   "7": 30
+  },
+  "ferias": [],
+  "pedidos": 5,
+  "demanda": {
+   "D": [
+    2,
+    4
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    1,
+    1
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "grade": [
+   [
+    6,
+    "D",
+    [
+     1,
+     4
+    ]
+   ],
+   [
+    13,
+    "D",
+    [
+     1,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N080",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-10-12",
+  "n_enf": 8,
+  "n_tec": 2,
+  "nomes": false,
+  "cargas": {
+   "2": 30,
+   "6": 36,
+   "8": 36
+  },
+  "ferias": [
+   [
+    6,
+    4,
+    7
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "M": [
+    2,
+    3
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "minimo": 12,
+   "intermediario": 13
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N081",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2027-02-01",
+  "n_enf": 7,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {
+   "1": 30,
+   "4": 30,
+   "5": 30,
+   "9": 36,
+   "10": 40
+  },
+  "ferias": [
+   [
+    9,
+    3,
+    3
+   ],
+   [
+    8,
+    23,
+    27
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    2,
+    4
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    9,
+    "N",
+    [
+     2,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N082",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2026-12-07",
+  "n_enf": 7,
+  "n_tec": 10,
+  "nomes": false,
+  "cargas": {
+   "1": 30,
+   "2": 36,
+   "3": 30,
+   "9": 40,
+   "14": 36,
+   "16": 40
+  },
+  "ferias": [
+   [
+    4,
+    5,
+    11
+   ],
+   [
+    9,
+    10,
+    10
+   ]
+  ],
+  "pedidos": 2,
+  "demanda": {
+   "D": [
+    1,
+    2
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    17,
+    "N",
+    [
+     1,
+     2
+    ]
+   ],
+   [
+    9,
+    "N",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": {
+   "alta": 3
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N083",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2027-03-15",
+  "n_enf": 4,
+  "n_tec": 4,
+  "nomes": true,
+  "cargas": {
+   "2": 30,
+   "5": 40
+  },
+  "ferias": [
+   [
+    4,
+    25,
+    25
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "D": [
+    2,
+    4
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    2,
+    3
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "grade": [
+   [
+    8,
+    "N",
+    [
+     1,
+     0
+    ]
+   ]
+  ],
+  "pacientes": {
+   "minimo": 14,
+   "alta": 15
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N084",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2026-11-23",
+  "n_enf": 5,
+  "n_tec": 5,
+  "nomes": false,
+  "cargas": {
+   "3": 36,
+   "4": 30,
+   "8": 40
+  },
+  "ferias": [
+   [
+    6,
+    0,
+    6
+   ],
+   [
+    0,
+    22,
+    27
+   ]
+  ],
+  "pedidos": 2,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N085",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-02-01",
+  "n_enf": 5,
+  "n_tec": 4,
+  "nomes": false,
+  "cargas": {
+   "0": 30
+  },
+  "ferias": [
+   [
+    4,
+    19,
+    21
+   ],
+   [
+    3,
+    22,
+    27
+   ]
+  ],
+  "pedidos": 4,
+  "demanda": {
+   "M": [
+    2,
+    1
+   ],
+   "T": [
+    1,
+    3
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N086",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2027-01-25",
+  "n_enf": 3,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {
+   "3": 30
+  },
+  "ferias": [
+   [
+    4,
+    13,
+    19
+   ],
+   [
+    3,
+    22,
+    27
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    0
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    2,
+    3
+   ],
+   "T": [
+    1,
+    4
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "grade": [
+   [
+    23,
+    "T",
+    [
+     2,
+     0
+    ]
+   ],
+   [
+    17,
+    "M",
+    [
+     2,
+     0
+    ]
+   ]
+  ],
+  "pacientes": {
+   "intensivo": 10
+  },
+  "grau": "alta"
+ },
+ {
+  "nome": "N087",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2027-02-15",
+  "n_enf": 3,
+  "n_tec": 2,
+  "nomes": true,
+  "cargas": {},
+  "ferias": [
+   [
+    2,
+    5,
+    8
+   ],
+   [
+    4,
+    16,
+    16
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "D": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    13,
+    "D",
+    [
+     1,
+     1
+    ]
+   ],
+   [
+    0,
+    "D",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": {
+   "minimo": 12
+  },
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N088",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2027-03-22",
+  "n_enf": 5,
+  "n_tec": 3,
+  "nomes": true,
+  "cargas": {
+   "1": 36,
+   "2": 30,
+   "6": 40,
+   "7": 36
+  },
+  "ferias": [
+   [
+    5,
+    9,
+    10
+   ],
+   [
+    1,
+    25,
+    27
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "grade": [],
+  "pacientes": {
+   "intensivo": 14,
+   "minimo": 15
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N089",
+  "modelo": "6+12",
+  "fds": "sex_dom",
+  "inicio": "2026-10-19",
+  "n_enf": 4,
+  "n_tec": 6,
+  "nomes": true,
+  "cargas": {
+   "0": 36,
+   "1": 30,
+   "4": 36,
+   "9": 36
+  },
+  "ferias": [
+   [
+    9,
+    24,
+    27
+   ],
+   [
+    6,
+    23,
+    27
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    2,
+    4
+   ],
+   "N": [
+    1,
+    1
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    2
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "grade": [
+   [
+    19,
+    "M",
+    [
+     1,
+     4
+    ]
+   ]
+  ],
+  "pacientes": {
+   "alta": 4,
+   "intensivo": 8
+  },
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N090",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-10-26",
+  "n_enf": 6,
+  "n_tec": 9,
+  "nomes": false,
+  "cargas": {
+   "7": 30,
+   "8": 30,
+   "9": 30,
+   "12": 40,
+   "13": 30
+  },
+  "ferias": [
+   [
+    6,
+    11,
+    13
+   ],
+   [
+    5,
+    2,
+    2
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "M": [
+    1,
+    1
+   ],
+   "T": [
+    1,
+    2
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "grade": [
+   [
+    13,
+    "M",
+    [
+     1,
+     2
+    ]
+   ],
+   [
+    2,
+    "T",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N091",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-03-29",
+  "n_enf": 8,
+  "n_tec": 11,
+  "nomes": true,
+  "cargas": {
+   "0": 40,
+   "1": 30,
+   "3": 36,
+   "6": 30,
+   "10": 36,
+   "14": 36,
+   "17": 36
+  },
+  "ferias": [
+   [
+    12,
+    2,
+    8
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "D": [
+    2,
+    2
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    9,
+    "D",
+    [
+     2,
+     2
+    ]
+   ],
+   [
+    3,
+    "D",
+    [
+     2,
+     1
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N092",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-01-11",
+  "n_enf": 3,
+  "n_tec": 2,
+  "nomes": false,
+  "cargas": {
+   "3": 36,
+   "4": 36
+  },
+  "ferias": [
+   [
+    2,
+    6,
+    7
+   ]
+  ],
+  "pedidos": 3,
+  "demanda": {
+   "D": [
+    2,
+    3
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    6,
+    "D",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N093",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-10-26",
+  "n_enf": 6,
+  "n_tec": 10,
+  "nomes": true,
+  "cargas": {
+   "1": 36,
+   "4": 30,
+   "6": 30,
+   "13": 30,
+   "14": 40,
+   "15": 36
+  },
+  "ferias": [
+   [
+    1,
+    6,
+    10
+   ],
+   [
+    5,
+    2,
+    9
+   ]
+  ],
+  "pedidos": 6,
+  "demanda": {
+   "D": [
+    1,
+    4
+   ],
+   "N": [
+    1,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    17,
+    "D",
+    [
+     2,
+     0
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "alta"
+ },
+ {
+  "nome": "N094",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-01-11",
+  "n_enf": 7,
+  "n_tec": 3,
+  "nomes": false,
+  "cargas": {
+   "0": 36,
+   "2": 30
+  },
+  "ferias": [],
+  "pedidos": 0,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    2,
+    1
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "semi_intensivo": 15
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N095",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2026-12-21",
+  "n_enf": 3,
+  "n_tec": 12,
+  "nomes": false,
+  "cargas": {
+   "4": 36,
+   "6": 40,
+   "7": 30,
+   "10": 40,
+   "12": 40
+  },
+  "ferias": [
+   [
+    11,
+    12,
+    14
+   ],
+   [
+    13,
+    10,
+    19
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "D": [
+    1,
+    3
+   ],
+   "N": [
+    1,
+    3
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    1,
+    0
+   ],
+   "N": [
+    1,
+    2
+   ]
+  },
+  "grade": [
+   [
+    14,
+    "N",
+    [
+     1,
+     2
+    ]
+   ],
+   [
+    27,
+    "D",
+    [
+     2,
+     2
+    ]
+   ]
+  ],
+  "pacientes": {
+   "semi_intensivo": 8,
+   "minimo": 8
+  },
+  "grau": "semi_intensivo"
+ },
+ {
+  "nome": "N096",
+  "modelo": "8h",
+  "fds": "sab_dom",
+  "inicio": "2027-03-22",
+  "n_enf": 7,
+  "n_tec": 12,
+  "nomes": true,
+  "cargas": {
+   "0": 30,
+   "6": 36,
+   "12": 30,
+   "13": 36,
+   "16": 36
+  },
+  "ferias": [],
+  "pedidos": 6,
+  "demanda": {
+   "M": [
+    2,
+    0
+   ],
+   "T": [
+    1,
+    1
+   ],
+   "N": [
+    2,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    26,
+    "M",
+    [
+     1,
+     3
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N097",
+  "modelo": "12x36",
+  "fds": "sex_dom",
+  "inicio": "2026-10-26",
+  "n_enf": 6,
+  "n_tec": 10,
+  "nomes": true,
+  "cargas": {
+   "10": 30,
+   "12": 30,
+   "14": 30
+  },
+  "ferias": [
+   [
+    13,
+    8,
+    17
+   ],
+   [
+    14,
+    22,
+    27
+   ]
+  ],
+  "pedidos": 0,
+  "demanda": {
+   "D": [
+    1,
+    3
+   ],
+   "N": [
+    2,
+    2
+   ]
+  },
+  "demanda_fds": {
+   "D": [
+    1,
+    4
+   ],
+   "N": [
+    1,
+    0
+   ]
+  },
+  "grade": [
+   [
+    11,
+    "D",
+    [
+     1,
+     2
+    ]
+   ],
+   [
+    8,
+    "N",
+    [
+     2,
+     0
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "intensivo"
+ },
+ {
+  "nome": "N098",
+  "modelo": "12x36",
+  "fds": "sab_dom",
+  "inicio": "2027-03-29",
+  "n_enf": 5,
+  "n_tec": 5,
+  "nomes": true,
+  "cargas": {
+   "0": 30
+  },
+  "ferias": [
+   [
+    1,
+    20,
+    25
+   ],
+   [
+    7,
+    24,
+    25
+   ]
+  ],
+  "pedidos": 1,
+  "demanda": {
+   "D": [
+    2,
+    2
+   ],
+   "N": [
+    2,
+    4
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [],
+  "pacientes": {
+   "intermediario": 14,
+   "semi_intensivo": 12
+  },
+  "grau": "intermediario"
+ },
+ {
+  "nome": "N099",
+  "modelo": "6+12",
+  "fds": "sab_dom",
+  "inicio": "2027-02-22",
+  "n_enf": 6,
+  "n_tec": 6,
+  "nomes": false,
+  "cargas": {
+   "7": 36,
+   "11": 30
+  },
+  "ferias": [],
+  "pedidos": 2,
+  "demanda": {
+   "M": [
+    1,
+    0
+   ],
+   "T": [
+    1,
+    3
+   ],
+   "N": [
+    2,
+    3
+   ]
+  },
+  "demanda_fds": null,
+  "grade": [
+   [
+    1,
+    "N",
+    [
+     2,
+     2
+    ]
+   ]
+  ],
+  "pacientes": null,
+  "grau": "minimo"
+ },
+ {
+  "nome": "N100",
+  "modelo": "8h",
+  "fds": "sex_dom",
+  "inicio": "2026-10-19",
+  "n_enf": 7,
+  "n_tec": 8,
+  "nomes": false,
+  "cargas": {
+   "2": 30,
+   "7": 36,
+   "10": 36,
+   "12": 40
+  },
+  "ferias": [
+   [
+    10,
+    18,
+    22
+   ],
+   [
+    11,
+    19,
+    20
+   ]
+  ],
+  "pedidos": 5,
+  "demanda": {
+   "M": [
+    1,
+    4
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    4
+   ]
+  },
+  "demanda_fds": {
+   "M": [
+    1,
+    3
+   ],
+   "T": [
+    2,
+    0
+   ],
+   "N": [
+    2,
+    0
+   ]
+  },
+  "grade": [],
+  "pacientes": null,
+  "grau": "minimo"
+ }
+]
