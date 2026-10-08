@@ -7,6 +7,29 @@ foi commitada e enviada ao fim. Travas: nada em `src/` nem nos testes; scripts s
 Máquina: i5-10210U, `appsi_highs` (HiGHS 1.15.1). Tempos são limite operacional, não
 resultado.
 
+## Para o Otávio
+
+- **Parte 1 feita:** nota corrigida; os esperados da rodada de 07/10 são os de `545bae9`, e
+  nenhum caso perde valor.
+- **Parte 2 interrompida pelo sistema, por falta de memória.** O K4 rodou ~1.909 s **sem achar
+  escala** e foi morto; o K3 não rodou.
+- **Partes 3 e 4 prontas e registradas, mas não rodadas.** Com 1,2 GB livres, relançar
+  arriscava outra queda. Os 96 derivados e os 100 casos do nível 3 (semente 81026) montam sem
+  erro; foram conferidos sem solver.
+- **Para decidir:** as faixas do nível 3 fazem 78 de 100 casos nascerem inviáveis (ver parte 4).
+- **Para executar:** feche o Chrome e rode os comandos do fim, um bloco por vez.
+
+| Parte | Status | Falhas | Commit |
+|---|---|---|---|
+| 1. Correções | feita | — | `3ef7da2` |
+| 2. K4 e K3, 3.600 s | **interrompida** (memória); K4 sem escala em ~1.909 s; K3 não rodou | nenhuma achada; inconclusivo | `dddd3dd` (esperado), `ff54b2b` |
+| 3. Monotonia e ordem | script e derivados conferidos; **não rodada** | — | `ff54b2b` |
+| 4. Nível 3 | 100 casos sorteados e commitados; **não rodada** | — | `ff54b2b` |
+
+**Falhas por camada (C4):** nenhuma falha nova. Segue em aberto o achado de 07/10 (K3/K4 sem
+escala), agora com K4 também sem escala em ~1.909 s: camada **solver ou modelo**, não
+determinada.
+
 ## Parte 1 — correções e conferência dos esperados
 
 **1a.** `docs/bateria_entradas.md`: a nota de 07/10 dizia "níveis 2 e 3 ainda não rodados".
@@ -110,3 +133,35 @@ técnicos por turno, contra 3 a 8 enfermeiros e 2 a 12 técnicos), 78 de 100 cas
 inviáveis pela conta. O lote vai exercitar muito o "faltam N" e o diagnóstico, e pouco a
 propriedade 5 (folga clara), que só vale nos 17. Não mudei as faixas: são as do desenho, e
 mudá-las é mudança de desenho experimental.
+
+## Para rodar o que faltou (feche o Chrome antes)
+
+No PowerShell, na pasta do repositório. Antes de tudo, `.\.venv\Scripts\Activate.ps1`.
+
+**Parte 2** (um de cada vez, até 1 h cada): os dois comandos da seção da parte 2.
+
+**Parte 3:** primeiro o menor caso, até o fim; depois o resto (até ~3 h):
+
+```
+python docs\diagnostico\bateria_propriedades.py P08 mais_pessoa
+foreach ($c in "P01","P02","P03","P04","P05","P06","P07","P08","P09","P10","P11","P12","P13","P14","P15","P16","P17","P18","K1","K2","K3","K4","K5","K6") { foreach ($v in "mais_pessoa","mais_posto","mais_ferias","embaralhado") { if (-not (Test-Path "resultados\bateria_2026-10-08\parte3\${c}_$v.json")) { python docs\diagnostico\bateria_propriedades.py $c $v } } }
+python docs\diagnostico\bateria_propriedades.py --resumo
+```
+
+**Parte 4:** primeiro um caso, depois o resto:
+
+```
+python docs\diagnostico\bateria_nivel3.py N001
+1..100 | ForEach-Object { $n = "N{0:D3}" -f $_; if (-not (Test-Path "resultados\bateria_2026-10-08\parte4\$n.json")) { python docs\diagnostico\bateria_nivel3.py $n } }
+python docs\diagnostico\bateria_nivel3.py --resumo
+```
+
+O laço pula os casos que já têm resultado gravado: se cair no meio, é só rodar de novo.
+
+**Commit**, depois de cada parte (o `-f` porque `resultados/` é ignorada pelo git):
+
+```
+git add -f resultados/bateria_2026-10-08 resultados/relatorio_2026-10-08a.md
+git commit -m "Bateria 08/10: parte N rodada"
+git push
+```
