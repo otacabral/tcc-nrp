@@ -1,0 +1,12 @@
+4b. grau do alerta, clinica da demonstracao (10 enf. em 30)
+   ok    grau intermediario: grupo de pacientes de maior carga por dia: intermediário (mínimo 32 h, intermediário 84 h, alta dependência 40 h)
+   ok    alerta de proporcao: []
+   ok    8 em 30: ['8 enfermeiros em 30 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 10 — grupo de pacientes de maior carga por dia: intermediário (mínimo 32 h, intermediário 84 h, alta dependência 40 h)']
+4c. pacientes mandam no grau, nao o campo
+   ok    ['8 enfermeiros em 30 profissionais; o Parecer pede ao menos 36% no grau alta dependência, isto é, 11 — grupo de pacientes de maior carga por dia: alta dependência (mínimo 8 h, alta dependência 50 h)']
+4d. sem pacientes, vale o campo
+   ok    ['8 enfermeiros em 30 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 10 — grau informado na tela']
+4e. empate: a ferramenta diz, nao escolhe em silencio
+   ok    ['8 enfermeiros em 30 profissionais; o Parecer pede ao menos 33% no grau mínimo, isto é, 10 — empate de carga entre mínimo e intermediário (mínimo 12 h, intermediário 12 h); a regra para empate não está decidida, e a conta usa o maior percentual, mínimo']
+
+ponta a ponta pela tela OK

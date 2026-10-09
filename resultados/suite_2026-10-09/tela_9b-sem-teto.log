@@ -1,0 +1,5 @@
+9b-sem-teto. 12x36, 14 + 26, sem teto de horas e sem MaxNumAssignments: maximo de plantoes de Tec 1
+   ok    o modelo tem o teto de horas (a desligar)
+   ok    maximo de plantoes de Tec 1 sem os dois tetos: 14 (esperado 14, provado: True)
+
+ponta a ponta pela tela OK

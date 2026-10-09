@@ -115,7 +115,7 @@ prova para no limite de tempo e não acha a mesma escala a cada execução.
   passou a aceitar o parâmetro novo (sem isso, os próximos usos quebrariam).
 - `modelo.py` e `instancia_br.py`: intactos.
 
-### B4 — testes: **INTERROMPIDOS pelo sistema, por falta de memória**
+### B4 — testes: suíte da tela completa; **demonstração (B2a) não rodou, por memória**
 
 `bash docs/diagnostico/suite_p14.sh` (um processo por teste; `resultados/suite_2026-10-09/`).
 O P08 rodou antes, sozinho: admite, 12, sem falhas.
@@ -129,13 +129,21 @@ O P08 rodou antes, sozinho: admite, 12, sem falhas.
 | regressão `--todos` | OK (56, 58, 197, 219) |
 | tela 8 (com o 8b refeito) | OK; no 8b a etapa 2 rodou e também ficou sem resposta (limite de 25 s); 20 de 20 pedidos |
 | tela 15 | OK |
-| tela 12 | **interrompido** no meio (12a: os dois primeiros itens ok) |
-| tela 1-2, 3, 4, 4b, 5, 7.1–7.4, 9, 9b-sem-teto, 9c-tela | **não rodaram** |
-| **B2a** demonstração pela tela | **não rodou** |
+| tela 12, 1-2, 3, 4, 4b, 5, 7.1, 7.2, 7.3, 7.4, 9, 9b-sem-teto, 9c-tela | **todos OK** (código 0) |
+| **B2a** demonstração pela tela | **não rodou** (memória) |
 
-Depois da interrupção: **0,8 GB livres** (Chrome em segundo plano, ~380 MB; o próprio Claude
-Code, ~870 MB). Pela regra, não relancei. **A parte B não está fechada; a tag `v1.2` não foi
-criada.**
+**O que aconteceu com a memória.** No teste 12, o Claude Code encerrou, por memória crítica, o
+processo que acompanhava a suíte (0,8 GB livres depois). O script, porém, **continuou sozinho**
+(não foi relançado) e terminou todos os testes da tela, com sucesso. Antes da demonstração — que
+abre um Chrome (~560 MB) e precisou de ~2,7 GB livres em 09/10 —, um vigia mediu **2.015 MB
+livres**, abaixo do mínimo combinado de 3 GB, e encerrou o script: a demonstração **não
+começou** (os arquivos dela continuam os da madrugada de 09/10). O teste 4, que confere que há
+um só alerta vermelho, passou com o alerta novo de descanso (amarelo) presente.
+
+**Estado da parte B:** a suíte da tela inteira e a regressão passaram; B2b, B2c e B2d passaram;
+**falta só o B2a** (demonstração idêntica). **Sem ele, a parte B não fecha e a tag `v1.2` não foi
+criada.** Pela conta, a demonstração não deveria mudar: nas três rodadas a etapa 1 prova o
+ótimo, e o caminho provado não mudou. Mas é afirmação a conferir, não conferida.
 
 **Achado da P14: a etapa 2 sem prova quase nunca entrega escala no tempo.** Em 4 resoluções sem
 prova (caso do Otávio, K5, K6, 8b), só o K5 entregou. Causa provável: a etapa 2 não parte da

@@ -6,3 +6,17 @@ p14_K6 | codigo 0 | 783 s | P14 OK
 regressao | codigo 0 | 57 s | regressao OK: otimo provado, Tabela 6, espelho de avaliacao.py e decomposicao por profissional
 tela_8 | codigo 0 | 248 s | ponta a ponta pela tela OK
 tela_15 | codigo 0 | 188 s | ponta a ponta pela tela OK
+tela_12 | codigo 0 | 377 s | ponta a ponta pela tela OK
+tela_1-2 | codigo 0 | 394 s | ponta a ponta pela tela OK
+tela_3 | codigo 0 | 188 s | ponta a ponta pela tela OK
+tela_4 | codigo 0 | 184 s | ponta a ponta pela tela OK
+tela_4b | codigo 0 | 1 s | ponta a ponta pela tela OK
+tela_5 | codigo 0 | 190 s | ponta a ponta pela tela OK
+tela_7.1 | codigo 0 | 186 s | ponta a ponta pela tela OK
+tela_7.2 | codigo 0 | 214 s | ponta a ponta pela tela OK
+tela_7.3 | codigo 0 | 926 s | ponta a ponta pela tela OK
+tela_7.4 | codigo 0 | 2 s | ponta a ponta pela tela OK
+tela_9 | codigo 0 | 516 s | ponta a ponta pela tela OK
+tela_9b-sem-teto | codigo 0 | 11 s | ponta a ponta pela tela OK
+tela_9c-tela | codigo 0 | 27 s | ponta a ponta pela tela OK
+demonstracao NAO iniciada: 2015 MB livres ao fim dos testes da tela (minimo combinado: 3 GB); script encerrado pelo vigia
