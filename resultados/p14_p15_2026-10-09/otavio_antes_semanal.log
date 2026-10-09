@@ -1,0 +1,31 @@
+Enf 1   semanas [102.0, 102.0, 102.0, inf] | menor 102 h | descanso da borda inicial 43 h
+Enf 2   semanas [37.0, 60.0, 84.0, inf] | menor 37 h | descanso da borda inicial 37 h  <-- a menor semana pode ser a da borda
+Enf 3   semanas [61.0, 126.0, 126.0, inf] | menor 61 h | descanso da borda inicial 61 h  <-- a menor semana pode ser a da borda
+Enf 4   semanas [72.0, 54.0, 78.0, inf] | menor 54 h | descanso da borda inicial 43 h
+Enf 5   semanas [72.0, 60.0, 78.0, 78.0] | menor 60 h | descanso da borda inicial 55 h
+Enf 6   semanas [67.0, 60.0, 72.0, 78.0] | menor 60 h | descanso da borda inicial 67 h
+Enf 7   semanas [48.0, 66.0, 60.0, inf] | menor 48 h | descanso da borda inicial 43 h
+Enf 8   semanas [60.0, 60.0, 108.0, inf] | menor 60 h | descanso da borda inicial 19 h
+Enf 9   semanas [84.0, 102.0, 108.0, 108.0] | menor 84 h | descanso da borda inicial 67 h
+Enf 10  semanas [48.0, 48.0, 114.0, 48.0] | menor 48 h | descanso da borda inicial 31 h
+Enf 11  semanas [67.0, 60.0, 60.0, 48.0] | menor 48 h | descanso da borda inicial 67 h
+Enf 12  semanas [78.0, 60.0, 102.0, inf] | menor 60 h | descanso da borda inicial 7 h
+Enf 13  semanas [54.0, 54.0, 54.0, 36.0] | menor 36 h | descanso da borda inicial 13 h
+Enf 14  semanas [60.0, 60.0, 48.0, 60.0] | menor 48 h | descanso da borda inicial 13 h
+Enf 15  semanas [66.0, 60.0, 72.0, 60.0] | menor 60 h | descanso da borda inicial 31 h
+Enf 16  semanas [60.0, 60.0, 60.0, inf] | menor 60 h | descanso da borda inicial 19 h
+Enf 17  semanas [60.0, 60.0, 48.0, inf] | menor 48 h | descanso da borda inicial 37 h
+Enf 18  semanas [72.0, 78.0, 48.0, inf] | menor 48 h | descanso da borda inicial 7 h
+Enf 19  semanas [60.0, 54.0, 36.0, inf] | menor 36 h | descanso da borda inicial 19 h
+Enf 20  semanas [79.0, 54.0, 60.0, inf] | menor 54 h | descanso da borda inicial 79 h
+Téc 1   semanas [42.0, 42.0, 36.0, 36.0] | menor 36 h | descanso da borda inicial 13 h
+Téc 2   semanas [54.0, 48.0, 54.0, 36.0] | menor 36 h | descanso da borda inicial 19 h
+Téc 3   semanas [36.0, 54.0, 48.0, 48.0] | menor 36 h | descanso da borda inicial 13 h
+Téc 4   semanas [36.0, 42.0, 48.0, 42.0] | menor 36 h | descanso da borda inicial 7 h
+Téc 5   semanas [31.0, 42.0, 42.0, 36.0] | menor 31 h | descanso da borda inicial 31 h  <-- a menor semana pode ser a da borda
+Téc 6   semanas [48.0, 48.0, 36.0, 54.0] | menor 36 h | descanso da borda inicial 7 h
+Téc 7   semanas [42.0, 42.0, 36.0, 48.0] | menor 36 h | descanso da borda inicial 13 h
+Téc 8   semanas [54.0, 42.0, 48.0, 36.0] | menor 36 h | descanso da borda inicial 19 h
+Téc 9   semanas [42.0, 48.0, 42.0, 42.0] | menor 42 h | descanso da borda inicial 7 h
+Téc 10  semanas [36.0, 36.0, 48.0, 36.0] | menor 36 h | descanso da borda inicial 19 h
+abaixo de 35 h: 1 profissionais

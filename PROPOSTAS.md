@@ -248,6 +248,9 @@ A P1 está desbloqueada: objetivo decidido.
   para que a sessão nova, depois de reconectar, mostre o que já foi calculado em vez do
   formulário vazio. Motivo: em 07/10, uma queda de conexão (`ConnectionResetError` 10054 no
   console do Streamlit) fez a tela voltar ao formulário sem resultado.
+- **Descanso semanal de 35 h como regra rígida** (acrescentado em 09/10, da P15): hoje é alerta
+  (Súmula 110 do TST atribui custo, não proíbe). Endurecer exigiria uma restrição nova no
+  modelo — o descanso semanal hoje só é medido na escala pronta, não é restrição.
 
 ---
 
@@ -488,4 +491,18 @@ escrita, independente da ferramenta, em `docs/diagnostico/bateria_desenho.py` (`
 **Condição, se aprovada:** é mudança de funcionalidade (piso e diagnóstico), fora do
 congelamento, salvo se for tratada como correção de defeito. Tem de passar com esperado
 registrado antes, e a demonstração da clínica tem de sair idêntica.
+
+---
+
+## 2026-10-09 — P15: descanso semanal abaixo de 35 h
+
+**Status: DECIDIDA em 09/10 pelo Otávio — entra como ALERTA, não como regra rígida.** Ver
+`DECISOES.md`, "2026-10-09 — P15: alerta de descanso semanal abaixo de 35 h". A regra rígida
+foi para trabalhos futuros (P3). *Proposta originada no projeto de redação; registrada aqui ao
+ser decidida.*
+
+**A questão.** A CLT (art. 67) exige repouso semanal de 24 h, e a ferramenta trava abaixo
+disso. A jurisprudência soma a ele o intervalo de 11 h entre jornadas (art. 66): Súmula 110 do
+TST (Res. 121/2003) e OJ 355 da SDI-1 mandam pagar como extras as horas que invadem as 11 h
+depois do repouso de 24 h — 24 + 11 = 35 h.
 

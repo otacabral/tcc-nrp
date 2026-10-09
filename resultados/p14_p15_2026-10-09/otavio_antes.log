@@ -1,0 +1,8 @@
+[     0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+[     0 s] Quadro informado, 30 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+[   601 s] concluido
+O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 17,5%: distância máxima até a melhor possível).
+{'enf_em_posto_tec': 57, 'fracao_min': 0.5113636363636364, 'fracao_max': 0.9204545454545454, 'gap': 0.17543859649122806, 'provado': False, 'etapa2': 'não rodou: a etapa 1 não provou o ótimo no tempo disponível', 'penalidade': 57}
+descanso semanal minimo: 31.0

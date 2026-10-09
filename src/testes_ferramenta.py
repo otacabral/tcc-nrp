@@ -62,6 +62,31 @@ P12 (08/10), esperado registrado ANTES de implementar (`resultados/relatorio_202
      O 39 cai no piso; o 40 fica sem resposta, ou nem e tentado, porque o orcamento acaba.
      Tela: "O quadro informado e insuficiente; o menor quadro viavel nao foi determinado em
      3 s.", diagnostico de alternancia, nenhum "Falta".
+
+P15 (09/10), esperado registrado ANTES de implementar (`resultados/relatorio_2026-10-09b.md`).
+Alerta de descanso semanal abaixo de 35 h, SEM as bordas do horizonte (decisao do Otavio,
+09/10): nao conta o descanso que comeca no inicio do periodo nem o que chega ao fim, porque o
+que vem antes e depois nao e conhecido. A trava de 24 h (`medir`/`cumpre`) nao muda.
+
+15a. Caso montado a mao (8 h; inicio na primeira segunda; a escala nao precisa ser legal, so
+     exercita a medida):
+     - pessoa "0": T (15-23) de segunda a sexta, folga no sabado, M (7-15) no domingo, depois
+       nada. Descanso de sexta 23:00 a domingo 07:00 = 32 h, interno, contem o sabado: 32 h;
+     - pessoa "1": M de segunda a sexta, folga sabado e domingo, M de segunda a sexta da
+       semana 2, depois nada: 64 h;
+     - pessoa "2": folga na segunda, M de terca a domingo, depois nada. O unico descanso da
+       semana 1 que contem dia livre e o da borda inicial (00:00 de segunda a 07:00 de terca =
+       31 h): sem as bordas, nao conta.
+     Esperado: `medir` (trava de 24 h, com bordas) da 31 h, como hoje; o minimo sem bordas e
+     32 h; o alerta diz 1 profissional, o menor 32 h, e cita a Sumula 110.
+15b. As tres planilhas da demonstracao (12x36, `docs/demonstracao/rodada*_escala.xlsx`): sem
+     alerta; minimo sem bordas >= 35 h.
+15c. A escala do caso do Otavio de 09/10 (`resultados/p14_p15_2026-10-09/otavio_antes_escala.json`;
+     6 h + 12 h): sem alerta (o unico descanso abaixo de 35 h e o da borda inicial, 31 h, do
+     Tec 5); minimo sem bordas 36 h; `medir` continua dando 31 h.
+15d. Tela (caso 5, 8 h): o indicador "descanso semanal" da tela mostra o minimo sem bordas da
+     escala; com o alerta do 15a posto no resultado, a tela o mostra em amarelo (warning), com
+     o texto da ferramenta.
 """
 
 from __future__ import annotations
@@ -847,11 +872,84 @@ def casos_p12() -> None:
     confere(not any("Falta" in t for t in _todos_textos(at)), "nenhum 'Falta'")
 
 
+# --- P15 (09/10): alerta de descanso semanal abaixo de 35 h, sem as bordas -----------------
+
+def casos_p15() -> None:
+    """15a a 15d — esperado no docstring do modulo, registrado antes de implementar."""
+    import json
+    from datetime import date
+    import pandas as pd
+    sys.path.insert(0, str(RAIZ / "docs" / "demonstracao"))
+    sys.path.insert(0, str(RAIZ / "docs" / "diagnostico"))
+    import conferencia_descanso_escala as cd
+    import caso_clinica_medica as caso
+    import conferir_planilhas as cp
+    import caso_otavio_0910 as co
+
+    print("15a. caso montado: 32 h interno, 31 h so na borda")
+    inst = fe.montar(_entrada(M8_TURNOS, 1, 2, {"M": (0, 1), "T": (0, 1), "N": (0, 0)}))
+    d = inst.dias
+    escala = ([(d[k], "0", "T") for k in range(5)] + [(d[6], "0", "M")]
+              + [(d[k], "1", "M") for k in list(range(5)) + list(range(7, 12))]
+              + [(d[k], "2", "M") for k in range(1, 7)])
+    m = fe.medir(inst, escala)
+    interno = cd.semanal_sem_bordas(inst, escala)
+    alertas = fe.alertas_descanso(inst, escala)
+    confere(m["menor_semanal"] == 31, f"medir (trava, com bordas): {m['menor_semanal']} h (31)")
+    confere(interno == {"0": 32, "1": 64, "2": None}, f"sem bordas por pessoa: {interno}")
+    confere(len(alertas) == 1 and "1 profissional" in alertas[0] and "32 h" in alertas[0]
+            and "Súmula 110" in alertas[0], f"alerta: {alertas}")
+
+    print("15b. planilhas da demonstracao (12x36): sem alerta")
+    for rodada, tec in cp.RODADAS.items():
+        tab = pd.read_excel(RAIZ / "docs" / "demonstracao" / f"{rodada}_escala.xlsx",
+                            sheet_name="Escala", index_col=0)
+        e = caso.entrada(tec)
+        inst_d = cp.instancia(e, list(tab.index))
+        cod = {v: k for k, v in fe.rotulos(inst_d).items()}
+        nome = {p.nome: n for n, p in inst_d.profissionais.items()}
+        esc = [(dd, nome[pessoa], cod[c]) for pessoa, linha in tab.iterrows()
+               for k, dd in enumerate(inst_d.dias)
+               if isinstance(c := linha.iloc[2 + k], str) and c and c != "indisp."]
+        valores = [v for v in cd.semanal_sem_bordas(inst_d, esc).values() if v is not None]
+        confere(not fe.alertas_descanso(inst_d, esc) and min(valores) >= 35,
+                f"{rodada}: sem alerta; minimo sem bordas {min(valores):g} h")
+
+    print("15c. caso do Otavio de 09/10 (6 h + 12 h): so a borda fica abaixo de 35 h")
+    inst_o = fe.montar(co.entrada())
+    arq = RAIZ / "resultados" / "p14_p15_2026-10-09" / "otavio_antes_escala.json"
+    esc_o = [(date.fromisoformat(x), n, s) for x, n, s in json.loads(arq.read_text())]
+    valores = [v for v in cd.semanal_sem_bordas(inst_o, esc_o).values() if v is not None]
+    confere(not fe.alertas_descanso(inst_o, esc_o), "sem alerta")
+    confere(min(valores) == 36, f"minimo sem bordas {min(valores):g} h (36)")
+    confere(fe.medir(inst_o, esc_o)["menor_semanal"] == 31, "medir (trava) continua 31 h")
+
+    print("15d. tela: indicador sem bordas e alerta em amarelo")
+    original = fe.verificar
+
+    def com_alerta(e, **kw):
+        r = original(e, **kw)
+        r.alertas_descanso = alertas
+        return r
+
+    fe.verificar = com_alerta
+    try:
+        at = pela_tela(M8, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)})
+    finally:
+        fe.verificar = original
+    r, _ = at.session_state["resultado"]
+    semanal = fe.fmt_semanal(r.conformidade["menor_semanal_interno"])
+    confere(any(f"descanso semanal {semanal}" in t for t in textos(at, "caption")),
+            f"indicador sem bordas na tela ({semanal})")
+    confere(alertas[0] in textos(at, "warning"), f"alerta em amarelo: {textos(at, 'warning')}")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
          "9b-sem-teto": caso_9b_sem_teto, "9c-tela": caso_9c_tela,
-         "7.4": casos_diagnostico_p7, "4b": casos_grau_alerta, "12": casos_p12}
+         "7.4": casos_diagnostico_p7, "4b": casos_grau_alerta, "12": casos_p12,
+         "15": casos_p15}
 
 
 def main() -> int:

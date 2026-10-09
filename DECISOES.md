@@ -1760,6 +1760,32 @@ em memória, a conferência **falha**; com a escala real, **passa**.
 
 ---
 
+## 2026-10-09 — P15: alerta de descanso semanal abaixo de 35 h
+
+**Status: vigente.** Decidido pelo Otávio em 09/10. Fecha a P15 (`PROPOSTAS.md`).
+
+**O que entra.** Quando o descanso semanal **medido** de algum profissional na escala gerada
+ficar abaixo de 35 h, a tela mostra um **alerta**, com o número de profissionais afetados e a
+referência à Súmula 110 do TST. **Não é regra rígida:** nada muda no modelo, na escala nem nos
+números; a escala continua valendo.
+
+**Fundamento.** Súmula 110 do TST (Res. 121/2003) e OJ 355 da SDI-1: as horas trabalhadas logo
+depois do repouso semanal de 24 h com prejuízo do intervalo de 11 h entre jornadas são pagas
+como extras (24 + 11 = 35 h). A súmula atribui **custo**, não proíbe — a mesma lógica do COFEN,
+que também entra como alerta. Fonte de apoio: notícia do TRT-3 de 13/11/2015, "Intervalo de 35
+horas entre as jornadas semanais deve ser respeitado em turnos de revezamento".
+
+**A trava continua sendo a da lei:** 24 h de repouso semanal (art. 67), 11 h entre jornadas
+(art. 66) e 36 h depois de plantão de 12 h (art. 59-A). A regra rígida de 35 h foi para
+trabalhos futuros (P3).
+
+**A medida** é a mesma do descanso semanal que a ferramenta já confere
+(`conferencia_descanso_escala.descanso_semanal`): por semana, o maior descanso contínuo que
+contém um dia sem turno, medido inteiro no relógio. O menor valor de cada profissional,
+entre as semanas, é comparado com 35 h.
+
+---
+
 ## Modelo de entrada
 
 ```
