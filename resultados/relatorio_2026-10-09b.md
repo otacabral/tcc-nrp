@@ -3,7 +3,19 @@
 Máquina: Intel Core i5-10210U, 12 GB, Windows 11, `appsi_highs` (HiGHS 1.15.1). Tempos são
 limite operacional, não resultado.
 
-<!-- PARA_O_OTAVIO -->
+## Para o Otávio
+
+- **P15 (alerta de 35 h): feita.** O seu "31 h" era da borda do início do período; o alerta e o
+  indicador agora ignoram as bordas (decisão sua). Teste 15 OK.
+- **P14 (etapa 2 sem prova): feita**; suíte da tela inteira OK, regressão OK, P05/P08/K1
+  iguais. Mas a etapa 2 só entregou escala em 1 de 4 casos sem prova (o K5): proposta P17
+  (partir da escala da etapa 1), não implementada.
+- **Falta a demonstração (B2a):** não rodou por falta de memória (2 GB livres). **A tag `v1.2`
+  não foi criada.** Comandos no fim.
+- **Tempo-limite (C):** 93% das resoluções da bateria provam antes de 600 s; os 7% restantes são
+  da família de fronteira do 6 h + 12 h.
+- **Para decidir:** a P17.
+
 
 ## Parte A — P15: alerta de descanso semanal abaixo de 35 h
 
@@ -220,3 +232,29 @@ justificativa operacional do limite, não como resultado.
   sugerida".
 - **Novo, da parte B:** P17 (`PROPOSTAS.md`), warm start da etapa 2 com a escala da etapa 1 —
   candidata, não implementada.
+
+## Comandos
+
+Tudo desta sessão já foi commitado e enviado (`b6fc3f7` … `c49e9cb`). Para fechar a parte B
+e criar a `v1.2`, com o Chrome fechado e, de preferência, sem o Claude Code aberto (ele ocupava
+~870 MB), no PowerShell, na raiz:
+
+```
+.\.venv\Scripts\Activate.ps1
+bash docs/demonstracao/rodar_rodada.sh rodada1
+bash docs/demonstracao/rodar_rodada.sh rodada2_19tec --tec 19
+bash docs/demonstracao/rodar_rodada.sh rodada2_18tec --tec 18
+```
+
+Cada rodada termina com a linha "planilhas da demonstracao: OK" no fim de
+`docs/demonstracao/<rodada>_tela.txt`. Os números têm de bater com a seção 9 do `NUMEROS_TCC.md`
+(24, 36, 34; 6 de 6). Se baterem:
+
+```
+git add docs/demonstracao
+git commit -m "B2a: demonstracao identica com a P14"
+git tag -a v1.2 -m "v1.2: P15 e P14; validacao encerrada"
+git push origin main --tags
+```
+
+Se algo não bater, não crie a tag: me traga o `_tela.txt` da rodada.
