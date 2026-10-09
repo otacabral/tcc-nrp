@@ -3,7 +3,21 @@
 Máquina: Intel Core i5-10210U, 12 GB, Windows 11, `appsi_highs` (HiGHS 1.15.1, Pyomo 6.10.1).
 Tempos são limite operacional, não resultado.
 
-<!-- PARA_O_OTAVIO -->
+## Para o Otávio
+
+- **P17 implementada** (a condição se cumpriu: a interface aceita a escala da etapa 1 como
+  partida, e a sonda mostrou o HiGHS aceitando). Em `modelo.py` só a chamada ao solver mudou.
+  **Nenhum teste rodou** (1,4 GB livres); tudo fica no script do fim, com a regressão primeiro.
+- **Relato (condição 2):** o esperado do 8b foi **apertado** antes de a sua condição chegar —
+  passa a exigir que a etapa 2 entregue escala. Não afrouxou nada; se preferir como estava,
+  reverto.
+- **Pedido por turno:** o modelo já aceita (é o `ShiftOffRequest` do INRC, validado pela
+  regressão); falta entrada, tela e pesos em três níveis — e há um risco técnico com a
+  tolerância do HiGHS. Estimativa ~1,5 dia. Registrado na P3 com as outras duas preferências.
+- **Para executar:** fechar os programas da lista e rodar o script (~2,5 h); se "TUDO OK",
+  criar a tag com os comandos do fim.
+- **Para decidir:** as preferências individuais (P3), quando quiser.
+
 
 ## Parte A — P17
 
@@ -191,3 +205,69 @@ O pedido guarda o **nome** do turno (escolhido numa lista, não digitado). Se o 
 `PROPOSTAS.md`, P3: "Preferências individuais" — (1) pedido por turno (com esta análise);
 (2) indisponibilidade recorrente (ex.: segundo vínculo toda terça); (3) marcação por
 profissional "exige 35 h de descanso semanal". Decisão do Otávio depois.
+
+## Para rodar: fechar a v1.2 (P14 + P17 + demonstração)
+
+### Antes: feche estes programas
+
+- **Chrome** — inclusive o que fica rodando em segundo plano: botão direito no ícone do Chrome
+  perto do relógio → Sair. Se não houver ícone: Gerenciador de Tarefas → "Google Chrome" →
+  Finalizar tarefa.
+- **Claude Code** (este terminal) e o app do Claude: ocupavam ~870 MB na última rodada.
+- Qualquer Streamlit aberto (janela do PowerShell com `streamlit run`: Ctrl+C e feche).
+- Outros programas pesados (Teams, Word com documentos grandes, etc.).
+
+### Confira a memória livre (mínimo 3 GB)
+
+No PowerShell:
+
+```
+(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1MB
+```
+
+O número é a memória livre em GB. Se for **menor que 3**, feche mais programas ou reinicie o
+computador antes. (O script também confere, antes de começar e antes de cada rodada da
+demonstração, e para sozinho abaixo de 3 GB.)
+
+### Rode tudo (uma vez, ~2,5 h; a ordem e as paradas estão no script)
+
+No PowerShell, na pasta do repositório:
+
+```
+cd D:\dev\tcc-nrp
+.\.venv\Scripts\Activate.ps1
+& "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v12.sh
+```
+
+O script, na ordem, **parando na primeira falha**:
+1. regressão dos 4 ótimos (56, 58, 197, 219) — obrigatória antes de tudo;
+2. testes de entrada;
+3. P17 no caso do Otávio, K5 e K6 (a etapa 2 sempre entrega escala e não piora);
+4. P08, P05 e K1, comparados com 07/10;
+5. a suíte da tela inteira (8, 15, 12, 1-2, 3, 4, 4b, 5, 7.1–7.4, 9, 9b, 9c);
+6. a demonstração pela tela (B2a), com o conferidor, e a comparação com 24/36/34 e 6 de 6.
+
+Resumo em `resultados\fechar_v12\resumo.txt`. A última linha diz **"TUDO OK"** ou
+**"PARADO: …"** com o motivo.
+
+### Se terminar com "TUDO OK": commit e tag v1.2
+
+```
+git add -f resultados/fechar_v12
+git add docs/demonstracao
+git commit -m "v1.2: P14 e P17 conferidas, demonstracao identica"
+git tag -a v1.2 -m "v1.2: P15, P14 e P17; validacao encerrada"
+git push origin main --tags
+```
+
+- `git add -f resultados/fechar_v12`: põe os logs no commit (a pasta `resultados/` é ignorada
+  pelo git, por isso o `-f`).
+- `git add docs/demonstracao`: as capturas e planilhas novas da demonstração.
+- `git tag -a v1.2 …`: marca este commit como a versão citável.
+- `git push origin main --tags`: envia o commit e a tag para o GitHub.
+
+### Se terminar com "PARADO"
+
+Não crie a tag. Me traga o `resultados\fechar_v12\resumo.txt` e o `.log` do passo que parou.
+Se parou por memória, feche mais programas e rode o mesmo comando de novo (ele recomeça do
+início).
