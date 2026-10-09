@@ -251,6 +251,13 @@ A P1 está desbloqueada: objetivo decidido.
 - **Descanso semanal de 35 h como regra rígida** (acrescentado em 09/10, da P15): hoje é alerta
   (Súmula 110 do TST atribui custo, não proíbe). Endurecer exigiria uma restrição nova no
   modelo — o descanso semanal hoje só é medido na escala pronta, não é restrição.
+- **Preferências individuais** (acrescentado em 09/10, por pedido do Otávio; decisão depois):
+  (1) **pedido por turno** ("não quero o turno X no dia D"): o modelo já aceita (`folga_turno`,
+  o `ShiftOffRequest` do INRC, validado pela regressão); falta a entrada brasileira, a tela e a
+  prioridade estrita em três níveis de peso, com o cuidado da tolerância relativa do HiGHS —
+  análise e estimativa em `resultados/relatorio_2026-10-09c.md`, parte B;
+  (2) **indisponibilidade recorrente** (ex.: segundo vínculo toda terça);
+  (3) **marcação por profissional "exige 35 h de descanso semanal"** (a P15 é alerta para todos).
 - **Mostrar a melhor escala encontrada durante a busca da etapa 1**, antes do fim do tempo-limite
   (acrescentado em 09/10, decisão do Otávio): exige rodar o solver em paralelo à tela, como o
   relógio ao vivo da P12.

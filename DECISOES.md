@@ -1862,6 +1862,11 @@ partida ser viável. A salvaguarda da P14 fica, redundante no critério.
 com "penalidade ≤ valor da etapa 1", achar a primeira escala era tão difícil quanto chegar
 àquele valor. Warm start "só como partida" é admitido pelo `CLAUDE.md` (25/09).
 
+**Condições do Otávio (09/10):** em `modelo.py`, só a chamada ao solver muda; a regressão dos 4
+ótimos é obrigatória antes dos outros testes; o teste 8b e o conferidor só podem ser revisados
+para conferir o comportamento novo, sem afrouxar esperado. O 8b foi apertado (passa a exigir
+que a etapa 2 entregue escala), antes de a condição chegar; relatado no relatório 09c.
+
 ---
 
 ## Modelo de entrada
