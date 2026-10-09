@@ -334,3 +334,9 @@ do "objetivo inteiro" não se aplica a ela.
 das afirmações de ótimo — "a prova vale como ótimo inteiro porque 0,0001 × objetivo < 1 (todos
 os casos, exceto a P1 de 03/10 com N = 40, 60 e 80); nesses três, o limite inferior registrado
 no log é igual ao objetivo (gap 0 exato)".
+
+## Registro aprovado (09/10)
+
+O texto proposto entrou no `NUMEROS_TCC.md` (no cabeçalho, como condição das afirmações de ótimo
+provado) e no `DECISOES.md` ("2026-10-09 — Condição das afirmações de ótimo provado: tolerância
+do HiGHS"). Nada mudou no código.

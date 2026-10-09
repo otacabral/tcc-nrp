@@ -11,6 +11,14 @@ Sem nenhuma das três, a linha leva **SEM CONFERÊNCIA**, com o motivo. Sem orig
 
 Tempo é sempre **limite operacional**, nunca resultado (CLAUDE.md).
 
+**Condição das afirmações de ótimo provado (09/10, decisão do Otávio).** O HiGHS declara
+"ótimo" quando o gap relativo fica em até 0,01% (tolerância padrão). A prova vale como ótimo
+inteiro porque 0,0001 × objetivo < 1 em todos os casos, exceto na P1 de 03/10 com N = 40, 60 e 80
+(seção 5); nesses três, o limite inferior registrado no log é igual ao objetivo (gap 0 exato).
+Conferência só de leitura em `resultados/relatorio_2026-10-09c.md` (continuação de 09/10, item 3).
+A etapa 2 tem objetivo contínuo (amplitude da fração do contrato) e fica fora deste critério; a
+tolerância nela é desprezível (0,0005 pp sobre 4,55 pp no 9c).
+
 **Máquina e solver das medições de 02 a 05/10:** Intel Core i5-10210U (4 núcleos, 8 threads), 12 GB, Windows 11, Python 3.11.9, HiGHS 1.15.1 via `appsi_highs`. Medições anteriores a 02/10 dizem o ambiente na própria linha.
 
 Os comandos rodam da raiz, com a `.venv` ativa.

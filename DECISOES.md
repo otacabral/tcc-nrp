@@ -1885,6 +1885,18 @@ estimativa em `resultados/relatorio_2026-10-09c.md`, parte B.
 
 ---
 
+## 2026-10-09 — Condição das afirmações de ótimo provado: tolerância do HiGHS
+
+**Status: vigente.** Decidido pelo Otávio em 09/10. Nada muda no código.
+
+O HiGHS declara "ótimo" com gap relativo de até 0,01%. Como os objetivos da etapa 1 são
+inteiros, a prova vale como ótimo inteiro quando 0,0001 × objetivo < 1 — o que vale em todos os
+resultados registrados, exceto na P1 de 03/10 com N = 40, 60 e 80; nesses três, o log mostra
+limite inferior igual ao objetivo (gap 0 exato). Registrado no `NUMEROS_TCC.md` como condição
+das afirmações de ótimo; conferência em `resultados/relatorio_2026-10-09c.md`.
+
+---
+
 ## Modelo de entrada
 
 ```
