@@ -146,3 +146,56 @@ escala nova, fica a da etapa 1 — o comportamento é correto, mas o ganho é ra
 P17, registrada e não implementada:** dar à etapa 2 a escala da etapa 1 como solução inicial
 (warm start "só como partida", admitido pelo `CLAUDE.md`), o que garante escala na etapa 2 e
 torna desnecessária a salvaguarda.
+
+## Parte C — o tempo-limite de 600 s da etapa 1 (só leitura, sem solver)
+
+`python docs\diagnostico\analise_tempo_limite.py`; saída completa em
+`resultados/p14_p15_2026-10-09/analise_tempo_limite.md`.
+
+**Limite do pedido: a bateria não gravou o log do HiGHS.** As rodadas de 07/10 e das partes 3 e
+4 passaram pelo caminho da tela (`ferramenta.verificar`), que não pede o log do solver; os
+`.log` delas só têm as mensagens do script. Sem o log não há tempo até a primeira solução nem
+até a última melhora. Logs do HiGHS existem só para 10 resoluções (parte A do diagnóstico,
+07/10, e o K4 de 08/10). Por isso a análise tem duas partes.
+
+**1. Os 10 logs do HiGHS** (todos do modelo 6 h + noturno de 12 h):
+
+| Log | O que é | 1ª solução | Última melhora | Fim | Status | Gap final |
+|---|---|---|---|---|---|---|
+| `A3a_15mais5_3600s` | K6 (15 + 5), limite 3.600 s | 0 s | **826 s** | 1.077 s | ótimo provado | 0% |
+| `A3b_22` | 22 pessoas, 600 s | 0 s | 305 s | 600 s | tempo esgotado | 16,7% |
+| `A3b_24` | 24 pessoas, 600 s | 0 s | 160 s | 600 s | tempo esgotado | 21,1% |
+| `A3b_26` | 26 pessoas, 600 s | 0 s | 358 s | 414 s | ótimo provado | 0% |
+| `A3c_*` (4) | modelos relaxados (sem uma regra cada), 600 s | 0 s | 66 a 277 s | 600 s | tempo esgotado | 10,5% a 30% |
+| `inviavel_16_10mais6` | prova de inviabilidade | — | — | 15 s | inviável | — |
+| `highs_17` | K4 (12 + 5), interrompido por memória | nenhuma | — | ~1.909 s | sem relatório | — |
+
+No K6 com 3.600 s: aos 600 s a melhor escala valia **19**; a última melhora, para o ótimo
+**18**, veio aos **826 s** (um turno de enfermeiro em posto de técnico a menos). Nos que pararam
+nos 600 s, a "última melhora" observada é censurada: não se sabe se haveria outra depois.
+
+**2. A bateria** (161 resoluções da etapa 1 que se isolam: o caso admite o quadro informado na
+primeira tentativa; 07/10, propriedades de 08/10, nível 3 de 09/10). Quando há prova, a última
+melhora acontece antes dela, então o tempo da prova é um limite superior da última melhora:
+
+| Modelo | Estrato | Resoluções | Com prova | Tempo até a prova: mediana / máximo | Sem prova (600 s) |
+|---|---|---|---|---|---|
+| 12×36 | folga clara | 9 | 9 | 1 / 2 s | 0 |
+| 12×36 | fronteira | 11 | 11 | 1 / 6 s | 0 |
+| 12×36 | níveis 1–2 e derivados | 21 | 21 | 2 / 9 s | 0 |
+| 6 h + 12 h | folga clara | 5 | 5 | 1 / 4 s | 0 |
+| 6 h + 12 h | fronteira | 10 | 10 | 3 / 29 s | 0 |
+| 6 h + 12 h | níveis 1–2 e derivados | 42 | 30 | 2 / 274 s | **12** (K3–K6 e derivados) |
+| 8 h | folga clara | 26 | 26 | 1 / 5 s | 0 |
+| 8 h | fronteira | 2 | 2 | 1 / 1 s | 0 |
+| 8 h | níveis 1–2 e derivados | 35 | 35 | 1 / 5 s | 0 |
+
+**Conclusão, em uma frase:** os 600 s cobrem a última melhora em **93% das resoluções da
+bateria (149 de 161), que provaram o ótimo antes do limite (no máximo em 274 s)**; nos 7%
+restantes — todos da família de fronteira do 6 h + noturno de 12 h (K3 a K6 e derivados) — a
+última melhora é desconhecida, e o único log longo dessa família (o K6) mostra que ela veio aos
+826 s, depois dos 600 s.
+
+**Afirmação fraca:** depende da máquina (i5-10210U), do solver (HiGHS 1.15.1 via `appsi_highs`,
+parâmetros padrão) e das instâncias da bateria (até 20 pessoas, 28 dias). Vai ao texto como
+justificativa operacional do limite, não como resultado.

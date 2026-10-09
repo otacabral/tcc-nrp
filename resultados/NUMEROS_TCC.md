@@ -207,3 +207,18 @@ commitados antes de rodar.
 | 100 casos, estratificados pela conta: 40 folga clara, 30 fronteira, 30 inviáveis | nível 3 sorteado em 08/10 (semente 20261008), rodado em 09/10 | esperados da conta commitados antes (`b8ce2ae`) | **a folga clara ficou concentrada no 8 h (26 de 40; 12×36 9, 6 h + 12 h 5)**: a propriedade 5 (folga clara não termina sem escala) fica mais testada nesse modelo; a fronteira concentra-se no 12×36 (14) e no 6 h + 12 h (14) |
 | 100 casos, 0 falhas | nível 3, propriedades 1 (93 escalas conferidas fora do modelo), 4 (honestidade), 5 (40 de 40 de folga clara admitem) e 6 (nenhum dos 30 inviáveis pela conta admitido); só etapa 1, 600 s | esperados da conta commitados antes (`b8ce2ae`); detalhe em `resultados/relatorio_2026-10-09a.md` | 63 admitem, 30 "faltam N" (20 provados pelo piso, 10 pelo solver) |
 | 7 de 100 não decididos, todos no 6 h + noturno de 12 h | nível 3: 6 sem resposta em 600 s, 1 no limite de 15 min por caso (2 da fronteira, 5 dos inviáveis) | — | **limite operacional**; mesma família do K3/K4: vai para as limitações. Nos inviáveis, o quadro informado foi dado como insuficiente pela conta e a busca parou sem afirmar o menor viável |
+
+## 12. Tempo-limite da etapa 1 (09/10, só leitura)
+
+Origem: `docs/diagnostico/analise_tempo_limite.py`; saída em
+`resultados/p14_p15_2026-10-09/analise_tempo_limite.md`; texto em
+`resultados/relatorio_2026-10-09b.md`, parte C. **Afirmação fraca:** i5-10210U, HiGHS 1.15.1
+via `appsi_highs`, parâmetros padrão, instâncias da bateria (até 20 pessoas, 28 dias).
+Justificativa operacional do limite de 600 s, não resultado.
+
+| Valor | O que mede | Conferência | Ressalva |
+|---|---|---|---|
+| 149 de 161 (93%) | resoluções da etapa 1 na bateria que provaram o ótimo antes de 600 s; nelas, a última melhora vem antes da prova, então os 600 s a cobrem | estado do solver gravado em cada JSON | só as resoluções isoláveis (admite na 1ª tentativa); a bateria não gravou o log do HiGHS, então não há tempo até a 1ª solução nem até a última melhora dela |
+| 274 s | maior tempo até a prova, nessas 149 (P10, 6 h + 12 h); mediana de 1 a 3 s por modelo e estrato | — | **limite operacional** |
+| 12 de 161 | resoluções sem prova em 600 s: todas da família de fronteira do 6 h + noturno de 12 h (K3 a K6 e derivados) | — | a última melhora delas é desconhecida |
+| 826 s | última melhora no único log longo dessa família (K6, 15 + 5, limite de 3.600 s): aos 600 s a melhor escala valia 19, o ótimo 18 veio aos 826 s e foi provado aos 1.077 s | log do HiGHS (`resultados/diagnostico_2026-10-07/A3a_15mais5_3600s.log`) | uma instância só |
