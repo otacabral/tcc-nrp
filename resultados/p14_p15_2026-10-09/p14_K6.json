@@ -1,0 +1,42 @@
+{
+ "caso": "K6",
+ "frase": "O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 10,5%: distância máxima até a melhor possível).",
+ "vigente": "Escala desta tela: a da etapa 1; o equilíbrio de carga não terminou no tempo.",
+ "etapa2": "sem resposta (indeterminado); fica a escala da etapa 1",
+ "tempo_etapa1": 600.8414809703827,
+ "tempo_etapa2": 180.51229524612427,
+ "gap": 0.10526315789473684,
+ "penalidade_etapa1": 19,
+ "etapa1": {
+  "enf_em_posto_tec": 19,
+  "pedidos_atendidos": 0,
+  "fracao": [
+   0.5454545454545454,
+   0.9886363636363636
+  ],
+  "diferenca_h": {
+   "enfermeiros": 54.0,
+   "tecnicos": 36.0
+  }
+ },
+ "final": {
+  "enf_em_posto_tec": 19,
+  "pedidos_atendidos": 0,
+  "fracao": [
+   0.5454545454545454,
+   0.9886363636363636
+  ],
+  "diferenca_h": {
+   "enfermeiros": 54.0,
+   "tecnicos": 36.0
+  }
+ },
+ "descanso_semanal_sem_bordas": 36.0,
+ "conferencias": {
+  "1 etapa 2 rodou": true,
+  "2 enf em posto tec <= etapa 1": true,
+  "3 diferenca por categoria <= etapa 1": true,
+  "4 descanso e rigidas": true,
+  "5 pedidos >= etapa 1": true
+ }
+}

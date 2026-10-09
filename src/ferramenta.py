@@ -184,8 +184,15 @@ class Resultado:
     def frase_vigente(self) -> str:
         """Qual escala a tela (e a planilha) mostra: a da etapa 2 ou a da etapa 1 (P12)."""
         etapa2 = self.indicadores.get("etapa2", "")
+        if etapa2 == "ok" and not self.provado:
+            return ("Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas, "
+                    "sobre uma escala sem prova de ótimo: o equilíbrio não deixou piorar o "
+                    "valor achado pela etapa 1.")
         if etapa2 == "ok":
             return "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas."
+        if etapa2.startswith("não melhorou"):
+            return ("Escala desta tela: a da etapa 1; o equilíbrio não achou escala mais "
+                    "equilibrada no tempo.")
         if etapa2.startswith("não rodou") or etapa2.startswith("nao rodou"):
             return "Escala desta tela: a da etapa 1; o equilíbrio de carga não rodou."
         return "Escala desta tela: a da etapa 1; o equilíbrio de carga não terminou no tempo."
@@ -365,7 +372,8 @@ def resolver(m, tempo: int | None) -> tuple[str, object, bool, float | None]:
             modelo.gap_relativo(resultado))
 
 
-def equilibrar(m, inst, z: int, tempo: int | None) -> tuple[str, object, bool, float | None]:
+def equilibrar(m, inst, z: int, tempo: int | None,
+               exato: bool = True) -> tuple[str, object, bool, float | None]:
     """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a amplitude da
     FRACAO CUMPRIDA — horas trabalhadas / horas devidas (carga contratual nos dias
     disponiveis), maior menos menor — DENTRO de cada categoria: amplitude entre enfermeiros
@@ -374,7 +382,7 @@ def equilibrar(m, inst, z: int, tempo: int | None) -> tuple[str, object, bool, f
     frente ao tamanho de cada categoria, e e mostrada a parte (`por_categoria`). O mecanismo
     e o do Experimento B (fixar o otimo, otimizar um segundo criterio), sobre o mesmo modelo,
     sem monta-lo de novo; muda o criterio."""
-    preparar_equilibrio(m, inst, z)
+    preparar_equilibrio(m, inst, z, exato)
     return resolver(m, tempo)
 
 
@@ -387,10 +395,14 @@ ENF, TEC = "enfermeiros", "tecnicos"
 NOME_CATEGORIA = {ENF: "Enfermeiros", TEC: "Técnicos"}
 
 
-def preparar_equilibrio(m, inst, z: int) -> None:
+def preparar_equilibrio(m, inst, z: int, exato: bool = True) -> None:
     """Troca o objetivo do modelo pelo da etapa 2, sem resolver. Separado de `equilibrar`
     para a curva de escalabilidade (`src/escalabilidade_objetivo.py`) resolver por conta
-    propria e cronometrar."""
+    propria e cronometrar.
+
+    `exato=True`: penalidade presa no otimo provado `z` (como sempre foi). `exato=False` (P14,
+    09/10): a etapa 1 nao provou o otimo e `z` e so o valor que ela achou; a etapa 2 nao pode
+    piorar esse valor (penalidade <= z)."""
     import pyomo.environ as pyo
     # quem nao tem dia disponivel nao deve hora nenhuma: fica fora da fracao
     devidas = {n: inst.horas_devidas(n) for n in inst.profissionais}
@@ -400,7 +412,8 @@ def preparar_equilibrio(m, inst, z: int) -> None:
             termos[n].append(inst.turnos[s].duracao_h * m.x[n, s, d])
     grupos = sorted({categoria(inst, n) for n in termos})
     m.objetivo.deactivate()
-    m.total_no_otimo = pyo.Constraint(expr=m.objetivo.expr == z)
+    m.total_no_otimo = pyo.Constraint(expr=(m.objetivo.expr == z) if exato
+                                      else (m.objetivo.expr <= z))
     m.fracao = pyo.Expression(list(termos), rule=lambda m, n: sum(termos[n]) / devidas[n])
     m.f_max = pyo.Var(grupos, domain=pyo.NonNegativeReals)
     m.f_min = pyo.Var(grupos, domain=pyo.NonNegativeReals)
@@ -512,9 +525,11 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None,
     z = modelo.valor_objetivo(m)
     info["penalidade"] = z
     info["amplitude_etapa1"] = amplitude(inst, escala)
-    if not provado:
-        info["etapa2"] = "não rodou: a etapa 1 não provou o ótimo no tempo disponível"
-        return veredito, inst, escala, info
+    # P14 (09/10): sem prova, a etapa 2 roda assim mesmo, sem piorar o valor da etapa 1. Guarda
+    # a escala da etapa 1 para a tela e as conferencias compararem ("antes" = esta rodada).
+    ind1 = indicadores(inst, escala)
+    info["etapa1"] = {k: ind1[k] for k in ("enf_em_posto_tec", "pedidos_atendidos",
+                                           "fracao_min", "fracao_max", "categorias")}
     tempo2 = TEMPO_ETAPA2 if tempo is None else min(TEMPO_ETAPA2, tempo)
     if prazo is not None:
         tempo2 = min(tempo2, int(prazo - time.time()))
@@ -525,9 +540,14 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None,
         aviso("escala_etapa1", inst=inst, escala=escala, limite=tempo2)
         aviso("etapa2", limite=tempo2)
     t0 = time.time()
-    v2, escala2, provado2, gap2 = equilibrar(m, inst, z, tempo2)
+    v2, escala2, provado2, gap2 = equilibrar(m, inst, z, tempo2, exato=provado)
     info["tempo_etapa2"] = time.time() - t0
     if v2 == ea.VIAVEL:
+        # salvaguarda do caminho sem prova (DECISOES.md, "2026-10-09 — P14"): o HiGHS nao parte
+        # da escala da etapa 1 e para no limite; se o equilibrio sair pior, fica a da etapa 1
+        if not provado and amplitude(inst, escala2) > info["amplitude_etapa1"] + 1e-9:
+            info["etapa2"] = "não melhorou o equilíbrio no tempo; fica a escala da etapa 1"
+            return veredito, inst, escala, info
         info.update(etapa2="ok", provado_etapa2=provado2, gap_etapa2=gap2,
                     amplitude=amplitude(inst, escala2))
         return veredito, inst, escala2, info

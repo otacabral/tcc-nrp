@@ -1,0 +1,8 @@
+P05 | codigo 0 | 188 s | P05: Falta 1; o menor quadro viável é 15. Escala gerada. | 187 s | falhas: nenhuma
+K1 | codigo 0 | 182 s | K1: O quadro informado admite escala legal. Escala gerada. | 181 s | falhas: nenhuma
+p14_otavio | codigo 0 | 783 s | P14 OK
+p14_K5 | codigo 0 | 782 s | P14 OK
+p14_K6 | codigo 0 | 783 s | P14 OK
+regressao | codigo 0 | 57 s | regressao OK: otimo provado, Tabela 6, espelho de avaliacao.py e decomposicao por profissional
+tela_8 | codigo 0 | 248 s | ponta a ponta pela tela OK
+tela_15 | codigo 0 | 188 s | ponta a ponta pela tela OK

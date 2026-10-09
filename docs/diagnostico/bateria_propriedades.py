@@ -69,7 +69,7 @@ TODOS = bd.CASOS + bd.CONHECIDOS
 
 def so_etapa1() -> None:
     """Desliga a etapa 2: `resolver_com_objetivo` fica com a escala da etapa 1."""
-    fe.equilibrar = lambda m, inst, z, tempo: (ea.INDETERMINADO, None, False, None)
+    fe.equilibrar = lambda m, inst, z, tempo, **kw: (ea.INDETERMINADO, None, False, None)
 
 
 def derivar(c: bd.Caso, variante: str) -> fe.Entrada:

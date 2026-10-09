@@ -1,0 +1,45 @@
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+{
+ "caso": "otavio",
+ "frase": "O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 17,5%: distância máxima até a melhor possível).",
+ "vigente": "Escala desta tela: a da etapa 1; o equilíbrio de carga não terminou no tempo.",
+ "etapa2": "sem resposta (indeterminado); fica a escala da etapa 1",
+ "tempo_etapa1": 600.9856071472168,
+ "tempo_etapa2": 180.73777437210083,
+ "gap": 0.17543859649122806,
+ "penalidade_etapa1": 57,
+ "etapa1": {
+  "enf_em_posto_tec": 57,
+  "pedidos_atendidos": 0,
+  "fracao": [
+   0.5113636363636364,
+   0.9204545454545454
+  ],
+  "diferenca_h": {
+   "enfermeiros": 60.0,
+   "tecnicos": 24.0
+  }
+ },
+ "final": {
+  "enf_em_posto_tec": 57,
+  "pedidos_atendidos": 0,
+  "fracao": [
+   0.5113636363636364,
+   0.9204545454545454
+  ],
+  "diferenca_h": {
+   "enfermeiros": 60.0,
+   "tecnicos": 24.0
+  }
+ },
+ "descanso_semanal_sem_bordas": 36.0,
+ "conferencias": {
+  "1 etapa 2 rodou": true,
+  "2 enf em posto tec <= etapa 1": true,
+  "3 diferenca por categoria <= etapa 1": true,
+  "4 descanso e rigidas": true,
+  "5 pedidos >= etapa 1": true
+ }
+}
+P14 OK

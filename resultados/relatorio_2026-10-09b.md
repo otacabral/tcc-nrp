@@ -101,3 +101,48 @@ prova para no limite de tempo e não acha a mesma escala a cada execução.
   etapa 1."; "Escala desta tela: a da etapa 1; o equilíbrio não achou escala mais equilibrada
   no tempo." (salvaguarda); legenda do equilíbrio: "entre as escalas que não pioram o valor da
   etapa 1 (a etapa 1 não provou o ótimo)".
+
+### B3 — implementação
+
+- `src/ferramenta.py`: `preparar_equilibrio(m, inst, z, exato=True)` e `equilibrar(...,
+  exato=True)` — com `exato=False`, a restrição da etapa 2 é penalidade ≤ z (no lugar de = z);
+  `resolver_com_objetivo` roda a etapa 2 também sem prova (`exato=provado`), guarda os
+  indicadores da escala da etapa 1 em `info["etapa1"]` e aplica a salvaguarda no caminho sem
+  prova; `Resultado.frase_vigente` com os dois textos novos.
+- `src/app.py`: só a legenda do equilíbrio ("entre as escalas que não pioram o valor da etapa 1
+  (a etapa 1 não provou o ótimo)").
+- `docs/diagnostico/bateria_propriedades.py`: a troca da etapa 2 usada pelos scripts da bateria
+  passou a aceitar o parâmetro novo (sem isso, os próximos usos quebrariam).
+- `modelo.py` e `instancia_br.py`: intactos.
+
+### B4 — testes: **INTERROMPIDOS pelo sistema, por falta de memória**
+
+`bash docs/diagnostico/suite_p14.sh` (um processo por teste; `resultados/suite_2026-10-09/`).
+O P08 rodou antes, sozinho: admite, 12, sem falhas.
+
+| Teste | Resultado |
+|---|---|
+| **B2d** P05 / P08 / K1 | faltam 1, menor 15 / admite, 12 / admite, 16 — **iguais a 07/10**, sem falhas |
+| **B2b** caso do Otávio | **P14 OK** nas cinco conferências; mas a etapa 2 **não achou escala** em 180 s ("sem resposta") e ficou a da etapa 1 (57 enf. em posto de técnico; 51–92%; diferença 60 h / 24 h) |
+| **B2c** K5 | **P14 OK**; a etapa 2 **entregou** escala: enf. em posto 21 = 21; diferença entre enfermeiros 42 h → **36 h**, técnicos 30 h = 30 h; contrato mínimo 68% → **72%** |
+| **B2c** K6 | **P14 OK**; etapa 2 sem resposta em 180 s; ficou a da etapa 1 |
+| regressão `--todos` | OK (56, 58, 197, 219) |
+| tela 8 (com o 8b refeito) | OK; no 8b a etapa 2 rodou e também ficou sem resposta (limite de 25 s); 20 de 20 pedidos |
+| tela 15 | OK |
+| tela 12 | **interrompido** no meio (12a: os dois primeiros itens ok) |
+| tela 1-2, 3, 4, 4b, 5, 7.1–7.4, 9, 9b-sem-teto, 9c-tela | **não rodaram** |
+| **B2a** demonstração pela tela | **não rodou** |
+
+Depois da interrupção: **0,8 GB livres** (Chrome em segundo plano, ~380 MB; o próprio Claude
+Code, ~870 MB). Pela regra, não relancei. **A parte B não está fechada; a tag `v1.2` não foi
+criada.**
+
+**Achado da P14: a etapa 2 sem prova quase nunca entrega escala no tempo.** Em 4 resoluções sem
+prova (caso do Otávio, K5, K6, 8b), só o K5 entregou. Causa provável: a etapa 2 não parte da
+escala da etapa 1 (o código não usa warm start, `relatorio_2026-10-06f.md`, parte B1); com a
+restrição "penalidade ≤ valor da etapa 1", achar a primeira escala é tão difícil quanto foi
+chegar àquele valor na etapa 1 (no caso do Otávio, 600 s). As conferências passam porque, sem
+escala nova, fica a da etapa 1 — o comportamento é correto, mas o ganho é raro. **Proposta
+P17, registrada e não implementada:** dar à etapa 2 a escala da etapa 1 como solução inicial
+(warm start "só como partida", admitido pelo `CLAUDE.md`), o que garante escala na etapa 2 e
+torna desnecessária a salvaguarda.

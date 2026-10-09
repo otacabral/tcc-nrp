@@ -1,4 +1,4 @@
-2026-10-09 13:05:10.024 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-09 14:05:20.405 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
 15a. caso montado: 32 h interno, 31 h so na borda
    ok    medir (trava, com bordas): 31.0 h (31)
    ok    sem bordas por pessoa: {'0': 32.0, '1': 64.0, '2': None}

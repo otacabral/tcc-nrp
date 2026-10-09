@@ -1,0 +1,6 @@
+12a. escala da etapa 1 avisada antes da etapa 2 (caso 5)
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+2026-10-09 14:11:32.900 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+   ok    ordem dos avisos: ['escala_etapa1', 'etapa2']
+   ok    a escala da etapa 1 cumpre o descanso

@@ -283,8 +283,10 @@ if "resultado" in st.session_state:
             # entre colegas da mesma categoria, que e o que o gestor le
             dif = " · ".join(f"{fe.NOME_CATEGORIA[g].lower()}: {fe.fmt_diferenca(cat)}"
                              for g, cat in ind.get("categorias", {}).items())
-            st.caption(f"Equilíbrio de carga dentro de cada categoria, entre as escalas de "
-                       f"mesmo custo. Diferença máxima de carga entre colegas — {dif}.")
+            entre = ("de mesmo custo" if r.provado else "que não pioram o valor da etapa 1 "
+                     "(a etapa 1 não provou o ótimo)")
+            st.caption(f"Equilíbrio de carga dentro de cada categoria, entre as escalas "
+                       f"{entre}. Diferença máxima de carga entre colegas — {dif}.")
         elif equilibrio:
             st.caption(f"Equilíbrio de carga: {equilibrio}.")
         if ind["pedidos_total"] and ind["pedidos_atendidos"] == ind["pedidos_total"]:
