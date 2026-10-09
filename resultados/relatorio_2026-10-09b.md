@@ -241,9 +241,9 @@ e criar a `v1.2`, com o Chrome fechado e, de preferência, sem o Claude Code abe
 
 ```
 .\.venv\Scripts\Activate.ps1
-& "C:Program FilesGitbinbash.exe" docs/demonstracao/rodar_rodada.sh rodada1
-& "C:Program FilesGitbinbash.exe" docs/demonstracao/rodar_rodada.sh rodada2_19tec --tec 19
-& "C:Program FilesGitbinbash.exe" docs/demonstracao/rodar_rodada.sh rodada2_18tec --tec 18
+& "C:\Program Files\Gitinash.exe" docs/demonstracao/rodar_rodada.sh rodada1
+& "C:\Program Files\Gitinash.exe" docs/demonstracao/rodar_rodada.sh rodada2_19tec --tec 19
+& "C:\Program Files\Gitinash.exe" docs/demonstracao/rodar_rodada.sh rodada2_18tec --tec 18
 ```
 
 Cada rodada termina com a linha "planilhas da demonstracao: OK" no fim de
