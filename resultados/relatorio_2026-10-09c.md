@@ -326,7 +326,7 @@ Os números da seção 5 (21, 21, 29 e 50 pedidos negados; 140, 224 e 322 enferm
 técnico) **não estão em risco**. O risco seria uma rodada futura parar com gap entre 0 e 0,01%
 num objetivo grande — o que não aconteceu em nenhuma registrada.
 
-**Não fora do critério inteiro:** a etapa 2 tem objetivo **contínuo** (amplitude da fração do
+**Fora do critério inteiro:** a etapa 2 tem objetivo **contínuo** (amplitude da fração do
 contrato); a tolerância de 0,01% sobre 4,55 pp (9c) é 0,0005 pp — irrelevante, mas o argumento
 do "objetivo inteiro" não se aplica a ela.
 
