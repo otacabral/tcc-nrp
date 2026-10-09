@@ -1,0 +1,7 @@
+casos com prova: 198
+0,0001 x teto = 0.197 | bateria_2026-10-08/parte4 N001 | W 281, pedidos 6, teto do objetivo 1966
+0,0001 x teto = 0.132 | bateria_2026-10-08/parte4 N092 | W 189, pedidos 6, teto do objetivo 1322
+0,0001 x teto = 0.132 | bateria_2026-10-08/parte4 N008 | W 330, pedidos 3, teto do objetivo 1319
+0,0001 x teto = 0.127 | bateria_2026-10-08/parte4 N090 | W 211, pedidos 5, teto do objetivo 1265
+0,0001 x teto = 0.118 | bateria_2026-10-08/parte3 P04/mais_posto | W 169, pedidos 6, teto do objetivo 1182
+algum >= 1: False

@@ -1865,7 +1865,23 @@ com "penalidade ≤ valor da etapa 1", achar a primeira escala era tão difícil
 **Condições do Otávio (09/10):** em `modelo.py`, só a chamada ao solver muda; a regressão dos 4
 ótimos é obrigatória antes dos outros testes; o teste 8b e o conferidor só podem ser revisados
 para conferir o comportamento novo, sem afrouxar esperado. O 8b foi apertado (passa a exigir
-que a etapa 2 entregue escala), antes de a condição chegar; relatado no relatório 09c.
+que a etapa 2 entregue escala), antes de a condição chegar; relatado no relatório 09c. **Decisão do Otávio (09/10): manter o 8b apertado; não reverter.**
+
+---
+
+## 2026-10-09 — Pedido por turno vira trabalho futuro
+
+**Status: vigente.** Decidido pelo Otávio em 09/10. Não implementar antes de 16/10.
+
+**Motivo:** custo de ~1,5 dia; exige mudar um parâmetro de parada do solver (a tolerância
+relativa do HiGHS, que com pesos em três níveis deixaria de garantir a prioridade estrita) e,
+com isso, refazer a regressão; e a prioridade agora é o texto do TCC.
+
+**Argumento para o texto:** o motor **já suporta** pedido por turno — o tipo `folga_turno`, que
+é o `ShiftOffRequest` do INRC, validado pela regressão (as quatro instâncias têm 50 ou 245 desses
+pedidos, e os ótimos publicados só batem com eles codificados certo). Faltam a entrada
+brasileira, a tela e os pesos. Registrado em P3, "Preferências individuais"; análise e
+estimativa em `resultados/relatorio_2026-10-09c.md`, parte B.
 
 ---
 

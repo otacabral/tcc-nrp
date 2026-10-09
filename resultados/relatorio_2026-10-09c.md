@@ -271,3 +271,66 @@ git push origin main --tags
 Não crie a tag. Me traga o `resultados\fechar_v12\resumo.txt` e o `.log` do passo que parou.
 Se parou por memória, feche mais programas e rode o mesmo comando de novo (ele recomeça do
 início).
+
+---
+
+# Continuação (09/10, noite) — decisões e conferência da tolerância
+
+## Para o Otávio (continuação)
+
+- **8b mantido apertado** e **pedido por turno em trabalho futuro**: registrados.
+- **Conferência da tolerância: PARADA, como pedido.** Três "ótimos provados" da curva da P1 de
+  03/10 (N = 40, 60, 80) têm 0,0001 × objetivo ≥ 1. **Mas os logs do HiGHS mostram, nos três,
+  limite inferior = objetivo** (prova exata, gap 0). Nada mudou no `NUMEROS_TCC.md`.
+- **Para decidir:** registrar no `NUMEROS_TCC.md` a condição em duas formas (abaixo).
+
+## 1 e 2 — registros
+
+- **8b:** `DECISOES.md`, entrada da P17: "manter o 8b apertado; não reverter".
+- **Pedido por turno:** `DECISOES.md`, "2026-10-09 — Pedido por turno vira trabalho futuro",
+  com o motivo (1,5 dia; mudança da tolerância do solver e regressão; prioridade do texto) e o
+  argumento (o motor já suporta `folga_turno`, validado pela regressão; faltam a entrada
+  brasileira, a tela e os pesos); P3 atualizada.
+
+## 3 — a tolerância relativa do HiGHS (0,01%) afeta algum "ótimo provado" registrado?
+
+Só leitura, sem solver. O HiGHS declara "ótimo" quando o gap relativo fica ≤ 0,01%. Como os
+objetivos da etapa 1 são inteiros, se 0,0001 × objetivo < 1 a prova vale como ótimo inteiro.
+
+| Resultado com prova | Objetivo | 0,0001 × objetivo |
+|---|---|---|
+| INRC (seção 1): sprint01, sprint02, long01, long02 | 56, 58, 197, 219 | 0,006 a 0,022 |
+| Experimento B (seção 3): menor e maior penalidade do mais penalizado | até 20 | ≤ 0,002 |
+| 9b-sem-teto (seção 8): máximo de plantões | 14 | 0,001 |
+| Demonstração (seção 9), etapa 1 | 24, 36, 34 (nenhum pedido negado) | ≤ 0,004 |
+| P1 com folga, 05/10 (seção 6): N = 44, 66, 88 | 107, 181, 267 | ≤ 0,03 |
+| Bateria (seções 11 e 12): 198 resoluções com prova (07/10, 08/10, 09/10) | teto W × pedidos + T, no máximo 1.966 | **≤ 0,197** (`resultados/p17_2026-10-09/tolerancia_bateria.txt`) |
+| **P1 de 03/10 (seção 5): N = 36** | 9.541 | 0,95 |
+| **P1 de 03/10: N = 40** | 10.745 | **1,07** |
+| **P1 de 03/10: N = 60** | 22.989 | **2,30** |
+| **P1 de 03/10: N = 80** | 53.572 | **5,36** |
+
+**Três ≥ 1: P1 de 03/10 com N = 40, 60 e 80.** Na regra combinada, isso é parada.
+
+**O que os logs dizem** (`resultados/escalabilidade_objetivo/highs_N{40,60,80}_etapa1.log`,
+relatório final do HiGHS, com até 12 algarismos significativos):
+
+| N | Primal bound | Dual bound | Gap |
+|---|---|---|---|
+| 40 | 10745 | 10745 | 0% |
+| 60 | 22989 | 22989 | 0% |
+| 80 | 53572 | 53572 | 0% |
+
+Nos três, o limite inferior **é igual** ao objetivo: a prova é exata, não "dentro da tolerância".
+Os números da seção 5 (21, 21, 29 e 50 pedidos negados; 140, 224 e 322 enfermeiros em posto de
+técnico) **não estão em risco**. O risco seria uma rodada futura parar com gap entre 0 e 0,01%
+num objetivo grande — o que não aconteceu em nenhuma registrada.
+
+**Não fora do critério inteiro:** a etapa 2 tem objetivo **contínuo** (amplitude da fração do
+contrato); a tolerância de 0,01% sobre 4,55 pp (9c) é 0,0005 pp — irrelevante, mas o argumento
+do "objetivo inteiro" não se aplica a ela.
+
+**Proposta de registro no `NUMEROS_TCC.md` (NÃO feito, por causa da parada):** como condição
+das afirmações de ótimo — "a prova vale como ótimo inteiro porque 0,0001 × objetivo < 1 (todos
+os casos, exceto a P1 de 03/10 com N = 40, 60 e 80); nesses três, o limite inferior registrado
+no log é igual ao objetivo (gap 0 exato)".

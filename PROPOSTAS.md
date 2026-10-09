@@ -256,6 +256,9 @@ A P1 está desbloqueada: objetivo decidido.
   o `ShiftOffRequest` do INRC, validado pela regressão); falta a entrada brasileira, a tela e a
   prioridade estrita em três níveis de peso, com o cuidado da tolerância relativa do HiGHS —
   análise e estimativa em `resultados/relatorio_2026-10-09c.md`, parte B;
+  **decidido em 09/10: trabalho futuro, não antes de 16/10** (~1,5 dia; muda a tolerância do
+  solver e exige regressão; prioridade do texto) — `DECISOES.md`, "Pedido por turno vira
+  trabalho futuro";
   (2) **indisponibilidade recorrente** (ex.: segundo vínculo toda terça);
   (3) **marcação por profissional "exige 35 h de descanso semanal"** (a P15 é alerta para todos).
 - **Mostrar a melhor escala encontrada durante a busca da etapa 1**, antes do fim do tempo-limite
