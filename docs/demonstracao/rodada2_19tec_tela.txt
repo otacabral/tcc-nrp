@@ -1,8 +1,8 @@
 demanda de seg 02/11 colada e conferida na linha 0: [1, 4, 1, 4]
 demanda de dom 15/11 colada e conferida na linha 13: [1, 4, 1, 4]
 demanda de sex 20/11 colada e conferida na linha 18: [1, 4, 1, 4]
-ESCALA DA ETAPA 1 NA TELA aos 12 s do clique
-TEMPO DO CLIQUE ATE O RESULTADO: 94 s
+ESCALA DA ETAPA 1 NA TELA aos 11 s do clique
+TEMPO DO CLIQUE ATE O RESULTADO: 78 s
 Escala de enfermagem
 
 A CLT trava a escala; o COFEN só alerta. Horizonte de 28 dias, começando numa segunda-feira.
@@ -149,18 +149,12 @@ keyboard_arrow_right
 
 Como o veredito foi obtido
 
-CHS usada no QP: 42,1 h por semana, a média das cargas contratuais da equipe.
-
-keyboard_arrow_right
-
-Como o veredito foi obtido
-
 Baixar planilha (.xlsx)
 
 Código com * = posto de enfermeiro.
-PICO DE MEMORIA (MB): servidor Streamlit + solver 298; Chrome do Playwright (soma dos processos) 567; este roteiro 60
+PICO DE MEMORIA (MB): servidor Streamlit + solver 298; Chrome do Playwright (soma dos processos) 578; este roteiro 59
 rodada2_19tec: cobertura contra a demanda DECLARADA no caso: igual em todos os dias
 rodada2_19tec: 29 profissionais, 359 atribuicoes | rigidas ok | descanso cumpre (menor folga 0 h, semanal 36 h, 1 dias seguidos) | teto ok | ferias ok
 planilhas da demonstracao: OK
 status 0
-menor memoria livre: 02:30:05 livre_MB=2630
+menor memoria livre: 18:25:39 livre_MB=5889

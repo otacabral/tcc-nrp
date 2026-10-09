@@ -1,0 +1,9 @@
+2026-10-09 17:42:15.978 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+5. enfermeiro em posto de tecnico: 8 h, 8 + 5
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    sem excecao na tela []
+   ok    veredito: ['O quadro informado admite escala legal. Escala gerada.', 'Alerta de descanso semanal (não impede a escala): 5 profissionais têm descanso semanal abaixo de 35 h (o menor: 24 h). A Súmula 110 do TST (e a OJ 355 da SDI-1) manda pagar como extras as horas que invadem o intervalo de 11 h depois do repouso semanal de 24 h: 24 + 11 = 35 h. Não conta o descanso que encosta no início ou no fim do período, porque o que vem antes e depois não é conhecido.']
+   ok    contagem na tela: 30 turnos de enfermeiro em posto de tecnico (>= 30)
+
+ponta a ponta pela tela OK

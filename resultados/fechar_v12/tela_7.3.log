@@ -1,0 +1,30 @@
+7.3 diagnostico da trava (motivo esperado registrado antes)
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    horas: 8 h, 1+3 por turno, 4 + 10: motivo horas (esperado horas)
+   ok       texto: Os turnos de técnico somam 2016 h. Pelo teto de cada um — a carga contratual nos dias disponíveis —, 10 técnicos trabalham no máximo 1760 h: faltam 256 h, que só enfermeiro pode cobrir. Depois do posto de enfermeiro, os enfermeiros têm 32 h de folga. Pela conta, faltam pelo menos 2 profissionais de 44 h.
+   ok       Faltam 2; o menor quadro viável é 16. Escala gerada.
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    alternancia: Experimento A com 39: motivo alternancia (esperado alternancia)
+   ok       texto: Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). seg 04/01 e ter 05/01 somam 40 plantões, que precisam de 40 pessoas diferentes; descontadas férias e licenças, 39 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.
+   ok       Falta 1; o menor quadro viável é 40. Escala gerada. tentativas [(39, 'piso', None, None), (40, 'viavel', 14, 26)]
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    categoria: 8 h, 1+2 por turno, 3 + 20: motivo categoria (esperado categoria)
+   ok       texto: Os turnos que pedem enfermeiro somam 672 h, e só enfermeiro os cobre. Pelo teto de cada um — a carga contratual nos dias disponíveis —, 3 enfermeiros trabalham no máximo 528 h. Pela conta, falta pelo menos 1 enfermeiro de 44 h.
+   ok       Falta 1; o menor quadro viável é 24. Escala gerada. tentativas [(23, 'inviavel', 3, 20), (24, 'viavel', 4, 20)]
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    dia: 8 h, 1+2, 6 + 8, Tec 1 a 6 de licenca em 14/01: motivo dia (esperado dia)
+   ok       texto: Em qui 14/01, descontadas férias e licenças, sobram 8 pessoas (6 enfermeiros) para 9 postos (3 de enfermeiro).
+   ok       Falta 1; o menor quadro viável é 15. Escala gerada. tentativas [(14, 'inviavel', 6, 8), (15, 'viavel', 6, 9)]
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    combinacao -> categoria: 12x36 so enfermeiro, 4, Enf 3 de licenca 09 e 10/01: motivo categoria (esperado categoria)
+   ok       texto: Os turnos que pedem enfermeiro somam 672 h, e só enfermeiro os cobre. Pelo teto de cada um — a carga contratual nos dias disponíveis e a alternância do plantão de 12 h (ninguém trabalha dois dias seguidos) —, 4 enfermeiros trabalham no máximo 667 h. Pela conta, falta pelo menos 1 enfermeiro de 44 h.
+
+Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). sáb 09/01 e dom 10/01 somam 4 plantões, que precisam de 4 pessoas diferentes; descontadas férias e licenças, 3 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.
+   ok       Falta 1; o menor quadro viável é 5. Escala gerada. tentativas [(4, 'inviavel', 4, 0), (5, 'inviavel', 4, 1), (5, 'viavel', 5, 0)]
+
+ponta a ponta pela tela OK

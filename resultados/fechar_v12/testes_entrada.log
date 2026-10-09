@@ -1,0 +1,96 @@
+QP em duas parcelas
+   ok    nucleo pelo porte = 35.2381 (esperado 35,24)
+   ok    completo = nucleo x 1,15 = 40.52
+   ok    quadro_referencia e o mesmo nucleo
+   ok    nucleo por pacientes (35.24 intermediarios) = 35.2381
+entrada por pacientes
+   ok    30 intermediarios + 4 intensivos = 252 h/dia
+   ok    minimo + intermediario -> intermediario
+   ok    alta + semi-intensivo (ambos 10 h) -> semi-intensivo, pela ordem do Parecer
+   ok    grau com zero pacientes nao conta
+   ok    grau derivado no id: br_intensivo_12x36_teto_e50_h252
+   ok    demanda entrega 7392 h >= 7056 h (teto)
+   ok    12x36: pacientes equivalentes ao porte dao a mesma demanda
+   ok    8h: pacientes equivalentes ao porte dao a mesma demanda
+razao fim de semana / dia util
+   ok    razao 0.000: total 5920.0000 h preservado
+   ok    razao 0.250: total 5920.0000 h preservado
+   ok    razao 0.690: total 5920.0000 h preservado
+   ok    razao 0.900: total 5920.0000 h preservado
+   ok    razao 1.000: total 5920.0000 h preservado
+   ok    razao efetiva sabado/segunda = 0.6897
+   ok    12x36/teto: razao 20/29 = variacao 1 (demanda identica)
+   ok    12x36/maior_resto: razao 20/29 = variacao 1 (demanda identica)
+   ok    8h/teto: razao 20/29 = variacao 1 (demanda identica)
+   ok    8h/maior_resto: razao 20/29 = variacao 1 (demanda identica)
+   ok    razao 1 (padrao da ferramenta) = demanda plana
+equipe por quantidade
+   ok    nomes padrao: Enf 1..Enf 13, Téc 1..Téc 25
+   ok    13 com a habilidade de enfermeiro
+   ok    13 de 38 cumpre os 33% do intermediario
+   ok    5 de 38 e acusado: ['5 enfermeiros em 38 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 13 — grau informado na tela']
+   ok    nomes informados
+   ok    XML com nomes acentuados valido no esquema
+descanso semanal medido no relogio (escalas montadas a mao)
+   ok    7 manhas seguidas: semana 1 = 0.0 h (esperado 0 h)
+   ok    7 manhas seguidas: medir reprova (0.0 h)
+   ok    manha de seg a sab, domingo livre, manha na seg seguinte: semana 1 = 40.0 h (esperado 40 h)
+   ok    manha de seg a sab, domingo livre, manha na seg seguinte: medir aprova (40.0 h)
+   ok    6 noites de seg a sab, noite na seg seguinte: semana 1 = 40.0 h (esperado 40 h)
+   ok    6 noites de seg a sab, noite na seg seguinte: medir aprova (40.0 h)
+   ok    noites seg-qua, quinta livre, manhas sex-seg: semana 1 = 24.0 h (esperado 24 h)
+   ok    noites seg-qua, quinta livre, manhas sex-seg: medir aprova (24.0 h)
+   ok    folga no ultimo domingo: semana 4 = inf (esperado inf, borda aberta)
+regras de descanso geradas dos horarios
+   ok    12x36: gerado = lista escrita a mao [('N', 2, 'D')]
+   ok    12x36: sem descarte (5) = com descarte (1) + limite de 1 dia(s) seguido(s) (4)
+   ok    8h: gerado = lista escrita a mao [('N', 1, 'M'), ('N', 1, 'T'), ('T', 1, 'M')]
+   ok    8h: sem descarte (3) = com descarte (3) + limite de 6 dia(s) seguido(s) (0)
+   ok    8h sem interjornada (--sem-descanso-clt): nenhum par
+   ok    turnos 6 h + 6 h + 12 h: [('N', 1, 'M'), ('N', 1, 'N'), ('N', 1, 'T'), ('N', 2, 'M'), ('N', 2, 'T')]
+turnos configurados e demanda informada (sem solver)
+   ok    dia util: generalista (M 3 tec + 1 enf; N 2 tec + 1 enf)
+   ok    sabado: M do fim de semana (2 tec), N sem valor de fim de semana (2 tec)
+   ok    feriado 14/01: demanda especifica por categoria
+   ok    teto de horas = {176.0} h em 28 dias (44 h padrao x 4 semanas)
+   ok    MaxNumAssignments = 176 / 6 h (turno mais curto), nunca mais apertado que as horas
+   ok    alertas COFEN: ['1 turno sem enfermeiro na demanda (ex.: 14/01 N)']
+   ok    turno sem demanda recusado: turnos sem demanda informada: ['N', 'T']
+reproducao do long01 pela razao 20/29 (com solver)
+   ok    12x36: efetivo 39 inviavel
+   ok    12x36: efetivo 40 viavel
+   ok    12x36: rigidas da escala ok
+   ok    12x36: descanso entre turnos medido; par mais apertado 36 h >= 36 h
+   ok    12x36: dias seguidos 1 <= 1
+   ok    12x36: descanso semanal medido 36 h >= 24 h (pior: profissional, semana = ('0', 1))
+   ok    8h: efetivo 36 inviavel
+   ok    8h: efetivo 37 viavel
+   ok    8h: rigidas da escala ok
+   ok    8h: descanso entre turnos medido; par mais apertado 16 h >= 11 h
+   ok    8h: dias seguidos 6 <= 6
+   ok    8h: descanso semanal medido 24 h >= 24 h (pior: profissional, semana = ('3', 2))
+indisponibilidade rigida (com solver)
+   ok    12x36: 7 dias de Enf 1 + 8 de Téc 4 (recortado no fim do horizonte)
+   ok    12x36: efetivo 38 com bloqueio viavel
+   ok    12x36: ninguem escalado em dia indisponivel
+   ok    12x36: rigidas da escala ok
+   ok    12x36: descanso entre turnos medido; par mais apertado 36 h >= 36 h
+   ok    12x36: dias seguidos 1 <= 1
+   ok    12x36: descanso semanal medido 36 h >= 24 h (pior: profissional, semana = ('0', 3))
+   ok    8h: 7 dias de Enf 1 + 8 de Téc 4 (recortado no fim do horizonte)
+   ok    8h: efetivo 38 com bloqueio viavel
+   ok    8h: ninguem escalado em dia indisponivel
+   ok    8h: rigidas da escala ok
+   ok    8h: descanso entre turnos medido; par mais apertado 16 h >= 11 h
+   ok    8h: dias seguidos 6 <= 6
+   ok    8h: descanso semanal medido 24 h >= 24 h (pior: profissional, semana = ('0', 3))
+turnos de 6 h de dia e 12 h a noite, com feriado (com solver)
+   ok    7 enf + 12 tec: viavel
+   ok    rigidas ok: cobertura (inclusive no feriado), um turno por dia, teto de horas
+   ok    maior carga individual 150 h <= 168 h
+   ok    feriado: ninguem no posto de enfermeiro da noite, como pedido
+   ok    turnos mistos: descanso entre turnos medido; par mais apertado 36 h >= 36 h
+   ok    turnos mistos: dias seguidos 6 <= 6
+   ok    turnos mistos: descanso semanal medido 36 h >= 24 h (pior: profissional, semana = ('4', 4))
+
+testes das entradas OK

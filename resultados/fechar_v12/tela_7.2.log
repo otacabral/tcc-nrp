@@ -1,0 +1,8 @@
+7.2 equilibrio: 12x36 do Experimento A, 40 profissionais, 20 pedidos de folga
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    etapa 2: ok
+      relogio: etapa 1 28.3 s | etapa 2 180.7 s (appsi_highs, esta maquina) | penalidade 96 | pedidos 20/20 | enf em posto tec 96 | amplitude da fracao 34.1% -> 13.6% (SEM prova) | carga 120-168 h | pedidos negados: no maximo 0 por pessoa
+      contrato: MinNumAssignments ligada=False valor=0 peso=0 | MaxNumAssignments ligada=True valor=14 peso=1 | tetos em horas [176.0]
+
+ponta a ponta pela tela OK
