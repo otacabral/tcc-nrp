@@ -1798,6 +1798,31 @@ registrado lê esse valor, e na demonstração ele não muda (36 h). Implementa�
 
 ---
 
+## 2026-10-09 — P14: etapa 2 também quando a etapa 1 não prova o ótimo
+
+**Status: vigente.** Decidido pelo Otávio em 09/10. Fecha a P14 (`PROPOSTAS.md`). Mudança de
+comportamento da orquestração (`ferramenta.resolver_com_objetivo`); o modelo não muda.
+
+**Antes.** Com a etapa 1 terminando com escala mas sem prova de ótimo, a etapa 2 não rodava, e
+a escala saía sem equilíbrio de carga (no caso de teste do Otávio de 09/10: 51% a 92% do
+contrato, sem equilíbrio). O motivo era o da entrada "Carga por contrato": fixar a penalidade
+num valor que não é o ótimo mediria o equilíbrio de outra coisa.
+
+**Agora.** A etapa 2 roda também nesse caso (até 180 s, limitada pelo orçamento do clique), com
+a restrição de **não piorar** o valor achado pela etapa 1: penalidade da etapa 2 ≤ valor da
+etapa 1 (no caso provado continua `=` ótimo, como antes). A tela diz que o equilíbrio foi feito
+sobre uma escala sem prova de ótimo. O gap mostrado continua o da etapa 1 — se a etapa 2 achar
+penalidade menor, ele passa a ser um limite folgado (a distância real é menor), e continua
+verdadeiro como "distância máxima".
+
+**Salvaguarda (registrada antes de implementar).** No caminho sem prova, se a etapa 2 devolver
+escala com o critério de equilíbrio (soma das amplitudes da fração do contrato, por categoria)
+**pior** que o da escala da etapa 1 — pode acontecer, porque ela também para no limite e o
+HiGHS não parte da escala da etapa 1 —, fica a escala da etapa 1. O caminho provado não ganha a
+salvaguarda, para não mudar a demonstração.
+
+---
+
 ## Modelo de entrada
 
 ```

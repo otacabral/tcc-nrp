@@ -35,6 +35,12 @@ pedidos, prova aos ~14 s. Numa maquina muito diferente, os limites podem precisa
 8b. Escala sem prova: o 40 do 12x36 com os 20 pedidos do 7.2, limite de 25 s. Tela: warning
     que comeca por "O quadro informado admite escala legal. Escala gerada; pode haver uma
     melhor (gap", nenhum success; escala e planilha na tela; equilibrio "nao rodou".
+    ESPERADO REFEITO EM 09/10, ANTES de implementar a P14 (DECISOES.md, "2026-10-09 — P14"):
+    com a etapa 1 sem prova, a etapa 2 passa a rodar (limite de 25 s aqui, o da etapa 1). O
+    equilibrio NAO pode dizer "nao rodou"; a linha "Escala desta tela" diz "sobre uma escala sem
+    prova de otimo" se a etapa 2 entregou escala, ou "a da etapa 1" se nao; os 20 pedidos
+    continuam atendidos (a etapa 2 nao pode piorar a penalidade, e negar um pedido custa mais
+    que todos os postos de tecnico).
     Pedidos entram por fora da tela (o AppTest nao edita a tabela): `fe.verificar` e
     embrulhado para acrescenta-los a entrada que a tela montou.
 8c. Tempo esgotado sem escala: o 40 sem pedidos, limite de 3 s. Tela: error "Sem resposta em
@@ -318,8 +324,13 @@ def casos_tempo() -> None:
         r, _ = at.session_state["resultado"]
         confere(bool(r.escala) and len(at.get("download_button")) == 1,
                 "escala e planilha na tela")
-        confere(any(t.startswith("Equilíbrio de carga: não rodou") for t in textos(at, "caption")),
-                "equilibrio nao rodou")
+        confere(not any(t.startswith("Equilíbrio de carga: não rodou")
+                        for t in textos(at, "caption")),
+                f"P14: a etapa 2 rodou ({r.indicadores.get('etapa2')})")
+        vigente = [t for t in textos(at, "caption") if t.startswith("Escala desta tela:")]
+        esperado = ("sobre uma escala sem prova de ótimo" if r.indicadores.get("etapa2") == "ok"
+                    else "a da etapa 1")
+        confere(len(vigente) == 1 and esperado in vigente[0], f"escala vigente: {vigente}")
         # 05/10: com todos os pedidos atendidos, a tela diz isso, e nao "negados: 0, em 0"
         confere("Todos os 20 pedidos de folga foram atendidos." in textos(at, "caption")
                 and not any("negados: 0" in t for t in textos(at, "caption")),

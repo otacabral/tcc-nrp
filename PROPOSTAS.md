@@ -506,3 +506,15 @@ disso. A jurisprudência soma a ele o intervalo de 11 h entre jornadas (art. 66)
 TST (Res. 121/2003) e OJ 355 da SDI-1 mandam pagar como extras as horas que invadem as 11 h
 depois do repouso de 24 h — 24 + 11 = 35 h.
 
+---
+
+## 2026-10-09 — P14: etapa 2 também sem prova da etapa 1
+
+**Status: DECIDIDA em 09/10 pelo Otávio — aprovada.** Ver `DECISOES.md`, "2026-10-09 — P14:
+etapa 2 também quando a etapa 1 não prova o ótimo". *Proposta originada no projeto de redação;
+registrada aqui ao ser decidida.*
+
+**A questão.** Quando a etapa 1 termina com escala mas sem prova de ótimo, a etapa 2 não rodava,
+e a escala saía sem equilíbrio de carga entre colegas. Proposta: rodar a etapa 2 com a restrição
+de não piorar o valor da etapa 1, em vez de exigir o ótimo provado.
+

@@ -75,3 +75,29 @@ completa roda na parte B.
 diferença" (lei trava; norma técnica e custo alertam); seção "Alerta de descanso semanal", com
 a Súmula 110, o exemplo das 32 h no 8 h e o que não conta (as bordas); o indicador na tabela
 dos números.
+
+## Parte B — P14: etapa 2 também sem prova
+
+### B2 — esperado, registrado e commitado ANTES de implementar
+
+Registro: `DECISOES.md`, "2026-10-09 — P14", com a regra (penalidade da etapa 2 ≤ valor da
+etapa 1 no caminho sem prova; `=` ótimo no caminho provado, como antes) e a **salvaguarda**: no
+caminho sem prova, se a etapa 2 devolver escala com critério de equilíbrio pior que o da etapa
+1, fica a da etapa 1. **"Antes" = a escala da etapa 1 da mesma rodada**, porque a etapa 1 sem
+prova para no limite de tempo e não acha a mesma escala a cada execução.
+
+- **a) Demonstração da clínica** (20/19/18 técnicos), refeita pela tela com o conferidor:
+  idêntica à de 09/10 (lá a etapa 1 prova o ótimo; o caminho provado não muda).
+- **b) Caso do Otávio** e **c) K5 e K6**: `docs/diagnostico/p14_conferir.py` (as cinco
+  conferências estão no cabeçalho): a etapa 2 roda; enfermeiro em posto de técnico ≤ o da etapa
+  1; diferença máxima de carga entre colegas, em cada categoria, ≤ a da etapa 1; descanso e
+  rígidas conferidos; pedidos ≥ os da etapa 1.
+- **d) P05, P08, K1:** mesmo veredito e mesmo menor quadro de 07/10.
+- **Teste 8b** (esperado refeito no docstring, antes): o equilíbrio deixa de dizer "não rodou";
+  a linha "Escala desta tela" diz "sobre uma escala sem prova de ótimo" (ou "a da etapa 1", se a
+  etapa 2 não entregar escala); os 20 pedidos continuam atendidos.
+- **Textos novos:** "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas,
+  sobre uma escala sem prova de ótimo: o equilíbrio não deixou piorar o valor achado pela
+  etapa 1."; "Escala desta tela: a da etapa 1; o equilíbrio não achou escala mais equilibrada
+  no tempo." (salvaguarda); legenda do equilíbrio: "entre as escalas que não pioram o valor da
+  etapa 1 (a etapa 1 não provou o ótimo)".
