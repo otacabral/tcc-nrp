@@ -67,3 +67,18 @@ soma) — o esperado abaixo confere por categoria, como pedido.
 
 **Os testes NÃO rodam nesta sessão** (1,4 GB livres; mínimo de 3 GB). Comandos no fim, para o
 Otávio rodar antes da demonstração e da tag.
+
+### A3 — implementação
+
+- `src/modelo.py`, `resolver`: parâmetro `partida: bool = False`; com `True`, passa
+  `warmstart=True` ao `solve` (e levanta erro claro se o solver não aceitar). Só a chamada; com
+  o padrão, nada muda — a regressão não é afetada, mas roda nos comandos do fim.
+- `src/ferramenta.py`: `resolver(m, tempo, partida=False)`; `equilibrar(..., partida=escala)`
+  preenche `f_max`/`f_min` com os da escala da etapa 1 e pede a partida;
+  `resolver_com_objetivo` passa a escala da etapa 1 só quando a etapa 1 não provou.
+- Compila; **nenhum teste rodou nesta sessão** (1,4 GB livres).
+
+### A4 — registro
+
+`DECISOES.md`, "2026-10-09 — P17: a etapa 2 parte da escala da etapa 1 quando não há prova";
+`PROPOSTAS.md`, P17 marcada como decidida e implementada, com testes pendentes.

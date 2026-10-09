@@ -1839,6 +1839,31 @@ salvaguarda, para não mudar a demonstração.
 
 ---
 
+## 2026-10-09 — P17: a etapa 2 parte da escala da etapa 1 quando não há prova
+
+**Status: vigente — implementada; testes pendentes** (rodam com a máquina limpa, antes da
+demonstração e da tag `v1.2`; `resultados/relatorio_2026-10-09c.md`). Decisão condicional do
+Otávio, 09/10: implementar se a interface com o solver permitisse de forma simples e
+documentada. **Permite:** a opção `warmstart` do APPSI do Pyomo, que no HiGHS vira
+`setSolution`; a sonda no P08 mostrou "MIP start solution is feasible".
+
+**O que muda.** No caminho sem prova (P14), a etapa 2 recebe a escala da etapa 1 como solução
+inicial. Não é heurística: é a solução exata que a etapa 1 achou, e ela cumpre "penalidade ≤
+valor da etapa 1" por construção. Com isso a etapa 2 sempre tem escala, e o critério de
+equilíbrio nunca piora. No caminho com prova, nada muda (a demonstração tem de sair idêntica).
+
+**Onde.** `modelo.resolver(..., partida=False)` — só a chamada ao solver: com `partida=True`,
+passa `warmstart=True`; o modelo (variáveis, restrições, objetivo) não muda, e com o padrão a
+chamada é a de sempre. `ferramenta.equilibrar(..., partida=escala)` preenche os extremos da
+fração (`f_max`, `f_min`), criados na etapa 2, com os valores da escala da etapa 1, para a
+partida ser viável. A salvaguarda da P14 fica, redundante no critério.
+
+**Por quê.** Achado da P14: sem partida, a etapa 2 sem prova entregou escala em 1 de 4 casos;
+com "penalidade ≤ valor da etapa 1", achar a primeira escala era tão difícil quanto chegar
+àquele valor. Warm start "só como partida" é admitido pelo `CLAUDE.md` (25/09).
+
+---
+
 ## Modelo de entrada
 
 ```

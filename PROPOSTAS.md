@@ -538,8 +538,9 @@ Cronograma", E2). Nada implementado.
 
 ## 2026-10-09 — P17: warm start da etapa 2 com a escala da etapa 1
 
-**Status: candidata — NÃO implementar** (achado da P14, 09/10). Fica para decisão do Otávio;
-pelo congelamento, só entraria como correção de defeito com esperado registrado antes.
+**Status: DECIDIDA em 09/10 pelo Otávio — implementada** (decisão condicional: a interface
+permitia de forma simples e documentada). Ver `DECISOES.md`, "2026-10-09 — P17". Testes
+pendentes, para rodar com a máquina limpa. *Status anterior: candidata — não implementar.*
 
 **O achado.** Com a P14, a etapa 2 roda também quando a etapa 1 não prova o ótimo, com a
 restrição de não piorar o valor dela. Em 4 resoluções sem prova (caso do Otávio de 09/10, K5,

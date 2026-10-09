@@ -463,7 +463,7 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
 
 def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
              tempo_limite: int | None = None, log: bool = False,
-             carregar: bool = True, log_arquivo: str | None = None):
+             carregar: bool = True, log_arquivo: str | None = None, partida: bool = False):
     """Resolve e devolve o objeto de resultado do Pyomo.
 
     `carregar=False` e obrigatorio quando a resposta pode ser INVIAVEL. O appsi/HiGHS tenta
@@ -474,6 +474,11 @@ def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
     Com `carregar=False` o resultado volta sempre, e quem quiser os valores das variaveis
     chama `carregar_solucao(m, resultado)` depois de conferir que ha solucao. Nos caminhos que
     so resolvem modelos sabidamente viaveis o padrao continua valendo, e nada muda.
+
+    `partida=True` (P17, 09/10): entrega ao solver os valores ATUAIS das variaveis como solucao
+    inicial (`warmstart` do appsi, que no HiGHS vira `setSolution`). So a chamada muda; o
+    modelo nao. Quem pede a partida responde por deixar valores que formem solucao viavel —
+    senao o HiGHS a descarta. Padrao False: a chamada de sempre.
     """
     opt = pyo.SolverFactory(solver)
     if tempo_limite is not None:
@@ -499,6 +504,10 @@ def resolver(m: pyo.ConcreteModel, solver: str = SOLVER_PADRAO,
     extra = {}
     if tempo_limite is not None and _aceita(opt.solve, "timelimit"):
         extra["timelimit"] = tempo_limite
+    if partida:
+        if not _aceita(opt.solve, "warmstart"):
+            raise RuntimeError(f"o solver {solver} nao aceita solucao inicial (warmstart)")
+        extra["warmstart"] = True
     if carregar:
         return opt.solve(m, tee=log, **extra)
 

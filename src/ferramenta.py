@@ -349,7 +349,8 @@ def pesos(inst):
     return inst, {(n, s): 1 for n in enf for s in base}, W
 
 
-def resolver(m, tempo: int | None) -> tuple[str, object, bool, float | None]:
+def resolver(m, tempo: int | None,
+             partida: bool = False) -> tuple[str, object, bool, float | None]:
     """Resolve um modelo ja montado. Devolve (veredito, escala ou None, provou_otimo, gap).
 
     O veredito de `ea.resolver_modelo` junta "otimo provado" e "solucao no limite de tempo"
@@ -357,7 +358,7 @@ def resolver(m, tempo: int | None) -> tuple[str, object, bool, float | None]:
     levanta: excecao do solver vira ERRO, como em `ea.resolver_modelo`."""
     try:
         resultado = modelo.resolver(m, solver=modelo.SOLVER_PADRAO, tempo_limite=tempo,
-                                    carregar=False)
+                                    carregar=False, partida=partida)
     except Exception as e:  # noqa: BLE001
         print(f"      [ERRO] o solver levantou {type(e).__name__}: {e}", flush=True)
         traceback.print_exc()   # a tela diz "detalhes no console": os detalhes sao estes
@@ -372,8 +373,8 @@ def resolver(m, tempo: int | None) -> tuple[str, object, bool, float | None]:
             modelo.gap_relativo(resultado))
 
 
-def equilibrar(m, inst, z: int, tempo: int | None,
-               exato: bool = True) -> tuple[str, object, bool, float | None]:
+def equilibrar(m, inst, z: int, tempo: int | None, exato: bool = True,
+               partida=None) -> tuple[str, object, bool, float | None]:
     """Segunda etapa: com a penalidade total presa no otimo `z`, minimiza a amplitude da
     FRACAO CUMPRIDA — horas trabalhadas / horas devidas (carga contratual nos dias
     disponiveis), maior menos menor — DENTRO de cada categoria: amplitude entre enfermeiros
@@ -383,7 +384,16 @@ def equilibrar(m, inst, z: int, tempo: int | None,
     e o do Experimento B (fixar o otimo, otimizar um segundo criterio), sobre o mesmo modelo,
     sem monta-lo de novo; muda o criterio."""
     preparar_equilibrio(m, inst, z, exato)
-    return resolver(m, tempo)
+    if partida is None:
+        return resolver(m, tempo)
+    # P17 (09/10): parte da escala da etapa 1 (`partida`), cujos valores ja estao nas
+    # variaveis do modelo; os extremos da fracao, criados agora, recebem os dessa escala, para
+    # a partida ser viavel. Ela cumpre "penalidade <= z" por construcao (vale z).
+    cat = por_categoria(inst, partida)
+    for g in m.f_max:
+        m.f_max[g].value = cat[g]["fracao_max"]
+        m.f_min[g].value = cat[g]["fracao_min"]
+    return resolver(m, tempo, partida=True)
 
 
 def categoria(inst, n: str) -> str:
@@ -540,7 +550,9 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None,
         aviso("escala_etapa1", inst=inst, escala=escala, limite=tempo2)
         aviso("etapa2", limite=tempo2)
     t0 = time.time()
-    v2, escala2, provado2, gap2 = equilibrar(m, inst, z, tempo2, exato=provado)
+    # P17 (09/10): sem prova, a etapa 2 parte da escala da etapa 1; com prova, nada muda
+    v2, escala2, provado2, gap2 = equilibrar(m, inst, z, tempo2, exato=provado,
+                                             partida=None if provado else escala)
     info["tempo_etapa2"] = time.time() - t0
     if v2 == ea.VIAVEL:
         # salvaguarda do caminho sem prova (DECISOES.md, "2026-10-09 — P14"): o HiGHS nao parte
