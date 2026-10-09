@@ -141,7 +141,7 @@ Origem: `src/testes_ferramenta.py`. Comandos: `python src\testes_ferramenta.py 9
 | 36,4 → 4,5 pp | o critério cai da etapa 1 para a etapa 2 (9d) | esperado antes: estritamente menor | o 36,4 depende da escala da etapa 1 |
 | 146,9 s | prova da etapa 2 do 9c, rodando sozinho | — | **limite operacional**; já falhou com outro processo junto |
 
-## 9. Demonstração: clínica médica (05/10, 21h)
+## 9. Demonstração: clínica médica (05/10, 21h; refeita em 09/10 com o roteiro corrigido)
 
 Origem: `docs/demonstracao/rodada1_tela.txt`, `rodada2_19tec_tela.txt` e `rodada2_18tec_tela.txt`, com capturas e planilhas ao lado. Comando: `bash docs/demonstracao/rodar_rodada.sh rodada1` (e `rodada2_19tec --tec 19`, `rodada2_18tec --tec 18`).
 
@@ -163,17 +163,19 @@ Configuração: equipe 10 + 20, 12×36, de 02/11 a 29/11/2026.
 | 1 e 0,6 plantão; 0,2 e 0,6; 0,9 e 0,6 | diferença máxima entre colegas (enf. e téc.) | SEM CONFERÊNCIA | a etapa 2 tem tempo limitado e pode variar entre rodadas |
 | 301–331 MB (servidor + solver); 569–600 MB (Chrome) | pico de memória por rodada | — | **limite operacional** |
 
-**Ressalva de 08/10 sobre esta seção inteira.** A entrada digitada pela tela (roteiro
-`docs/demonstracao/capturas.py`) pôs a demanda de feriado de **sex 20/11 em ter 24/11**, nas
-três rodadas de 05/10 e de novo nas de 08/10. Achado por `docs/demonstracao/conferir_planilhas.py`,
-que compara a planilha baixada com a demanda declarada no caso. As demais datas especiais
-(02/11, 15/11) entraram certas. **Não mudam com isso** (conta, sem solver): horas de demanda
-(4.308 h), maior par de dias seguidos (28, primeiro em 03–04/11), piso e motivos da trava —
-portanto vereditos, cortes e texto do diagnóstico. **Podem mudar** os números que saem do solver
-(turnos de enfermeiro em posto de técnico, contrato cumprido, horas não utilizadas, diferença
-entre colegas). Os mínimos da conta (≥ 24, ≥ 36) valem nas duas entradas. Em 08/10, com a P12,
-as três rodadas refeitas deram exatamente os mesmos números de 05/10 (24, 36, 34; 6 de 6),
-com a mesma entrada defeituosa. Decisão pendente: corrigir o roteiro e refazer.
+**Defeito e correção (08–09/10).** Nas rodadas de 05/10, o roteiro que digita a entrada na
+tela (`docs/demonstracao/capturas.py`) pôs a demanda de feriado de **sex 20/11 em ter 24/11**.
+Achado em 08/10 por `docs/demonstracao/conferir_planilhas.py`, que compara a planilha baixada
+com a demanda **declarada** no caso. Corrigido (o roteiro acha a linha pela data e confere a
+colagem); esperado registrado antes (commit `882edf1`); as três rodadas refeitas em 09/10, de
+madrugada, com o conferidor passando nas três (cobertura igual à declarada em todos os dias,
+rígidas, descanso, teto, férias). **Todos os valores da tabela acima se confirmaram, iguais**:
+24, 36 e 34 turnos de enfermeiro em posto de técnico (os mínimos da conta), 6 de 6 pedidos,
+contrato cumprido 68–100%, 82–100% e 75–100%, horas não utilizadas 432/108, 288/108 e 312/116 h,
+diferença entre colegas 1 e 0,6, 0,2 e 0,6, 0,9 e 0,6 plantão. As escalas mudaram (393 a 422
+células diferentes; 20/11 agora com a cobertura de feriado); os agregados não, porque as horas
+de demanda são as mesmas (4.308 h) e a contagem de enfermeiro em posto de técnico já estava no
+mínimo aritmético. Detalhe em `resultados/relatorio_2026-10-09a.md`.
 
 ## 10. Escalabilidade de 28/09 (objetivo trivial)
 

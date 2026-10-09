@@ -140,24 +140,52 @@ A tela é uma página só, de cima para baixo.
 - A ferramenta calcula o quadro de pessoal do Parecer e compara com a sua equipe. Isso não
   muda a escala.
 
-Ao final, clique em **"Gerar escala"**. Uma barra mostra o andamento.
+Ao final, clique em **"Gerar escala"**.
 
-**Quanto tempo leva:**
-- cada quadro testado leva até 10 minutos para a escala e até 3 minutos para equilibrar a
+**O que a tela mostra durante o cálculo.** A barra diz em que fase o cálculo está e quanto
+tempo aquela fase pode levar:
+- "Conta: piso aritmético e alertas do COFEN" — contas rápidas, sem otimização;
+- "Quadro informado, 30 profissionais: etapa 1 (procurando escala legal), até 10 min";
+- "Busca do menor quadro, 29 profissionais: …" — quando a equipe informada não basta e a
+  ferramenta testa quadros maiores;
+- "Escala pronta com 30 profissionais: etapa 2 (equilibrando a carga entre colegas), até
+  3 min".
+
+Cada mensagem termina com "orçamento do clique: 20 min". **A barra não tem relógio**: ela muda
+de mensagem quando muda de fase. Não feche nem recarregue a página enquanto a barra estiver na
+tela; o cálculo se perde.
+
+**A escala aparece antes do fim.** Assim que a etapa 1 acha a escala, ela aparece numa caixa
+com o aviso "Escala pronta; equilibrando a carga entre colegas (até 3 min)". Nesse intervalo
+não há botão de planilha (um clique interromperia o cálculo). Quando o equilíbrio termina, a
+caixa some e o resultado aparece, com a linha "Escala desta tela: …" dizendo qual escala vale.
+A planilha baixada é sempre a escala da tela.
+
+*Na demonstração (notebook com Intel Core i5-10210U e 12 GB), a escala apareceu entre 10 e
+30 s depois do clique, e o resultado final entre 1,5 e 3,5 min. Noutra máquina ou noutra
+unidade, os tempos são outros; os limites acima valem sempre.*
+
+**Quanto tempo leva, no máximo:**
+- cada quadro testado: até 10 minutos para achar a escala e até 3 minutos para equilibrar a
   carga;
-- se a equipe não bastar, a ferramenta testa quadros maiores, até 12 pessoas a mais.
+- se a equipe não bastar, a ferramenta testa quadros maiores, até 12 pessoas a mais;
+- **o clique inteiro tem um limite de 20 minutos.** Esgotado, a ferramenta para e mostra só o
+  que conseguiu provar.
 
 ---
 
 ## 6. Como ler o resultado
 
-### O veredito: três desfechos
+### O veredito: os desfechos
 
 | O que aparece | O que quer dizer |
 |---|---|
 | **"O quadro informado admite escala legal. Escala gerada."** (verde) | A equipe dá conta. A escala está pronta. |
 | **"Falta 1; o menor quadro viável é 29. Escala gerada."** (amarelo) | A equipe informada não dá conta. A escala mostrada é a do menor quadro que dá. A ferramenta acrescenta as pessoas e diz quantas. |
-| **"Não foi possível gerar a escala no tempo disponível."** (vermelho) | A ferramenta não achou escala no tempo. Isso **não** prova que falta gente; pode ser só tempo. Tente de novo ou simplifique a entrada. |
+| **"Sem resposta em 10 min com 30 profissionais: o solver não achou escala nem provou que ela não existe."** (vermelho) | A ferramenta não achou escala no tempo. Isso **não** prova que falta gente; pode ser só tempo. Tente de novo ou simplifique a entrada. |
+| **"O quadro informado é insuficiente. Sem resposta em 10 min com 31 profissionais: o menor quadro viável não foi determinado."** (vermelho) | Está provado que a equipe informada não basta (a caixa do diagnóstico diz por quê), mas a ferramenta não conseguiu achar, no tempo, a escala de um quadro maior. |
+| **"O quadro informado é insuficiente; o menor quadro viável não foi determinado em 20 min."** (vermelho) | O mesmo, quando acaba o limite de 20 minutos do clique. |
+| **"Erro técnico ao resolver com 30 profissionais; detalhes no console."** (vermelho) | Uma falha do programa, não da equipe. A janela do PowerShell onde a ferramenta roda mostra o erro completo; copie esse texto se for pedir ajuda. |
 
 **"Pode haver uma melhor (gap ...)".** Às vezes aparece depois de "Escala gerada". A escala é
 legal, mas o tempo acabou antes de provar que é a melhor. O gap é a distância máxima até a
@@ -294,6 +322,11 @@ Com 18 técnicos, a caixa do diagnóstico diz:
 > 04/11 somam 28 plantões, que precisam de 28 pessoas diferentes; descontadas férias e
 > licenças, 27 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo
 > menos 1 pessoa.
+
+As planilhas baixadas são conferidas por `docs/demonstracao/conferir_planilhas.py`, que as
+compara com os dados do caso (cobertura dia a dia, descanso, teto de horas, férias). Em 08/10
+ele achou um erro do roteiro que digitava a demonstração: o feriado de 20/11 tinha entrado em
+24/11. A demonstração foi refeita em 09/10, com os mesmos resultados.
 
 As capturas da tela e as planilhas estão em `docs/demonstracao/`:
 - `rodada1_*`;

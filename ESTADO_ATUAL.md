@@ -22,6 +22,23 @@ estamos** e **o que vem depois**.
 > dos arquivos, barra normal; `DECISOES.md`, "Correção de defeito: `src/validar.py`"), com as
 > cinco conferências refeitas no avaliador oficial (56, 58, 197, 219 e 224). A suíte não foi
 > rodada de novo: nenhum teste usa o `validar.py`.
+>
+> **09/10/2026 — v1.1: VERSÃO CITÁVEL DO TCC** (tag `v1.1` no commit desta nota; substitui a
+> `v1.0.1` como versão citável). Diferenças:
+> - **P12** (`DECISOES.md`, "2026-10-08 — P12 aprovada"): a escala da etapa 1 aparece na tela
+>   enquanto a etapa 2 equilibra a carga; a barra diz a fase e o limite dela; "o solver falhou"
+>   virou "sem resposta em 10 min com N profissionais" ou "erro técnico …"; orçamento de 20 min
+>   por clique. Nenhuma regra, modelo ou número mudou (`modelo.py` e `instancia_br.py` intactos).
+> - **Suíte de 08/10**, um teste por processo: 16 de 16 OK (regressão, entradas, tela 1–9c e o
+>   teste novo 12), depois da correção de um defeito do teste 12a; P05, P08 e K1 da bateria
+>   iguais a 07/10 (`resultados/relatorio_2026-10-08b.md`).
+> - **Demonstração refeita em 09/10** com o roteiro corrigido (o feriado de 20/11 entrava em
+>   24/11 desde 05/10; `DECISOES.md`, "2026-10-08 — Demonstração: feriado de 20/11 digitado em
+>   24/11"): conferidor independente da entrada OK nas três rodadas; vereditos, cortes e todos
+>   os números da seção 9 do `NUMEROS_TCC.md` iguais (`resultados/relatorio_2026-10-09a.md`).
+> - **Bateria** (07–08/10): níveis 1 e 2 e propriedades 2 e 3 sem violação; a escala com 17
+>   do K4 existe (o solver nem sempre a acha em 600 s). Nível 3 estratificado: ver o relatório
+>   de 09/10.
 
 ---
 

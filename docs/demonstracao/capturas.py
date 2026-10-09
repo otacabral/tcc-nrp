@@ -332,7 +332,9 @@ def main() -> int:
         try:
             pg.wait_for_selector("text=Escala pronta; equilibrando", timeout=900000)
             print(f"ESCALA DA ETAPA 1 NA TELA aos {time.time() - t0:.0f} s do clique")
-            esperar(pg, 1500)
+            # sem `esperar`: ele aguarda a tela terminar de calcular, e a foto sairia ja com o
+            # resultado final (foi o que aconteceu nas capturas de 08 e 09/10)
+            pg.wait_for_timeout(1500)
             foto(pg, AQUI / f"{a.rodada}_equilibrando.png")
         except Exception as erro:  # noqa: BLE001
             print(f"escala da etapa 1 nao apareceu na tela: {type(erro).__name__}")

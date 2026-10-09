@@ -1709,6 +1709,14 @@ diferença de dias, confere que a linha é a da data antes de colar e confere os
 nela. O conferidor roda no fim de cada rodada (`rodar_rodada.sh`), e a rodada falha se ele
 falhar. Esperado registrado antes de refazer (`cortes_esperados.md`, seção de 08/10).
 
+**Refeita em 09/10 (madrugada), com o Chrome fechado:** os três feriados colados e conferidos
+nas linhas certas; conferidor OK nas três; vereditos, cortes, diagnóstico e mínimos iguais ao
+esperado (`882edf1`). Todos os números da seção 9 do `NUMEROS_TCC.md` se confirmaram iguais;
+as escalas mudaram (393 a 422 células), os agregados não — mesmas horas, e a contagem de
+enfermeiro em posto de técnico já estava no mínimo aritmético. As fotos "equilibrando" desta
+rodada saíram com o resultado final (o roteiro esperava a tela terminar antes de fotografar);
+foram apagadas e o roteiro, corrigido, sem nova rodada.
+
 ---
 
 ## 2026-10-08 — P12 aprovada: progresso na tela, escala da etapa 1 mostrada já, orçamento de 20 min por clique
