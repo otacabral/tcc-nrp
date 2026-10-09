@@ -43,3 +43,35 @@ Os casos e o que se espera estão no docstring de `src/testes_ferramenta.py` (ca
 
 **Nada muda no modelo, na escala nem nos números**: o alerta e o indicador só leem a escala
 pronta.
+
+### A3 — implementação
+
+- `docs/conferencia_descanso_escala.py`: `descanso_semanal(..., sem_bordas=False)` — com
+  `sem_bordas=True`, pula o descanso que começa no início do horizonte ou chega ao fim; a
+  semana sem descanso interno vale None. `semanal_sem_bordas(inst, escala)`: o mínimo por
+  profissional. Sem o parâmetro, a função é a de antes (a trava de 24 h não muda).
+- `src/ferramenta.py`: `SEMANAL_ALERTA_H = 35`; `alertas_descanso(inst, escala)` (o texto
+  inteiro, com o prefixo "Alerta de descanso semanal (não impede a escala)"); o resultado
+  ganha `alertas_descanso` e `conformidade["menor_semanal_interno"]`; a planilha mostra o
+  mínimo sem bordas e o alerta.
+- `src/app.py`: o alerta em amarelo (`st.warning`), depois dos alertas do COFEN; a linha do
+  descanso mostra o mínimo sem bordas.
+- `modelo.py` e `instancia_br.py`: intactos.
+
+**Testes** (um processo cada; `resultados/suite_2026-10-09/`):
+- `testes_ferramenta.py 15`: **código 0**, todos os itens ok — 15a (`medir` 31 h; sem bordas
+  32/64/None; 1 profissional, 32 h), 15b (as três rodadas: sem alerta, 36 h), 15c (caso do
+  Otávio: sem alerta, 36 h; `medir` 31 h), 15d (indicador sem bordas na tela; alerta em amarelo).
+- `testes_entrada.py`: **código 0** (a medida da trava, com bordas, inalterada).
+
+Efeito registrado: nas escalas de **8 h** o alerta tende a aparecer de verdade (no caso 5 da
+tela, mínimo sem bordas de 24 h: sair às 23h e voltar às 7h do dia seguinte ao da folga dá
+32 h). Os testes antigos leem erros e sucessos, não avisos — exceto o 8b, que é 12×36. A suíte
+completa roda na parte B.
+
+### A4 — guia
+
+`GUIA_DE_USO.md`: o alerta na lista do que a ferramenta devolve; seção nova "Trava e alerta: a
+diferença" (lei trava; norma técnica e custo alertam); seção "Alerta de descanso semanal", com
+a Súmula 110, o exemplo das 32 h no 8 h e o que não conta (as bordas); o indicador na tabela
+dos números.

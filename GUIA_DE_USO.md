@@ -14,7 +14,8 @@ devolve:
 - **a escala** de 28 dias, para baixar em planilha (.xlsx);
 - **se não dá conta**, o motivo e o **menor quadro** com que daria;
 - **alertas do COFEN** (Parecer Normativo nº 1/2024): proporção de enfermeiros e quadro de
-  pessoal. Os alertas só avisam; não impedem a escala.
+  pessoal. Os alertas só avisam; não impedem a escala;
+- **alerta de descanso semanal** abaixo de 35 h (Súmula 110 do TST). Também só avisa.
 
 Entre todas as escalas legais, ela escolhe esta, nesta ordem:
 
@@ -216,6 +217,36 @@ QP completo. Exemplo, da demonstração:
 
 A escala continua valendo. Os alertas são para a sua decisão.
 
+### Trava e alerta: a diferença
+
+A ferramenta trata as regras de dois jeitos:
+
+- **Trava (a lei):** a escala **nunca** sai sem cumprir. São as regras da CLT: 11 h entre
+  jornadas (art. 66), 36 h depois de plantão de 12 h (art. 59-A), repouso semanal de 24 h
+  (art. 67), dias seguidos e carga contratual; e as férias e licenças. Se não há escala que
+  cumpra todas, a ferramenta diz que falta gente.
+- **Alerta (norma técnica ou custo):** a escala sai, e a tela avisa. São os alertas do COFEN
+  (o Parecer é norma de dimensionamento, não regra de escala) e o alerta de descanso semanal
+  de 35 h, abaixo.
+
+### Alerta de descanso semanal (em amarelo)
+
+Aparece quando alguém tem, em alguma semana, um descanso semanal **abaixo de 35 h**. Exemplo:
+
+> Alerta de descanso semanal (não impede a escala): 1 profissional tem descanso semanal abaixo
+> de 35 h (o menor: 32 h). …
+
+**Por que 35 h.** A lei pede 24 h de repouso semanal e 11 h entre jornadas. A Súmula 110 do
+TST (e a OJ 355 da SDI-1) diz que, quando o intervalo de 11 h depois do repouso de 24 h não é
+respeitado, as horas que o invadem são pagas como **horas extras**: 24 + 11 = 35 h. A súmula
+cria um custo, não uma proibição. Por isso é alerta, e não trava: a escala continua legal, mas
+pode gerar horas extras. Nos turnos de 8 h, isso é comum (por exemplo, sair às 23h e voltar às
+7h do dia seguinte ao da folga dá 32 h).
+
+**O que não conta.** O descanso que encosta no **início** ou no **fim** do período não entra
+no alerta: o que a pessoa fez antes do primeiro dia, ou fará depois do último, a ferramenta não
+sabe. O indicador "descanso semanal" da tela segue a mesma regra.
+
 ### Por que não há escala legal (o diagnóstico)
 
 Quando falta gente, aparece uma caixa com **todos os motivos simples** que explicam a falta,
@@ -237,7 +268,7 @@ cada um com os números. Cada motivo, sozinho, já prova que não há escala:
 | Enfermeiro em posto de técnico | Quantos turnos um enfermeiro cobriu em vaga de técnico. |
 | Pedidos de folga atendidos | Quantos dos pedidos foram atendidos. Abaixo dos números, a tela diz "Todos os 6 pedidos de folga foram atendidos." ou, se algum foi negado, quantos e em quantas pessoas. |
 | Contrato cumprido (mín.–máx.) | Quanto do contrato cada pessoa cumpre: horas escaladas ÷ horas contratadas nos dias em que está disponível. |
-| Conferência de descanso | "cumpre" quer dizer que a escala foi medida no relógio e respeita os descansos da CLT. |
+| Conferência de descanso | "cumpre" quer dizer que a escala foi medida no relógio e respeita os descansos da CLT. Abaixo, a linha mostra o menor descanso entre turnos, o menor descanso semanal (sem o início e o fim do período, como o alerta de 35 h) e o máximo de dias seguidos. |
 | Diferença máxima de carga entre colegas | Por categoria. Por exemplo, "1 plantão (12 h)": entre dois colegas da mesma categoria, a diferença de carga é de no máximo um plantão, já descontadas férias e contratos diferentes. |
 | Horas de contrato não utilizadas | Por categoria: horas contratadas menos horas escaladas. |
 | Diferença entre categorias | Quanto, em média, técnicos e enfermeiros cumprem do contrato. A ferramenta não tenta igualar isso: depende de quantos postos de cada categoria a demanda pede. |

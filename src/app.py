@@ -247,6 +247,8 @@ if "resultado" in st.session_state:
             st.write(r.frase())
     for alerta in r.alertas:
         st.error(f"Alerta COFEN (não impede a escala): {alerta}")
+    for alerta in r.alertas_descanso:
+        st.warning(alerta)    # o texto vem inteiro da ferramenta (P15)
 
     if r.escala:
         ind, c = r.indicadores, r.conformidade
@@ -263,7 +265,7 @@ if "resultado" in st.session_state:
         m[4].metric("Conferência de descanso", "cumpre" if c["ok"] else "NÃO CUMPRE")
         st.caption(r.frase_vigente())
         st.caption(f"Descanso mínimo entre turnos {c['menor_geral']:.0f} h · descanso "
-                   f"semanal {fe.fmt_semanal(c['menor_semanal'])} · no máximo "
+                   f"semanal {fe.fmt_semanal(c['menor_semanal_interno'])} · no máximo "
                    f"{br.plural(c['max_consec'], 'dia seguido', 'dias seguidos')}")
         for g, cat in ind.get("categorias", {}).items():
             st.caption(f"{fe.NOME_CATEGORIA[g]}: {cat['fracao_min']:.0%}–"

@@ -92,7 +92,8 @@ def _inicio_fim(inst, dia, turno_id) -> tuple[datetime, datetime]:
     return ini, fim
 
 
-def descanso_semanal(inst, blocos: list[tuple[datetime, datetime]]) -> list[tuple[int, float]]:
+def descanso_semanal(inst, blocos: list[tuple[datetime, datetime]],
+                     sem_bordas: bool = False) -> list[tuple[int, float | None]]:
     """Maior descanso continuo de cada semana do horizonte, medido no relogio (CLT art. 67).
 
     Regra (DECISOES.md, "2026-09-29 — Ajustes da Etapa 2"): para cada semana, de segunda a
@@ -108,6 +109,11 @@ def descanso_semanal(inst, blocos: list[tuple[datetime, datetime]]) -> list[tupl
     — limitacao declarada no DECISOES.md.
 
     Devolve [(semana, horas)] para as semanas inteiras do horizonte, contadas do primeiro dia.
+
+    `sem_bordas=True` (P15, 09/10): deixa de fora o descanso que comeca no inicio do horizonte
+    e o que chega ao fim dele, porque o que vem antes e depois nao e conhecido; a semana sem
+    nenhum descanso interno que contenha dia livre vale None. E a medida do ALERTA de 35 h e
+    do indicador da tela; a trava de 24 h (`medir`, `cumpre`) continua com as bordas.
 
     HISTORICO. Ate 29/09 o descanso semanal nao era medido: a linha que deveria guarda-lo era
     `menor_semanal = min(menor_semanal, menor_semanal)`, que nao faz nada. A primeira correcao
@@ -132,14 +138,34 @@ def descanso_semanal(inst, blocos: list[tuple[datetime, datetime]]) -> list[tupl
     for semana in range(inst.n_dias // 7):
         livres = [inst.inicio + timedelta(days=7 * semana + k) for k in range(7)]
         livres = [d for d in livres if d not in com_turno]
-        maior = 0.0
+        maior = None if sem_bordas else 0.0
         for a, b in descansos:
+            if sem_bordas and (a == ini_h or b == fim_h):
+                continue
             if any(a < datetime.combine(d + timedelta(days=1), datetime.min.time())
                    and b > datetime.combine(d, datetime.min.time()) for d in livres):
                 horas = float("inf") if b == fim_h else (b - a).total_seconds() / 3600
-                maior = max(maior, horas)
+                maior = horas if maior is None else max(maior, horas)
         resultado.append((semana, maior))
     return resultado
+
+
+def semanal_sem_bordas(inst, escala) -> dict[str, float | None]:
+    """Por profissional, o menor descanso semanal SEM as bordas do horizonte (P15): o minimo,
+    entre as semanas que tem descanso interno, de `descanso_semanal(..., sem_bordas=True)`.
+    None para quem nao tem nenhum (sem turno, ou so descansos que encostam nas bordas)."""
+    por_prof: dict[str, list] = {n: [] for n in inst.profissionais}
+    for (dia, n, turno) in escala:
+        por_prof[n].append(_inicio_fim(inst, dia, turno))
+    saida = {}
+    for n, blocos in por_prof.items():
+        if not blocos:
+            saida[n] = None
+            continue
+        valores = [h for _, h in descanso_semanal(inst, sorted(blocos), sem_bordas=True)
+                   if h is not None]
+        saida[n] = min(valores) if valores else None
+    return saida
 
 
 def medir(inst, escala) -> dict:
@@ -189,8 +215,11 @@ def medir(inst, escala) -> dict:
             "max_consec": max_consec, "profissionais": len(por_prof)}
 
 
-def fmt_semanal(horas: float) -> str:
-    """`inf` e a borda aberta: o pior descanso da escala chega ao fim do horizonte."""
+def fmt_semanal(horas: float | None) -> str:
+    """`inf` e a borda aberta: o pior descanso da escala chega ao fim do horizonte. None: sem
+    descanso semanal inteiro dentro do periodo (medida sem bordas)."""
+    if horas is None:
+        return "—"
     return "borda" if horas == float("inf") else f"{horas:.0f} h"
 
 

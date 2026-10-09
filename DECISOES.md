@@ -1784,6 +1784,18 @@ trabalhos futuros (P3).
 contém um dia sem turno, medido inteiro no relógio. O menor valor de cada profissional,
 entre as semanas, é comparado com 35 h.
 
+**Sem as bordas (decisão do Otávio, 09/10, antes de implementar).** O alerta não conta o
+descanso que começa no início do horizonte nem o que chega ao fim: o que vem antes e depois não
+é conhecido. Achado que motivou: no caso de teste do Otávio, o único descanso abaixo de 35 h
+(Téc 5, 31 h) era o da borda inicial — de 00:00 do primeiro dia até o primeiro turno; no meio
+do mês, o mínimo era 36 h. **A borda é a mesma limitação da continuidade entre períodos** (P3,
+trabalhos futuros: receber os últimos dias do período anterior). A trava de 24 h (`medir`,
+`cumpre`) continua com as bordas, como antes. O **indicador** "descanso semanal mínimo" da tela
+e da planilha passou a seguir a regra do alerta (sem as bordas): nenhum teste nem número
+registrado lê esse valor, e na demonstração ele não muda (36 h). Implementação:
+`conferencia_descanso_escala.descanso_semanal(..., sem_bordas=True)` e `semanal_sem_bordas`;
+`ferramenta.alertas_descanso`; teste 15 (`src/testes_ferramenta.py`).
+
 ---
 
 ## Modelo de entrada

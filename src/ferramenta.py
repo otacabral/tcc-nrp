@@ -47,7 +47,8 @@ sys.path.insert(0, str(RAIZ / "docs"))
 import experimento_a as ea  # noqa: E402
 import instancia_br as br  # noqa: E402
 import modelo  # noqa: E402
-from conferencia_descanso_escala import cumpre, fmt_semanal, medir  # noqa: E402
+from conferencia_descanso_escala import (cumpre, fmt_semanal, medir,  # noqa: E402
+                                         semanal_sem_bordas)
 
 MARGEM = 12          # quantos quadros acima do informado tentar antes de desistir
 TEMPO = 600          # limite da etapa 1, em segundos (decidido em 05/10)
@@ -60,6 +61,9 @@ TEMPO_ETAPA2 = 180
 # aprovada"): cada resolucao recebe o menor entre o seu limite e o que resta dele; acabado, a
 # busca para e a tela mostra so o que foi provado. Lido na chamada: os testes o encurtam.
 ORCAMENTO = 20 * 60
+# P15 (DECISOES.md, "2026-10-09 — P15"): ALERTA, nao trava, quando o descanso semanal medido
+# sem as bordas do horizonte fica abaixo disto. Sumula 110 do TST: 24 h + 11 h.
+SEMANAL_ALERTA_H = 35
 
 ADMITE, FALTAM, NAO_DECIDIDO, SEM_VIAVEL = "admite", "faltam", "nao_decidido", "sem_viavel"
 
@@ -126,6 +130,7 @@ class Resultado:
     # motivo em ea.INDETERMINADO, ea.ERRO ou ORCAMENTO_ESGOTADO
     parada: tuple | None = None
     orcamento: float | None = None
+    alertas_descanso: list[str] = field(default_factory=list)   # P15: nao impedem a escala
 
     @property
     def faltam(self) -> int | None:
@@ -747,7 +752,10 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
             r.veredito = ADMITE if acrescimo == 0 else FALTAM
             r.menor_viavel, r.inst, r.escala = quadro, inst, escala
             m = medir(inst, escala)
-            r.conformidade = {"ok": cumpre(inst, m), **m}
+            internos = [h for h in semanal_sem_bordas(inst, escala).values() if h is not None]
+            r.conformidade = {"ok": cumpre(inst, m), **m,
+                              "menor_semanal_interno": min(internos) if internos else None}
+            r.alertas_descanso = alertas_descanso(inst, escala)
             r.indicadores = {**indicadores(inst, escala), **info}
             break
         if veredito != ea.INVIAVEL:
@@ -759,6 +767,23 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
         r.veredito = SEM_VIAVEL  # toda a faixa foi provada inviavel
     progresso(1.0, "concluido")
     return r
+
+
+def alertas_descanso(inst, escala) -> list[str]:
+    """P15: descanso semanal abaixo de 35 h, medido sem as bordas do horizonte. Alerta, nao
+    trava: a Sumula 110 do TST atribui custo (horas extras), nao proibe."""
+    abaixo = {n: h for n, h in semanal_sem_bordas(inst, escala).items()
+              if h is not None and h < SEMANAL_ALERTA_H}
+    if not abaixo:
+        return []
+    k = len(abaixo)
+    return [f"Alerta de descanso semanal (não impede a escala): "
+            f"{br.plural(k, 'profissional tem', 'profissionais têm')} descanso semanal abaixo "
+            f"de {SEMANAL_ALERTA_H} h (o menor: {min(abaixo.values()):.0f} h). A Súmula 110 do "
+            f"TST (e a OJ 355 da SDI-1) manda pagar como extras as horas que invadem o intervalo "
+            f"de 11 h depois do repouso semanal de 24 h: 24 + 11 = 35 h. Não conta o descanso "
+            f"que encosta no início ou no fim do período, porque o que vem antes e depois não é "
+            f"conhecido."]
 
 
 def _n_enf(inst) -> int:
@@ -841,7 +866,8 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
                        "não otimizada)", f"{ind['diferenca_categorias'] * 100:+.0f} pp"))
     linhas += [
         ("Descanso mínimo entre turnos (medido)", f"{c.get('menor_geral', 0):.0f} h"),
-        ("Descanso semanal mínimo (medido)", fmt_semanal(c.get("menor_semanal", 0))),
+        ("Descanso semanal mínimo (medido, sem o início e o fim do período)",
+         fmt_semanal(c.get("menor_semanal_interno"))),
         ("Maior sequência de dias trabalhados", c.get("max_consec")),
         ("Conferência de descanso", "cumpre" if c.get("ok") else "NÃO CUMPRE"),
     ]
@@ -850,6 +876,7 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
                    ("QP núcleo assistencial (sem IST)", round(r.qp[0], 2)),
                    ("QP completo (com IST de 15%)", round(r.qp[1], 2))]
     linhas += [("Alerta COFEN (não impede a escala)", a) for a in r.alertas]
+    linhas += [("Alerta de descanso semanal", a) for a in r.alertas_descanso]
     resumo = pd.DataFrame(linhas, columns=["Item", "Valor"])
     legenda = pd.DataFrame(
         [(rotulo[s], f"{t.inicio:%H:%M}", f"{t.fim:%H:%M}",
