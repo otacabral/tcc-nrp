@@ -199,3 +199,16 @@ restantes — todos da família de fronteira do 6 h + noturno de 12 h (K3 a K6 e
 **Afirmação fraca:** depende da máquina (i5-10210U), do solver (HiGHS 1.15.1 via `appsi_highs`,
 parâmetros padrão) e das instâncias da bateria (até 20 pessoas, 28 dias). Vai ao texto como
 justificativa operacional do limite, não como resultado.
+
+## Parte D — registros
+
+- **D1.** `DECISOES.md`, "2026-10-09 — Encerramento da validação; próxima frente, o texto"; nota
+  no `ESTADO_ATUAL.md`. A tag `v1.2` **ainda não foi criada**: depende de a suíte da parte B
+  fechar (ver B4).
+- **D2.** P3 (trabalhos futuros): "Mostrar a melhor escala encontrada durante a busca da etapa
+  1, antes do fim do tempo-limite" — exige o solver em paralelo, como o relógio ao vivo.
+- **D3.** P16 (`PROPOSTAS.md`): a lista de melhorias de tela para 26 a 29/10 — "sem pedidos de
+  folga" no lugar de "0 de 0"; gap em unidades do problema; separar "o seu quadro" da "escala
+  sugerida".
+- **Novo, da parte B:** P17 (`PROPOSTAS.md`), warm start da etapa 2 com a escala da etapa 1 —
+  candidata, não implementada.

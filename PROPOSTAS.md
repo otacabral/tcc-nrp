@@ -251,6 +251,9 @@ A P1 está desbloqueada: objetivo decidido.
 - **Descanso semanal de 35 h como regra rígida** (acrescentado em 09/10, da P15): hoje é alerta
   (Súmula 110 do TST atribui custo, não proíbe). Endurecer exigiria uma restrição nova no
   modelo — o descanso semanal hoje só é medido na escala pronta, não é restrição.
+- **Mostrar a melhor escala encontrada durante a busca da etapa 1**, antes do fim do tempo-limite
+  (acrescentado em 09/10, decisão do Otávio): exige rodar o solver em paralelo à tela, como o
+  relógio ao vivo da P12.
 
 ---
 
@@ -517,4 +520,37 @@ registrada aqui ao ser decidida.*
 **A questão.** Quando a etapa 1 termina com escala mas sem prova de ótimo, a etapa 2 não rodava,
 e a escala saía sem equilíbrio de carga entre colegas. Proposta: rodar a etapa 2 com a restrição
 de não piorar o valor da etapa 1, em vez de exigir o ótimo provado.
+
+---
+
+## 2026-10-09 — P16: melhorias de tela para a janela de 26 a 29/10
+
+**Status: lista aprovada pelo Otávio em 09/10, para a janela de 26 a 29/10** (melhoria de tela
+e textos de ajuda, sem mudar comportamento nem número; `DECISOES.md`, "2026-10-06 —
+Cronograma", E2). Nada implementado.
+
+- "Pedidos de folga atendidos: 0 de 0" → "sem pedidos de folga".
+- Mostrar o gap em unidades do problema, não em %. Exemplo: "esta escala usa 57 turnos de
+  enfermeiro em vaga de técnico; o melhor possível está entre 47 e 57".
+- Separar visualmente "o seu quadro" da "escala sugerida" na tela de quadro insuficiente.
+
+---
+
+## 2026-10-09 — P17: warm start da etapa 2 com a escala da etapa 1
+
+**Status: candidata — NÃO implementar** (achado da P14, 09/10). Fica para decisão do Otávio;
+pelo congelamento, só entraria como correção de defeito com esperado registrado antes.
+
+**O achado.** Com a P14, a etapa 2 roda também quando a etapa 1 não prova o ótimo, com a
+restrição de não piorar o valor dela. Em 4 resoluções sem prova (caso do Otávio de 09/10, K5,
+K6, teste 8b), só o K5 entregou escala no tempo; nas outras 3 ficou a escala da etapa 1
+(`resultados/relatorio_2026-10-09b.md`, parte B). Causa provável: a etapa 2 não parte da escala
+da etapa 1 (o código não usa warm start); com "penalidade ≤ valor da etapa 1", achar a primeira
+escala é tão difícil quanto chegar àquele valor (no caso do Otávio, 600 s).
+
+**Proposta.** Passar a escala da etapa 1 ao HiGHS como solução inicial da etapa 2. É warm start
+"só como partida", admitido pelo `CLAUDE.md` (25/09): não substitui prova nenhuma — a etapa 2
+não prova nada no caminho sem prova. Garante que a etapa 2 sempre tenha escala e dispensa a
+salvaguarda. Exige conferir se o `appsi_highs` aceita solução inicial e se a demonstração sai
+idêntica (no caminho provado, a etapa 2 também ganharia a partida).
 

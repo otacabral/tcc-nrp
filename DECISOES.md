@@ -1823,6 +1823,22 @@ salvaguarda, para não mudar a demonstração.
 
 ---
 
+## 2026-10-09 — Encerramento da validação; próxima frente, o texto
+
+**Status: vigente.** Decidido pelo Otávio em 09/10.
+
+- **A semana de testes termina em 09/10.** Depois das partes A (P15) e B (P14) desta data, a
+  versão citável do TCC passa a ser a **`v1.2`** (tag ao fim, com `git push --tags`). *Registro
+  de 09/10, tarde: a tag ainda não foi criada — a suíte da parte B foi interrompida por falta de
+  memória antes de terminar; ver `resultados/relatorio_2026-10-09b.md`.*
+- **Até 16/10** (congelamento dos números, mantido), só entra correção de defeito, com esperado
+  registrado antes.
+- **Próxima frente: o texto do TCC.**
+- Melhorias de tela para a janela de 26 a 29/10 (sem mudar comportamento nem número): lista na
+  P16 (`PROPOSTAS.md`).
+
+---
+
 ## Modelo de entrada
 
 ```

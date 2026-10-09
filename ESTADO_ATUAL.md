@@ -39,6 +39,14 @@ estamos** e **o que vem depois**.
 > - **Bateria** (07–08/10): níveis 1 e 2 e propriedades 2 e 3 sem violação; a escala com 17
 >   do K4 existe (o solver nem sempre a acha em 600 s). Nível 3 estratificado: ver o relatório
 >   de 09/10.
+>
+> **09/10/2026 (tarde) — VALIDAÇÃO ENCERRADA; próxima frente, o texto** (`DECISOES.md`,
+> "2026-10-09 — Encerramento da validação"). Entraram a **P15** (alerta de descanso semanal
+> abaixo de 35 h, sem as bordas do horizonte) e a **P14** (etapa 2 também sem prova, sem piorar o
+> valor da etapa 1). A versão citável passa a ser a **`v1.2`** quando a suíte da parte B fechar:
+> em 09/10 ela foi interrompida por falta de memória (ver `resultados/relatorio_2026-10-09b.md`).
+> Até 16/10, só correção de defeito, com esperado registrado antes. Melhorias de tela para 26 a
+> 29/10: P16. Candidata em aberto: P17 (warm start da etapa 2).
 
 ---
 
