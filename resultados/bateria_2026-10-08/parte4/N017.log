@@ -1,0 +1,18 @@
+N017: 8h, 3+4; conta: INVIAVEL pela conta {'horas': -1957.7142857142858, 'horas_enf': -408.0, 'ocupados_dia': -8, 'ocupados_dia_enf': -2}
+N017 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N017 [    0.0 s] Quadro informado, 7 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 8 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 9 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 10 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 11 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 12 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 13 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 14 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 15 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 16 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 17 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 18 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N017 [    0.0 s] Busca do menor quadro, 19 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N017 [    4.0 s] Escala pronta com 19 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N017 [    4.0 s] concluido
+N017: faltam menor 19 | 4 s

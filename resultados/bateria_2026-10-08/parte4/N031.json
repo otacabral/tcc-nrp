@@ -1,0 +1,35 @@
+{
+ "caso": "N031",
+ "modelo": "8h",
+ "equipe": "8+7",
+ "estrato": "folga_clara",
+ "esperado": "GERA ESCALA (esperado)",
+ "folgas": {
+  "horas": 29.71428571428578,
+  "horas_enf": 213.1428571428571,
+  "ocupados_dia": 3,
+  "ocupados_dia_enf": 2
+ },
+ "veredito": "admite",
+ "frase": "O quadro informado admite escala legal. Escala gerada.",
+ "menor_viavel": 15,
+ "tentativas": [
+  [
+   15,
+   "viavel",
+   8,
+   7
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 1.652491569519043,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 5.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

@@ -1,0 +1,6 @@
+N064: 6+12, 8+12; conta: FRONTEIRA {'horas': 998.8571428571431, 'horas_enf': 131.42857142857156, 'ocupados_dia': 5, 'ocupados_dia_enf': 0}
+N064 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N064 [    0.0 s] Quadro informado, 20 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N064 [   29.2 s] Escala pronta com 20 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N064 [   29.2 s] concluido
+N064: admite menor 20 | 29 s

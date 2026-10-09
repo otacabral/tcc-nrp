@@ -1,0 +1,6 @@
+N062: 12x36, 7+12; conta: GERA ESCALA (esperado) {'horas': 1480.0, 'horas_enf': 264.0, 'ocupados_dia': 7, 'ocupados_dia_enf': 1}
+N062 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N062 [    0.0 s] Quadro informado, 19 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N062 [    0.8 s] Escala pronta com 19 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N062 [    0.8 s] concluido
+N062: admite menor 19 | 1 s

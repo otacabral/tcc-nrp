@@ -1,0 +1,10 @@
+N003: 12x36, 4+12; conta: INVIAVEL pela conta {'horas': 612.0, 'horas_enf': -588.0, 'ocupados_dia': 2, 'ocupados_dia_enf': -4}
+N003 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N003 [    0.0 s] Quadro informado, 16 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N003 [    0.6 s] Busca do menor quadro, 17 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N003 [    1.2 s] Busca do menor quadro, 18 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N003 [    1.8 s] Busca do menor quadro, 19 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N003 [    2.5 s] Busca do menor quadro, 20 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N003 [    4.3 s] Escala pronta com 20 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N003 [    4.3 s] concluido
+N003: faltam menor 20 | 4 s

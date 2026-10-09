@@ -1,0 +1,87 @@
+{
+ "caso": "N013",
+ "modelo": "6+12",
+ "equipe": "7+3",
+ "estrato": "inviavel",
+ "esperado": "INVIAVEL pela conta",
+ "folgas": {
+  "horas": -956.5714285714284,
+  "horas_enf": 269.7142857142858,
+  "ocupados_dia": -8,
+  "ocupados_dia_enf": 1
+ },
+ "veredito": "nao_decidido",
+ "frase": "O quadro informado é insuficiente. Sem resposta em 10 min com 18 profissionais: o menor quadro viável não foi determinado.",
+ "menor_viavel": null,
+ "tentativas": [
+  [
+   10,
+   "piso",
+   null,
+   null
+  ],
+  [
+   11,
+   "piso",
+   null,
+   null
+  ],
+  [
+   12,
+   "piso",
+   null,
+   null
+  ],
+  [
+   13,
+   "piso",
+   null,
+   null
+  ],
+  [
+   14,
+   "piso",
+   null,
+   null
+  ],
+  [
+   15,
+   "piso",
+   null,
+   null
+  ],
+  [
+   16,
+   "inviavel",
+   7,
+   9
+  ],
+  [
+   16,
+   "inviavel",
+   13,
+   3
+  ],
+  [
+   17,
+   "inviavel",
+   8,
+   9
+  ],
+  [
+   17,
+   "inviavel",
+   14,
+   3
+  ],
+  [
+   18,
+   "indeterminado",
+   8,
+   10
+  ]
+ ],
+ "provado": null,
+ "gap": null,
+ "tempo_total": 604.6446869373322
+}

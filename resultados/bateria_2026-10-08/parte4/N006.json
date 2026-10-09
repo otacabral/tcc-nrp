@@ -1,0 +1,20 @@
+{
+ "caso": "N006",
+ "modelo": "6+12",
+ "equipe": "5+3",
+ "estrato": "inviavel",
+ "esperado": "INVIAVEL pela conta",
+ "folgas": {
+  "horas": -1847.142857142857,
+  "horas_enf": -442.2857142857142,
+  "ocupados_dia": -12,
+  "ocupados_dia_enf": -3
+ },
+ "veredito": "nao_determinado_15min",
+ "frase": "",
+ "menor_viavel": null,
+ "tentativas": [],
+ "provado": null,
+ "gap": null,
+ "tempo_total": 900.0273180007935
+}

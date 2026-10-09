@@ -1,0 +1,6 @@
+N043: 6+12, 6+12; conta: FRONTEIRA {'horas': 676.0, 'horas_enf': 194.0, 'ocupados_dia': 3, 'ocupados_dia_enf': 0}
+N043 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N043 [    0.0 s] Quadro informado, 18 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N043 [    8.4 s] Escala pronta com 18 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N043 [    8.4 s] concluido
+N043: admite menor 18 | 8 s

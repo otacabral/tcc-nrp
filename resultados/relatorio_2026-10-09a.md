@@ -3,7 +3,18 @@
 Máquina: Intel Core i5-10210U, 12 GB, Windows 11, `appsi_highs` (HiGHS 1.15.1). Tempos são
 limite operacional, não resultado.
 
-<!-- PARA_O_OTAVIO -->
+## Para o Otávio
+
+- **Demonstração refeita e conferida.** Os três feriados entraram nas datas certas; o
+  conferidor passou nas três rodadas; vereditos, cortes, diagnóstico e todos os números saíram
+  **iguais** aos de antes (as escalas mudaram, os totais não — explicado abaixo).
+- **Tag `v1.1` criada e enviada** (commit `d397c40`).
+- **Nível 3: 100 de 100 casos rodaram, 0 falhas** nas propriedades 1, 4, 5 e 6. 40 de 40 casos
+  de folga clara geraram escala; nenhum caso inviável pela conta foi admitido.
+- **7 casos não decididos, todos no modelo 6 h + noturno de 12 h** — a mesma família do K3/K4.
+  Vai para as limitações; nada a corrigir.
+- Nada para você executar. Nenhuma decisão pendente desta sessão.
+
 
 ## 1. Demonstração refeita com o roteiro corrigido
 
@@ -74,8 +85,68 @@ apagadas, o roteiro corrigido (sem nova rodada), e o guia não cita a imagem.
 
 ## 3. Tag v1.1
 
-<!-- TAG -->
+Tag anotada `v1.1` no commit `d397c40` ("v1.1: demonstracao refeita com o roteiro corrigido…"), enviada
+com `git push origin main --tags`. Criada **depois** de a demonstração bater inteira com o
+esperado de `882edf1`. O `ESTADO_ATUAL.md` registra a `v1.1` como a versão citável do TCC.
 
 ## 4. Nível 3 estratificado
 
-<!-- NIVEL3 -->
+`python docs\diagnostico\bateria_nivel3.py --lote`, sem supervisão, de 02:40 até ~04:30 de
+09/10. Semente 20261008; casos e esperados commitados antes (`b8ce2ae`). Só a etapa 1, 600 s por
+resolução, no máximo 15 min por caso, um processo por caso. Memória livre ao começar: 3,33 GB
+(o mínimo combinado era 3 GB). O primeiro caso (N001) rodou sozinho até o fim antes do lote.
+**Não caiu por memória; os 100 casos rodaram.** Soma dos tempos: 1,7 h (limite operacional).
+
+**Propriedades (C3 do desenho):** **0 falhas em 100 casos.**
+
+| Propriedade | Onde vale | Resultado |
+|---|---|---|
+| 1. Toda escala passa nas conferências por fora do modelo (cobertura e um turno por dia, descanso no relógio, teto de horas, férias) | 93 casos com escala | 93 de 93 |
+| 4. Honestidade: "faltam N" só com o quadro informado provado inviável; "provado" só com gap ≤ 0,01%; escala sem prova com o aviso "pode haver uma melhor" | 30 "faltam" (20 provados pelo piso, 10 pelo solver); 92 escalas provadas; 1 sem prova (N026, gap 36,2%, com o aviso) | sem violação |
+| 5. Folga clara (menor folga da conta ≥ 2) não termina sem escala | 40 casos | 40 de 40 admitem |
+| 6. Conta inviável → a ferramenta não admite o quadro informado | 30 casos | nenhum admitido |
+
+**Veredito por estrato:**
+
+| Estrato | Casos | Admite | Faltam N | Não decidido (600 s) | Não determinado (15 min) |
+|---|---|---|---|---|---|
+| Folga clara | 40 | 40 | 0 | 0 | 0 |
+| Fronteira (folga 0 ou 1) | 30 | 23 | 5 | 2 | 0 |
+| Inviável pela conta | 30 | 0 | 25 | 4 | 1 |
+| **Total** | **100** | **63** | **30** | **6** | **1** |
+
+Na fronteira, a conta é só condição necessária: 23 admitiram, e 5 a ferramenta provou
+insuficientes. Isso não contradiz nada: folga 0 ou 1 pela conta não garante escala.
+
+**Casos não decididos, à parte — todos no modelo 6 h + noturno de 12 h:**
+
+| Caso | Estrato | Equipe | Menor folga da conta | O que aconteceu |
+|---|---|---|---|---|
+| N005 | fronteira | 8 + 9 | 0 (ocupados por dia) | 17 provado inviável pelo solver; 18 sem resposta em 600 s |
+| N072 | fronteira | 8 + 11 | 0 (ocupados por dia e por dia de enf.) | 19 (o informado) sem resposta em 600 s |
+| N004 | inviável | 8 + 4 | −1.011 h; ocupados por dia −7 | 12 a 17 pelo piso; 18 provado inviável pelo solver (as duas composições); 19 sem resposta em 600 s |
+| N013 | inviável | 7 + 3 | −957 h; ocupados por dia −8 | 10 a 15 pelo piso; 16 e 17 provados inviáveis pelo solver; 18 sem resposta |
+| N030 | inviável | 3 + 6 | −1.223 h; ocupados por dia −8 | 9 a 15 pelo piso; 16 provado inviável pelo solver; 17 sem resposta |
+| N035 | inviável | 7 + 9 | −282 h; ocupados por dia −2 | 16 e 17 pelo piso; 18 provado inviável pelo solver; 19 sem resposta |
+| N006 | inviável | 5 + 3 | −1.847 h; ocupados por dia −12 | 15 min sem terminar (processo encerrado pelo lote) |
+
+**Por modelo e estrato:**
+
+| Modelo | Folga clara | Fronteira | Inviável | Não decididos |
+|---|---|---|---|---|
+| 12×36 | 9 | 14 | 7 | 0 |
+| 8 h | 26 | 2 | 9 | 0 |
+| 6 h + 12 h | 5 | 14 | 14 | **7** (2 da fronteira, 5 dos inviáveis) |
+
+Leitura: os 7 não decididos estão todos no 6 h + noturno de 12 h, o mesmo modelo da família
+K3/K4 da parte A, cuja escala com 17 existe mas o solver nem sempre acha em 600 s. Nos
+inviáveis, a ferramenta já disse que o quadro informado é insuficiente quando a conta provou
+(o piso), e parou sem afirmar o menor quadro viável — o comportamento honesto. É a mesma
+limitação registrada em 08/10 (`DECISOES.md`, "Bateria: K3/K4 longos não rodam de novo"):
+casos de fronteira e desta família podem não ser decididos no tempo e na memória disponíveis.
+O piso da ferramenta não enxerga a conta de "ocupados por dia" para turnos de 12 h misturados a
+turnos curtos (P13, candidata a melhoria, não implementada): por isso, nos inviáveis do 6 h +
+12 h, a busca chega ao solver em tamanhos que a conta da bateria já prova insuficientes.
+
+Arquivos: `resultados/bateria_2026-10-08/parte4/` (um `.json` e um `.log` por caso),
+`nivel3_lote.log`, `nivel3_resumo.md` (a tabela de todos os 100).

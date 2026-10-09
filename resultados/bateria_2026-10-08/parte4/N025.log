@@ -1,0 +1,21 @@
+N025: 6+12, 3+3; conta: INVIAVEL pela conta {'horas': -852.0, 'horas_enf': -294.0, 'ocupados_dia': -10, 'ocupados_dia_enf': -3}
+N025 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N025 [    0.0 s] Quadro informado, 6 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N025 [    0.0 s] Busca do menor quadro, 7 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N025 [    0.0 s] Busca do menor quadro, 8 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N025 [    0.0 s] Busca do menor quadro, 9 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N025 [    0.0 s] Busca do menor quadro, 10 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N025 [    0.0 s] Busca do menor quadro, 11 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N025 [    0.7 s] Busca do menor quadro, 11 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N025 [    1.2 s] Busca do menor quadro, 12 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N025 [    1.9 s] Busca do menor quadro, 12 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N025 [    2.5 s] Busca do menor quadro, 13 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N025 [    3.1 s] Busca do menor quadro, 13 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N025 [    3.8 s] Busca do menor quadro, 14 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N025 [    4.5 s] Busca do menor quadro, 14 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N025 [    5.3 s] Busca do menor quadro, 15 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N025 [    6.0 s] Busca do menor quadro, 15 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N025 [    6.9 s] Busca do menor quadro, 16 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N025 [   11.6 s] Escala pronta com 16 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N025 [   11.6 s] concluido
+N025: faltam menor 16 | 12 s

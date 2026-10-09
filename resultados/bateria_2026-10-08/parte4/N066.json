@@ -1,0 +1,41 @@
+{
+ "caso": "N066",
+ "modelo": "12x36",
+ "equipe": "7+10",
+ "estrato": "fronteira",
+ "esperado": "FRONTEIRA",
+ "folgas": {
+  "horas": 1090.2857142857142,
+  "horas_enf": 432.0,
+  "ocupados_dia": 0,
+  "ocupados_dia_enf": 1
+ },
+ "veredito": "faltam",
+ "frase": "Falta 1; o menor quadro viável é 18. Escala gerada.",
+ "menor_viavel": 18,
+ "tentativas": [
+  [
+   17,
+   "inviavel",
+   7,
+   10
+  ],
+  [
+   18,
+   "viavel",
+   8,
+   10
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 1.5955915451049805,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 1,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

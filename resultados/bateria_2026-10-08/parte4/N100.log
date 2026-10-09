@@ -1,0 +1,6 @@
+N100: 8h, 7+4; conta: GERA ESCALA (esperado) {'horas': 64.57142857142844, 'horas_enf': 280.57142857142844, 'ocupados_dia': 2, 'ocupados_dia_enf': 2}
+N100 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N100 [    0.0 s] Quadro informado, 11 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N100 [    3.9 s] Escala pronta com 11 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N100 [    3.9 s] concluido
+N100: admite menor 11 | 4 s

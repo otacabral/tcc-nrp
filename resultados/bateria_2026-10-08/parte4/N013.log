@@ -1,0 +1,15 @@
+N013: 6+12, 7+3; conta: INVIAVEL pela conta {'horas': -956.5714285714284, 'horas_enf': 269.7142857142858, 'ocupados_dia': -8, 'ocupados_dia_enf': 1}
+N013 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N013 [    0.0 s] Quadro informado, 10 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N013 [    0.0 s] Busca do menor quadro, 11 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N013 [    0.0 s] Busca do menor quadro, 12 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N013 [    0.0 s] Busca do menor quadro, 13 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N013 [    0.0 s] Busca do menor quadro, 14 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N013 [    0.0 s] Busca do menor quadro, 15 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N013 [    0.0 s] Busca do menor quadro, 16 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N013 [    1.1 s] Busca do menor quadro, 16 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N013 [    2.1 s] Busca do menor quadro, 17 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N013 [    3.0 s] Busca do menor quadro, 17 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N013 [    4.2 s] Busca do menor quadro, 18 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N013 [  604.6 s] concluido
+N013: nao_decidido menor None | 605 s

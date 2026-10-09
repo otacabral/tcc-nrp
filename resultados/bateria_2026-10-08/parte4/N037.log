@@ -1,0 +1,6 @@
+N037: 6+12, 5+10; conta: FRONTEIRA {'horas': 692.5714285714284, 'horas_enf': 124.0, 'ocupados_dia': 2, 'ocupados_dia_enf': 0}
+N037 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N037 [    0.0 s] Quadro informado, 15 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N037 [    2.1 s] Escala pronta com 15 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N037 [    2.1 s] concluido
+N037: admite menor 15 | 2 s

@@ -1,0 +1,6 @@
+N056: 12x36, 5+11; conta: GERA ESCALA (esperado) {'horas': 353.7142857142858, 'horas_enf': 208.0, 'ocupados_dia': 2, 'ocupados_dia_enf': 1}
+N056 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N056 [    0.0 s] Quadro informado, 16 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N056 [    2.2 s] Escala pronta com 16 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N056 [    2.2 s] concluido
+N056: admite menor 16 | 2 s

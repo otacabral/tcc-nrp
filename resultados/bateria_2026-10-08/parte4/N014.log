@@ -1,0 +1,19 @@
+N014: 6+12, 5+6; conta: INVIAVEL pela conta {'horas': -1507.4285714285716, 'horas_enf': -280.0, 'ocupados_dia': -11, 'ocupados_dia_enf': -2}
+N014 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N014 [    0.0 s] Quadro informado, 11 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 12 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 13 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 14 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 15 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 16 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 17 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 18 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 19 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N014 [    0.0 s] Busca do menor quadro, 20 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N014 [    1.4 s] Busca do menor quadro, 20 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N014 [    2.6 s] Busca do menor quadro, 21 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N014 [    3.8 s] Busca do menor quadro, 21 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N014 [    5.3 s] Busca do menor quadro, 22 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N014 [  239.3 s] Escala pronta com 22 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N014 [  239.3 s] concluido
+N014: faltam menor 22 | 239 s

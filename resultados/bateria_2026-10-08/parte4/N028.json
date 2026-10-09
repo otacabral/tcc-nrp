@@ -1,0 +1,35 @@
+{
+ "caso": "N028",
+ "modelo": "12x36",
+ "equipe": "7+10",
+ "estrato": "fronteira",
+ "esperado": "FRONTEIRA",
+ "folgas": {
+  "horas": 477.1428571428569,
+  "horas_enf": 376.0,
+  "ocupados_dia": 0,
+  "ocupados_dia_enf": 1
+ },
+ "veredito": "admite",
+ "frase": "O quadro informado admite escala legal. Escala gerada.",
+ "menor_viavel": 17,
+ "tentativas": [
+  [
+   17,
+   "viavel",
+   7,
+   10
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 3.636774778366089,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 1,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

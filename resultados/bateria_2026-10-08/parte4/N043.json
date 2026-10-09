@@ -1,0 +1,35 @@
+{
+ "caso": "N043",
+ "modelo": "6+12",
+ "equipe": "6+12",
+ "estrato": "fronteira",
+ "esperado": "FRONTEIRA",
+ "folgas": {
+  "horas": 676.0,
+  "horas_enf": 194.0,
+  "ocupados_dia": 3,
+  "ocupados_dia_enf": 0
+ },
+ "veredito": "admite",
+ "frase": "O quadro informado admite escala legal. Escala gerada.",
+ "menor_viavel": 18,
+ "tentativas": [
+  [
+   18,
+   "viavel",
+   6,
+   12
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 8.431530952453613,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

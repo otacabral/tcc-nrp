@@ -1,0 +1,6 @@
+N018: 8h, 8+6; conta: GERA ESCALA (esperado) {'horas': 210.57142857142844, 'horas_enf': 370.57142857142867, 'ocupados_dia': 3, 'ocupados_dia_enf': 3}
+N018 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N018 [    0.0 s] Quadro informado, 14 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N018 [    1.1 s] Escala pronta com 14 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N018 [    1.1 s] concluido
+N018: admite menor 14 | 1 s

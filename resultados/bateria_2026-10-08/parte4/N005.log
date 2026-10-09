@@ -1,0 +1,6 @@
+N005: 6+12, 8+9; conta: FRONTEIRA {'horas': 54.85714285714266, 'horas_enf': 440.0, 'ocupados_dia': 0, 'ocupados_dia_enf': 3}
+N005 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N005 [    0.0 s] Quadro informado, 17 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N005 [    1.3 s] Busca do menor quadro, 18 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N005 [  601.8 s] concluido
+N005: nao_decidido menor None | 602 s

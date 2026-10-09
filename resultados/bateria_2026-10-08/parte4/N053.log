@@ -1,0 +1,6 @@
+N053: 6+12, 5+7; conta: GERA ESCALA (esperado) {'horas': 653.7142857142858, 'horas_enf': 48.0, 'ocupados_dia': 4, 'ocupados_dia_enf': 1}
+N053 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N053 [    0.0 s] Quadro informado, 12 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N053 [    2.3 s] Escala pronta com 12 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N053 [    2.3 s] concluido
+N053: admite menor 12 | 2 s

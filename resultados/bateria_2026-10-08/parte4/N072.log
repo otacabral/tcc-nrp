@@ -1,0 +1,5 @@
+N072: 6+12, 8+11; conta: FRONTEIRA {'horas': 99.42857142857156, 'horas_enf': 219.42857142857133, 'ocupados_dia': 0, 'ocupados_dia_enf': 0}
+N072 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N072 [    0.0 s] Quadro informado, 19 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N072 [  600.6 s] concluido
+N072: nao_decidido menor None | 601 s

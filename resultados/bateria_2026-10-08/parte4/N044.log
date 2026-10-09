@@ -1,0 +1,6 @@
+N044: 12x36, 7+4; conta: GERA ESCALA (esperado) {'horas': 447.42857142857156, 'horas_enf': 503.42857142857156, 'ocupados_dia': 2, 'ocupados_dia_enf': 2}
+N044 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N044 [    0.0 s] Quadro informado, 11 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N044 [    0.7 s] Escala pronta com 11 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N044 [    0.7 s] concluido
+N044: admite menor 11 | 1 s

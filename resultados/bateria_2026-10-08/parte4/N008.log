@@ -1,0 +1,9 @@
+N008: 8h, 7+12; conta: INVIAVEL pela conta {'horas': -509.7142857142858, 'horas_enf': 249.1428571428571, 'ocupados_dia': 2, 'ocupados_dia_enf': 2}
+N008 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N008 [    0.0 s] Quadro informado, 19 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N008 [    0.0 s] Busca do menor quadro, 20 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N008 [    0.0 s] Busca do menor quadro, 21 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N008 [    0.0 s] Busca do menor quadro, 22 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N008 [    4.4 s] Escala pronta com 22 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N008 [    4.4 s] concluido
+N008: faltam menor 22 | 4 s

@@ -1,0 +1,59 @@
+{
+ "caso": "N002",
+ "modelo": "12x36",
+ "equipe": "8+3",
+ "estrato": "inviavel",
+ "esperado": "INVIAVEL pela conta",
+ "folgas": {
+  "horas": -600.5714285714284,
+  "horas_enf": 215.42857142857156,
+  "ocupados_dia": -4,
+  "ocupados_dia_enf": 1
+ },
+ "veredito": "faltam",
+ "frase": "Faltam 4; o menor quadro viável é 15. Escala gerada.",
+ "menor_viavel": 15,
+ "tentativas": [
+  [
+   11,
+   "piso",
+   null,
+   null
+  ],
+  [
+   12,
+   "piso",
+   null,
+   null
+  ],
+  [
+   13,
+   "piso",
+   null,
+   null
+  ],
+  [
+   14,
+   "piso",
+   null,
+   null
+  ],
+  [
+   15,
+   "viavel",
+   8,
+   7
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 6.691236257553101,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 1,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

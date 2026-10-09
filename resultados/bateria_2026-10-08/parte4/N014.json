@@ -1,0 +1,113 @@
+{
+ "caso": "N014",
+ "modelo": "6+12",
+ "equipe": "5+6",
+ "estrato": "inviavel",
+ "esperado": "INVIAVEL pela conta",
+ "folgas": {
+  "horas": -1507.4285714285716,
+  "horas_enf": -280.0,
+  "ocupados_dia": -11,
+  "ocupados_dia_enf": -2
+ },
+ "veredito": "faltam",
+ "frase": "Faltam 11; o menor quadro viável é 22. Escala gerada.",
+ "menor_viavel": 22,
+ "tentativas": [
+  [
+   11,
+   "piso",
+   null,
+   null
+  ],
+  [
+   12,
+   "piso",
+   null,
+   null
+  ],
+  [
+   13,
+   "piso",
+   null,
+   null
+  ],
+  [
+   14,
+   "piso",
+   null,
+   null
+  ],
+  [
+   15,
+   "piso",
+   null,
+   null
+  ],
+  [
+   16,
+   "piso",
+   null,
+   null
+  ],
+  [
+   17,
+   "piso",
+   null,
+   null
+  ],
+  [
+   18,
+   "piso",
+   null,
+   null
+  ],
+  [
+   19,
+   "piso",
+   null,
+   null
+  ],
+  [
+   20,
+   "inviavel",
+   7,
+   13
+  ],
+  [
+   20,
+   "inviavel",
+   14,
+   6
+  ],
+  [
+   21,
+   "inviavel",
+   7,
+   14
+  ],
+  [
+   21,
+   "inviavel",
+   15,
+   6
+  ],
+  [
+   22,
+   "viavel",
+   8,
+   14
+  ]
+ ],
+ "provado": true,
+ "gap": 0.0,
+ "tempo_total": 239.313951253891,
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ }
+}

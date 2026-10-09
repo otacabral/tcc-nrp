@@ -1,0 +1,12 @@
+N033: 8h, 3+3; conta: INVIAVEL pela conta {'horas': -726.2857142857143, 'horas_enf': -526.8571428571429, 'ocupados_dia': -3, 'ocupados_dia_enf': -3}
+N033 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+N033 [    0.0 s] Quadro informado, 6 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N033 [    0.0 s] Busca do menor quadro, 7 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N033 [    0.0 s] Busca do menor quadro, 8 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N033 [    0.0 s] Busca do menor quadro, 9 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N033 [    0.0 s] Busca do menor quadro, 10 profissionais: inviável pela conta, sem solver · orçamento do clique: 20 min
+N033 [    0.0 s] Busca do menor quadro, 11 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+N033 [    0.5 s] Busca do menor quadro, 11 profissionais: etapa 1 (procurando escala legal), até 10 min — 2ª composição: acréscimos como enfermeiros · orçamento do clique: 20 min
+N033 [    1.0 s] Escala pronta com 11 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+N033 [    1.0 s] concluido
+N033: faltam menor 11 | 1 s
