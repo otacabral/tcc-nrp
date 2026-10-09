@@ -41,6 +41,9 @@ pedidos, prova aos ~14 s. Numa maquina muito diferente, os limites podem precisa
     prova de otimo" se a etapa 2 entregou escala, ou "a da etapa 1" se nao; os 20 pedidos
     continuam atendidos (a etapa 2 nao pode piorar a penalidade, e negar um pedido custa mais
     que todos os postos de tecnico).
+    ESPERADO REFEITO EM 09/10, ANTES de implementar a P17 (etapa 2 partindo da escala da etapa
+    1): a etapa 2 SEMPRE entrega escala -> `etapa2` == "ok", e a linha diz "sobre uma escala sem
+    prova de otimo".
     Pedidos entram por fora da tela (o AppTest nao edita a tabela): `fe.verificar` e
     embrulhado para acrescenta-los a entrada que a tela montou.
 8c. Tempo esgotado sem escala: o 40 sem pedidos, limite de 3 s. Tela: error "Sem resposta em
@@ -328,9 +331,10 @@ def casos_tempo() -> None:
                         for t in textos(at, "caption")),
                 f"P14: a etapa 2 rodou ({r.indicadores.get('etapa2')})")
         vigente = [t for t in textos(at, "caption") if t.startswith("Escala desta tela:")]
-        esperado = ("sobre uma escala sem prova de ótimo" if r.indicadores.get("etapa2") == "ok"
-                    else "a da etapa 1")
-        confere(len(vigente) == 1 and esperado in vigente[0], f"escala vigente: {vigente}")
+        confere(r.indicadores.get("etapa2") == "ok",
+                f"P17: a etapa 2 entregou escala ({r.indicadores.get('etapa2')})")
+        confere(len(vigente) == 1 and "sobre uma escala sem prova de ótimo" in vigente[0],
+                f"escala vigente: {vigente}")
         # 05/10: com todos os pedidos atendidos, a tela diz isso, e nao "negados: 0, em 0"
         confere("Todos os 20 pedidos de folga foram atendidos." in textos(at, "caption")
                 and not any("negados: 0" in t for t in textos(at, "caption")),

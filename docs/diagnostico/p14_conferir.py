@@ -14,6 +14,11 @@ etapa 1 para no limite de tempo e pode achar escalas diferentes a cada execucao)
 3. diferenca maxima de carga entre colegas, em cada categoria, <= a da escala da etapa 1;
 4. descanso conferido: `conformidade["ok"]` e `solucao.conferir_rigidas` sem problema;
 5. pedidos atendidos da escala final >= os da etapa 1 (o otavio e K5/K6 nao tem pedidos).
+
+P17 (09/10), com `--p17`, esperado registrado ANTES de implementar a partida da etapa 2:
+6. a etapa 2 SEMPRE entrega escala (`etapa2` == "ok"): ela parte da escala da etapa 1, que
+   cumpre "nao piorar" por construcao.
+A saida vai para `p17_<caso>.json`.
 """
 
 from __future__ import annotations
@@ -44,6 +49,7 @@ def entrada(nome: str):
 
 def main() -> int:
     nome = sys.argv[1]
+    p17 = "--p17" in sys.argv[2:]
     r = fe.verificar(entrada(nome))
     ind = r.indicadores
     e1 = ind.get("etapa1", {})
@@ -59,6 +65,8 @@ def main() -> int:
                                                                  habilidade_rigida=True),
         "5 pedidos >= etapa 1": ind["pedidos_atendidos"] >= e1.get("pedidos_atendidos", 10**9),
     }
+    if p17:
+        ok["6 etapa 2 entregou escala"] = ind.get("etapa2") == "ok"
     out = {"caso": nome, "frase": r.frase(), "vigente": r.frase_vigente(),
            "etapa2": ind.get("etapa2"), "tempo_etapa1": ind.get("tempo_etapa1"),
            "tempo_etapa2": ind.get("tempo_etapa2"), "gap": ind.get("gap"),
@@ -74,10 +82,11 @@ def main() -> int:
            "descanso_semanal_sem_bordas": r.conformidade and r.conformidade.get("menor_semanal_interno"),
            "conferencias": ok}
     SAIDA.mkdir(parents=True, exist_ok=True)
-    (SAIDA / f"p14_{nome}.json").write_text(json.dumps(out, ensure_ascii=False, indent=1,
+    (SAIDA / f"{'p17' if p17 else 'p14'}_{nome}.json").write_text(json.dumps(out, ensure_ascii=False, indent=1,
                                                        default=str), encoding="utf-8")
     print(json.dumps(out, ensure_ascii=False, indent=1, default=str))
-    print("P14 OK" if all(ok.values()) else "P14 FALHA")
+    rotulo = "P17" if p17 else "P14"
+    print(f"{rotulo} OK" if all(ok.values()) else f"{rotulo} FALHA")
     return 0 if all(ok.values()) else 1
 
 

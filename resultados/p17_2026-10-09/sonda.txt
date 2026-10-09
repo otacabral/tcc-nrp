@@ -1,0 +1,4 @@
+etapa 1: valor 0 | provado True
+partida: criterio da etapa 2 na escala da etapa 1 = 0.25757575757575757
+etapa 2: estado maxTimeLimit | tem solucao True
+linhas do log sobre a partida: ['MIP start solution is feasible, objective value is 0.257575757576', 'Restarting search from the root node', 'Model after restart has 1371 rows, 990 cols (986 bin., 0 int., 0 impl., 4 cont., 0 dom.fix.), and 7024 nonzeros', '  Solution status   feasible']
