@@ -1,6 +1,7 @@
 # Estado atual — ponto de partida para qualquer sessão
 
-**Atualizado em 03/10/2026.** Este arquivo existe para responder, em uma leitura, *onde o
+**Atualizado em 10/10/2026** (nota de 10/10 abaixo; o corpo, das seções 1 a 7, é de 03/10 com
+atualizações datadas). Este arquivo existe para responder, em uma leitura, *onde o
 trabalho está*. É o primeiro que qualquer assistente — Claude Code aqui no repositório ou o
 chat de orientação/redação — deve ler.
 
@@ -47,6 +48,15 @@ estamos** e **o que vem depois**.
 > em 09/10 ela foi interrompida por falta de memória (ver `resultados/relatorio_2026-10-09b.md`).
 > Até 16/10, só correção de defeito, com esperado registrado antes. Melhorias de tela para 26 a
 > 29/10: P16. Candidata em aberto: P17 (warm start da etapa 2).
+>
+> **09/10/2026 (noite) — v1.2: VERSÃO CITÁVEL DO TCC** (tag `v1.2` no commit `04f3156`, enviada
+> ao GitHub; substitui a `v1.1`; registrado em 10/10). O `docs/diagnostico/fechar_v12.sh` terminou
+> às 18:33 de 09/10 com **"TUDO OK"** (`resultados/fechar_v12/resumo.txt`), na ordem e parando na
+> primeira falha: regressão dos 4 ótimos (56, 58, 197, 219 = Tabela 6), testes de entrada, P17 no
+> caso do Otávio, K5 e K6 (seis conferências OK), P08/P05/K1 iguais a 07/10, suíte da tela (15
+> testes) e a demonstração pelas três rodadas, com o conferidor da planilha OK em cada uma e os
+> números iguais (24/36/34 enfermeiros em posto de técnico, 6 de 6 pedidos). Entram na `v1.2`: P15
+> (alerta), P14 e P17. A P17 deixou de ser candidata: está implementada e conferida.
 
 ---
 
