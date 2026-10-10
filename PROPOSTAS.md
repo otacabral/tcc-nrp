@@ -565,3 +565,139 @@ não prova nada no caminho sem prova. Garante que a etapa 2 sempre tenha escala 
 salvaguarda. Exige conferir se o `appsi_highs` aceita solução inicial e se a demonstração sai
 idêntica (no caminho provado, a etapa 2 também ganharia a partida).
 
+---
+
+## 2026-10-10 — P18: reorganização de `resultados/` e `docs/`
+
+**Status: proposta. NÃO executar antes de 16/10.** Se for aprovada, a execução fica para 16 ou
+17/10, depois do congelamento dos números. Nada foi movido.
+
+### a) Inventário (10/10, só leitura)
+
+A lista arquivo por arquivo está em `docs/inventario_pastas_2026-10-10.csv` (742 arquivos), com
+tamanho, data, se é versionado e quem cita. Uma citação conta como "pelo caminho" quando o texto
+traz o caminho relativo (com `/` ou `\`). A que vem "só pelo nome" é mais fraca, porque nomes
+como `resumo.txt` dão falso positivo. A busca cobriu os arquivos da raiz, o `NUMEROS_TCC.md`, os
+relatórios, todo `.py`, `.sh` e `.md` de `src/` e `docs/` e o `historico/`.
+
+| Pasta | Arquivos | Tamanho | Última mod. | Versionados | Quem cita |
+|---|---|---|---|---|---|
+| `resultados/` (só os arquivos soltos) | 56 | ~13 MB (12 MB são o `pyomo.zip`) | 09/10 | 23 | ver o CSV |
+| `resultados/bateria_2026-10-07` | 48 | 31 KB | 07/10 | 48 | NUMEROS, rel. 07a, `bateria_propriedades.py`, `fechar_v12.sh` |
+| `resultados/bateria_2026-10-08` | 308 | 263 KB | 09/10 | 308 | NUMEROS, rel. 08a, 08b, 09a, `analise_tempo_limite.py` |
+| `resultados/bateria_2026-10-09` | 6 | 6 KB | 09/10 | 6 | **ninguém** |
+| `resultados/conferencia_padrao` | 2 | 76 KB | 22/09 | 0 | `conferencia_padrao_avaliador.py` |
+| `resultados/conferencia_piso` | 4 | 41 KB | 22/09 | 0 | `conferencia_piso_forcado.py`, nota do piso forçado |
+| `resultados/diagnostico_2026-10-07` | 11 | 110 KB | 07/10 | 11 | NUMEROS, rel. 06f, `aprendizado/LEIA_ME.md` |
+| `resultados/escalabilidade` | 6 | 852 KB | 28/09 | 0 | ninguém (são os XML da curva de 28/09; o CSV dela é citado) |
+| `resultados/escalabilidade_objetivo` | 33 | 938 KB | 05/10 | **0** | NUMEROS, PROPOSTAS, rel. 03b, 03c, 05b, 09c, `escalabilidade_objetivo.py`, `figuras_tcc.py` |
+| `resultados/experimento_a` | 72 | 2,2 MB | 22/09 | 0 | `experimento_a.py` (grava nela), nota do Exp. A no histórico |
+| `resultados/fechar_v12` | 32 | 39 KB | 09/10 | 32 | ESTADO_ATUAL, rel. 09c, `fechar_v12.sh` |
+| `resultados/figuras` | 8 | 221 KB | 05/10 | 8 | DECISOES, ESTADO_ATUAL, rel. 05c, 05g, `figuras_tcc.py` |
+| `resultados/medium_late05_2026-10-06` | 4 | 75 KB | 06/10 | 4 | DECISOES, PROPOSTAS, NUMEROS, rel. 06b–06d, `rodar_medium_late05.py` |
+| `resultados/p14_p15_2026-10-09` | 10 | 25 KB | 09/10 | 7 (os 3 `p17_*.json` não) | NUMEROS, rel. 09b, `p14_conferir.py`, `testes_ferramenta.py` |
+| `resultados/p17_2026-10-09` | 3 | 5 KB | 09/10 | 3 | rel. 09c |
+| `resultados/preliminar_P1_2026-10-02` | 18 | 918 KB | 02/10 | 0 | PROPOSTAS (P1: "não é resultado") |
+| `resultados/suite_2026-10-06` | 18 | 24 KB | 06/10 | 18 | ESTADO_ATUAL, NUMEROS, rel. 06a |
+| `resultados/suite_2026-10-08` | 25 | 34 KB | 09/10 | 25 | rel. 08b, `suite_p12.sh` |
+| `resultados/suite_2026-10-09` | 21 | 31 KB | 09/10 | 21 | rel. 09b, `suite_p14.sh` |
+| `docs/` (só os arquivos soltos) | 21 | ~0,5 MB | 09/10 | 21 | ver o CSV |
+| `docs/aprendizado` | 6 | 39 KB | 07/10 | 3 | rel. 06f |
+| `docs/demonstracao` | 24 | 2,6 MB | 09/10 | 24 | DECISOES, ESTADO_ATUAL, GUIA_DE_USO, PROPOSTAS, `fechar_v12.sh` |
+| `docs/diagnostico` | 19 | ~270 KB | 09/10 | 19 | relatórios de 06f a 09c, NUMEROS, DECISOES |
+
+### b) O que o inventário mostrou além da arrumação
+
+1. **Parte da evidência citada pelo `NUMEROS_TCC.md` não está no git**, e por isso também não
+   está na tag `v1.2`. São os logs do HiGHS da P1 (`resultados/escalabilidade_objetivo/`, base da
+   condição de tolerância de 09/10), os CSVs da P1 e da rodada com folga, o
+   `escalabilidade.csv`, o `experimento_a.csv`, o `experimento_b_resumo.csv` e as quatro escalas
+   ótimas `*_completo.xml` (56, 58, 197, 219). Esses arquivos só existem nesta máquina.
+   **Recomendo versionar com `git add -f`** (~1,2 MB), antes ou junto da reorganização. Isso não
+   muda número nem código; só guarda a evidência.
+2. **Os `p17_*.json` da v1.2 não estão versionados.** Os logs da mesma rodada estão
+   (`resultados/fechar_v12/p17_*.log`, com o mesmo conteúdo).
+3. **Arquivos que ninguém cita:** `resultados/bateria_2026-10-09/` (6), o
+   `experimento_a_ANTES_correcao.csv` e os `*_completo_avaliador.txt`, que são a saída das
+   conferências do `validar.py` de 06/10 (o DECISOES fala delas, mas sem o nome do arquivo).
+   Também as duas capturas de 29/09 em `docs/`, o `docs/diagnostico/relaxar.py` (parte A3c), o
+   `pyomo.zip` e as duas escalas triviais de 15/09.
+
+### c) Estrutura proposta
+
+**Recomendo a opção A, a mínima.** A opção B, completa, fica registrada abaixo com o custo dela.
+
+**Opção A: mover só o que ninguém cita como evidência; o resto fica onde está.** Há duas
+razões. Os caminhos de `resultados/` são citados ~100 vezes em 14 ou mais arquivos (41 citações
+a relatórios, 34 a baterias e 16 a suítes), muitas delas dentro de entradas datadas do
+`DECISOES.md` e dos relatórios, que são registro e não devem ser reescritos. E vários scripts
+gravam e leem nesses caminhos: o `experimento_a.py`, o `testes_entrada.py` (lê o
+`experimento_a.csv`), o `figuras_tcc.py`, o `conferencia_piso_forcado.py` (lê os
+`*_completo.xml`) e o `fechar_v12.sh`. Nesta opção a arrumação vira um **índice**, sem mudar
+nada de lugar. O índice é o `resultados/LEIA_ME.md`, que classifica cada pasta como evidência
+citável, apoio ou histórico e diz quem a cita.
+
+- **Evidência citável (fica):** `NUMEROS_TCC.md`, `consolidado.csv`, todos os `relatorio_*.md`,
+  `bateria_2026-10-07/08`, `diagnostico_2026-10-07`, `escalabilidade.csv`, `escalabilidade/`,
+  `escalabilidade_objetivo/` e os dois CSVs dela, `experimento_a/` e `experimento_a.csv`, os
+  três `experimento_b*.csv`, os quatro `*_completo.xml` e os `*_completo_avaliador.txt`,
+  `conferencia_padrao/`, `conferencia_piso/`, `fechar_v12/`, `figuras/`,
+  `medium_late05_2026-10-06/`, `p14_p15_2026-10-09/`, `p17_2026-10-09/` e as três `suite_*`. Em
+  `docs/`, fica tudo, exceto o que está listado abaixo.
+- **Histórico (vai para `historico/`):** `resultados/preliminar_P1_2026-10-02/` (a P1 diz que
+  "não é resultado"), `resultados/experimento_a_ANTES_correcao.csv` (registro do erro de 23/09),
+  `docs/captura_interface_2026-09-29.jpg` e `docs/captura_interface_etapa6_2026-09-29.jpg`
+  (substituídas pelas capturas da demonstração).
+- **Descartável (só lista, NÃO apagar):** vai para o `resultados/DESCARTAVEIS.md`. Quem decide
+  apagar é o Otávio, depois da entrega. São o `resultados/pyomo.zip` (12 MB, cópia do pacote
+  Pyomo de 10/09, não é resultado), o `resultados/sprint01_escala_trivial.xml` e o
+  `resultados/sprint_hidden06_escala_trivial.xml` (teste do avaliador de 15/09), o
+  `docs/aprendizado/brinquedo.lp` com os dois `brinquedo*_highs.log` (gerados pelo
+  `brinquedo.py`) e as pastas `__pycache__`.
+- **Fica onde está, com a classificação no índice:** `bateria_2026-10-09/` (ninguém cita;
+  conferir antes de classificar), `resultados/sprint01.xml` (exemplo do docstring de
+  `src/validar.py`), `docs/diagnostico/relaxar.py`, `suite_p12.sh` e `suite_p14.sh` (o
+  `fechar_v12.sh` substituiu os dois, mas os relatórios os citam).
+
+**Opção B: organizar por assunto** (`resultados/relatorios/`, `resultados/validacao/`,
+`resultados/bateria/`, `resultados/escalabilidade/`, `resultados/demonstracao/`). Exige
+atualizar ~100 citações, entre elas entradas antigas do `DECISOES.md` e os relatórios, além dos
+caminhos dentro de ~10 scripts. Não recomendo: mexe em registro datado e cria o risco de um
+script gravar no caminho velho sem ninguém perceber.
+
+### d) Tabela caminho antigo → novo (opção A) e referências a atualizar
+
+| Antigo | Novo | Versionado | Referências a atualizar |
+|---|---|---|---|
+| `resultados/preliminar_P1_2026-10-02/` | `historico/resultados/preliminar_P1_2026-10-02/` | não | `PROPOSTAS.md`, P1, a linha "Os logs ficam guardados em …" (1) |
+| `resultados/experimento_a_ANTES_correcao.csv` | `historico/resultados/experimento_a_ANTES_correcao.csv` | não | nenhuma |
+| `docs/captura_interface_2026-09-29.jpg` | `historico/capturas/captura_interface_2026-09-29.jpg` | sim (`git mv`) | nenhuma |
+| `docs/captura_interface_etapa6_2026-09-29.jpg` | `historico/capturas/captura_interface_etapa6_2026-09-29.jpg` | sim (`git mv`) | nenhuma |
+| — | `resultados/LEIA_ME.md` (novo, índice) | `git add -f` | — |
+| — | `resultados/DESCARTAVEIS.md` (novo) | `git add -f` | — |
+
+Cuidado: `resultados/` está no `.gitignore`. Um arquivo não versionado movido com `mv` comum não
+aparece no `git status`, e a tabela acima passa a ser o único registro da mudança. Os
+versionados vão com `git mv`, para o histórico seguir o arquivo.
+
+### e) Verificação depois de mover
+
+O esperado é que tudo saia igual. Fora a regressão, nenhum passo usa o solver.
+
+1. **Nenhuma citação aponta para arquivo inexistente.** Rodar de novo o levantamento de 10/10 e
+   exigir **zero** citações pelo caminho que não achem o arquivo. O levantamento lê os textos, e
+   não a tabela de mudanças, para não compartilhar premissa com a mudança.
+2. **`python src\regressao.py --todos`**: 56, 58, 197, 219 = Tabela 6 (~1 min).
+3. **`bateria_comparar` e `demo_comparar`**. Hoje são trechos dentro do `fechar_v12.sh`. A
+   proposta é extraí-los, sem mudança, para `docs/diagnostico/comparar_v12.py`. Os dois só
+   comparam arquivos já gravados, sem resolver nada: P08, P05 e K1 de `fechar_v12/bateria/`
+   contra `bateria_2026-10-07/` (mesmo veredito, mesmo menor quadro, sem falhas), e as três
+   planilhas da demonstração (24/36/34 e 6 de 6). Esperado: "bateria igual a 07/10" e
+   "demonstracao igual".
+4. **`python src\testes_entrada.py`**, que lê o `resultados/experimento_a.csv` (este arquivo não
+   se move).
+5. **`git status` limpo depois do commit**, com o `git diff --stat` mostrando só os renomes, os
+   dois índices novos e a linha da P1.
+
+Se qualquer um falhar: desfazer a mudança (os renomes são reversíveis) e relatar.
+
