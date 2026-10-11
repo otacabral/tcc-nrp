@@ -44,6 +44,13 @@ pedidos, prova aos ~14 s. Numa maquina muito diferente, os limites podem precisa
     ESPERADO REFEITO EM 09/10, ANTES de implementar a P17 (etapa 2 partindo da escala da etapa
     1): a etapa 2 SEMPRE entrega escala -> `etapa2` == "ok", e a linha diz "sobre uma escala sem
     prova de otimo".
+    ESPERADO REFEITO EM 11/10, ANTES de corrigir o texto (DECISOES.md, "2026-10-10 — P17", item
+    c): `etapa2` continua "ok". A linha "Escala desta tela" passa a depender de a etapa 2 ter
+    melhorado o criterio (`amplitude` < `amplitude_etapa1`): se melhorou, e exatamente a linha
+    atual ("a da etapa 2, com a carga equilibrada entre colegas, sobre uma escala sem prova de
+    otimo: ..."); se nao melhorou, e exatamente "Escala desta tela: a da etapa 1. O equilibrio
+    de carga nao achou, no tempo disponivel, escala mais equilibrada sem piorar o resultado da
+    etapa 1.", e `amplitude` == `amplitude_etapa1`. Nenhum desfecho fica sem conferencia.
     Pedidos entram por fora da tela (o AppTest nao edita a tabela): `fe.verificar` e
     embrulhado para acrescenta-los a entrada que a tela montou.
 8c. Tempo esgotado sem escala: o 40 sem pedidos, limite de 3 s. Tela: error "Sem resposta em
@@ -333,8 +340,21 @@ def casos_tempo() -> None:
         vigente = [t for t in textos(at, "caption") if t.startswith("Escala desta tela:")]
         confere(r.indicadores.get("etapa2") == "ok",
                 f"P17: a etapa 2 entregou escala ({r.indicadores.get('etapa2')})")
-        confere(len(vigente) == 1 and "sobre uma escala sem prova de ótimo" in vigente[0],
-                f"escala vigente: {vigente}")
+        # 11/10 (P17, item c): a linha diz a verdade sobre a etapa 2 ter melhorado ou nao
+        a1, a2 = r.indicadores.get("amplitude_etapa1"), r.indicadores.get("amplitude")
+        melhorou = a1 is not None and a2 is not None and a2 < a1 - 1e-9
+        if melhorou:
+            linha_esperada = ("Escala desta tela: a da etapa 2, com a carga equilibrada entre "
+                              "colegas, sobre uma escala sem prova de ótimo: o equilíbrio não "
+                              "deixou piorar o valor achado pela etapa 1.")
+        else:
+            linha_esperada = ("Escala desta tela: a da etapa 1. O equilíbrio de carga não "
+                              "achou, no tempo disponível, escala mais equilibrada sem piorar o "
+                              "resultado da etapa 1.")
+            confere(a1 is not None and a2 is not None and abs(a2 - a1) <= 1e-9,
+                    f"sem melhora, o criterio final e o da etapa 1 ({a1} -> {a2})")
+        confere(vigente == [linha_esperada],
+                f"escala vigente: {vigente} (criterio {a1} -> {a2})")
         # 05/10: com todos os pedidos atendidos, a tela diz isso, e nao "negados: 0, em 0"
         confere("Todos os 20 pedidos de folga foram atendidos." in textos(at, "caption")
                 and not any("negados: 0" in t for t in textos(at, "caption")),

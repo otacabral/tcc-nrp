@@ -1965,7 +1965,32 @@ commitados): **ESPERADO OK, desfecho SEM MELHORA.*** Arquivos em
 
 **c) Defeito de texto (depois de a e b).** Quando a etapa 2 não melhora o critério, a tela diz
 "com a carga equilibrada entre colegas", o que é falso. Texto proposto pelo Otávio: "o equilíbrio
-não encontrou escala melhor no tempo disponível; mantida a escala da etapa 1". *Pendente.*
+não encontrou escala melhor no tempo disponível; mantida a escala da etapa 1".
+
+*Decisão do Otávio (11/10), com o texto final:* quando o critério final da etapa 2 **não** for
+menor que o da etapa 1, a linha passa a ser "Escala desta tela: a da etapa 1. O equilíbrio de
+carga não achou, no tempo disponível, escala mais equilibrada sem piorar o resultado da etapa
+1."; quando for menor, fica a linha atual.
+
+*Como será implementado (registrado antes):* **só no caminho sem prova**. Nele, quando o critério
+final não for menor, a ferramenta passa a mostrar a escala da etapa 1 (até aqui só fazia isso
+quando o critério piorava, pela salvaguarda da P14). Assim "a da etapa 1" é literalmente
+verdade, mesmo no caso, não observado, de o HiGHS trocar a partida por outra escala de mesmo
+critério. `etapa2` continua "ok", porque a etapa 2 entregou escala. **O caminho com prova não
+muda.** Nele a etapa 2 não parte da escala da etapa 1 e pode devolver outra escala de mesmo
+critério; dizer "a da etapa 1" ali seria falso, e trocar a escala mudaria a demonstração. Esse
+caso fica para decisão do Otávio, mas não foi observado: o 9d melhorou (36,4 → 4,5 pp), e os
+registros da demonstração não guardam o critério da etapa 1 para conferir.
+
+*Esperado, commitado antes de implementar:*
+- `docs/diagnostico/p17_frase_conferir.py` (sem solver, com os indicadores gravados): K5 de 11/10
+  e Otávio, K5 e K6 de 09/10 → linha nova; 9d (com prova) → linha atual do caminho provado;
+  sintético sem prova com melhora → linha atual sem prova. Antes da correção, os quatro
+  primeiros falham (rodado: "FRASE FALHA", que é o defeito).
+- Teste 8b (`src/testes_ferramenta.py`, esperado refeito no docstring): a linha bate exatamente
+  com a de "melhorou" ou com a de "não melhorou", conforme o critério; sem melhora, critério
+  final = etapa 1. O 12a (com prova) não muda.
+- Regressão primeiro, depois as telas 8 e 12, que leem essa linha. Tudo OK → tag `v1.2.2`.
 
 ---
 
