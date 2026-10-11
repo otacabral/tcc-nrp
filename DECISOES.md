@@ -2004,6 +2004,26 @@ igual ao esperado.
 Correção em `src/ferramenta.py` (`resolver_com_objetivo` e `Resultado.frase_vigente`), só no
 caminho sem prova; `modelo.py` intacto. Tag `v1.2.2`.
 
+**d) Adendo de 11/10 — diagnóstico da etapa 2 no K5, SÓ TESTE** (decisão do Otávio, 11/10). Nada
+muda em `src/`, na ferramenta ou na `v1.2.2`, qualquer que seja o resultado. Script:
+`docs/diagnostico/p17_etapa2_variantes.py`. Ele monta por fora o modelo da etapa 2 do K5 (as
+mesmas funções da ferramenta, com penalidade ≤ 21) e parte da escala da etapa 1 gravada em
+`resultados/p17_diagnostico_2026-10-10/` (critério 0,4091).
+- **A) Tempo:** o mesmo modelo, com limite de 1.800 s.
+- **B) Simetria:** limite de 180 s, com ordem por horas dentro de cada grupo de profissionais
+  idênticos (no K5, os 13 enfermeiros e os 5 técnicos). A partida é a mesma escala, renumerada
+  por horas decrescentes.
+
+**Esperado, commitado antes de rodar:** "melhora" e "sem melhora" são válidos nas duas.
+Conferências obrigatórias:
+- partida aceita = 0,4091;
+- havendo melhora, critério recontado sem `ferramenta.indicadores` = o melhor do log;
+- penalidade ≤ 21, recontada da escala;
+- descanso e rígidas OK;
+- em B, a escala final, desfeita a renumeração, é legal na instância original.
+
+Ressalva: uma rodada, uma partida; tempo é limite operacional. *Resultado: pendente.*
+
 ---
 
 ## 2026-10-09 — Texto do TCC antecipado para 09/10
