@@ -1,0 +1,25 @@
+12a. escala da etapa 1 avisada antes da etapa 2 (caso 5)
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+2026-10-11 01:18:40.456 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+   ok    ordem dos avisos: ['escala_etapa1', 'etapa2']
+   ok    a escala da etapa 1 cumpre o descanso
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+2026-10-11 01:21:46.472 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 01:21:46.996 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+   ok    linha da escala vigente: ['Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.'] (etapa 2 ok)
+   ok    uma so grade de escala na tela: 1
+   ok    grade da tela = grade da planilha
+   ok    planilha = r.escala, celula a celula
+12c. erro tecnico: solver que levanta excecao (caso 5)
+   ok    tela: ['Erro técnico ao resolver com 13 profissionais; detalhes no console.']
+   ok    nenhum 'o solver falhou'
+   ok    console com o traceback: 'R_PADRAO, tempo_limite=tempo,\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "D:\\dev\\tcc-nrp\\src\\testes_ferramenta.py", line 875, in quebrado\n    raise RuntimeError("falha simulada do solver (teste 12c)")\nRuntimeError: falha simulada do solver (teste 12c)\n'
+12d. orcamento do clique de 3 s: o 39 cai no piso, o 40 nao e decidido
+   ok    tentativas [(39, 'piso', None, None), (40, 'indeterminado', 14, 26)]
+   ok    tela: ['O quadro informado é insuficiente; o menor quadro viável não foi determinado em 3 s.']
+   ok    diagnostico de alternancia: ('alternancia', 'Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). seg 04/01 e ter 05/01 somam 40 plantões, que precisam de 40 pessoas diferentes; descontadas férias e licenças, 39 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.', ['alternancia'])
+   ok    nenhum 'Falta'
+
+ponta a ponta pela tela OK

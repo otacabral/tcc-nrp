@@ -1622,7 +1622,7 @@ com caminho absoluto e contrabarra, de propósito, para pôr à prova a troca pa
 
 ## 2026-10-06 — Cronograma: semana de testes e congelamento dos números em 16/10
 
-**Status: vigente.** Decidido pelo Otávio em 06/10.
+**Status: superada em parte** pela entrada "2026-10-09 — Texto do TCC antecipado para 09/10" (registrada em 11/10): o texto começou em 09/10, não em 13/10, e a semana de testes terminou antes, em 09/10. O congelamento dos números em 16/10 e a janela de tela de 26 a 29/10 continuam. Decidido pelo Otávio em 06/10.
 
 - **E1. O congelamento dos números passa de 14/10 para 16/10**, para acomodar a semana de
   testes. Motivo: uma correção de defeito achado na bateria pode mudar a demonstração.
@@ -1905,7 +1905,8 @@ Registro anterior: em andamento (10/10). Os números entram no `NUMEROS_TCC.md`,
 **Conclusão.** O código não tem defeito: a etapa 2 carrega a melhor solução do HiGHS (a), e a
 rodada do K5 (b) mostrou o HiGHS sem achar nada melhor que a partida em 180 s. **Limitação:** nos
 casos sem prova, a etapa 2 não melhorou em nenhuma das 4 rodadas (Otávio, K5 e K6 em 09/10; K5 em
-11/10). No K5 de 11/10, o limite inferior do critério ficou em ~0 o tempo todo (gap de 100% ao
+11/10). *Acréscimo de 11/10:* nem no teste 8b da tela (12×36, 40 pessoas, 20 pedidos, 25 s por
+etapa), rodado para a v1.2.2. No K5 de 11/10, o limite inferior do critério ficou em ~0 o tempo todo (gap de 100% ao
 fim). A diferença entre colegas é reportada só em horas: nesses casos há plantões de 6 h e de
 12 h, e contar plantões não compara cargas. O texto da tela que dizia "com a carga equilibrada
 entre colegas" mesmo sem melhora é o defeito do item c.
@@ -1991,6 +1992,32 @@ registros da demonstração não guardam o critério da etapa 1 para conferir.
   com a de "melhorou" ou com a de "não melhorou", conforme o critério; sem melhora, critério
   final = etapa 1. O 12a (com prova) não muda.
 - Regressão primeiro, depois as telas 8 e 12, que leem essa linha. Tudo OK → tag `v1.2.2`.
+
+*Resultado (11/10, uma resolução por processo; logs em `resultados/v122_2026-10-11/`):* tudo
+igual ao esperado.
+- `p17_frase_conferir.py`: "FRASE OK" nos 6 casos.
+- Regressão: 56, 58, 197, 219 = Tabela 6.
+- Tela 8: OK. **O 8b também ficou sem melhora** (critério 0,3409 → 0,3409 em 25 s) e mostrou a
+  linha nova. É a 5ª resolução sem prova em que a etapa 2 não melhora.
+- Tela 12: OK (12a, com prova: linha "a da etapa 2, com a carga equilibrada entre colegas").
+
+Correção em `src/ferramenta.py` (`resolver_com_objetivo` e `Resultado.frase_vigente`), só no
+caminho sem prova; `modelo.py` intacto. Tag `v1.2.2`.
+
+---
+
+## 2026-10-09 — Texto do TCC antecipado para 09/10
+
+**Status: vigente.** Decidido pelo Otávio em 09/10; registrado em 11/10. Altera a entrada
+"2026-10-06 — Cronograma" (E2).
+
+Com a validação encerrada em 09/10 ("2026-10-09 — Encerramento da validação"), antes do fim da
+semana de testes prevista (08 a 12/10), o texto do TCC começa em 09/10. **Cronograma vigente:**
+- texto do TCC: **09 a 25/10**;
+- números congelados: **16/10** (até lá, só correção de defeito, com esperado registrado antes);
+- melhoria de tela e textos de ajuda: **26 a 29/10**, sem mudar comportamento nem número;
+- reorganização das pastas (P18, opção A): 16–17/10;
+- entrega: **04/11**.
 
 ---
 

@@ -185,6 +185,13 @@ class Resultado:
         """Qual escala a tela (e a planilha) mostra: a da etapa 2 ou a da etapa 1 (P12)."""
         etapa2 = self.indicadores.get("etapa2", "")
         if etapa2 == "ok" and not self.provado:
+            # P17, item c (11/10): sem melhora do criterio, a escala e a da etapa 1
+            # (`resolver_com_objetivo` a devolve nesse caso) e a linha diz isso
+            a1, a2 = self.indicadores.get("amplitude_etapa1"), self.indicadores.get("amplitude")
+            if a1 is not None and a2 is not None and a2 >= a1 - 1e-9:
+                return ("Escala desta tela: a da etapa 1. O equilíbrio de carga não achou, no "
+                        "tempo disponível, escala mais equilibrada sem piorar o resultado da "
+                        "etapa 1.")
             return ("Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas, "
                     "sobre uma escala sem prova de ótimo: o equilíbrio não deixou piorar o "
                     "valor achado pela etapa 1.")
@@ -560,6 +567,10 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None,
         if not provado and amplitude(inst, escala2) > info["amplitude_etapa1"] + 1e-9:
             info["etapa2"] = "não melhorou o equilíbrio no tempo; fica a escala da etapa 1"
             return veredito, inst, escala, info
+        # P17, item c (11/10): sem prova e sem melhora do criterio, a tela mostra a escala da
+        # etapa 1 e diz isso (`frase_vigente`); a etapa 2 entregou escala, entao `etapa2` = "ok"
+        if not provado and amplitude(inst, escala2) >= info["amplitude_etapa1"] - 1e-9:
+            escala2 = escala
         info.update(etapa2="ok", provado_etapa2=provado2, gap_etapa2=gap2,
                     amplitude=amplitude(inst, escala2))
         return veredito, inst, escala2, info

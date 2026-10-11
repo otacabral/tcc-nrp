@@ -1,6 +1,6 @@
 # Estado atual — ponto de partida para qualquer sessão
 
-**Atualizado em 10/10/2026** (nota de 10/10 abaixo; o corpo, das seções 1 a 7, é de 03/10 com
+**Atualizado em 11/10/2026** (notas de 10 e 11/10 abaixo; o corpo, das seções 1 a 7, é de 03/10 com
 atualizações datadas). Este arquivo existe para responder, em uma leitura, *onde o
 trabalho está*. É o primeiro que qualquer assistente — Claude Code aqui no repositório ou o
 chat de orientação/redação — deve ler.
@@ -66,6 +66,15 @@ estamos** e **o que vem depois**.
 > versionada. Lista gerada e conferida por `docs/diagnostico/citados_fora_do_git.py`, que depois
 > do add dá **0 arquivos fora do git**. Em andamento: o diagnóstico da P17 (`DECISOES.md`,
 > "2026-10-10 — P17: etapa 2 sem melhora nos três casos difíceis").
+>
+> **11/10/2026 — v1.2.2: VERSÃO CITÁVEL DO TCC** (tag `v1.2.2` no commit desta nota; substitui a
+> `v1.2.1`). **P17 fechada, sem defeito** (`DECISOES.md`, "2026-10-10 — P17"): na rodada do K5
+> de 11/10, com as escalas gravadas, a etapa 2 não melhorou a partida (0,4091) em 180 s, 0
+> células diferentes, recontagem independente igual à ferramenta (`NUMEROS_TCC.md`, seção 13).
+> **Correção de defeito de texto**, só no caminho sem prova: sem melhora do critério, a tela
+> mostra a escala da etapa 1 e diz isso. Regressão (56, 58, 197, 219) e telas 8 e 12 OK
+> (`resultados/v122_2026-10-11/`). Cronograma: texto do TCC de 09 a 25/10 (`DECISOES.md`,
+> "2026-10-09 — Texto do TCC antecipado para 09/10").
 
 ---
 
@@ -88,7 +97,7 @@ colunas. Warm start heurístico só como partida, e só se a escala exigir.
 | ~~10/10/2026~~ **05/10/2026** | **Congelamento das funcionalidades — antecipado para 05/10** (decisão do Otávio, `DECISOES.md`, "2026-10-05 — Congelamento das funcionalidades antecipado"). Até 10/10 só entra correção de defeito, com esperado registrado antes. Nenhuma função nova. |
 | 08–12/10/2026 | **Semana de testes**: diagnóstico e bateria de entradas variadas (`DECISOES.md`, "2026-10-06 — Cronograma"). |
 | ~~14/10/2026~~ **16/10/2026** | **Congelamento de resultado numérico — adiado para 16/10** (decisão do Otávio, 06/10), para acomodar a semana de testes. Até lá, fechamento técnico (suíte, demonstração refeita se preciso, `v1.1`) e só correção de defeito, com esperado registrado antes. Depois, nenhum número novo entra. |
-| 13–25/10/2026 | Texto do TCC. |
+| ~~13–25/10/2026~~ **09–25/10/2026** | Texto do TCC, antecipado para 09/10 (`DECISOES.md`, "2026-10-09 — Texto do TCC antecipado para 09/10"). |
 | 26–29/10/2026 | Melhoria de tela e textos de ajuda, com o rascunho com o orientador — sem mudar comportamento nem número; capturas finais refeitas no fim. |
 | **04/11/2026** | **Entrega.** |
 

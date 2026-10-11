@@ -1,20 +1,23 @@
 # LEIA PRIMEIRO — mapa dos arquivos deste projeto
 
-**Atualizado em 10/10/2026.** Este arquivo diz o que é cada arquivo do projeto de redação,
+**Atualizado em 11/10/2026.** Este arquivo diz o que é cada arquivo do projeto de redação,
 quais estão vigentes e em que ordem ler. Qualquer chat novo deve começar por aqui.
 
-## Onde o trabalho está (10/10/2026)
+## Onde o trabalho está (11/10/2026)
 
-- **Versão citável do TCC: v1.2.1** (tag v1.2.1, commit `032dede`). Código idêntico ao da
-  v1.2 (tag enviada em 09/10; `resumo.txt` do `fechar_v12` termina em "TUDO OK"), mais 23
-  arquivos de evidência citados pelo `NUMEROS_TCC.md` que estavam fora do git.
+- **Versão citável do TCC: v1.2.2** (tag `v1.2.2`, 11/10). Diferença para a v1.2.1: a
+  correção de defeito de texto da P17 (abaixo), só no caminho sem prova; regressão e telas 8 e
+  12 OK. A v1.2.1 (tag v1.2.1, commit `032dede`) tinha código idêntico ao da v1.2 (tag enviada
+  em 09/10; `resumo.txt` do `fechar_v12` termina em "TUDO OK"), mais 23 arquivos de evidência
+  citados pelo `NUMEROS_TCC.md` que estavam fora do git.
 - A v1.2 acrescenta à v1.1: **P15** (alerta, não trava, quando o descanso semanal fica abaixo
   de 35 h — Súmula 110 do TST — ignorando as bordas do período), **P14 + P17** (a etapa 2
   equilibra a carga mesmo sem prova de ótimo, partindo da escala da etapa 1, sem nunca piorar).
-- **P17 em diagnóstico (10/10).** Nos três casos difíceis (Otávio, K5, K6) a etapa 2 não
-  melhorou nada sobre a etapa 1. A leitura do código não achou defeito; a rodada de
-  diagnóstico do K5 decide se é limite de tempo ou defeito. Nada sobre a P17 vai ao texto
-  até fechar (`DECISOES.md`, "2026-10-10 — P17").
+- **P17 fechada (11/10): sem defeito, com limitação.** Nos casos sem prova, a etapa 2 não
+  melhorou em nenhuma rodada registrada (Otávio, K5 e K6 em 09/10; K5 em 11/10, com as
+  escalas gravadas e recontadas; e o teste 8b). A garantia (nunca piora a etapa 1) vale por
+  construção. A tela passou a dizer, nesse caso, "a da etapa 1" (defeito de texto corrigido
+  na v1.2.2). Números: `NUMEROS_TCC.md`, seção 13; decisão: `DECISOES.md`, "2026-10-10 — P17".
 - **Validação encerrada em 09/10.** Até 16/10 (congelamento dos números), só correção de
   defeito, com esperado registrado antes. Texto do TCC de 09/10 a 25/10; melhorias de tela de
   26 a 29/10. Reorganização das pastas (P18, opção A) em 16–17/10.
@@ -71,6 +74,7 @@ o que eles decidiram já está no `DECISOES.md` e no `NUMEROS_TCC.md`.
 | `relatorio_2026-10-09b.md` | P15 (alerta de 35 h) e P14 |
 | `relatorio_2026-10-09c.md` | P17 (etapa 2 partindo da etapa 1); pedido por turno (trabalho futuro); tolerância do HiGHS; comandos da v1.2 |
 | `relatorio_2026-10-10a.md` | P17: leitura do código (sem defeito) e esperado da rodada do K5; v1.2.1 (23 arquivos de evidência versionados); P18 decidida |
+| `relatorio_2026-10-11a.md` | P17 fechada (K5 sem melhora, recontagem = ferramenta); defeito de texto corrigido; v1.2.2; cronograma do texto (09–25/10) |
 | `resumo.txt` | Saída do `fechar_v12.sh`: tudo OK, base da tag v1.2 |
 | `p17_otavio.log`, `p17_K5.log`, `p17_K6.log` | Logs da P17 nos três casos difíceis: etapa 2 sem melhora sobre a etapa 1; diagnóstico aberto em 10/10 (rodada do K5, `DECISOES.md`) |
 
