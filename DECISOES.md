@@ -1897,6 +1897,56 @@ das afirmações de ótimo; conferência em `resultados/relatorio_2026-10-09c.md
 
 ---
 
+## 2026-10-10 — P17: etapa 2 sem melhora nos três casos difíceis; diagnóstico
+
+**Status: em andamento** (decisão do Otávio, 10/10). Nada sobre a P17 entra no
+`NUMEROS_TCC.md` até fechar.
+
+**O achado.** Na rodada da `v1.2` (`resultados/fechar_v12/p17_*.log`), nos três casos sem
+prova (Otávio, K5, K6), os números da escala final são idênticos aos da etapa 1: mesmos
+enfermeiros em posto de técnico, mesma fração mínima e máxima, mesma diferença entre colegas por
+categoria. As escalas não foram gravadas: a recontagem independente não pôde ser feita. Pelo
+`CLAUDE.md`, resultado idêntico é sinal de alarme. A conferência 3 da P17 ("diferença ≤ etapa
+1") passa também se a etapa 2 só devolver a partida, então não distingue os dois casos.
+
+**a) Leitura do código (10/10), sem defeito.** No caminho sem prova, a etapa 2 carrega a
+**melhor solução que o HiGHS tem ao parar**, que é a partida só se nada melhor apareceu:
+- `ferramenta.equilibrar` (`src/ferramenta.py`, l. 376–396) põe nos `f_max`/`f_min` os valores
+  da escala da etapa 1 (as variáveis `x` já têm os dela) e chama `resolver(m, tempo,
+  partida=True)`;
+- `ferramenta.resolver` (l. 352–373) chama `modelo.resolver(..., carregar=False,
+  partida=True)`, classifica e, se viável, `modelo.carregar_solucao(m, resultado)` e
+  `modelo.atribuicoes(m)` (`x` > 0,5);
+- `modelo.resolver` (`src/modelo.py`, l. 507–510 e 518–521) passa `warmstart=True` e
+  `load_solutions=False`;
+- no Pyomo (`pyomo/contrib/appsi/solvers/highs.py`): `_warm_start` (l. 226–244) entrega os
+  valores atuais ao HiGHS com `setSolution`, antes de otimizar (l. 271–272); ao terminar,
+  `_postsolve` lê `self._sol = highs.getSolution()` (l. 696), a solução incumbente do HiGHS
+  depois da busca; `load_vars`/`get_primals` (l. 745–775) copiam essa solução para as
+  variáveis.
+- `modelo.carregar_solucao` (l. 538–555) chama `solution_loader.load_vars()`, isto é, a
+  solução do HiGHS, não a partida.
+
+Indício a favor: na sonda de 09/10 (P08, 20 s; `resultados/p17_2026-10-09/sonda_highs.log`), o
+HiGHS aceitou a partida (0,2576) e a melhorou duas vezes (0,1061 e 0,0682). O código, portanto,
+não prende a escala à partida. Nos três casos difíceis falta saber se o HiGHS de fato não
+melhorou em 180 s.
+
+**b) Rodada de diagnóstico, um caso (K5, 600 s + 180 s), autorizada.** Script:
+`docs/diagnostico/p17_diagnostico_k5.py`. Grava a escala da etapa 1, a da etapa 2 e o log do
+HiGHS da etapa 2, e reconta sem `ferramenta.indicadores` nem o modelo. **Esperado, registrado
+e commitado antes de rodar:** se o log mostrar solução melhor que a partida, a escala final
+difere da etapa 1 e o critério recontado dela é o melhor valor do log; se não mostrar melhora,
+as escalas são idênticas célula a célula. Qualquer outro desfecho é defeito. Conferência a
+mais: o critério recontado da escala da etapa 1 é o valor da partida aceita no log.
+*Resultado: pendente.*
+
+**c) Defeito de texto (depois de a e b).** Quando a etapa 2 não melhora o critério, a tela diz
+"com a carga equilibrada entre colegas", o que é falso. Texto proposto pelo Otávio: "o equilíbrio
+não encontrou escala melhor no tempo disponível; mantida a escala da etapa 1". *Pendente.*
+
+---
+
 ## Modelo de entrada
 
 ```
