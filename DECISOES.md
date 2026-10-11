@@ -2022,7 +2022,28 @@ Conferências obrigatórias:
 - descanso e rígidas OK;
 - em B, a escala final, desfeita a renumeração, é legal na instância original.
 
-Ressalva: uma rodada, uma partida; tempo é limite operacional. *Resultado: pendente.*
+Ressalva: uma rodada, uma partida; tempo é limite operacional.
+
+*Resultado (11/10, rodadas do Otávio: B ~12:38–12:41, A ~12:42–13:12; i5-10210U, HiGHS 1.15.1;
+`resultados/p17_variantes_2026-10-11/A/` e `B/`):* as duas dentro do esperado, todas as
+conferências OK. Recontagem refeita depois, sem solver, a partir das escalas gravadas: bate.
+- **B (simetria, 180 s): SEM MELHORA.** Grupos de 13 e 5, 16 restrições de ordem. Partida aceita
+  (0,4091), nenhuma solução melhor, dual ~3e-14, gap de 100%, 1.315 nós. Escala final = partida
+  (0 atribuições diferentes); conferência 5 OK.
+- **A (tempo, 1.800 s): MELHORA.** Partida aceita (0,4091). Melhoras aos 1.752,1 s (0,1705) e
+  aos 1.797,4 s (0,1364), as duas com fonte "L" no log, que a legenda do próprio log do HiGHS
+  1.15.1 define como "L => Sub-MIP" (heurística que resolve um MIP menor). Fim: primal 0,1364,
+  dual ~2e-14, gap de 100%, 14.455 nós. Penalidade recontada 21 (= etapa 1). Diferença entre
+  colegas: enfermeiros 42 → 12 h (120–162 → 144–156 h), técnicos 30 → 12 h (144–174 → 150–162 h).
+  Descanso e rígidas OK.
+
+**Leitura (decisão do Otávio, 11/10).** Nos casos de fronteira, a limitação da etapa 2 é de
+**tempo, não de alcance**: existe escala muito mais equilibrada com a mesma penalidade, e o HiGHS
+só a achou aos ~29 min. A melhora veio a 3 s do fim, então pode haver melhora maior com mais
+tempo. A quebra de simetria não antecipou a melhora em 180 s. O limite inferior continuou ~0 nas
+duas: nenhuma prova de que 0,1364 seja o melhor. **A ferramenta não muda:** o orçamento do clique
+(20 min, P12) não comportaria uma etapa 2 desse tamanho. Uma rodada, uma partida; tempo é limite
+operacional desta máquina. Desdobramento: `PROPOSTAS.md`, P19 (a) e (d).
 
 ---
 

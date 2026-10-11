@@ -10,7 +10,7 @@ limite operacional, não resultado. **Nada mudou em `src/`, na ferramenta nem na
 - **Para executar:** as duas rodadas de verdade, A (1.800 s) e B (180 s). Comandos no fim.
 - **Registrado:** P19 nova (trabalho futuro, com duas opções descartadas), item novo na P16 e o
   8b na seção 13 do `NUMEROS_TCC.md` (total: 5 de 5 resoluções sem prova, nenhuma melhora).
-- **Commit e push feitos.** Os resultados de A e B entram depois das rodadas.
+- **Commit e push feitos.** Os resultados de A e B entraram depois das rodadas (item 1).
 
 ## 1. Diagnóstico da etapa 2 no K5 (só teste)
 
@@ -43,13 +43,42 @@ Script: `docs/diagnostico/p17_etapa2_variantes.py`. O esperado está no cabeçal
 | diferença entre colegas (h), enf. / téc. | 42 / 30 | 42 / 30 |
 | conferências | todas OK | todas OK, inclusive a 5 (desfeita a renumeração) |
 
-**Rodadas de verdade (A, 1.800 s; B, 180 s): pendentes.** Comandos no fim.
+**Rodadas de verdade (rodadas pelo Otávio em 11/10; B ~12:38–12:41, A ~12:42–13:12):**
+`resultados/p17_variantes_2026-10-11/A/` e `B/`. Os `resumo.json` batem com a saída que o Otávio
+trouxe, e a recontagem foi refeita aqui sem solver, a partir das escalas gravadas
+(`p17_diagnostico_k5.recontar`, penalidade, descanso e rígidas):
+
+| | B (simetria, 180 s) | A (tempo, 1.800 s) |
+|---|---|---|
+| desfecho | SEM MELHORA | **MELHORA** |
+| partida aceita no log | 0,4091 | 0,4091 |
+| melhoras na tabela do log | nenhuma | 1.752,1 s → 0,1705; 1.797,4 s → 0,1364 (fonte "L") |
+| fim | dual ~3e-14; gap 100%; 1.315 nós | primal 0,1364; dual ~2e-14; gap 100%; 14.455 nós |
+| critério recontado | 0,4091 | 0,1364 (= melhor do log) |
+| penalidade recontada | 21 | 21 |
+| diferença entre colegas (h), enf. / téc. | 42 / 30 | 12 / 12 (enf. 144–156 h; téc. 150–162 h) |
+| atribuições diferentes da partida | 0 | 235 de 308 |
+| conferências | 1–5 OK | 1–4 OK |
+
+**Fonte "L":** a legenda impressa no próprio `highs.log` (HiGHS 1.15.1, linhas 27–30) diz
+"L => Sub-MIP", isto é, a solução veio da heurística que resolve um MIP menor, derivado do
+modelo. O log mostra também 377 chamadas de sub-MIP no Solve.
+
+**Leitura (decisão do Otávio):** nos casos de fronteira, a limitação é de tempo, não de alcance;
+a simetria não antecipou a melhora em 180 s; a ferramenta não muda (o orçamento do clique é de
+20 min). Uma rodada, uma partida.
+
+**Registrado:** `DECISOES.md` (P17, item d, resultado e leitura); `NUMEROS_TCC.md`, seção 13 (as
+duas rodadas, com conferência e ressalva); `PROPOSTAS.md`, P19 (a) com o resultado, (d) nova
+("busca longa", trabalho futuro), e a P3 aponta para a (d).
 
 ## 2. P19 nova: equilíbrio nos casos de fronteira (trabalho futuro)
 
-- **(a) Quebra de simetria.** O resultado da rodada 1B entra quando ela rodar.
+- **(a) Quebra de simetria.** Rodada 1B: sem efeito em 180 s no K5 (ver item 1).
 - **(b) Equilíbrio como faixa, por bissecção.**
 - **(c) Troca explícita para o gestor:** uma piora limitada da etapa 1 em troca de equilíbrio.
+- **(d) Busca longa, opcional** (acrescentada depois das rodadas): a etapa 2 roda além dos 20
+  min (ex.: à noite) e o gestor recebe a melhor escala achada. Evidência: rodada A.
 - **Descartadas, com motivo:**
   - retirar a etapa 2: perde 9d 36,4 → 4,5 pp e, na rodada com folga, 34,1/20,5/27,3 → 13,6 pp;
   - pôr o equilíbrio como prioridade da etapa 1: subordina o COFEN, leva o limite inferior ~0

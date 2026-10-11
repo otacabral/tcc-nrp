@@ -18,6 +18,10 @@ quais estão vigentes e em que ordem ler. Qualquer chat novo deve começar por a
   escalas gravadas e recontadas; e o teste 8b). A garantia (nunca piora a etapa 1) vale por
   construção. A tela passou a dizer, nesse caso, "a da etapa 1" (defeito de texto corrigido
   na v1.2.2). Números: `NUMEROS_TCC.md`, seção 13; decisão: `DECISOES.md`, "2026-10-10 — P17".
+- **Diagnóstico de 11/10 (só teste; a ferramenta não muda):** no K5, com 30 min em vez de 3, a
+  etapa 2 achou escala bem mais equilibrada com a mesma penalidade (diferença entre colegas de
+  42 → 12 h e 30 → 12 h), só aos ~29 min. A limitação é de tempo, não de alcance. A quebra de
+  simetria não ajudou em 3 min. Trabalho futuro: `PROPOSTAS.md`, P19 (d), "busca longa".
 - **Validação encerrada em 09/10.** Até 16/10 (congelamento dos números), só correção de
   defeito, com esperado registrado antes. Texto do TCC de 09/10 a 25/10; melhorias de tela de
   26 a 29/10. Reorganização das pastas (P18, opção A) em 16–17/10.
@@ -75,6 +79,7 @@ o que eles decidiram já está no `DECISOES.md` e no `NUMEROS_TCC.md`.
 | `relatorio_2026-10-09c.md` | P17 (etapa 2 partindo da etapa 1); pedido por turno (trabalho futuro); tolerância do HiGHS; comandos da v1.2 |
 | `relatorio_2026-10-10a.md` | P17: leitura do código (sem defeito) e esperado da rodada do K5; v1.2.1 (23 arquivos de evidência versionados); P18 decidida |
 | `relatorio_2026-10-11a.md` | P17 fechada (K5 sem melhora, recontagem = ferramenta); defeito de texto corrigido; v1.2.2; cronograma do texto (09–25/10) |
+| `relatorio_2026-10-11b.md` | Diagnóstico da etapa 2 no K5: 30 min melhora (0,4091 → 0,1364), simetria não; P19; item novo da P16 |
 | `resumo.txt` | Saída do `fechar_v12.sh`: tudo OK, base da tag v1.2 |
 | `p17_otavio.log`, `p17_K5.log`, `p17_K6.log` | Logs da P17 nos três casos difíceis: etapa 2 sem melhora sobre a etapa 1; diagnóstico aberto em 10/10 (rodada do K5, `DECISOES.md`) |
 

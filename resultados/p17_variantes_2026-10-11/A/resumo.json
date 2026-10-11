@@ -1,0 +1,56 @@
+{
+ "variante": "A",
+ "teste": false,
+ "tempo_limite": 1800,
+ "grupos_identicos": [
+  13,
+  5
+ ],
+ "desfecho": "MELHORA",
+ "partida_log": 0.409090909091,
+ "melhoras": [
+  {
+   "fonte": "",
+   "tempo": "0.3s",
+   "valor": 0.4090909091,
+   "limite": "-5.659090909"
+  },
+  {
+   "fonte": "L",
+   "tempo": "1752.1s",
+   "valor": 0.1704545455,
+   "limite": "0"
+  },
+  {
+   "fonte": "L",
+   "tempo": "1797.4s",
+   "valor": 0.1363636364,
+   "limite": "0"
+  }
+ ],
+ "primal": "0.136363636364",
+ "dual": "2.30926389122e-14",
+ "gap": "100% (tolerance: 0.01%)",
+ "status": "Time limit reached",
+ "penalidade_final": 21,
+ "diferenca_h": {
+  "enfermeiros": {
+   "partida": 42.0,
+   "final": 12.0
+  },
+  "tecnicos": {
+   "partida": 30.0,
+   "final": 12.0
+  }
+ },
+ "criterio": {
+  "partida": 0.40909090909090906,
+  "final": 0.13636363636363635
+ },
+ "conferencias": {
+  "1 partida aceita = 0,4091": true,
+  "2 criterio recontado = melhor do log": true,
+  "3 penalidade <= 21": true,
+  "4 descanso e rigidas": true
+ }
+}

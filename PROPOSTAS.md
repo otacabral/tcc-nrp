@@ -263,7 +263,7 @@ A P1 está desbloqueada: objetivo decidido.
   (3) **marcação por profissional "exige 35 h de descanso semanal"** (a P15 é alerta para todos).
 - **Mostrar a melhor escala encontrada durante a busca da etapa 1**, antes do fim do tempo-limite
   (acrescentado em 09/10, decisão do Otávio): exige rodar o solver em paralelo à tela, como o
-  relógio ao vivo da P12.
+  relógio ao vivo da P12. Ver também P19 (d), "busca longa" da etapa 2 (11/10).
 
 ---
 
@@ -726,16 +726,20 @@ Se qualquer um falhar: desfazer a mudança (os renomes são reversíveis) e rela
 **O problema.** Nos casos sem prova da etapa 1, a etapa 2 não melhorou o equilíbrio em nenhuma das
 5 resoluções registradas (`NUMEROS_TCC.md`, seção 13; `DECISOES.md`, "2026-10-10 — P17"). No K5,
 o limite inferior do critério ficou em ~0 o tempo todo (gap de 100%): o solver não consegue
-provar que a escala da etapa 1 já é boa, nem achar uma melhor. A garantia ("nunca piora") vale;
-o ganho, nesses casos, não apareceu.
+provar que a escala da etapa 1 já é boa, nem achar uma melhor em 180 s. A garantia ("nunca
+piora") vale; o ganho, nesses casos, não apareceu. **Atualização de 11/10:** com 1.800 s, o K5
+melhorou de 0,4091 para 0,1364 (diferença entre colegas: enf. 42 → 12 h, téc. 30 → 12 h, mesma
+penalidade), achada só aos ~29 min. A limitação é de tempo, não de alcance (`DECISOES.md`,
+"2026-10-10 — P17", item d).
 
 **Três caminhos, para trabalho futuro:**
 
 a) **Quebra de simetria entre profissionais idênticos.** Ordem por horas dentro de cada grupo de
    pessoas com mesma categoria, contrato, disponibilidade e pedidos. Elimina escalas que só
    trocam pessoas iguais entre si e tende a apertar o limite inferior. Testada no K5 em 11/10
-   (rodada 1B, `docs/diagnostico/p17_etapa2_variantes.py B`). *Resultado: pendente* (no teste
-   curto de 60 s, sem melhora, dual ~0).
+   (rodada 1B, `docs/diagnostico/p17_etapa2_variantes.py B`). *Resultado:* **sem efeito em 180 s
+   no K5** (grupos de 13 e 5, 16 restrições de ordem; sem melhora; dual ~0). Uma rodada, uma
+   partida (`NUMEROS_TCC.md`, seção 13).
 
 b) **Equilíbrio como faixa, por bissecção.** Em vez de minimizar a amplitude, perguntar "existe
    escala com amplitude ≤ t?" para uma sequência de t, cada uma um modelo de viabilidade. Troca a
@@ -745,6 +749,14 @@ b) **Equilíbrio como faixa, por bissecção.** Em vez de minimizar a amplitude,
 c) **Troca explícita para o gestor.** Tolerar uma piora limitada da etapa 1 (por exemplo, +k
    enfermeiros em posto de técnico) em troca de equilíbrio. Muda a prioridade entre etapas, que
    hoje é estrita (decisão de 29/09): é decisão de escopo, não de implementação.
+
+d) **Modo "busca longa", opcional** (acrescentado em 11/10, decisão do Otávio). O gestor deixa a
+   etapa 2 rodando além do orçamento do clique (20 min, P12), por exemplo durante a noite, e
+   recebe a melhor escala encontrada. Liga-se ao item da P3 "mostrar a melhor escala encontrada
+   durante a busca": a mesma infraestrutura (solver em paralelo à tela) serve aos dois.
+   **Evidência:** rodada A do K5, 11/10 — com 1.800 s, critério 0,4091 → 0,1364, penalidade
+   igual, melhora achada aos 1.752 s e aos 1.797 s (`NUMEROS_TCC.md`, seção 13). Uma rodada,
+   uma partida; sem prova de ótimo; tempo é limite operacional desta máquina.
 
 **Descartadas, com motivo (11/10):**
 
