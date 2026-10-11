@@ -1,0 +1,7 @@
+﻿N;porte_horas;demanda_plantoes;piso;variaveis;restricoes;veredito;valor;gap;estado_solver;descanso_minimo_h;conferencia;segundos_cpu;segundos_parede;limite_s;solver;detalhe
+36;5920.0;504;36;3696;5008;otimo_provado;0;0.0%;optimal;36;ok;39.0;38.0;900;appsi_highs;
+40;6592.0;560;40;4144;5604;otimo_provado;0;0.0%;optimal;36;ok;63.1;60.6;900;appsi_highs;
+60;9952.0;840;60;6160;8272;otimo_provado;0;0.0%;optimal;36;ok;65.3;61.9;900;appsi_highs;
+80;13312.0;1120;80;8232;11018;otimo_provado;0;0.0%;optimal;36;ok;239.0;270.5;900;appsi_highs;
+120;20032.0;1680;120;12320;16432;otimo_provado;0;0.0%;optimal;36;ok;222.5;215.7;900;appsi_highs;
+200;33472.0;2800;200;20496;27260;otimo_provado;0;0.0%;optimal;36;ok;549.2;551.1;900;appsi_highs;

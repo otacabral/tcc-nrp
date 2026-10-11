@@ -1,0 +1,5 @@
+﻿instancia;Z;profissionais;forma;media_por_profissional;piso_teorico;min_do_max;max_do_max;amplitude;concentracao_inevitavel;margem_de_gestao;segundos_parede;segundos_cpu;solver;observacao
+sprint01;56;10;B;5.6;6;7;18;11;1.25;2.57;196.5;203.7;appsi_highs;
+sprint02;58;10;B;5.8;6;7;18;11;1.21;2.57;156.5;165.5;appsi_highs;
+long01;197;49;B;4.02;5;11;19;8;2.74;1.73;4166.1;;appsi_highs;
+long02;219;49;B;4.47;5;14;20;6;3.13;1.43;11565.3;;appsi_highs;"tempo de parede contaminado: a maquina ficou suspensa ~36.036 s no meio da rodada. Valor aqui ja descontado; UMA das 51 resolucoes ficou sem tempo medido"

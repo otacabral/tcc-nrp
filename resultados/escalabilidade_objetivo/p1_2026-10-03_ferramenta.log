@@ -1,0 +1,42 @@
+### Curva com objetivo nao trivial (P1). Solver appsi_highs, limite 900 s por etapa, semente 20261002 (+N).
+### Maquina: Intel64 Family 6 Model 142 Stepping 12, GenuineIntel | Windows-10-10.0.26200-SP0 | Python 3.11.9
+
+### N =  36: 72 pedidos, W = 449, 3696 variaveis, 12640 restricoes
+   ### etapa1: optimal | provou otimo: sim | gap 0.0% | relogio 39.8 s | primeira escala legal 39.0 s (HiGHS)
+   ### etapa2: optimal | provou otimo: sim | gap 0.0% | relogio 10.3 s | primeira escala legal 9.6 s (HiGHS)
+   ### penalidade 9541 (recontada 9541) | pedidos 51/72 | enf em posto tec 112 | amplitude da fracao 0.0% -> 0.0 | carga 168-168 h | descanso ok (folga minima 0 h acima do exigido, semanal 36 h) | rigidas ok
+
+### N =  40: 80 pedidos, W = 505, 4144 variaveis, 14300 restricoes
+   ### etapa1: optimal | provou otimo: sim | gap 0.0% | relogio 168.0 s | primeira escala legal 54.3 s (HiGHS)
+   ### etapa2: optimal | provou otimo: sim | gap 0.0% | relogio 16.2 s | primeira escala legal 15.4 s (HiGHS)
+   ### penalidade 10745 (recontada 10745) | pedidos 59/80 | enf em posto tec 140 | amplitude da fracao 0.0% -> 0.0 | carga 168-168 h | descanso ok (folga minima 0 h acima do exigido, semanal 36 h) | rigidas ok
+
+### N =  60: 120 pedidos, W = 785, 6160 variaveis, 20992 restricoes
+   ### etapa1: optimal | provou otimo: sim | gap 0.0% | relogio 130.1 s | primeira escala legal 128.9 s (HiGHS)
+   ### etapa2: optimal | provou otimo: sim | gap 0.0% | relogio 18.3 s | primeira escala legal 17.2 s (HiGHS)
+   ### penalidade 22989 (recontada 22989) | pedidos 91/120 | enf em posto tec 224 | amplitude da fracao 0.0% -> 0.0 | carga 168-168 h | descanso ok (folga minima 0 h acima do exigido, semanal 36 h) | rigidas ok
+
+### N =  80: 160 pedidos, W = 1065, 8232 variaveis, 28086 restricoes
+   ### etapa1: optimal | provou otimo: sim | gap 0.0% | relogio 693.0 s | primeira escala legal 235.1 s (HiGHS)
+   ### etapa2: optimal | provou otimo: sim | gap 0.0% | relogio 34.0 s | primeira escala legal 32.4 s (HiGHS)
+   ### penalidade 53572 (recontada 53572) | pedidos 110/160 | enf em posto tec 322 | amplitude da fracao 0.0% -> 0.0 | carga 168-168 h | descanso ok (folga minima 0 h acima do exigido, semanal 36 h) | rigidas ok
+
+### N = 120: 240 pedidos, W = 1625, 12320 variaveis, 41872 restricoes
+   ### etapa1: maxTimeLimit | provou otimo: NAO | gap 3.2% | relogio 901.9 s | primeira escala legal 345.8 s (HiGHS)
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ### penalidade 102879 (recontada 102879) | pedidos 177/240 | enf em posto tec 504 | amplitude da fracao 0.0% -> - | carga 168-168 h | descanso ok (folga minima 0 h acima do exigido, semanal 36 h) | rigidas ok
+
+### N = 200: 400 pedidos, W = 2745, 20496 variaveis, 69444 restricoes
+   ### etapa1: maxTimeLimit | provou otimo: NAO | gap - | relogio 902.8 s | primeira escala legal - s (HiGHS)
+   ### sem escala na etapa 1
+
+### resumo
+### N= 36 | etapa 1 optimal gap 0.0% 39.8 s (1a escala 39.0 s) | etapa 2 optimal gap 0.0% 10.3 s | penalidade 9541 | descanso ok
+### N= 40 | etapa 1 optimal gap 0.0% 168.0 s (1a escala 54.3 s) | etapa 2 optimal gap 0.0% 16.2 s | penalidade 10745 | descanso ok
+### N= 60 | etapa 1 optimal gap 0.0% 130.1 s (1a escala 128.9 s) | etapa 2 optimal gap 0.0% 18.3 s | penalidade 22989 | descanso ok
+### N= 80 | etapa 1 optimal gap 0.0% 693.0 s (1a escala 235.1 s) | etapa 2 optimal gap 0.0% 34.0 s | penalidade 53572 | descanso ok
+### N=120 | etapa 1 maxTimeLimit gap 3.2% 901.9 s (1a escala 345.8 s) | etapa 2 nao rodou (etapa 1 sem prova) gap - - s | penalidade 102879 | descanso ok
+### N=200 | etapa 1 maxTimeLimit gap - 902.8 s (1a escala None s) | etapa 2 nao rodou (etapa 1 sem escala) gap - - s | penalidade - | descanso FALHA/sem escala
+
+resultado: D:\dev\tcc-nrp\resultados\escalabilidade_objetivo.csv

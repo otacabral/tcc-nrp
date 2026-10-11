@@ -1,0 +1,16 @@
+### Curva com objetivo nao trivial (P1). Solver appsi_highs, limite 900 s por etapa, semente 20261002 (+N).
+### Maquina: Intel64 Family 6 Model 142 Stepping 12, GenuineIntel | Windows-10-10.0.26200-SP0 | Python 3.11.9
+### Rodada COM FOLGA: equipe = round(1.1 x N), mesma demanda.
+
+### N =  40, equipe 44: 88 pedidos, W = 505, 4536 variaveis, 15558 restricoes
+   ### etapa1: optimal | provou otimo: sim | gap 0.0% | relogio 20.7 s | primeira escala legal 1.9 s (HiGHS)
+   ### etapa2: maxTimeLimit | provou otimo: NAO | gap 19.6% | relogio 902.2 s | primeira escala legal 18.1 s (HiGHS)
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ### etapa 2: amplitude 34.09% -> 13.64% | por categoria enfermeiros 27.27% -> 6.82% | tecnicos 6.82% -> 6.82% | 90% da reducao aos 18.1 s (HiGHS)
+   ### penalidade 107 (recontada 107) | pedidos 88/88 | enf em posto tec 107 | amplitude da fracao 34.1% -> 0.13636363636363646 | carga 120-168 h | descanso ok (folga minima 0 h acima do exigido, semanal 36 h) | rigidas ok
+
+### resumo
+### N= 40 equipe  44 | etapa 1 optimal gap 0.0% 20.7 s (1a escala 1.9 s) | etapa 2 maxTimeLimit gap 19.6% 902.2 s | penalidade 107 | descanso ok | amplitude 0.34090909090909094 -> 0.13636363636363646 (90% aos 18.1 s)
+
+resultado: D:\dev\tcc-nrp\resultados\escalabilidade_objetivo_folga.csv

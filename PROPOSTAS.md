@@ -569,8 +569,18 @@ idêntica (no caminho provado, a etapa 2 também ganharia a partida).
 
 ## 2026-10-10 — P18: reorganização de `resultados/` e `docs/`
 
-**Status: proposta. NÃO executar antes de 16/10.** Se for aprovada, a execução fica para 16 ou
-17/10, depois do congelamento dos números. Nada foi movido.
+**Status: DECIDIDA em 10/10 pelo Otávio: opção A aprovada, execução em 16–17/10** (depois do
+congelamento dos números). Nada foi movido. Duas atualizações de 10/10, antes da execução:
+- **Item b1 resolvido em 10/10, fora da P18:** a evidência citada pelo `NUMEROS_TCC.md` foi
+  versionada (tag `v1.2.1`; `docs/diagnostico/citados_fora_do_git.py`).
+- **Classificação de `resultados/bateria_2026-10-09/`:** **não é o nível 3** da bateria. São os
+  6 arquivos da parte B2d da suíte da P14 (P08, P05 e K1 contra 07/10, gravados por
+  `docs/diagnostico/suite_p14.sh` às 13:14–13:21 de 09/10). O nível 3 (100 casos) está em
+  `resultados/bateria_2026-10-08/parte4/` (199 arquivos, já versionados e citados pela seção 11
+  do `NUMEROS_TCC.md`). Classificação: **apoio**, fica onde está. A conferência equivalente da
+  `v1.2` está em `resultados/fechar_v12/bateria/`. O `NUMEROS_TCC.md` não muda.
+
+*Status anterior: proposta. NÃO executar antes de 16/10.*
 
 ### a) Inventário (10/10, só leitura)
 

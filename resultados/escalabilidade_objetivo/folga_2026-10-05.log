@@ -1,0 +1,25 @@
+### Curva com objetivo nao trivial (P1). Solver appsi_highs, limite 900 s por etapa, semente 20261002 (+N).
+### Maquina: Intel64 Family 6 Model 142 Stepping 12, GenuineIntel | Windows-10-10.0.26200-SP0 | Python 3.11.9
+### Rodada COM FOLGA: equipe = round(1.1 x N), mesma demanda.
+
+### N =  60, equipe 66: 132 pedidos, W = 785, 6776 variaveis, 23080 restricoes
+   ### etapa1: optimal | provou otimo: sim | gap 0.0% | relogio 39.1 s | primeira escala legal 2.2 s (HiGHS)
+   ### etapa2: maxTimeLimit | provou otimo: NAO | gap 26.1% | relogio 904.3 s | primeira escala legal 45.6 s (HiGHS)
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ### etapa 2: amplitude 20.45% -> 13.64% | por categoria enfermeiros 13.64% -> 6.82% | tecnicos 6.82% -> 6.82% | 90% da reducao aos 45.6 s (HiGHS)
+   ### penalidade 181 (recontada 181) | pedidos 132/132 | enf em posto tec 181 | amplitude da fracao 20.5% -> 0.13636363636363646 | carga 120-168 h | descanso ok (folga minima 0 h acima do exigido, semanal 36 h) | rigidas ok
+
+### N =  80, equipe 88: 176 pedidos, W = 1065, 9072 variaveis, 31004 restricoes
+   ### etapa1: optimal | provou otimo: sim | gap 0.0% | relogio 61.5 s | primeira escala legal 3.0 s (HiGHS)
+   ### etapa2: maxTimeLimit | provou otimo: NAO | gap 37.5% | relogio 906.8 s | primeira escala legal 81.1 s (HiGHS)
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ### etapa 2: amplitude 27.27% -> 13.64% | por categoria enfermeiros 20.45% -> 6.82% | tecnicos 6.82% -> 6.82% | 90% da reducao aos 81.1 s (HiGHS)
+   ### penalidade 267 (recontada 267) | pedidos 176/176 | enf em posto tec 267 | amplitude da fracao 27.3% -> 0.13636363636363646 | carga 120-168 h | descanso ok (folga minima 0 h acima do exigido, semanal 36 h) | rigidas ok
+
+### resumo
+### N= 60 equipe  66 | etapa 1 optimal gap 0.0% 39.1 s (1a escala 2.2 s) | etapa 2 maxTimeLimit gap 26.1% 904.3 s | penalidade 181 | descanso ok | amplitude 0.2045454545454547 -> 0.13636363636363646 (90% aos 45.6 s)
+### N= 80 equipe  88 | etapa 1 optimal gap 0.0% 61.5 s (1a escala 3.0 s) | etapa 2 maxTimeLimit gap 37.5% 906.8 s | penalidade 267 | descanso ok | amplitude 0.2727272727272728 -> 0.13636363636363646 (90% aos 81.1 s)
+
+resultado: D:\dev\tcc-nrp\resultados\escalabilidade_objetivo_folga.csv

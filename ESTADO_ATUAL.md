@@ -57,6 +57,15 @@ estamos** e **o que vem depois**.
 > testes) e a demonstração pelas três rodadas, com o conferidor da planilha OK em cada uma e os
 > números iguais (24/36/34 enfermeiros em posto de técnico, 6 de 6 pedidos). Entram na `v1.2`: P15
 > (alerta), P14 e P17. A P17 deixou de ser candidata: está implementada e conferida.
+>
+> **10/10/2026 — v1.2.1: VERSÃO CITÁVEL DO TCC** (tag `v1.2.1` no commit desta nota; substitui a
+> `v1.2`, que não foi movida). **Código idêntico ao da `v1.2`** (diff de `src/` vazio). Diferença:
+> a evidência citada pelo `NUMEROS_TCC.md` que estava fora do git (23 arquivos, 286,5 KB: CSVs e
+> logs da P1, CSVs dos experimentos A e B, as quatro escalas ótimas `*_completo.xml` com as saídas
+> do avaliador, os três logs do HiGHS da condição de ótimo e os `p17_*.json`) passou a ser
+> versionada. Lista gerada e conferida por `docs/diagnostico/citados_fora_do_git.py`, que depois
+> do add dá **0 arquivos fora do git**. Em andamento: o diagnóstico da P17 (`DECISOES.md`,
+> "2026-10-10 — P17: etapa 2 sem melhora nos três casos difíceis").
 
 ---
 

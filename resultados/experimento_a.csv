@@ -1,0 +1,25 @@
+﻿grau;regime;regra;variacao;demanda_plantoes;teto_por_pessoa;piso_de_capacidade;piso_de_alternancia;piso_usado;quadro_referencia;maior_inviavel;menor_viavel;indeterminados;erros_do_solver;intervalo;distancia_do_piso;conferencia;segundos_cpu;solver
+intermediario;12x36;teto;0.0;504;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;44.4;appsi_highs
+intermediario;8h;teto;0.0;756;21;36;32;36;35.24;35;36;;;[36, 36];0.0%;ok;3.4;appsi_highs
+intermediario;12x36;teto;0.5;528;14;38;40;40;35.24;39;40;;;[40, 40];5.3%;o avaliador cobrou Unwanted pattern, que aqui e rigida;3.0;appsi_highs
+intermediario;8h;teto;0.5;792;21;38;33;38;35.24;37;38;;;[38, 38];0.0%;ok;3.7;appsi_highs
+intermediario;12x36;teto;1.0;512;14;37;40;40;35.24;39;40;;;[40, 40];8.1%;o avaliador cobrou Unwanted pattern, que aqui e rigida;2.9;appsi_highs
+intermediario;8h;teto;1.0;768;21;37;32;37;35.24;36;37;;;[37, 37];0.0%;ok;3.4;appsi_highs
+alta;12x36;teto;0.0;504;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;20.8;appsi_highs
+alta;12x36;maior_resto;0.0;493;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;11.8;appsi_highs
+alta;8h;teto;0.0;756;21;36;32;36;35.24;35;36;;;[36, 36];0.0%;ok;3.2;appsi_highs
+alta;8h;maior_resto;0.0;740;21;36;31;36;35.24;35;36;;;[36, 36];0.0%;ok;2.5;appsi_highs
+intensivo;12x36;teto;0.0;504;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;24.3;appsi_highs
+intensivo;12x36;maior_resto;0.0;493;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;11.7;appsi_highs
+intensivo;8h;teto;0.0;756;21;36;32;36;35.24;35;36;;;[36, 36];0.0%;ok;2.6;appsi_highs
+intensivo;8h;maior_resto;0.0;740;21;36;31;36;35.24;35;36;;;[36, 36];0.0%;ok;2.5;appsi_highs
+intermediario;12x36;maior_resto;0.0;493;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;2.6;appsi_highs
+intermediario;8h;maior_resto;0.0;740;21;36;31;36;35.24;35;36;;;[36, 36];0.0%;ok;3.4;appsi_highs
+minimo;12x36;teto;0.0;504;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;44.2;appsi_highs
+minimo;12x36;maior_resto;0.0;493;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;2.1;appsi_highs
+minimo;8h;teto;0.0;756;21;36;32;36;35.24;35;36;;;[36, 36];0.0%;ok;3.2;appsi_highs
+minimo;8h;maior_resto;0.0;740;21;36;31;36;35.24;35;36;;;[36, 36];0.0%;ok;3.3;appsi_highs
+semi_intensivo;12x36;teto;0.0;504;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;23.9;appsi_highs
+semi_intensivo;12x36;maior_resto;0.0;493;14;36;36;36;35.24;35;36;;;[36, 36];0.0%;ok;11.7;appsi_highs
+semi_intensivo;8h;teto;0.0;756;21;36;32;36;35.24;35;36;;;[36, 36];0.0%;ok;2.6;appsi_highs
+semi_intensivo;8h;maior_resto;0.0;740;21;36;31;36;35.24;35;36;;;[36, 36];0.0%;ok;2.6;appsi_highs
