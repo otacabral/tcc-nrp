@@ -263,6 +263,8 @@ Não tem acesso a esta pasta. Recebe os arquivos por upload.
 Otávio no projeto de redação e registradas como decisões no `DECISOES.md`. Não esperam
 validação do orientador; ele é informado na reunião.
 
-**A ponte são quatro arquivos**: este, `VIRADA_ESCOPO_2026-09-24.md`, `PROPOSTAS.md` e
-`DECISOES.md`. Decisão registrada de um lado que não chega ao outro vira capítulo escrito com
+**A ponte são cinco arquivos**: `LEIA_PRIMEIRO.md` (mapa dos arquivos do projeto de redação,
+acrescentado em 10/10), este, `VIRADA_ESCOPO_2026-09-24.md`, `PROPOSTAS.md` e `DECISOES.md`.
+O `LEIA_PRIMEIRO.md` sobe ao projeto de redação junto com os demais sempre que houver
+relatório. Decisão registrada de um lado que não chega ao outro vira capítulo escrito com
 decisão superada.
