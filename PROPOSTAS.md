@@ -543,6 +543,12 @@ Cronograma", E2). Nada implementado.
 - Mostrar o gap em unidades do problema, não em %. Exemplo: "esta escala usa 57 turnos de
   enfermeiro em vaga de técnico; o melhor possível está entre 47 e 57".
 - Separar visualmente "o seu quadro" da "escala sugerida" na tela de quadro insuficiente.
+- *Acrescentado em 11/10 (decisão do Otávio):* quando a etapa 2 **não** reduzir o critério no
+  caminho **com prova**, a linha "Escala desta tela" passa a ser "O equilíbrio de carga não
+  reduziu a diferença entre colegas em relação à etapa 1." Caso ainda não observado (o 9d
+  melhorou; a demonstração não guardou o critério da etapa 1). É o complemento da correção da
+  `v1.2.2`, que só tratou o caminho sem prova (`DECISOES.md`, "2026-10-10 — P17", item c).
+  **Não mexer antes de 26/10.**
 
 ---
 
@@ -710,4 +716,43 @@ O esperado é que tudo saia igual. Fora a regressão, nenhum passo usa o solver.
    dois índices novos e a linha da P1.
 
 Se qualquer um falhar: desfazer a mudança (os renomes são reversíveis) e relatar.
+
+---
+
+## 2026-10-11 — P19: equilíbrio nos casos de fronteira
+
+**Status: TRABALHO FUTURO** (decisão do Otávio, 11/10). Não entra na ferramenta antes de 04/11.
+
+**O problema.** Nos casos sem prova da etapa 1, a etapa 2 não melhorou o equilíbrio em nenhuma das
+5 resoluções registradas (`NUMEROS_TCC.md`, seção 13; `DECISOES.md`, "2026-10-10 — P17"). No K5,
+o limite inferior do critério ficou em ~0 o tempo todo (gap de 100%): o solver não consegue
+provar que a escala da etapa 1 já é boa, nem achar uma melhor. A garantia ("nunca piora") vale;
+o ganho, nesses casos, não apareceu.
+
+**Três caminhos, para trabalho futuro:**
+
+a) **Quebra de simetria entre profissionais idênticos.** Ordem por horas dentro de cada grupo de
+   pessoas com mesma categoria, contrato, disponibilidade e pedidos. Elimina escalas que só
+   trocam pessoas iguais entre si e tende a apertar o limite inferior. Testada no K5 em 11/10
+   (rodada 1B, `docs/diagnostico/p17_etapa2_variantes.py B`). *Resultado: pendente* (no teste
+   curto de 60 s, sem melhora, dual ~0).
+
+b) **Equilíbrio como faixa, por bissecção.** Em vez de minimizar a amplitude, perguntar "existe
+   escala com amplitude ≤ t?" para uma sequência de t, cada uma um modelo de viabilidade. Troca a
+   prova de otimalidade (difícil) por provas de viabilidade e de inviabilidade, que às vezes
+   fecham mais rápido; o resultado é uma faixa ("entre x e y").
+
+c) **Troca explícita para o gestor.** Tolerar uma piora limitada da etapa 1 (por exemplo, +k
+   enfermeiros em posto de técnico) em troca de equilíbrio. Muda a prioridade entre etapas, que
+   hoje é estrita (decisão de 29/09): é decisão de escopo, não de implementação.
+
+**Descartadas, com motivo (11/10):**
+
+- **Retirar a etapa 2.** Perde ganhos medidos no caminho com prova: 9d, de 36,4 para 4,5 pp;
+  rodada com folga da P1, de 34,1, 20,5 e 27,3 para 13,6 pp (o piso aritmético). Que a etapa 2
+  não melhore nos casos de fronteira não anula o que ela faz nos demais.
+- **Pôr o equilíbrio como prioridade da etapa 1.** Subordina a composição do COFEN (enfermeiro em
+  posto de técnico) ao equilíbrio; leva o limite inferior ~0 para a etapa 1, que hoje prova o
+  ótimo em 93% das resoluções da bateria; e invalida a bateria, que foi conferida com a
+  prioridade atual.
 
