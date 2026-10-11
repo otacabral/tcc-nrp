@@ -1899,8 +1899,16 @@ das afirmações de ótimo; conferência em `resultados/relatorio_2026-10-09c.md
 
 ## 2026-10-10 — P17: etapa 2 sem melhora nos três casos difíceis; diagnóstico
 
-**Status: em andamento** (decisão do Otávio, 10/10). Nada sobre a P17 entra no
-`NUMEROS_TCC.md` até fechar.
+**Status: FECHADA em 11/10 — sem defeito; limitação registrada** (decisão do Otávio, 11/10).
+Registro anterior: em andamento (10/10). Os números entram no `NUMEROS_TCC.md`, seção 13.
+
+**Conclusão.** O código não tem defeito: a etapa 2 carrega a melhor solução do HiGHS (a), e a
+rodada do K5 (b) mostrou o HiGHS sem achar nada melhor que a partida em 180 s. **Limitação:** nos
+casos sem prova, a etapa 2 não melhorou em nenhuma das 4 rodadas (Otávio, K5 e K6 em 09/10; K5 em
+11/10). No K5 de 11/10, o limite inferior do critério ficou em ~0 o tempo todo (gap de 100% ao
+fim). A diferença entre colegas é reportada só em horas: nesses casos há plantões de 6 h e de
+12 h, e contar plantões não compara cargas. O texto da tela que dizia "com a carga equilibrada
+entre colegas" mesmo sem melhora é o defeito do item c.
 
 **O achado.** Na rodada da `v1.2` (`resultados/fechar_v12/p17_*.log`), nos três casos sem
 prova (Otávio, K5, K6), os números da escala final são idênticos aos da etapa 1: mesmos
@@ -1939,7 +1947,21 @@ e commitado antes de rodar:** se o log mostrar solução melhor que a partida, a
 difere da etapa 1 e o critério recontado dela é o melhor valor do log; se não mostrar melhora,
 as escalas são idênticas célula a célula. Qualquer outro desfecho é defeito. Conferência a
 mais: o critério recontado da escala da etapa 1 é o valor da partida aceita no log.
-*Resultado: pendente.*
+
+*Resultado (rodada em 11/10, ~00:42–00:55; a pasta tem a data em que o script e o esperado foram
+commitados): **ESPERADO OK, desfecho SEM MELHORA.*** Arquivos em
+`resultados/p17_diagnostico_2026-10-10/` (o nome fica, para não mudar a referência do commit
+`d9c0677`).
+- Etapa 1: penalidade 21, sem prova, gap 28,6% em 600 s (em 09/10 foram 21 e 33,3%; a etapa 1
+  muda de rodada para rodada).
+- HiGHS na etapa 2: partida aceita com valor **0,4091**; nenhuma solução melhor em 180 s
+  (1.667 nós); fim com primal 0,4091, dual ~1,2e-14 e gap de 100%.
+- **0 células diferentes** entre a escala da etapa 1 e a final.
+- Recontagem a partir das escalas gravadas, sem `ferramenta.indicadores` nem o modelo, igual à
+  ferramenta: enfermeiros 120–162 h (diferença de 42 h; 23,86 pp), técnicos 144–174 h (30 h;
+  17,05 pp); critério 0,4091 = valor da partida no log.
+- Teste curto do script antes da rodada (90 s + 20 s, `resultados/p17_diagnostico_teste/`):
+  marcado como teste, veredito sem valor.
 
 **c) Defeito de texto (depois de a e b).** Quando a etapa 2 não melhora o critério, a tela diz
 "com a carga equilibrada entre colegas", o que é falso. Texto proposto pelo Otávio: "o equilíbrio

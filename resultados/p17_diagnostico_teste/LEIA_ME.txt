@@ -1,0 +1,7 @@
+TESTE DO SCRIPT - VEREDITO SEM VALOR.
+
+Rodada curta (90 s na etapa 1, 20 s na etapa 2) de docs/diagnostico/p17_diagnostico_k5.py
+com --teste, feita em 11/10/2026 ~00:35 so para ver o script rodar ate o fim antes da rodada
+de verdade (regra de 03/10). Os limites nao sao os da tela; nenhum numero daqui vai ao texto.
+A rodada que vale esta em resultados/p17_diagnostico_2026-10-10/ (feita em 11/10 ~00:42-00:55;
+o nome da pasta e o do dia em que o script foi escrito).

@@ -230,3 +230,20 @@ Justificativa operacional do limite de 600 s, não resultado.
 | 274 s | maior tempo até a prova, nessas 149 (P10, 6 h + 12 h); mediana de 1 a 3 s por modelo e estrato | — | **limite operacional** |
 | 12 de 161 | resoluções sem prova em 600 s: todas da família de fronteira do 6 h + noturno de 12 h (K3 a K6 e derivados) | — | a última melhora delas é desconhecida |
 | 826 s | última melhora no único log longo dessa família (K6, 15 + 5, limite de 3.600 s): aos 600 s a melhor escala valia 19, o ótimo 18 veio aos 826 s e foi provado aos 1.077 s | log do HiGHS (`resultados/diagnostico_2026-10-07/A3a_15mais5_3600s.log`) | uma instância só |
+
+## 13. P17 — etapa 2 sem prova (09 e 11/10)
+
+Origem: `resultados/fechar_v12/p17_otavio.log`, `p17_K5.log` e `p17_K6.log` (09/10; mesmo
+conteúdo em `resultados/p14_p15_2026-10-09/p17_*.json`) e `resultados/p17_diagnostico_2026-10-10/`
+(K5, rodada em 11/10). Comandos: `python docs\diagnostico\p14_conferir.py <caso> --p17` e
+`python docs\diagnostico\p17_diagnostico_k5.py rodar` (o `analisar` refaz a recontagem sem
+solver). Decisão: `DECISOES.md`, "2026-10-10 — P17" (fechada em 11/10). **Afirmação fraca:**
+i5-10210U, HiGHS 1.15.1 via `appsi_highs`, limites da tela (600 s + 180 s). Diferença entre
+colegas só em horas: nesses casos há plantões de 6 h e de 12 h, e contar plantões não compara
+cargas.
+
+| Valor | O que mede | Conferência | Ressalva |
+|---|---|---|---|
+| a etapa 2 sem prova nunca piora a etapa 1 | garantia: a etapa 2 parte da escala da etapa 1, com "penalidade ≤ valor da etapa 1" como restrição; no fim, o critério de equilíbrio não sobe | **por construção** (a partida cumpre a restrição; ver `DECISOES.md`, P14 e P17) e conferências 2, 3 e 5 do `p14_conferir.py --p17` (enfermeiros em posto de técnico, diferença por categoria e pedidos, contra a etapa 1 da mesma rodada) nos 3 casos de 09/10 | — |
+| sem melhora em 3 de 3 (09/10) | Otávio (20 + 10, 6 h + 12 h): penalidade 57, gap 17,5%, diferença 60 h (enf.) e 24 h (téc.); K5 (13 + 5): 21, gap 33,3%, 42 h e 30 h; K6 (15 + 5): 18, gap 5,6%, 48 h e 18 h; final = etapa 1 nos três | **SEM RECONTAGEM INDEPENDENTE**: as escalas não foram gravadas; os números são os da ferramenta | limite de 180 s na etapa 2; a etapa 1 varia a cada rodada |
+| sem melhora no K5 (11/10) | partida aceita pelo HiGHS com critério 0,4091; nenhuma solução melhor em 180 s; dual ~0, gap de 100%; 0 células diferentes entre etapa 1 e final; enf. 120–162 h (42 h; 23,86 pp), téc. 144–174 h (30 h; 17,05 pp); etapa 1 com penalidade 21 e gap 28,6% | **recontagem a partir das escalas gravadas, sem `ferramenta.indicadores` nem o modelo** (`p17_diagnostico_k5.py analisar`): igual à ferramenta; critério recontado = valor da partida no log; esperado commitado antes (`d9c0677`) | uma rodada; limite de 180 s; a etapa 1 varia a cada rodada (gap 28,6% contra 33,3% em 09/10, mesma penalidade 21) |

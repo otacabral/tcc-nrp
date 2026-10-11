@@ -1,0 +1,4 @@
+Rodada de diagnostico da P17 no K5, feita em 11/10/2026, ~00:42-00:55 (o nome da pasta tem a
+data em que o script e o esperado foram commitados, 10/10, commit d9c0677; nao renomear).
+Script: docs/diagnostico/p17_diagnostico_k5.py rodar (600 s + 180 s, limites da tela).
+Resultado: ESPERADO OK, desfecho SEM MELHORA (DECISOES.md, "2026-10-10 - P17").
