@@ -6,6 +6,8 @@ Instruções para o Claude Code. Isto é **protocolo de trabalho** — como agir
 **Leia primeiro `ESTADO_ATUAL.md`**, antes de qualquer coisa. É o arquivo curto que diz onde
 o trabalho está e aponta para os outros. Depois dele, conforme a tarefa:
 
+- `PASSAGEM.md` — onde a última sessão parou e a próxima tarefa; lido primeiro pelos chats e
+  atualizado pelo Claude Code ao fim de cada sessão.
 - `VIRADA_ESCOPO_2026-09-24.md` — escopo e parâmetros normativos.
 - `MAPA_CODIGO.md` — inventário do código, arquivo por arquivo.
 - `DECISOES.md` — decisões de modelagem. Foi para `historico/` na virada de escopo de 24/09
@@ -25,7 +27,7 @@ Escopo mudou em 24/09: antes era comparar regimes de jornada. Os experimentos da
 passam a ser validação e demonstração de uso. Os documentos antigos estão em
 `historico/escopo-comparacao-regimes/` — consulta, não referência ativa.
 
-**Congelamento de resultado numérico: 14/10/2026.**
+**Congelamento de resultado numérico: 16/10/2026** (adiado de 14/10 em 06/10).
 
 ## Stack
 
@@ -45,16 +47,13 @@ fecha. Fora isso: sem metaheurística, sem geração de colunas. O objeto é o m
 experimentos, ordem das tarefas: aplicar direto, sem perguntar.
 
 **Mudanças de formulação, desenho experimental ou escopo**: registrar em `PROPOSTAS.md` com o
-raciocínio completo e **não implementar**. O Otávio leva para validação no projeto de
-redação. (O `PROPOSTAS.md` do escopo anterior está no histórico; um novo se recria quando a
-primeira proposta do escopo atual aparecer.)
+raciocínio completo e **não implementar**. O Otávio valida com o chat de Orientação, que lê
+o `PROPOSTAS.md` direto desta pasta. O `PROPOSTAS.md` da raiz é o vigente; o do escopo anterior
+está em `historico/escopo-comparacao-regimes/`.
 
 **Nenhum resultado numérico vale** sem conferência no avaliador oficial ou contra a Tabela 6
 de Santos et al. (2016). `python src\regressao.py` é o portão: roda antes de qualquer
 alteração no modelo entrar.
-
-**Reescrita de arquivo de contexto está congelada** até a especificação da ferramenta sair do
-projeto de redação. Notas novas, sim; reescrita de contexto, não.
 
 **Git**: o Otávio é iniciante. Dar o comando exato e dizer o que ele faz. Nunca `rebase` nem
 `amend` em commit antigo — o registro de que as decisões tiveram data e motivo é evidência do
@@ -65,17 +64,24 @@ trabalho.
 **Execução longa** (regra de 03/10): antes de lançar, rodar o menor caso até o fim; depois de
 lançar, só relatar que está rodando após o primeiro caso completo aparecer no log.
 
+**Fim de sessão** (regra de 11/10): atualizar o `PASSAGEM.md` — onde paramos, próxima tarefa,
+decisões da sessão, pendências com a Redação — e commitar. Vale também para sessões em que o
+trabalho veio do chat de Orientação.
+
 ## Formato das respostas
 
 Começar com uma seção curta **"Para o Otávio"**: o que mudou, o que ele precisa executar, o
 que precisa de decisão. Máximo cinco linhas, sem jargão.
 
-Terminar com um bloco separado, título **"LEVAR PARA O PROJETO DE REDACAO"**, listando todo
-arquivo de decisão ou proposta editado na sessão, com uma linha sobre o que mudou em cada.
-Se nenhum, escrever "LEVAR PARA O PROJETO DE REDACAO: nada". **Não omitir.**
+Terminar com um bloco separado, título **"LEVAR PARA O CHAT DE ORIENTAÇÃO"**, listando o que
+mudou na pasta na sessão — todo arquivo de decisão, proposta, número ou passagem editado ou
+criado —, com uma linha sobre o que mudou em cada. Se nenhum, escrever "LEVAR PARA O CHAT DE
+ORIENTAÇÃO: nada". **Não omitir.**
 
-O projeto de redação roda separado e não tem acesso a esta pasta. Decisão registrada aqui que
-não chega lá vira capítulo escrito com decisão superada.
+Os chats leem esta pasta direto, sem upload: o de Orientação só lê; o de Redação lê esta pasta
+e escreve em `D:\TCC\escrita`. O Claude Code é o único que escreve aqui. O bloco final serve
+para o chat saber o que reler — decisão registrada aqui que ele não relê vira capítulo escrito
+com decisão superada.
 
 ## O que este repositório aprendeu errando
 

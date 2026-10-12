@@ -1,67 +1,67 @@
-# LEIA PRIMEIRO — mapa dos arquivos deste projeto
+# LEIA PRIMEIRO — mapa da pasta para os chats
 
-**Atualizado em 11/10/2026.** Este arquivo diz o que é cada arquivo do projeto de redação,
-quais estão vigentes e em que ordem ler. Qualquer chat novo deve começar por aqui.
+**Atualizado em 11/10/2026** (reescrito na reorganização dos chats). Este arquivo diz o que é
+cada arquivo de `D:\dev\tcc-nrp`, quais estão vigentes e em que ordem ler.
+
+## Como os chats usam esta pasta
+
+- Os chats **leem esta pasta direto**, no disco. Não há mais cópias no Projeto do claude.ai
+  nem upload: a verdade está aqui.
+- **Chat de Orientação:** só leitura.
+- **Chat de Redação:** lê esta pasta e escreve só em `D:\TCC\escrita`.
+- **Claude Code:** é o único que escreve nesta pasta. Ao fim de cada sessão, atualiza o
+  `PASSAGEM.md` e commita.
 
 ## Onde o trabalho está (11/10/2026)
 
 - **Versão citável do TCC: v1.2.2** (tag `v1.2.2`, 11/10). Diferença para a v1.2.1: a
-  correção de defeito de texto da P17 (abaixo), só no caminho sem prova; regressão e telas 8 e
-  12 OK. A v1.2.1 (tag v1.2.1, commit `032dede`) tinha código idêntico ao da v1.2 (tag enviada
-  em 09/10; `resumo.txt` do `fechar_v12` termina em "TUDO OK"), mais 23 arquivos de evidência
-  citados pelo `NUMEROS_TCC.md` que estavam fora do git.
+  correção de defeito de texto da P17, só no caminho sem prova; regressão e telas 8 e 12 OK. A
+  v1.2.1 (tag `v1.2.1`, commit `032dede`) tinha código idêntico ao da v1.2, mais 23 arquivos
+  de evidência citados pelo `NUMEROS_TCC.md` que estavam fora do git.
 - A v1.2 acrescenta à v1.1: **P15** (alerta, não trava, quando o descanso semanal fica abaixo
   de 35 h — Súmula 110 do TST — ignorando as bordas do período), **P14 + P17** (a etapa 2
   equilibra a carga mesmo sem prova de ótimo, partindo da escala da etapa 1, sem nunca piorar).
-- **P17 fechada (11/10): sem defeito, com limitação.** Nos casos sem prova, a etapa 2 não
-  melhorou em nenhuma rodada registrada (Otávio, K5 e K6 em 09/10; K5 em 11/10, com as
-  escalas gravadas e recontadas; e o teste 8b). A garantia (nunca piora a etapa 1) vale por
-  construção. A tela passou a dizer, nesse caso, "a da etapa 1" (defeito de texto corrigido
-  na v1.2.2). Números: `NUMEROS_TCC.md`, seção 13; decisão: `DECISOES.md`, "2026-10-10 — P17".
-- **Diagnóstico de 11/10 (só teste; a ferramenta não muda):** no K5, com 30 min em vez de 3, a
-  etapa 2 achou escala bem mais equilibrada com a mesma penalidade (diferença entre colegas de
-  42 → 12 h e 30 → 12 h), só aos ~29 min. A limitação é de tempo, não de alcance. A quebra de
-  simetria não ajudou em 3 min. Trabalho futuro: `PROPOSTAS.md`, P19 (d), "busca longa".
+- **P17 fechada (11/10): sem defeito, com limitação.** Nos limites da tela, a etapa 2 não
+  melhorou em nenhuma das 5 resoluções sem prova. No diagnóstico de 11/10 (só teste), o K5 com
+  30 min em vez de 3 achou escala bem mais equilibrada com a mesma penalidade (diferença entre
+  colegas 42 → 12 h e 30 → 12 h), só aos ~29 min; a quebra de simetria não ajudou em 3 min. A
+  limitação é de tempo, não de alcance; a ferramenta não muda. Trabalho futuro: `PROPOSTAS.md`,
+  P19. Números: `resultados/NUMEROS_TCC.md`, seção 13.
 - **Validação encerrada em 09/10.** Até 16/10 (congelamento dos números), só correção de
   defeito, com esperado registrado antes. Texto do TCC de 09/10 a 25/10; melhorias de tela de
   26 a 29/10. Reorganização das pastas (P18, opção A) em 16–17/10.
 
-## Dois avisos sobre as instruções do projeto
-
-Se as instruções do projeto ainda tiverem estas referências, elas estão mortas:
-- **`CONTEXTO_PROJETO_2_REDACAO.md` não existe.** O papel dele é deste arquivo, do
-  `ESTADO_ATUAL.md` e do `VIRADA_ESCOPO_2026-09-24.md`.
-- **O projeto "INRC 1 · Códigos" não existe mais.** O código roda no **Claude Code**, no
-  repositório `D:\dev\tcc-nrp`, que nenhum chat acessa. A ponte são os arquivos abaixo.
-
 ## Ordem de leitura
 
-1. **Este arquivo.**
-2. **`ESTADO_ATUAL.md`** — onde o trabalho está e o que vem depois.
-3. **`DECISOES.md`** — toda decisão de modelagem, com data, motivo e status. Vale o que a marca
-   de status diz (vigente, superada, histórico). As entradas de 05/10 a 10/10 são as que mais
+1. **`PASSAGEM.md`** — onde a última sessão parou, próxima tarefa, pendências com a Redação.
+2. **Este arquivo.**
+3. **`ESTADO_ATUAL.md`** — onde o trabalho está e o que vem depois, com mais detalhe.
+4. **`DECISOES.md`** — toda decisão de modelagem, com data, motivo e status. Vale o que a marca
+   de status diz (vigente, superada, histórico). As entradas de 05/10 em diante são as que mais
    pesam agora.
-4. **`PROPOSTAS.md`** — propostas decididas, descartadas e trabalhos futuros (P3). P16 é a lista
-   de melhorias de tela de 26-29/10; P18, a reorganização das pastas.
-5. **`NUMEROS_TCC.md`** — todo número citável, com origem, comando, conferência e ressalva. É a
-   fonte do capítulo de resultados. **Nenhum número vai ao texto sem estar aqui.**
-6. **`VIRADA_ESCOPO_2026-09-24.md`** — o escopo atual (ferramenta, não comparação de regimes),
+5. **`PROPOSTAS.md`** — propostas decididas, descartadas e trabalhos futuros (P3, P19). P16 é a
+   lista de melhorias de tela de 26-29/10; P18, a reorganização das pastas.
+6. **`resultados/NUMEROS_TCC.md`** — todo número citável, com origem, comando, conferência e
+   ressalva. É a fonte do capítulo de resultados. **Nenhum número vai ao texto sem estar aqui.**
+7. **`VIRADA_ESCOPO_2026-09-24.md`** — o escopo atual (ferramenta, não comparação de regimes),
    parâmetros do Parecer COFEN e base legal.
 
 ## O que é cada arquivo
 
-### Ponte com o Claude Code (vigentes, atualizados pelo Claude Code)
+### Arquivos-ponte (vigentes, mantidos pelo Claude Code)
 
 | Arquivo | Para quê |
 |---|---|
+| `PASSAGEM.md` | Passagem entre sessões: onde paramos, próxima tarefa, decisões, pendências com a Redação |
 | `LEIA_PRIMEIRO.md` | Este mapa |
 | `ESTADO_ATUAL.md` | Onde o trabalho está e o que vem depois |
 | `DECISOES.md` | Diário de decisões de modelagem e implementação |
-| `PROPOSTAS.md` | O que espera decisão; trabalhos futuros (P3) |
-| `NUMEROS_TCC.md` | Números citáveis com conferência |
+| `PROPOSTAS.md` | O que espera decisão; trabalhos futuros (P3, P19) |
+| `resultados/NUMEROS_TCC.md` | Números citáveis com conferência |
+| `VIRADA_ESCOPO_2026-09-24.md` | Escopo atual, parâmetros do Parecer, base legal |
 | `GUIA_DE_USO.md` | Manual do usuário final (instalar, preencher, ler o resultado) |
 
-### Relatórios de sessão do Claude Code (histórico; consulta pontual)
+### Relatórios de sessão do Claude Code (`resultados/`; histórico, consulta pontual)
 
 Cada sessão do Claude Code termina num relatório. Servem para saber **como** algo foi feito;
 o que eles decidiram já está no `DECISOES.md` e no `NUMEROS_TCC.md`.
@@ -80,45 +80,38 @@ o que eles decidiram já está no `DECISOES.md` e no `NUMEROS_TCC.md`.
 | `relatorio_2026-10-10a.md` | P17: leitura do código (sem defeito) e esperado da rodada do K5; v1.2.1 (23 arquivos de evidência versionados); P18 decidida |
 | `relatorio_2026-10-11a.md` | P17 fechada (K5 sem melhora, recontagem = ferramenta); defeito de texto corrigido; v1.2.2; cronograma do texto (09–25/10) |
 | `relatorio_2026-10-11b.md` | Diagnóstico da etapa 2 no K5: 30 min melhora (0,4091 → 0,1364), simetria não; P19; item novo da P16 |
-| `resumo.txt` | Saída do `fechar_v12.sh`: tudo OK, base da tag v1.2 |
-| `p17_otavio.log`, `p17_K5.log`, `p17_K6.log` | Logs da P17 nos três casos difíceis: etapa 2 sem melhora sobre a etapa 1; diagnóstico aberto em 10/10 (rodada do K5, `DECISOES.md`) |
-
-**Duplicatas no projeto de redação:** `relatorio_2026-10-07a.md` e `relatorio_2026-10-09a.md`
-aparecem duas vezes cada. Vale a cópia **mais recente** (enviada em 09/10, 19:15); a mais
-antiga pode ser apagada.
+| `relatorio_2026-10-11c.md` | Reorganização dos chats; Sub-MIP do HiGHS; busca das 207 + 36 escalas de 18/09 |
+| `fechar_v12/resumo.txt` | Saída do `fechar_v12.sh`: tudo OK, base da tag v1.2 |
+| `fechar_v12/p17_otavio.log`, `p17_K5.log`, `p17_K6.log` | Logs da P17 nos três casos difíceis (09/10) |
 
 ### Apoio da bateria e da demonstração
 
 | Arquivo | Para quê |
 |---|---|
-| `bateria_entradas.md` | Desenho da bateria (14 áreas da tela, 3 níveis, 6 propriedades, camadas de falha) |
-| `cortes_esperados.md` | A conta registrada antes de rodar a demonstração da clínica (20/19/18 técnicos) |
+| `docs/bateria_entradas.md` | Desenho da bateria (14 áreas da tela, 3 níveis, 6 propriedades, camadas de falha) |
+| `docs/demonstracao/cortes_esperados.md` | A conta registrada antes de rodar a demonstração da clínica (20/19/18 técnicos) |
 
-### Referência técnica (do repositório; podem estar desatualizados)
+### Referência técnica (podem estar desatualizados)
 
 | Arquivo | Situação |
 |---|---|
 | `MAPA_CODIGO.md` | Inventário do código de 28/09. **Desatualizado** (fala em escalabilidade "rodando agora"); o papel de cada arquivo ainda vale |
-| `CLAUDE.md` | Regras de trabalho do Claude Code no repositório |
+| `CLAUDE.md` | Regras de trabalho do Claude Code nesta pasta |
 | `README.md`, `requirements.txt` | Apresentação e bibliotecas do repositório |
-| `formato_instancias.md` | Formato XML das instâncias do INRC |
+| `docs/formato_instancias.md` | Formato XML das instâncias do INRC |
+| `historico/escopo-comparacao-regimes/` | Documentos do escopo anterior (comparação de regimes): consulta, não referência ativa |
 
-### Escopo e TCC 1
+### Fora desta pasta (em `D:\TCC`)
 
-| Arquivo | Para quê |
+| Arquivo | Onde |
 |---|---|
-| `VIRADA_ESCOPO_2026-09-24.md` | Escopo atual, parâmetros do Parecer, base legal |
-| `REENQUADRAMENTO_TCC1.md` | O que no TCC 1 contradiz o escopo atual. Escrito antes da virada de 24/09; o cabeçalho diz o que foi superado (título, objetivo, ordem de execução) e o que vale |
-| `TCC parte I .pdf` | TCC 1 entregue, para escopo abandonado (estudo de caso em hospital) |
-
-### Fontes e literatura
-
-| Arquivo | Para quê |
-|---|---|
-| `Parecer-Normativo-1-2024.pdf` | Fonte primária do COFEN (QP, percentuais, graus misturados) |
-| `Informe-Estrategico-…12X36.pdf`, `RT Informa - N. 20…12x36.pdf` | ADI 5994: acordo individual no 12×36 |
-| `s1047901415946.pdf` | Artigo de referência (conferir na ficha antes de citar) |
-| `00_Triagem_Etapa1.xlsx`, `Analise_Base_Literatura_NRP.docx` | Triagem e síntese da literatura de NRP para o referencial |
+| `Parecer-Normativo-1-2024.pdf` (fonte primária do COFEN) | `D:\TCC\acervo\normas\` |
+| `Informe-Estrategico-…12X36.pdf`, `RT Informa - N. 20…12x36.pdf` (ADI 5994, acordo individual no 12×36) | `D:\TCC\acervo\normas\` |
+| `00_Triagem_Etapa1.xlsx`, `Analise_Base_Literatura_NRP.docx` (triagem e síntese da literatura de NRP) | `D:\TCC\acervo\revisao_sistematica\artigos e analises\` |
+| Literatura por camada (fundamentos, NRP, MILP, solvers…) | `D:\TCC\acervo\literatura\Fontes NRP\` |
+| `REENQUADRAMENTO_TCC1.md` (o que no TCC 1 contradiz o escopo atual) | `D:\TCC\escrita\fontes\` |
+| `TCC parte I .pdf` (TCC 1 entregue, escopo abandonado) | `D:\TCC\arquivo_morto\TCC1\01. seções em desenvolvimento\` |
+| `s1047901415946.pdf` (artigo de referência) | não achado pelo nome em `D:\TCC` (11/10) |
 
 ## Como a ferramenta funciona, em uma linha por peça
 

@@ -2045,6 +2045,54 @@ duas: nenhuma prova de que 0,1364 seja o melhor. **A ferramenta não muda:** o o
 (20 min, P12) não comportaria uma etapa 2 desse tamanho. Uma rodada, uma partida; tempo é limite
 operacional desta máquina. Desdobramento: `PROPOSTAS.md`, P19 (a) e (d).
 
+*Nota para o referencial (2.4.3) e o método (11/10, só leitura): o que é a fonte "L" (Sub-MIP).*
+- **Versão que roda:** pacote `highspy` 1.15.1; biblioteca "Running HiGHS 1.15.1 (git hash:
+  04024d7)", impressa pelo próprio HiGHS no `.venv`. Os `highs.log` gravados via `appsi_highs`
+  não trazem essa linha de cabeçalho. A tag `v1.15.1` do repositório oficial aponta para o
+  commit `04024d701f79feb8e2f18bc3df0dffc04ef05088`, o mesmo do binário. Fonte:
+  <https://github.com/ERGO-Code/HiGHS/tree/v1.15.1>. O `.venv` só tem o binário.
+- **O que o código chama de sub-MIP:** `HighsPrimalHeuristics::solveSubMip`
+  (`highs/mip/HighsPrimalHeuristics.cpp`, linha 77). Copia o modelo com limites de variáveis
+  mais apertados (parte das variáveis inteiras fixadas pela heurística que chama), resolve essa
+  cópia com o próprio resolvedor de MIP do HiGHS e, se achar solução, a oferece ao problema
+  principal com a fonte `kSolutionSourceSubMip` (linha 238). A letra "L" e o nome "Sub-MIP"
+  vêm de `highs/mip/HighsMipSolverData.h`, linha 53, e de `HighsMipSolverData.cpp`, linhas
+  113–115.
+- **Limites da cópia** (`solveSubMip`, linhas 92–130):
+  - nós, folhas e nós sem melhora limitados pela heurística que chama;
+  - o tempo restante do problema principal;
+  - o valor da melhor solução como corte;
+  - gap absoluto pequeno;
+  - sem detecção de simetria;
+  - `mip_heuristic_effort` = 0,8 dentro da cópia.
+- **Quem chama** (nomes como estão no código):
+  - `rootReducedCost` (linha 314; chamada na 369), só na raiz;
+  - `RENS` (linha 394; chamada na 627), na raiz e, durante a árvore, só enquanto não há
+    incumbente;
+  - `RINS` (linha 661; chamada na 938), durante a árvore, quando já há incumbente.
+- **Quando disparam:**
+  - Na raiz: `HighsMipSolverData.cpp`, linhas 2363–2398.
+  - Na árvore: `HighsMipSolver::run`, a função `runHeuristics` (`HighsMipSolver.cpp`, linhas
+    746–795). Ela é chamada na linha 847 só se `moreHeuristicsAllowed()` permitir.
+  - Essa função (`HighsMipSolverData.cpp`, linhas 669 em diante) limita a fração de iterações
+    de LP gasta em heurísticas, que vem de `mip_heuristic_effort` (linha 764).
+- **Opções e padrões** (`highs/lp_data/HighsOptions.h`, linhas 1224–1257; conferidos no `.venv`
+  com `getOptionValue` e na documentação oficial,
+  <https://ergo-code.github.io/HiGHS/stable/options/definitions/>):
+
+  | Opção | Padrão |
+  |---|---|
+  | `mip_heuristic_effort` | 0,05 (faixa 0–1) |
+  | `mip_heuristic_run_rins` | true |
+  | `mip_heuristic_run_rens` | true |
+  | `mip_heuristic_run_root_reduced_cost` | true |
+
+- **No K5 (rodada A):** as duas melhoras saíram com "L" em plena árvore (nós 14.154 e 14.378),
+  bem depois do último reinício da busca (linha 186 do log). Já havia incumbente (a partida).
+  Pelo código acima, o único caminho de sub-MIP nessa situação é o `RINS`. O log, porém, não
+  registra o nome da heurística: a leitura "foi o RINS" é inferência pelo código, não
+  observação.
+
 ---
 
 ## 2026-10-09 — Texto do TCC antecipado para 09/10

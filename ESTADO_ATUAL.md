@@ -3,7 +3,8 @@
 **Atualizado em 11/10/2026** (notas de 10 e 11/10 abaixo; o corpo, das seções 1 a 7, é de 03/10 com
 atualizações datadas). Este arquivo existe para responder, em uma leitura, *onde o
 trabalho está*. É o primeiro que qualquer assistente — Claude Code aqui no repositório ou o
-chat de orientação/redação — deve ler.
+chat de Orientação ou de Redação, que leem esta pasta direto — deve ler (os chats começam
+pelo `PASSAGEM.md`).
 
 Ele não substitui nada. O escopo está em `VIRADA_ESCOPO_2026-09-24.md`, o protocolo de
 trabalho em `CLAUDE.md`, o inventário de código em `MAPA_CODIGO.md`, as decisões de modelagem
@@ -260,20 +261,26 @@ Está em `CLAUDE.md`, mas vale repetir porque é o critério mais útil que saiu
   não mudou nada.
 - **Resultado idêntico depois de uma correção é sinal de alarme**, não de estabilidade.
 
-## 7. Como os dois ambientes se dividem
+## 7. Como os ambientes se dividem (reescrita em 11/10)
 
 **Claude Code, aqui no repositório**: código, experimentos, conferências, organização de
-arquivos. Lê estes arquivos sozinho — não precisa que nada seja colado.
+arquivos. É o **único que escreve** nesta pasta. Ao fim de cada sessão, atualiza o
+`PASSAGEM.md` e commita.
 
-**Chat de orientação / redação**: escopo, decisões, especificação da ferramenta, texto do TCC.
-Não tem acesso a esta pasta. Recebe os arquivos por upload.
+**Chat de Orientação**: escopo, decisões, especificação da ferramenta. **Lê esta pasta direto**
+(`D:\dev	cc-nrp`), só leitura. Começa pelo `PASSAGEM.md`.
+
+**Chat de Redação**: texto do TCC. Lê esta pasta direto e escreve só em `D:\TCC\escrita`.
+
+Não há mais upload: as cópias no Projeto do claude.ai foram aposentadas em 11/10, e a verdade
+está no disco.
 
 **Quem decide (regra de 29/09/2026).** Decisões de escopo e de formulação são tomadas pelo
-Otávio no projeto de redação e registradas como decisões no `DECISOES.md`. Não esperam
-validação do orientador; ele é informado na reunião.
+Otávio com o chat de Orientação e registradas como decisões no `DECISOES.md` pelo Claude Code.
+Não esperam validação do orientador; ele é informado na reunião.
 
-**A ponte são cinco arquivos**: `LEIA_PRIMEIRO.md` (mapa dos arquivos do projeto de redação,
-acrescentado em 10/10), este, `VIRADA_ESCOPO_2026-09-24.md`, `PROPOSTAS.md` e `DECISOES.md`.
-O `LEIA_PRIMEIRO.md` sobe ao projeto de redação junto com os demais sempre que houver
-relatório. Decisão registrada de um lado que não chega ao outro vira capítulo escrito com
-decisão superada.
+**Os arquivos-ponte**: `PASSAGEM.md` (onde paramos e próxima tarefa), `LEIA_PRIMEIRO.md` (mapa
+da pasta para os chats), este, `DECISOES.md`, `PROPOSTAS.md`, `resultados/NUMEROS_TCC.md` e
+`VIRADA_ESCOPO_2026-09-24.md`. O bloco "LEVAR PARA O CHAT DE ORIENTAÇÃO", no fim de cada
+resposta do Claude Code, diz o que mudou e o que reler. Decisão registrada aqui que o chat não
+relê vira capítulo escrito com decisão superada.
