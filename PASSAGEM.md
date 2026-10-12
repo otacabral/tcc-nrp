@@ -24,6 +24,8 @@ fim de cada sessão (dele ou do chat).
 - Claude Code: nada pendente da sessão de 11/10. Feitos:
   - Sub-MIP do HiGHS 1.15.1, registrada no `DECISOES.md`, P17 item d;
   - busca das 207 + 36 escalas de 18/09: não encontradas (ver "Pendências com a Redação").
+  - "shell still running": era um comando travado do próprio Claude Code, já encerrado; nenhum
+    processo vivo, nenhuma rodada em andamento.
 - Otávio: e-mail ao orientador (confirmar se foi enviado).
 - 16–17/10: P18, opção A.
 
