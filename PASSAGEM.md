@@ -28,6 +28,21 @@ fim de cada sessão (dele ou do chat).
     processo vivo, nenhuma rodada em andamento.
 - Otávio: e-mail ao orientador (confirmar se foi enviado).
 - 16–17/10: P18, opção A.
+- Depois da P18: MAPA_CODIGO.md (pedido da Redação, sustenta a 4.2 e o Apêndice C). Só
+  documentação; na mesma sessão da P18 ou na seguinte. Pedido de 11/10, em resumo:
+  1. todo `src/` e os scripts de `docs/`, com caminhos pós-P18: papel (produto, validação,
+     teste, experimento, diagnóstico) e módulos do projeto que importa ou chama;
+  2. fluxo de um clique no `ferramenta.py`, pelos nomes das funções, sem número de linha: conta
+     (veredito do quadro), etapa 1, etapa 2 com e sem prova, menor quadro, diagnóstico,
+     conferência fora do modelo (descanso no relógio), planilha;
+  3. índice reverso script → seções e linhas do `NUMEROS_TCC.md`, sem copiar comandos;
+  4. tirar "Rodando agora" e "O que isso sugere para a construção da ferramenta"; o escopo
+     anterior fica, marcado como histórico;
+  5. cabeçalho "conferido na versão <tag ou commit>, <data>";
+  6. conferir que todo comando da coluna "Comando" do `NUMEROS_TCC.md` aponta para arquivo que
+     existe (sem rodar); corrigir só o caminho e listar no relatório;
+  7. depois da P16 (fim de 29/10): reconferir os nomes de função do item 2 e atualizar a versão
+     no cabeçalho.
 
 ## Decisões das sessões de 09 a 11/10
 
