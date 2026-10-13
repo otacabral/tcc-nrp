@@ -76,6 +76,13 @@ estamos** e **o que vem depois**.
 > mostra a escala da etapa 1 e diz isso. Regressão (56, 58, 197, 219) e telas 8 e 12 OK
 > (`resultados/v122_2026-10-11/`). Cronograma: texto do TCC de 09 a 25/10 (`DECISOES.md`,
 > "2026-10-09 — Texto do TCC antecipado para 09/10").
+>
+> **13/10/2026 — v1.2.3: VERSÃO CITÁVEL DO TCC** (tag `v1.2.3` no commit desta nota; substitui a
+> `v1.2.2`). **Correção de defeito: art. 67 com horários editáveis** (`DECISOES.md`,
+> "2026-10-13 — Art. 67 com horários editáveis"; `resultados/relatorio_2026-10-13a.md`). (a) o
+> gerador de pares proíbe a folga isolada abaixo de 24 h; (b) escala que reprova na conferência
+> de descanso não é entregue (erro explícito na tela). Nenhum número muda: 544 + 96 XML
+> idênticos byte a byte; regressão = Tabela 6; suíte da tela completa OK.
 
 ---
 

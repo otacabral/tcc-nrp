@@ -111,7 +111,7 @@ o que eles decidiram já está no `DECISOES.md` e no `NUMEROS_TCC.md`.
 | Literatura por camada (fundamentos, NRP, MILP, solvers…) | `D:\TCC\acervo\literatura\Fontes NRP\` |
 | `REENQUADRAMENTO_TCC1.md` (o que no TCC 1 contradiz o escopo atual) | `D:\TCC\escrita\fontes\` |
 | `TCC parte I .pdf` (TCC 1 entregue, escopo abandonado) | `D:\TCC\arquivo_morto\TCC1\01. seções em desenvolvimento\` |
-| `s1047901415946.pdf` (artigo de referência) | não achado pelo nome em `D:\TCC` (11/10) |
+| Santos et al. (2016), Ann Oper Res 239:225–251 (artigo de referência; no Projeto, `s1047901415946.pdf`) | `D:\TCCcervo\literatura\Fontes NRP\Camada 4 - Modelos IP e MILP para NRP (nucleo do trabalho)\Santos et al. (2016) - publicado.pdf` (achado pelo md5 em 13/10) |
 
 ## Como a ferramenta funciona, em uma linha por peça
 

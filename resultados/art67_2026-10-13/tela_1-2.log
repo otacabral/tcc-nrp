@@ -1,0 +1,22 @@
+2026-10-13 13:27:04.396 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+1. 12x36, demanda equivalente ao Experimento A (razao 20/29), 40 = 14 + 26
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+2026-10-13 13:30:28.777 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+   ok    sem excecao na tela []
+   ok    veredito: ['O quadro informado admite escala legal. Escala gerada.']
+   ok    sem alerta: []
+   ok    demanda montada pela tela = celula v1 do Experimento A
+   ok    tentativas [(40, 'viavel', 14, 26)]
+   ok    planilha abre: ['Escala', 'Resumo', 'Legenda']
+   ok    conferencia de descanso: cumpre
+2. mesma configuracao, 39 = 13 + 26
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    sem excecao na tela
+   ok    veredito: ['Falta 1; o menor quadro viável é 40. Escala gerada.']
+   ok    tentativas [(39, 'piso', None, None), (40, 'viavel', 14, 26)]
+   ok    diagnostico na tela: ('alternancia', 'Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). seg 04/01 e ter 05/01 somam 40 plantões, que precisam de 40 pessoas diferentes; descontadas férias e licenças, 39 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.', ['alternancia'])
+   ok    janela do diagnostico aparece na tela
+
+ponta a ponta pela tela OK

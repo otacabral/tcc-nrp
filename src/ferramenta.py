@@ -17,7 +17,11 @@ O veredito do quadro:
 - **faltam N; o menor quadro viavel e X** — o quadro informado e inviavel, com prova do
   solver ou da aritmetica, e X e o primeiro viavel subindo o quadro;
 - **nao decidido** — o solver bateu no limite de tempo sem escala: "nao foi possivel gerar a
-  escala no tempo disponivel". Nunca e contado como inviavel, e nunca vira "faltam N".
+  escala no tempo disponivel". Nunca e contado como inviavel, e nunca vira "faltam N". Tambem
+  quando a escala achada REPROVA na conferencia de descanso no relogio (`cumpre`): erro
+  explicito, sem escala nem planilha, e a busca para ali — nao conta como viavel nem como
+  inviavel (13/10, DECISOES.md, "2026-10-13 — Art. 67 com horarios editaveis"). Segunda
+  protecao: o modelo ja proibe as sequencias que a reprovariam.
 
 Com escala, a frase separa o otimo provado ("escala gerada") da escala achada no limite de
 tempo sem prova ("pode haver uma melhor", com o gap). DECISOES.md, "Redesenho", 02/10.
@@ -47,8 +51,8 @@ sys.path.insert(0, str(RAIZ / "docs"))
 import experimento_a as ea  # noqa: E402
 import instancia_br as br  # noqa: E402
 import modelo  # noqa: E402
-from conferencia_descanso_escala import (cumpre, fmt_semanal, medir,  # noqa: E402
-                                         semanal_sem_bordas)
+from conferencia_descanso_escala import (MIN_SEMANAL, cumpre, fmt_semanal,  # noqa: E402
+                                         medir, semanal_sem_bordas)
 
 MARGEM = 12          # quantos quadros acima do informado tentar antes de desistir
 TEMPO = 600          # limite da etapa 1, em segundos (decidido em 05/10)
@@ -132,6 +136,8 @@ class Resultado:
     orcamento: float | None = None
     alertas_descanso: list[str] = field(default_factory=list)   # P15: nao impedem a escala
 
+    reprovacao: str | None = None   # 13/10: o que a conferencia de descanso mediu e reprovou
+
     @property
     def faltam(self) -> int | None:
         return None if self.menor_viavel is None else self.menor_viavel - self.quadro_informado
@@ -166,6 +172,9 @@ class Resultado:
         # existe com o quadro informado provado insuficiente (pela conta ou pelo solver).
         insuficiente = "O quadro informado é insuficiente" if self.diagnostico else ""
         motivo, quadro, segundos = self.parada or (ea.INDETERMINADO, None, None)
+        if motivo == REPROVADA:
+            antes = f"{insuficiente}. " if insuficiente else ""
+            return f"{antes}{self.reprovacao} Não use esta escala."
         if motivo == ORCAMENTO_ESGOTADO and insuficiente:
             return (f"{insuficiente}; o menor quadro viável não foi determinado em "
                     f"{fmt_tempo(self.orcamento)}.")
@@ -206,6 +215,7 @@ class Resultado:
 
 
 ORCAMENTO_ESGOTADO = "orcamento"
+REPROVADA = "reprovada"   # escala achada, reprovada na conferencia de descanso (13/10)
 
 
 # --- montagem -----------------------------------------------------------------------------
@@ -792,12 +802,21 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
             if veredito != ea.INVIAVEL:
                 break
         if veredito == ea.VIAVEL:
-            r.veredito = ADMITE if acrescimo == 0 else FALTAM
-            r.menor_viavel, r.inst, r.escala = quadro, inst, escala
             m = medir(inst, escala)
             internos = [h for h in semanal_sem_bordas(inst, escala).values() if h is not None]
-            r.conformidade = {"ok": cumpre(inst, m), **m,
-                              "menor_semanal_interno": min(internos) if internos else None}
+            conformidade = {"ok": cumpre(inst, m), **m,
+                            "menor_semanal_interno": min(internos) if internos else None}
+            if not conformidade["ok"]:
+                # 13/10: escala que reprova no relogio nao e entregue nem conta como viavel; e
+                # o quadro tambem nao foi provado inviavel, entao a busca para sem decidir
+                r.tentativas[-1] = (quadro, REPROVADA, *r.tentativas[-1][2:])
+                r.parada, r.conformidade = (REPROVADA, quadro, None), conformidade
+                r.reprovacao = reprovacao(inst, m)
+                decidido = False
+                break
+            r.veredito = ADMITE if acrescimo == 0 else FALTAM
+            r.menor_viavel, r.inst, r.escala = quadro, inst, escala
+            r.conformidade = conformidade
             r.alertas_descanso = alertas_descanso(inst, escala)
             r.indicadores = {**indicadores(inst, escala), **info}
             break
@@ -810,6 +829,30 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
         r.veredito = SEM_VIAVEL  # toda a faixa foi provada inviavel
     progresso(1.0, "concluido")
     return r
+
+
+def reprovacao(inst, m: dict) -> str:
+    """A frase do erro quando a escala reprova na conferencia de descanso (`cumpre`), com o
+    que foi medido. Mesmos criterios do `cumpre`."""
+    limite = inst.contratos["0"].max_consecutive_working_days
+    teto = limite.valor if limite.ativa else inst.n_dias
+    artigos, medidas = [], []
+    if m["menor_folga"] < 0:
+        exigido = m["exigido_no_pior"]
+        artigos.append("art. 59-A" if exigido == br.POS_TURNO_LONGO else "art. 66")
+        medidas.append(f"descanso de {m['pior_folga'][3]:.0f} h entre dois turnos, abaixo "
+                       f"do mínimo de {exigido} h")
+    if m["menor_semanal"] < MIN_SEMANAL:
+        artigos.append("art. 67")
+        medidas.append(f"descanso semanal de {m['menor_semanal']:.0f} h, abaixo do mínimo de "
+                       f"{MIN_SEMANAL} h")
+    if m["max_consec"] > teto:
+        artigos.append("art. 67")
+        medidas.append(f"{m['max_consec']} dias seguidos de trabalho, acima do máximo de "
+                       f"{teto}")
+    artigos = list(dict.fromkeys(artigos))
+    return (f"A escala encontrada não cumpre a conferência de descanso "
+            f"({'; '.join(artigos)}): {'; '.join(medidas)}.")
 
 
 def alertas_descanso(inst, escala) -> list[str]:

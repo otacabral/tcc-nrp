@@ -1,11 +1,12 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 11/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 13/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- Versão citável: v1.2.2. Validação encerrada em 09/10.
+- Versão citável: **v1.2.3** (13/10, correção do art. 67; nenhum número muda). Validação
+  encerrada em 09/10.
 - Números citáveis: `resultados/NUMEROS_TCC.md`.
 - P17 fechada, sem defeito.
   - Nos limites da tela, a etapa 2 não melhorou em nenhuma das 5 resoluções sem prova.
@@ -21,12 +22,18 @@ fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-- Claude Code: nada pendente da sessão de 11/10. Feitos:
+- Claude Code: nada pendente da sessão de 13/10. Feito: correção do art. 67 com horários
+  editáveis, (a) + (b), com esperado commitado antes; suíte completa OK; tag `v1.2.3`
+  (`resultados/relatorio_2026-10-13a.md`).
+- Sessão de 11/10, feitos:
   - Sub-MIP do HiGHS 1.15.1, registrada no `DECISOES.md`, P17 item d;
   - busca das 207 + 36 escalas de 18/09: não encontradas (ver "Pendências com a Redação").
   - "shell still running": era um comando travado do próprio Claude Code, já encerrado; nenhum
     processo vivo, nenhuma rodada em andamento.
 - Otávio: e-mail ao orientador (confirmar se foi enviado).
+- Otávio: enviar a tag ao GitHub — `git push origin main` e depois `git push origin v1.2.3`.
+- Santos et al. (2016) está no acervo (achado pelo md5 em 13/10); caminho no `LEIA_PRIMEIRO.md`.
+  As cópias do Projeto podem ser apagadas sem perder o artigo.
 - 16–17/10: P18, opção A.
 - Depois da P18: MAPA_CODIGO.md (pedido da Redação, sustenta a 4.2 e o Apêndice C). Só
   documentação; na mesma sessão da P18 ou na seguinte. Pedido de 11/10, em resumo:
@@ -44,6 +51,17 @@ fim de cada sessão (dele ou do chat).
   7. depois da P16 (fim de 29/10): reconferir os nomes de função do item 2 e atualizar a versão
      no cabeçalho.
 
+## Decisões da sessão de 13/10
+
+- **Art. 67 com horários editáveis** (`DECISOES.md`, 2026-10-13). Com turno editado na tela, a
+  folga isolada podia dar menos de 24 h (N 23–07, folga, M 05–13 = 22 h) e a ferramenta
+  entregava a escala como "admite escala legal".
+  - (a) o modelo proíbe a folga isolada abaixo de 24 h (fonte única: o gerador de pares);
+  - (b) se a conferência no relógio reprovar, erro em vermelho, sem escala, e a busca para;
+  - a regra vale também com `--sem-descanso-clt`; o id do padrão segue `clt_36h_…`.
+- A afirmação de 29/09 "o modelo garante o art. 67 por construção" ficou marcada como
+  superada (vale só para os horários dos modelos prontos).
+
 ## Decisões das sessões de 09 a 11/10
 
 - v1.2.1: evidência citada versionada.
@@ -60,6 +78,11 @@ fim de cada sessão (dele ou do chat).
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **Art. 67 (13/10):** onde o texto disser que o modelo garante o descanso semanal "por
+  construção" ou pelos horários, trocar pela regra explícita: toda folga isolada ≥ 24 h, mais
+  no máximo 6 dias seguidos (`DECISOES.md`, "2026-10-13 — Art. 67 com horários editáveis"). E
+  a segunda proteção: escala que reprova na conferência no relógio não é entregue.
 
 - **Seção 2.4.3:** gap de otimalidade, heurísticas primais no solver, HiGHS e por que ele
   (ferramenta gratuita). Fontes a conferir.

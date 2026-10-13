@@ -1,0 +1,7 @@
+regressao do modelo, solver appsi_highs, 4 alvos
+   OK  sprint01   Z=  56 (esperado   56) | sum(pena)=  56 | max pena= 11 |    5.0s
+   OK  sprint02   Z=  58 (esperado   58) | sum(pena)=  58 | max pena= 12 |    2.5s
+   OK  long01     Z= 197 (esperado  197) | sum(pena)= 197 | max pena= 15 |   15.9s
+   OK  long02     Z= 219 (esperado  219) | sum(pena)= 219 | max pena= 15 |   39.7s
+
+regressao OK: otimo provado, Tabela 6, espelho de avaliacao.py e decomposicao por profissional

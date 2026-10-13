@@ -1,0 +1,20 @@
+2026-10-13 13:06:34.280 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+15a. caso montado: 32 h interno, 31 h so na borda
+   ok    medir (trava, com bordas): 31.0 h (31)
+   ok    sem bordas por pessoa: {'0': 32.0, '1': 64.0, '2': None}
+   ok    alerta: ['Alerta de descanso semanal (não impede a escala): 1 profissional tem descanso semanal abaixo de 35 h (o menor: 32 h). A Súmula 110 do TST (e a OJ 355 da SDI-1) manda pagar como extras as horas que invadem o intervalo de 11 h depois do repouso semanal de 24 h: 24 + 11 = 35 h. Não conta o descanso que encosta no início ou no fim do período, porque o que vem antes e depois não é conhecido.']
+15b. planilhas da demonstracao (12x36): sem alerta
+   ok    rodada1: sem alerta; minimo sem bordas 36 h
+   ok    rodada2_19tec: sem alerta; minimo sem bordas 36 h
+   ok    rodada2_18tec: sem alerta; minimo sem bordas 36 h
+15c. caso do Otavio de 09/10 (6 h + 12 h): so a borda fica abaixo de 35 h
+   ok    sem alerta
+   ok    minimo sem bordas 36 h (36)
+   ok    medir (trava) continua 31 h
+15d. tela: indicador sem bordas e alerta em amarelo
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    indicador sem bordas na tela (24 h)
+   ok    alerta em amarelo: ['Alerta de descanso semanal (não impede a escala): 1 profissional tem descanso semanal abaixo de 35 h (o menor: 32 h). A Súmula 110 do TST (e a OJ 355 da SDI-1) manda pagar como extras as horas que invadem o intervalo de 11 h depois do repouso semanal de 24 h: 24 + 11 = 35 h. Não conta o descanso que encosta no início ou no fim do período, porque o que vem antes e depois não é conhecido.']
+
+ponta a ponta pela tela OK

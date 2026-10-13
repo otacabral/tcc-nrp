@@ -196,6 +196,19 @@ def teste_gerador_descanso() -> None:
     esperado = {("N", 1, "M"), ("N", 1, "N"), ("N", 1, "T"), ("N", 2, "M"), ("N", 2, "T")}
     gerado = set(br.pares_proibidos_por_horario(mistos, 6))
     confere(gerado == esperado, f"turnos 6 h + 6 h + 12 h: {sorted(gerado)}")
+    # art. 67 com horarios editados (13/10, esperado no relatorio 2026-10-13a): N 23-07,
+    # folga, M 05-13 = 22 h passava nas 11 h. Agora (N, 2, M) e proibido, com e sem a regra
+    # das 11 h, e toda folga isolada admitida da ao menos 24 h.
+    editados = [("N", 23, 8), ("M", 5, 8)]
+    confere(("N", 2, "M") in br.pares_proibidos_por_horario(editados, 6)
+            and ("N", 2, "M") in br.pares_proibidos_por_horario(editados, 6, interjornada=False),
+            "N 23-07, folga, M 05-13 (22 h): (N, 2, M) proibido pelo art. 67")
+    menor, _ = br.conferir_descanso(None, turnos_base=editados, max_consec=6, saltos=(2,))
+    confere(menor >= br.DESCANSO_SEMANAL, f"N 23-07 + M 05-13: menor folga isolada {menor:.0f} h"
+                                          f" >= {br.DESCANSO_SEMANAL} h")
+    # salto 3 nao precisa da regra: dois dias livres dao ao menos 72 - (23 + 24) = 25 h
+    menor3 = min(72 + j - (i + d) for i in range(24) for d in range(1, 25) for j in range(24))
+    confere(menor3 >= br.DESCANSO_SEMANAL, f"salto 3, qualquer horario valido: {menor3} h")
 
 
 TURNOS_MISTOS = [("M", 7, 6, "Manha"), ("T", 13, 6, "Tarde"), ("N", 19, 12, "Noite")]

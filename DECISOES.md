@@ -1115,6 +1115,12 @@ critério operacional "ao menos um dia sem turno por semana, com descanso contí
 mais, medido inteiro". É critério operacional, sem verificação de jurisprudência sobre
 descanso que atravessa a virada da semana.
 
+> **Superada em 13/10** ("2026-10-13 — Art. 67 com horários editáveis"). O argumento acima
+> vale só para os horários dos modelos prontos: com turnos editados na tela, o pior caso
+> noite → folga → manhã pode dar menos de 24 h (N 23–07, folga, M 05–13 = 22 h), e o modelo
+> **não** garantia o art. 67. Desde 13/10 a garantia vem de uma regra explícita do gerador de
+> pares proibidos, não dos horários. O texto acima fica como registro.
+
 *Limitação:* cada escala é gerada para um período isolado. A continuidade com os períodos
 anterior e seguinte — interjornada e descanso na virada — não é conferida. Observação, não
 garantia: com turnos fixos e início sempre numa segunda-feira, a folga no último domingo dura
@@ -2092,6 +2098,46 @@ operacional desta máquina. Desdobramento: `PROPOSTAS.md`, P19 (a) e (d).
   Pelo código acima, o único caminho de sub-MIP nessa situação é o `RINS`. O log, porém, não
   registra o nome da heurística: a leitura "foi o RINS" é inferência pelo código, não
   observação.
+
+---
+
+## 2026-10-13 — Art. 67 com horários editáveis
+
+**Status: vigente.** Correção de defeito antes do congelamento (16/10). Decisão do Otávio:
+correção (a) + (b). Esperado registrado e commitado antes de implementar
+(`resultados/relatorio_2026-10-13a.md`). Supera, na entrada "2026-09-29 — Ajustes da Etapa 2",
+a afirmação "o modelo garante o art. 67 por construção" (marcada lá, sem apagar).
+
+**Defeito.** Com turnos editados na tela, o art. 67 (24 h de descanso semanal) não era
+garantido pelo modelo. N 23–07, folga, M 05–13 = 22 h: passa nas 11 h e não era proibido. A
+conferência no relógio (`medir`/`cumpre`) reprovava, mas a ferramenta entregava a escala com
+"admite escala legal", só com a métrica "NÃO CUMPRE", e a busca do menor quadro a contava como
+viável. O argumento de 29/09 (pior caso noite → folga → manhã = 24 h) só vale para os horários
+dos modelos prontos.
+
+**(a) Regra no modelo.** `instancia_br.pares_proibidos_por_horario` (fonte única) proíbe também
+(s, 2, t) quando 48 + início de t − (início de s + duração de s) < 24 h. Critério conservador:
+**toda** folga isolada dá ao menos 24 h; com no máximo 6 dias seguidos, toda janela de 7 dias
+tem um dia sem turno, logo há ao menos um descanso de 24 h por semana. Salto 3 não precisa: com
+dois dias livres o descanso é ≥ 72 − (23 + 24) = 25 h (início ≤ 23 h, duração ≤ 24 h, limites
+de `_validar_turnos`); conferido por enumeração em `testes_entrada.py`. A regra vale com ou sem
+`interjornada` (o `--sem-descanso-clt` continua desligando só as 11 h), como o limite de 6 dias.
+O id do padrão de salto 2 continua `clt_36h_…` (nome histórico; trocar mudaria os XML).
+
+**(b) Segunda proteção na ferramenta.** Se `cumpre()` reprovar a escala achada, ela não é
+entregue: veredito "não decidido", sem escala nem planilha, a busca do menor quadro para ali
+(a escala não conta como viável e o quadro não foi provado inviável), e a tela mostra em
+vermelho "A escala encontrada não cumpre a conferência de descanso (art. 67): <medida>. Não use
+esta escala." O artigo entre parênteses acompanha o que reprovou (art. 66 ou 59-A para o
+intervalo entre turnos, art. 67 para o semanal e os dias seguidos). Com (a), não deve
+acontecer; teste 16 de `testes_ferramenta.py` (escala montada à mão que reprova).
+
+**Efeito nos números: nenhum.** Os modelos prontos (12×36, 8 h em três turnos, 6 h + noturno
+12 h), os regimes do caminho por pacientes e todo caso da bateria e dos testes com horários
+próprios dão no mínimo 24 h na folga isolada: nenhum par novo. Conferido byte a byte: os 544
+XML da grade dos experimentos e os 96 XML do caminho por turnos (bateria P e K, demonstração,
+casos de diagnóstico, os três modelos), antes × depois, idênticos. Controle positivo: o XML do
+caso 23–07 + 05–13 muda (ganha o padrão N, folga, M).
 
 ---
 

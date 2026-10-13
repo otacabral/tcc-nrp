@@ -103,6 +103,16 @@ que vem antes e depois nao e conhecido. A trava de 24 h (`medir`/`cumpre`) nao m
 15d. Tela (caso 5, 8 h): o indicador "descanso semanal" da tela mostra o minimo sem bordas da
      escala; com o alerta do 15a posto no resultado, a tela o mostra em amarelo (warning), com
      o texto da ferramenta.
+
+Art. 67 com horarios editaveis (13/10), esperado registrado ANTES de implementar
+(`resultados/relatorio_2026-10-13a.md`, item 4):
+
+16. Escala montada a mao que reprova: turnos N 23-07 e M 05-13, uma pessoa no ciclo N, folga, M
+    ao longo dos 28 dias (toda folga isolada entre N e M: 22 h), entregue no lugar da
+    resolucao. `verificar`: veredito nao e "admite"; `r.escala` vazia; a frase contem "nao
+    cumpre a conferencia de descanso (art. 67)", "22 h" e "Nao use esta escala"; a tentativa
+    fica como reprovada. Pela tela: a frase em `st.error`; nenhum "admite escala legal",
+    nenhum botao de planilha.
 """
 
 from __future__ import annotations
@@ -979,12 +989,55 @@ def casos_p15() -> None:
     confere(alertas[0] in textos(at, "warning"), f"alerta em amarelo: {textos(at, 'warning')}")
 
 
+# --- 13/10: escala que reprova na conferencia de descanso nao e entregue --------------------
+
+EDITADOS = [("N", 23, 7), ("M", 5, 13)]
+
+
+def _reprovada(inst):
+    """Ciclo N, folga, M: toda folga isolada da 22 h (N termina 07:00, M comeca 05:00)."""
+    return [(d, "0", "NM"[k % 3 // 2]) for k, d in enumerate(inst.dias) if k % 3 != 1]
+
+
+def caso_reprovada() -> None:
+    """16 — esperado no docstring do modulo, registrado antes de implementar."""
+    original = fe.resolver_com_objetivo
+    editada = fe.montar(_entrada(EDITADOS, 1, 1, {"N": (0, 0), "M": (0, 0)}))
+    m = fe.medir(editada, _reprovada(editada))
+    confere(m["menor_semanal"] == 22 and not fe.cumpre(editada, m),
+            f"escala montada: descanso semanal {m['menor_semanal']:g} h, reprova")
+
+    def entrega_reprovada(inst, tempo, aviso=None, prazo=None):
+        return fe.ea.VIAVEL, editada, _reprovada(editada), {}
+
+    fe.resolver_com_objetivo = entrega_reprovada
+    try:
+        print("16. sem tela")
+        r = fe.verificar(_entrada(EDITADOS, 1, 1, {"N": (0, 0), "M": (0, 0)}), tempo=5)
+        frase = r.frase()
+        confere(r.veredito != fe.ADMITE and not r.escala and r.menor_viavel is None,
+                f"veredito {r.veredito}, sem escala")
+        confere("não cumpre a conferência de descanso (art. 67)" in frase and "22 h" in frase
+                and frase.endswith("Não use esta escala."), f"frase: {frase}")
+        confere(r.tentativas and r.tentativas[0][1] == fe.REPROVADA,
+                f"tentativas {r.tentativas}")
+        print("16. pela tela")
+        at = pela_tela(M8, 1, 1, {"M": (0, 0), "T": (0, 0), "N": (0, 0)})
+    finally:
+        fe.resolver_com_objetivo = original
+    r, _ = at.session_state["resultado"]
+    confere(r.frase() in textos(at, "error"), f"erro na tela: {textos(at, 'error')}")
+    confere(not any("admite escala legal" in t for t in _todos_textos(at)),
+            "nenhum 'admite escala legal'")
+    confere(len(at.get("download_button")) == 0, "sem botao de planilha")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
          "9b-sem-teto": caso_9b_sem_teto, "9c-tela": caso_9c_tela,
          "7.4": casos_diagnostico_p7, "4b": casos_grau_alerta, "12": casos_p12,
-         "15": casos_p15}
+         "15": casos_p15, "16": caso_reprovada}
 
 
 def main() -> int:

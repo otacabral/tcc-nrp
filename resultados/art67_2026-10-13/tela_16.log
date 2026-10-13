@@ -1,0 +1,12 @@
+2026-10-13 12:56:24.055 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+   ok    escala montada: descanso semanal 22 h, reprova
+16. sem tela
+   ok    veredito nao_decidido, sem escala
+   ok    frase: A escala encontrada não cumpre a conferência de descanso (art. 67): descanso semanal de 22 h, abaixo do mínimo de 24 h. Não use esta escala.
+   ok    tentativas [(2, 'reprovada', 1, 1)]
+16. pela tela
+   ok    erro na tela: ['A escala encontrada não cumpre a conferência de descanso (art. 67): descanso semanal de 22 h, abaixo do mínimo de 24 h. Não use esta escala.']
+   ok    nenhum 'admite escala legal'
+   ok    sem botao de planilha
+
+ponta a ponta pela tela OK

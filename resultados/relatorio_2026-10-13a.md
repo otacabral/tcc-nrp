@@ -80,4 +80,28 @@ esperado (este commit) → regressão → (a) → (b) → testes → suíte da t
 
 ## Resultado
 
-(preenchido depois da implementação, abaixo)
+Na ordem, em 13/10 (evidência em `resultados/art67_2026-10-13/`):
+
+1. **Regressão antes de mexer** (`regressao_antes.log`): 56, 58, 197, 219 = Tabela 6.
+2. **(a)** no gerador; `conferir_descanso` aceita turnos configurados (`turnos_base`) e saltos.
+   Caso 23–07 + 05–13: (N, 2, M) proibido, com e sem a regra das 11 h; menor folga isolada
+   admitida 40 h; salto 3 por enumeração: mínimo 25 h. Esperado 2: **confere**.
+3. **(b)** em `ferramenta.verificar` (`reprovacao`, `REPROVADA`) e na explicação da tela.
+4. **XML byte a byte, antes (commit do esperado, `git worktree`) × depois:**
+   - 544 XML da grade (`docs/conferencia_xml_experimentos.py`): 0 diferentes;
+   - 96 XML do caminho por turnos (bateria P e K, demonstração nas três rodadas,
+     `caso_otavio_0910`, `caso_parte_a`, os três modelos; acréscimos 0, 1 e 2): 0 diferentes;
+   - controle positivo, o caso 23–07 + 05–13: 1 de 1 diferente (ganha o padrão N, folga, M).
+
+   Esperado 1 e 3: **confere** — nenhum par novo fora do caso do defeito; nada refeito;
+   nenhum número citável muda. Como a instância é idêntica byte a byte, a demonstração e a
+   bateria não foram rodadas de novo.
+5. **Suíte** (`docs/diagnostico/fechar_v123.sh`, um processo por teste; `resumo.txt`):
+   **TUDO OK** — regressão `--todos` (56, 58, 197, 219), `testes_entrada.py` com solver e as
+   telas 16, 4b, 7.4, 9b-sem-teto, 9c-tela, 3, 4, 5, 15, 7.1, 7.2, 8, 12, 1-2, 9 e 7.3.
+   Esperado 4 (teste 16): **confere** — veredito "nao_decidido", sem escala, tentativa
+   "reprovada", frase "A escala encontrada não cumpre a conferência de descanso (art. 67):
+   descanso semanal de 22 h, abaixo do mínimo de 24 h. Não use esta escala." em `st.error`,
+   sem "admite escala legal", sem botão de planilha.
+
+Depois da suíte, nenhuma mudança em `src/`. Tag `v1.2.3` no commit deste resultado.

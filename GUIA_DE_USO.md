@@ -224,7 +224,10 @@ A ferramenta trata as regras de dois jeitos:
 - **Trava (a lei):** a escala **nunca** sai sem cumprir. São as regras da CLT: 11 h entre
   jornadas (art. 66), 36 h depois de plantão de 12 h (art. 59-A), repouso semanal de 24 h
   (art. 67), dias seguidos e carga contratual; e as férias e licenças. Se não há escala que
-  cumpra todas, a ferramenta diz que falta gente.
+  cumpra todas, a ferramenta diz que falta gente. Toda escala ainda é medida no relógio antes
+  de sair; se essa conferência reprovar, a tela mostra em vermelho "A escala encontrada não
+  cumpre a conferência de descanso …: <o que foi medido>. Não use esta escala." e não entrega
+  escala nem planilha. Não deve acontecer — é a segunda proteção (incluída em 13/10).
 - **Alerta (norma técnica ou custo):** a escala sai, e a tela avisa. São os alertas do COFEN
   (o Parecer é norma de dimensionamento, não regra de escala) e o alerta de descanso semanal
   de 35 h, abaixo.

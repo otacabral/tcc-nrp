@@ -123,6 +123,7 @@ MAX_CONSECUTIVOS = {"8h": 6, "12x36": 1}
 INTERJORNADA = 11      # art. 66
 POS_TURNO_LONGO = 36   # art. 59-A: doze horas seguidas por trinta e seis de descanso
 TURNO_LONGO = 12       # a partir de quantas horas de turno vale o descanso de 36 h
+DESCANSO_SEMANAL = 24  # art. 67: toda folga isolada (salto 2) da ao menos isto (13/10)
 
 
 def descanso_exigido(duracao_h: float) -> int:
@@ -422,15 +423,19 @@ def conferir_par(perfil: dict[int, float], duracao: int,
     return erros
 
 
-def conferir_descanso(regime: str, descanso_clt: bool = True,
-                      variantes: bool = True) -> tuple[float, list[str]]:
+def conferir_descanso(regime: str | None, descanso_clt: bool = True,
+                      variantes: bool = True, *, turnos_base=None, max_consec=None,
+                      saltos=(1, 2)) -> tuple[float, list[str]]:
     """Menor intervalo entre o fim de um turno e o inicio do proximo, entre as sequencias
     que o contrato admite. Confere que as regras de descanso codificadas de fato valem.
 
-    Enumera todos os pares (turno no dia d, turno no dia d+k) para k = 1 e 2, descarta os
+    Enumera todos os pares (turno no dia d, turno no dia d+k) para k em `saltos`, descarta os
     proibidos por MaxConsecutiveWorkingDays e pelos padroes indesejados, e mede o intervalo.
-    O k = 2 com o dia do meio livre e o caso do descanso semanal: no regime de 8 h e ele que
-    tem de dar pelo menos 24 h (CLT art. 67), aproximado por no maximo 6 dias seguidos.
+    O k = 2 com o dia do meio livre e o caso do descanso semanal: e ele que tem de dar pelo
+    menos 24 h (CLT art. 67), com no maximo 6 dias seguidos.
+
+    `turnos_base` ([(id, inicio, duracao)], com `max_consec`): turnos configurados, no lugar
+    do `regime`, sem variantes — o caminho da ferramenta (13/10).
     """
     # As variantes de enfermeiro entram aqui tambem. Ate 23/09 esta conferencia enumerava so
     # os turnos-base, exatamente como o gerador de padroes — as duas listas eram a mesma lista
@@ -439,17 +444,22 @@ def conferir_descanso(regime: str, descanso_clt: bool = True,
     # (`docs/conferencia_descanso_escala.py`), que le os horarios do arquivo em vez de confiar
     # numa lista. Licao: conferencia que compartilha a premissa do que confere nao confere.
     turnos = {}
-    for tid, ini, dur, _ in REGIMES[regime]:
-        for v in _variantes(tid, variantes):
-            turnos[v] = (ini, ini + dur)
-    max_consec = MAX_CONSECUTIVOS[regime]
-    proibidos = {(va, k, vb)
-                 for a, k, b in _pares_proibidos(regime, descanso_clt)
-                 for va in _variantes(a, variantes)
-                 for vb in _variantes(b, variantes)}
+    if turnos_base is not None:
+        turnos = {tid: (ini, ini + dur) for tid, ini, dur in turnos_base}
+        proibidos = set(pares_proibidos_por_horario(turnos_base, max_consec,
+                                                    interjornada=descanso_clt))
+    else:
+        for tid, ini, dur, _ in REGIMES[regime]:
+            for v in _variantes(tid, variantes):
+                turnos[v] = (ini, ini + dur)
+        max_consec = MAX_CONSECUTIVOS[regime]
+        proibidos = {(va, k, vb)
+                     for a, k, b in _pares_proibidos(regime, descanso_clt)
+                     for va in _variantes(a, variantes)
+                     for vb in _variantes(b, variantes)}
 
     menor, linhas = float("inf"), []
-    for k in (1, 2):
+    for k in saltos:
         if k == 1 and max_consec < 2:
             linhas.append(f"   k=1: proibido por MaxConsecutiveWorkingDays = {max_consec}")
             continue
@@ -565,7 +575,9 @@ def _padroes_de(proibidos, variantes: bool) -> dict[str, Padrao]:
                 entradas = [EntradaPadrao(va, "Any")]
                 entradas += [EntradaPadrao("None", "Any")] * (salto - 1)
                 entradas.append(EntradaPadrao(vb, "Any"))
-                # ids de salto 1 e 2 mantidos como eram, para o XML do Experimento A nao mudar
+                # ids de salto 1 e 2 mantidos como eram, para o XML do Experimento A nao mudar.
+                # O "36h_" e nome historico do salto 2: desde 13/10 o par de salto 2 tambem
+                # pode vir do art. 67 (folga isolada abaixo de 24 h), e o id nao diz o motivo
                 prefixo = {1: "", 2: "36h_"}.get(salto, f"d{salto}_")
                 pid = f"clt_{prefixo}{va}_{vb}"
                 padroes[pid] = Padrao(id=pid, peso=1, entradas=tuple(entradas))
@@ -587,6 +599,15 @@ def pares_proibidos_por_horario(turnos, max_consecutivos: int | None,
     de salto 1 — por isso os saltos maiores so precisam do caso com o meio livre. k vai ate 4,
     que cobre qualquer turno de ate 24 h com 36 h de descanso.
 
+    Art. 67 (13/10, DECISOES.md, "2026-10-13 — Art. 67 com horarios editaveis"): com o salto
+    2 — um dia livre entre s e t —, o par tambem e proibido se o descanso ficar abaixo de 24 h.
+    Criterio conservador: TODA folga isolada da ao menos 24 h; com no maximo 6 dias seguidos,
+    toda janela de 7 dias tem um dia sem turno, e portanto ha ao menos um descanso de 24 h por
+    semana. Ate 13/10 isso era suposto pelos horarios dos modelos prontos (noite -> folga ->
+    manha = 24 h) e falhava com horario editado: N 23-07, folga, M 05-13 = 22 h. Salto 3 nao
+    precisa: com dois dias livres o descanso e 72 + ini_t - (ini_s + dur_s) >= 72 - 47 = 25 h
+    (inicio <= 23 h, duracao <= 24 h). Vale com ou sem `interjornada`, como o limite de 6 dias.
+
     `descartar`: pares de salto 1 sao dois dias seguidos de trabalho, que o contrato ja proibe
     quando `max_consecutivos` < 2. Nao sao emitidos (decisao do Otavio, 29/09: opcao 1) — a
     lista fica identica a escrita a mao antes, e o modelo e o XML do Experimento A nao mudam.
@@ -600,14 +621,17 @@ def pares_proibidos_por_horario(turnos, max_consecutivos: int | None,
     proibidos = set()
     for s, ini_s, dur_s in turnos:
         exigido = descanso_exigido(dur_s)
-        if exigido == INTERJORNADA and not interjornada:
-            continue
         for k in (1, 2, 3, 4):
+            if exigido == INTERJORNADA and not interjornada:
+                break
             if descartar and k == 1 and max_consecutivos is not None and max_consecutivos < 2:
                 continue
             for t, ini_t, _ in turnos:
                 if 24 * k + ini_t - (ini_s + dur_s) < exigido:
                     proibidos.add((s, k, t))
+        for t, ini_t, _ in turnos:     # art. 67: a folga isolada (salto 2)
+            if 48 + ini_t - (ini_s + dur_s) < DESCANSO_SEMANAL:
+                proibidos.add((s, 2, t))
     return tuple(sorted(proibidos))
 
 

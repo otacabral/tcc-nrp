@@ -313,7 +313,9 @@ if "resultado" in st.session_state:
                    "indeterminado": f"sem resposta em {fe.fmt_tempo(fe.TEMPO)} — nem provado "
                                     f"inviável",
                    "erro": "erro técnico ao resolver; detalhes no console",
-                   fe.ORCAMENTO_ESGOTADO: "não testado: o orçamento do clique acabou"}
+                   fe.ORCAMENTO_ESGOTADO: "não testado: o orçamento do clique acabou",
+                   fe.REPROVADA: "escala encontrada, mas reprovada na conferência de "
+                                 "descanso — não entregue"}
         for quadro, v, n_enf_t, n_tec_t in r.tentativas:
             composicao = f" ({n_enf_t} enf. + {n_tec_t} téc.)" if n_enf_t is not None else ""
             st.write(f"{quadro} profissionais{composicao}: {explica.get(v, v)}")
