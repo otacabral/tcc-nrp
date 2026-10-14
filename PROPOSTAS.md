@@ -549,6 +549,20 @@ Cronograma", E2). Nada implementado.
   melhorou; a demonstração não guardou o critério da etapa 1). É o complemento da correção da
   `v1.2.2`, que só tratou o caminho sem prova (`DECISOES.md`, "2026-10-10 — P17", item c).
   **Não mexer antes de 26/10.**
+- *Acrescentado em 13/10 (pedido do chat de Orientação, prioridade baixa):* veredito próprio
+  para a escala reprovada na conferência de descanso. Hoje, quando `cumpre()` reprova
+  (segunda proteção da `v1.2.3`, `DECISOES.md`, "2026-10-13 — Art. 67 com horários
+  editáveis"), `ferramenta.verificar` devolve `veredito = "nao_decidido"` e marca o motivo só
+  em `parada = ("reprovada", …)` e na tentativa. "Não decidido" descreve outro caso (o solver
+  não concluiu no tempo); quem lê o veredito sem olhar a `parada` — por exemplo os scripts
+  da bateria, que gravam `r.veredito` no JSON — não distingue os dois. Proposta: uma
+  constante própria (ex.: `REPROVADA_CONF = "reprovada_conferencia"`) como veredito, **sem
+  mudar a frase da tela nem o comportamento**: continua sem escala e sem planilha, a busca
+  para ali, nunca vira "faltam N" nem "sem viável". Onde mexer: `verificar` (atribuir o
+  veredito), `Resultado.frase` (o ramo sai do bloco "sem decisão" e vira ramo próprio, mesmo
+  texto), `app.py` (o novo veredito vai para `st.error`, como hoje), teste 16 (esperar o
+  veredito novo; a frase e a tela, iguais). Prioridade baixa: com a correção (a) da `v1.2.3`,
+  o caso não deve ocorrer. **Não mexer antes de 26/10.**
 
 ---
 

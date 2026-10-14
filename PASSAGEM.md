@@ -61,6 +61,9 @@ fim de cada sessão (dele ou do chat).
   - a regra vale também com `--sem-descanso-clt`; o id do padrão segue `clt_36h_…`.
 - A afirmação de 29/09 "o modelo garante o art. 67 por construção" ficou marcada como
   superada (vale só para os horários dos modelos prontos).
+- P16, item novo (pedido da Orientação): veredito próprio para a escala reprovada na
+  conferência, no lugar de "nao_decidido"; mesma frase e mesmo comportamento. Prioridade
+  baixa; janela de 26–29/10.
 
 ## Decisões das sessões de 09 a 11/10
 
