@@ -45,3 +45,16 @@ versionadas (v1.2.1), mais contas.
   só como terceira coluna.
 - **Mapa rótulo do avaliador → família do modelo**: escrito à mão no script. É premissa do
   script; um rótulo sem mapa faz o script falhar, não passar.
+
+## Adendo, antes do controle (19/10): controle positivo
+
+A primeira rodada deu tudo igual. Resultado idêntico pede controle (CLAUDE.md). Script
+`docs/diagnostico/validacao_restricoes_controle.py`, semente fixa:
+
+- **(c1) a conferência consegue falhar:** 5 escalas perturbadas por instância (trocas que
+  preservam a cobertura e o um-turno-por-dia), comparadas com a saída do avaliador da escala
+  ORIGINAL. Esperado: a conferência acusa diferença (grade ≠ XML e penalidade ≠) em todas as
+  20 que mudaram a escala.
+- **(c2) avaliador × modelo fora do ótimo:** as mesmas 20 escalas, avaliadas de novo pelo
+  avaliador oficial (java). Esperado: duras = 0; penalidade ≥ Tabela 6; diferença avaliador ×
+  modelo = 0 por tipo e por profissional × tipo em todas.
