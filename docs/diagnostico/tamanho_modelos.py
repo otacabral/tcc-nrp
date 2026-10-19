@@ -61,6 +61,23 @@ def main() -> int:
     linhas.append(("ferramenta: demonstracao, rodada 1 (etapa 1)", len(inst.profissionais),
                    len(inst.turnos), len(inst.dias), d["variaveis"], d["restricoes"],
                    "", "", "", "", "", ""))
+    # efeito de cada opcao da ferramenta no tamanho, no mesmo caso: liga uma diferenca por vez
+    # a partir do modelo "como no INRC" (construir com os padroes)
+    variantes = [
+        ("base: caso da demonstracao com construir() nos padroes do INRC",
+         dict()),
+        ("base + so habilidade rigida", dict(habilidade_rigida=True)),
+        ("base + so limites legais rigidos (RIGIDAS_LEGAIS_BR)",
+         dict(rigidas_legais=modelo.RIGIDAS_LEGAIS_BR)),
+        ("base + so custo de enfermeiro em posto de tecnico", dict(custo_atribuicao=custo)),
+        ("ferramenta (todas: ea.modelo_br)", None),
+    ]
+    for rotulo, opcoes in variantes:
+        m = (ea.modelo_br(inst_p, custo) if opcoes is None
+             else modelo.construir(inst_p, **opcoes))
+        d = modelo.dimensao(m)
+        linhas.append((rotulo, len(inst.profissionais), len(inst.turnos), len(inst.dias),
+                       d["variaveis"], d["restricoes"], "", "", "", "", "", ""))
     cab = ["instancia", "profissionais", "turnos", "dias", "nosso_variaveis",
            "nosso_restricoes", "santos_x", "santos_y", "santos_w", "santos_r", "santos_z",
            "santos_x_y_w_r_z"]

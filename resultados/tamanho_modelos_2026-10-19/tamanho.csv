@@ -5,3 +5,8 @@ long01;49;5;28;15029;10857;6860;196;19894;19894;490;47334
 long02;49;5;28;15120;10948;6860;196;19894;19894;490;47334
 medium_late05;30;5;28;15320;13060;4200;120;12180;12180;300;28980
 ferramenta: demonstracao, rodada 1 (etapa 1);30;4;28;3080;10552;;;;;;
+base: caso da demonstracao com construir() nos padroes do INRC;30;4;28;20970;18592;;;;;;
+base + so habilidade rigida;30;4;28;11810;10552;;;;;;
+base + so limites legais rigidos (RIGIDAS_LEGAIS_BR);30;4;28;4200;18592;;;;;;
+base + so custo de enfermeiro em posto de tecnico;30;4;28;20970;18592;;;;;;
+ferramenta (todas: ea.modelo_br);30;4;28;3080;10552;;;;;;
