@@ -1,0 +1,43 @@
+instancia;familia;tipo;avaliador;modelo;diferenca;avaliacao_py
+sprint01;complete_weekends;fim de semana completo;0;0;0;0
+sprint01;day_off_requests;pedido de folga (dia);24;24;0;24
+sprint01;identical_shift_types_during_weekend;turnos idênticos no fim de semana;0;0;0;0
+sprint01;max_consecutive_free_days;máximo de folgas seguidas;0;0;0;0
+sprint01;max_consecutive_working_days;máximo de dias seguidos de trabalho;1;1;0;1
+sprint01;max_num_assignments;máximo de atribuições;30;30;0;30
+sprint01;min_consecutive_free_days;mínimo de folgas seguidas;1;1;0;1
+sprint01;min_consecutive_working_days;mínimo de dias seguidos de trabalho;0;0;0;0
+sprint01;min_num_assignments;mínimo de atribuições;0;0;0;0
+sprint01;shift_off_requests;pedido de folga (turno);0;0;0;0
+sprint01;unwanted_patterns;padrões indesejados;0;0;0;0
+sprint02;complete_weekends;fim de semana completo;0;0;0;0
+sprint02;day_off_requests;pedido de folga (dia);24;24;0;24
+sprint02;identical_shift_types_during_weekend;turnos idênticos no fim de semana;0;0;0;0
+sprint02;max_consecutive_free_days;máximo de folgas seguidas;0;0;0;0
+sprint02;max_consecutive_working_days;máximo de dias seguidos de trabalho;0;0;0;0
+sprint02;max_num_assignments;máximo de atribuições;32;32;0;32
+sprint02;min_consecutive_free_days;mínimo de folgas seguidas;1;1;0;1
+sprint02;min_consecutive_working_days;mínimo de dias seguidos de trabalho;1;1;0;1
+sprint02;min_num_assignments;mínimo de atribuições;0;0;0;0
+sprint02;shift_off_requests;pedido de folga (turno);0;0;0;0
+sprint02;unwanted_patterns;padrões indesejados;0;0;0;0
+long01;complete_weekends;fim de semana completo;0;0;0;0
+long01;day_off_requests;pedido de folga (dia);44;44;0;44
+long01;identical_shift_types_during_weekend;turnos idênticos no fim de semana;0;0;0;0
+long01;max_consecutive_free_days;máximo de folgas seguidas;0;0;0;0
+long01;max_consecutive_working_days;máximo de dias seguidos de trabalho;0;0;0;0
+long01;max_num_assignments;máximo de atribuições;150;150;0;150
+long01;min_consecutive_working_days;mínimo de dias seguidos de trabalho;0;0;0;0
+long01;min_num_assignments;mínimo de atribuições;0;0;0;0
+long01;shift_off_requests;pedido de folga (turno);0;0;0;0
+long01;unwanted_patterns;padrões indesejados;3;3;0;3
+long02;complete_weekends;fim de semana completo;0;0;0;0
+long02;day_off_requests;pedido de folga (dia);47;47;0;47
+long02;identical_shift_types_during_weekend;turnos idênticos no fim de semana;0;0;0;0
+long02;max_consecutive_free_days;máximo de folgas seguidas;0;0;0;0
+long02;max_consecutive_working_days;máximo de dias seguidos de trabalho;0;0;0;0
+long02;max_num_assignments;máximo de atribuições;160;160;0;160
+long02;min_consecutive_working_days;mínimo de dias seguidos de trabalho;1;1;0;1
+long02;min_num_assignments;mínimo de atribuições;0;0;0;0
+long02;shift_off_requests;pedido de folga (turno);0;0;0;0
+long02;unwanted_patterns;padrões indesejados;11;11;0;11

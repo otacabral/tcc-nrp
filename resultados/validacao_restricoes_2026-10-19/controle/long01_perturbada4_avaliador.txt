@@ -1,0 +1,254 @@
+Schedule:
+=========
+
+Employee  0 | L   |   N |   N |E    |  D  |     |    DH|     |     |     |E    |     |E    |     |E    |     |     |     |     |E    |     |  D  | L   | L   | L   |   N | L   |E    |
+Employee  1 |     |     |     |   N | L   | L   |     |     |     |     |    DH|     |     | L   |E    | L   | L   |   N | L   | L   |     |   N |    DH|    DH|   N |E    |E    |     |
+Employee  2 |     |     |     |E    | L   |   N |  D  |  D  |     |     |     |     |   N |     |     |     |     |     |  D  |     |     |     |  D  |  D  |  D  |     |  D  |  D  |
+Employee  3 |E    |     |     |E    | L   |     | L   | L   |     |     | L   |   N | L   |   N |     |     |     |     |  D  |E    |   N | L   |     |     |     |     |E    |     |
+Employee  4 |  D  |E    |E    |     |     |     |     |     | L   | L   | L   | L   |E    |     |   N |E    |E    |     |     |     |     |E    |  D  |  D  |     | L   | L   | L   |
+Employee  5 |     |     |     |     |     |     |     |  D  | L   | L   |   N |     |     |     |     |     |     |     |     |E    |  D  |     |     |     | L   | L   |    DH|  D  |
+Employee  6 |  D  |     |     |  D  |     |  D  |  D  | L   |   N |   N |     |E    |     |E    | L   |     |     |   N | L   |   N |   N |   N |     |     |   N |     |     |     |
+Employee  7 |   N | L   | L   |     |     |  D  |     | L   |   N |   N | L   |E    |  D  | L   |     |     |     | L   | L   |   N |     |    DH|     |     |E    |  D  |     |     |
+Employee  8 |     |     |     |E    |     |     |E    |    DH|     |     |     |     | L   |E    |E    | L   | L   |E    |E    |     | L   |E    | L   | L   |   N |  D  |     |E    |
+Employee  9 | L   |   N |   N |     | L   | L   |     |     |     |     |     |   N |   N |     |    DH|    DH|    DH|E    |     |  D  |E    |     |     |     | L   |     |    DH|  D  |
+Employee 10 |  D  |  D  |  D  | L   | L   |     |E    |     |     |     |     | L   |   N |     |     |     |     |  D  | L   |E    |  D  |   N |     |     |E    |E    |E    |     |
+Employee 11 |E    |     |     | L   |     | L   | L   | L   |E    |E    |   N |   N |     |E    |     |     |     | L   | L   | L   |E    | L   |     |     |    DH|     |     |     |
+Employee 12 |    DH|     |     |   N |   N |   N |     | L   |E    |E    |E    |     |    DH|  D  |     |     |     | L   |     |     |E    |E    |     |     |   N |     |  D  |E    |
+Employee 13 |     |     |E    |     |   N |     |E    |E    |  D  |  D  |     |     | L   |    DH| L   |   N |   N |E    |E    |     |  D  |   N |  D  |  D  |     |     | L   | L   |
+Employee 14 |E    |E    |E    |  D  |     |   N |     |    DH|     |     | L   |E    |     |     |   N |  D  |  D  |     |     |     |     | L   |E    |E    |     | L   | L   | L   |
+Employee 15 |   N |E    |E    |     |  D  |     |E    |     |     |     | L   |     |     | L   |     |     |     |   N |   N |  D  |    DH|  D  |   N |   N |     |     |     |E    |
+Employee 16 |     |     |     |     |    DH|     | L   |     |     |     |   N | L   |E    | L   |    DH|   N |   N |     |     |     | L   |   N | L   | L   |   N | L   |     | L   |
+Employee 17 |   N | L   | L   |E    |   N |E    |     |     |     |     |  D  | L   |E    |     | L   | L   | L   |     |     |  D  | L   |  D  |     |     |     |     |  D  |   N |
+Employee 18 |E    |     |     |     |E    |E    |     | L   |E    |E    |E    |  D  |   N |     |     |     |     |  D  |   N |     |     |  D  | L   | L   |    DH|     |E    |     |
+Employee 19 |E    | L   | L   |   N |     |   N |  D  |     |     |     |E    | L   |     |   N | L   |E    |E    | L   |    DH| L   |     |     |     |     |     |   N |  D  |E    |
+Employee 20 | L   |   N |   N |    DH|E    |     |E    |  D  |     |     | L   |     |     | L   |E    |     |     |  D  |  D  |     |E    |     |     |     |E    |   N |  D  |     |
+Employee 21 |     |     |     |     |     | L   |   N |E    |  D  |  D  |E    |    DH|     |   N | L   |E    |E    |E    |     | L   |E    |     |     |     |E    | L   |     |     |
+Employee 22 |     | L   | L   | L   |     |    DH|E    | L   |E    |E    |     |     |     |     | L   | L   | L   |E    |     |E    |     |     |     |     |     |   N |E    |   N |
+Employee 23 |     |     |     |    DH|     |E    |   N |     |     |     |  D  |E    |  D  |E    |   N |     |     |    DH|     |   N |   N |E    |E    |E    |     |  D  |   N | L   |
+Employee 24 |     |     |     | L   |     |     | L   |   N |E    |E    |     |E    |  D  |     | L   |     |     |E    |E    |     |E    | L   |     |     |E    |E    |E    | L   |
+Employee 25 | L   |     |     |  D  |     | L   |     |E    |     |     |   N |     |E    |     |  D  |E    |E    | L   |   N |   N |E    | L   |   N |   N |   N |E    |     |  D  |
+Employee 26 |E    |    DH|    DH|     |E    |     |   N |   N | L   | L   |     |     |E    |E    |E    |   N |   N |  D  |E    |     |     |    DH|   N |   N | L   |     |     |   N |
+Employee 27 |   N |     |     |     |   N |  D  |  D  |     |     |     |     |     | L   |  D  |  D  |  D  |  D  |   N |     |E    |  D  |E    | L   | L   | L   |     |     |    DH|
+Employee 28 |     |     |     |     |  D  |     |     |     |     |     |  D  | L   | L   |     | L   |   N |   N |     |   N |E    |   N |E    |E    |E    |     |E    | L   |E    |
+Employee 29 |   N |E    |E    |  D  |     |   N |E    |   N |   N |   N |     |     |     |  D  |   N | L   | L   |     | L   | L   |    DH|     |     |     |     |   N |     |     |
+Employee 30 |   N |  D  |  D  |E    | L   |     |     |E    |     |     |   N |  D  |E    |     |  D  | L   | L   |E    |     |     |     |     |     |     |     |E    |     |     |
+Employee 31 |E    |     |     |   N |E    |E    | L   |   N |     |     |     |E    |   N |  D  |     |     |     | L   |     |     |     |     |     |     |E    | L   |     |     |
+Employee 32 |  D  | L   | L   |     |  D  | L   |     |     |     |     |    DH|    DH|     |E    |   N |E    |E    |     |E    |  D  |  D  |E    |     |     | L   |     |     |    DH|
+Employee 33 |     |     |     |     |E    |     |   N |   N |     |     |E    |   N |    DH| L   |     |     |     |   N |E    |     |     |     |     |     |E    |     |   N |   N |
+Employee 34 |     |     |     |     |    DH|  D  | L   |E    |     |     |     |  D  |     |   N |     |     |     |     |   N |     | L   | L   |     |     |     |    DH|   N |E    |
+Employee 35 | L   |     |     |E    |   N |  D  |   N |     |     |     |     |  D  | L   |     |E    |     |     |     |E    | L   |     |E    | L   | L   | L   |E    |     |   N |
+Employee 36 | L   |     |     |     |  D  |    DH|     |   N |  D  |  D  |  D  |     |     |  D  |     |     |     | L   |   N |     | L   |     |     |     | L   |     |   N |   N |
+Employee 37 |     |     |     |   N |E    | L   | L   |     |     |     |     | L   |E    |     |  D  |     |     |     |     |     |     | L   |E    |E    |     |   N |E    |     |
+Employee 38 |     |     |     |     |     |E    |  D  |     |E    |E    |     |   N |  D  |E    |     |     |     |     |     |E    | L   |     |     |     |     |  D  |E    | L   |
+Employee 39 | L   |E    |E    |  D  |     |E    |    DH|     |     |     |   N |  D  | L   | L   |     |     |     |     |     |   N |     |     |     |     |     |     | L   | L   |
+Employee 40 |     |     |     |E    | L   |     |     |     |     |     | L   |E    |     |     |     |     |     |    DH|  D  |  D  |   N |     |     |     |     |E    |   N |     |
+Employee 41 |  D  |   N |   N |     |     |     |     |E    | L   | L   | L   |E    |     |   N |   N |     |     |     |     |   N | L   |     |     |     |     |     |     |     |
+Employee 42 |     |     |     | L   | L   |   N | L   |     |     |     |     |     | L   |   N |     |     |     |E    |    DH| L   | L   |     |     |     |  D  | L   |     |     |
+Employee 43 |E    |E    |     | L   |E    |     |     | L   | L   | L   |     |     |     |     |  D  |  D  |  D  |  D  |  D  |     |     |     |     |     |  D  |    DH| L   |     |
+Employee 44 |     |     |     |   N |E    | L   |     |     |     |     |E    | L   |   N |E    |     |     |     | L   | L   |    DH|   N |     |     |     |  D  | L   |     |     |
+Employee 45 | L   | L   | L   | L   |     |     |     |E    | L   | L   |E    |   N |     |     |     |     |     |     |     |     |E    |   N |E    |E    |     |     |   N |  D  |
+Employee 46 |     |     |     |     |     |E    |E    |E    |     |     |     |     |  D  | L   |E    |     |     |     |     |     |     |  D  |E    |E    |  D  |  D  |     |     |
+Employee 47 |     |     |     | L   |   N |E    |     |  D  |   N |   N |     |     |     |    DH|E    |E    |E    |     |E    | L   |     | L   |   N |   N |E    |     | L   |E    |
+Employee 48 |    DH|  D  |  D  |     |     |     |   N |  D  |    DH|    DH|  D  |     |     |     |     |     |     |   N | L   |    DH|     |     |     |     |     |     |     |     |
+
+Violations:
+===========
+
+    Employee: 44
+    ================
+         Maximum number of assignments: excess = 8 , pos = 139, cost = 8
+         Requested day off: excess = 1 , pos = 4, cost = 1
+    Employee: 45
+    ================
+         Maximum number of assignments: excess = 10 , pos = 139, cost = 10
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 46
+    ================
+         Maximum number of assignments: excess = 6 , pos = 139, cost = 6
+    Employee: 47
+    ================
+         Maximum number of assignments: excess = 13 , pos = 139, cost = 13
+         Requested day off: excess = 1 , pos = 3, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 48
+    ================
+         Maximum number of assignments: excess = 6 , pos = 139, cost = 6
+    Employee: 10
+    ================
+         Requested day off: excess = 1 , pos = 3, cost = 1
+    Employee: 11
+    ================
+    Employee: 12
+    ================
+    Employee: 13
+    ================
+         Incomplete working weekends: excess = 1 , pos = 10, cost = 1
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 10, cost = 1
+         Maximum number of assignments: excess = 3 , pos = 139, cost = 3
+         Identical shifttypes during weekend: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 3, cost = 1
+         Requested day off: excess = 1 , pos = 6, cost = 1
+    Employee: 14
+    ================
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 1
+         Requested day off: excess = 1 , pos = 6, cost = 1
+    Employee: 15
+    ================
+         Requested day off: excess = 1 , pos = 4, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 16
+    ================
+         Requested day off: excess = 1 , pos = 9, cost = 1
+    Employee: 17
+    ================
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+         Unwanted pattern: L-D: excess = 1 , pos = 139, cost = 1
+    Employee: 18
+    ================
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 19
+    ================
+         Maximum number of assignments: excess = 2 , pos = 139, cost = 2
+         Requested day off: excess = 1 , pos = 2, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 0
+    ===============
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+    Employee: 1
+    ===============
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+    Employee: 2
+    ===============
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 112, cost = 1
+    Employee: 3
+    ===============
+         Maximum number of assignments: excess = 2 , pos = 139, cost = 2
+    Employee: 4
+    ===============
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 41, cost = 1
+         Maximum number of assignments: excess = 12 , pos = 139, cost = 12
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 5
+    ===============
+         Maximum number of assignments: excess = 5 , pos = 139, cost = 5
+         Requested day off: excess = 1 , pos = 5, cost = 1
+    Employee: 6
+    ===============
+         Requested day off: excess = 1 , pos = 7, cost = 1
+    Employee: 7
+    ===============
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 1
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 3, cost = 1
+    Employee: 8
+    ===============
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 9
+    ===============
+         Requested day off: excess = 1 , pos = 5, cost = 1
+    Employee: 20
+    ================
+         Requested day off: excess = 1 , pos = 6, cost = 1
+    Employee: 21
+    ================
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 22
+    ================
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 6, cost = 1
+    Employee: 23
+    ================
+         Unwanted pattern: D-E-D: excess = 1 , pos = 62, cost = 1
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+    Employee: 24
+    ================
+    Employee: 25
+    ================
+         Maximum number of consecutive working days: excess = 5 , pos = 125, cost = 5
+         Maximum number of assignments: excess = 3 , pos = 139, cost = 3
+         Requested day off: excess = 1 , pos = 3, cost = 1
+         Requested day off: excess = 1 , pos = 7, cost = 1
+    Employee: 26
+    ================
+         Maximum number of assignments: excess = 4 , pos = 139, cost = 4
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 27
+    ================
+         Unwanted pattern: L-D: excess = 1 , pos = 67, cost = 1
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 1
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 28
+    ================
+    Employee: 29
+    ================
+         Maximum number of assignments: excess = 5 , pos = 139, cost = 5
+         Requested day off: excess = 1 , pos = 4, cost = 1
+    Employee: 30
+    ================
+         Maximum number of assignments: excess = 2 , pos = 139, cost = 2
+         Requested day off: excess = 1 , pos = 5, cost = 1
+    Employee: 31
+    ================
+    Employee: 32
+    ================
+         Maximum number of assignments: excess = 5 , pos = 139, cost = 5
+         Requested day off: excess = 1 , pos = 3, cost = 1
+    Employee: 33
+    ================
+    Employee: 34
+    ================
+    Employee: 35
+    ================
+         Maximum number of assignments: excess = 4 , pos = 139, cost = 4
+    Employee: 36
+    ================
+         Maximum number of assignments: excess = 2 , pos = 139, cost = 2
+    Employee: 37
+    ================
+         Minimum number of consecutive working days: excess = 1 , pos = 72, cost = 1
+         Maximum number of assignments: excess = 7 , pos = 139, cost = 7
+    Employee: 38
+    ================
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 40, cost = 1
+         Maximum number of assignments: excess = 7 , pos = 139, cost = 7
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 39
+    ================
+         Minimum number of consecutive working days: excess = 1 , pos = 98, cost = 1
+         Maximum number of assignments: excess = 8 , pos = 139, cost = 8
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 40
+    ================
+         Maximum number of assignments: excess = 5 , pos = 139, cost = 5
+         Requested day off: excess = 1 , pos = 7, cost = 1
+    Employee: 41
+    ================
+         Maximum number of assignments: excess = 7 , pos = 139, cost = 7
+         Requested day off: excess = 1 , pos = 3, cost = 1
+    Employee: 42
+    ================
+         Maximum number of assignments: excess = 7 , pos = 139, cost = 7
+    Employee: 43
+    ================
+         Incomplete working weekends: excess = 1 , pos = 5, cost = 1
+         Maximum number of assignments: excess = 10 , pos = 139, cost = 10
+         Identical shifttypes during weekend: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+
+Penalty:
+========
+    218
+

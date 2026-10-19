@@ -1,0 +1,89 @@
+Schedule:
+=========
+
+Employee  0 |    |    |  D |    |    | L  |   N|    |    |    |E   | L  |   N|  D |    |    |    |E   |E   | L  |   N|E   | L  | L  |    |  D |   N|  D |
+Employee  1 | L  |E   |E   | L  | L  |    |    |    |    |    |    |E   |  D | L  |    |    |    |  D | L  |    |  D | L  |    |    | L  |E   |  D |E   |
+Employee  2 |    |    |    |E   |E   |E   | L  | L  |    |    | L  | L  | L  |    |    |    |    |    |   N|  D |    |E   |   N|   N|  D | L  |E   |E   |
+Employee  3 |   N|   N|   N|   N|E   |  D |E   |    |    |    |  D |   N|    |E   |  D |    |    | L  | L  |    |    | L  |E   |E   |    | L  | L  | L  |
+Employee  4 | L  | L  | L  |E   | L  |    |    |  D |E   |E   |   N|    |E   |    |E   | L  | L  |    |E   |E   | L  |   N|    |    | L  |E   |    |    |
+Employee  5 |E   |  D |    |    |    |    |  D |E   | L  | L  |    |  D |E   |    |E   |  D |  D |E   |    |E   |E   |    |    |    |    |   N|E   |   N|
+Employee  6 |    |    |    |  D |  D |E   |    |   N|   N|   N| L  |    |    | L  |   N|E   |E   |    |    |    |E   |  D |  D |  D |E   |    |    |    |
+Employee  7 |    |    |    | L  |   N|   N|    |E   |  D |  D |E   |    |    |   N| L  |   N|   N| L  |    |   N| L  |    |    |    |    |    |    |    |
+Employee  8 |E   |    |    |    |    | L  |E   |    |    |    |    |E   | L  |    |    |    |    |   N|  D |    |    |    |    |    |E   |    |    |    |
+Employee  9 |  D |    |    |    |    |    | L  | L  |    |    |    |    |    |E   | L  |    |    |    |    | L  |    |    |    |    |   N|    | L  | L  |
+
+Violations:
+===========
+
+    Employee: 0
+    ===============
+         Minimum number of consecutive working days: excess = 1 , pos = 10, cost = 1
+         Incomplete working weekends: excess = 1 , pos = 10, cost = 1
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 10, cost = 1
+         Maximum number of assignments: excess = 1 , pos = 111, cost = 1
+         Identical shifttypes during weekend: excess = 1 , pos = 3, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+    Employee: 1
+    ===============
+         Requested day off: excess = 1 , pos = 2, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+    Employee: 2
+    ===============
+         Maximum number of assignments: excess = 1 , pos = 111, cost = 1
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+    Employee: 3
+    ===============
+         Maximum number of assignments: excess = 3 , pos = 111, cost = 3
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+    Employee: 4
+    ===============
+         Minimum number of consecutive working days: excess = 1 , pos = 48, cost = 1
+         Maximum number of assignments: excess = 7 , pos = 111, cost = 7
+         Requested day off: excess = 1 , pos = 2, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+    Employee: 5
+    ===============
+         Incomplete working weekends: excess = 1 , pos = 6, cost = 1
+         Maximum number of assignments: excess = 5 , pos = 111, cost = 5
+         Identical shifttypes during weekend: excess = 1 , pos = 3, cost = 1
+         Requested day off: excess = 1 , pos = 3, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+         Requested day off: excess = 1 , pos = 6, cost = 1
+         Requested day off: excess = 1 , pos = 7, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 6
+    ===============
+         Maximum number of consecutive working days: excess = 1 , pos = 111, cost = 1
+         Maximum number of assignments: excess = 7 , pos = 111, cost = 7
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+    Employee: 7
+    ===============
+         Maximum number of consecutive working days: excess = 1 , pos = 69, cost = 1
+         Maximum number of assignments: excess = 5 , pos = 111, cost = 5
+         Requested day off: excess = 1 , pos = 5, cost = 1
+         Requested day off: excess = 1 , pos = 6, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+         Requested shift off: excess = 1 , pos = 0, cost = 1
+    Employee: 8
+    ===============
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 9
+    ===============
+         Minimum number of consecutive free days: excess = 2 , pos = 99, cost = 2
+         Maximum number of assignments: excess = 1 , pos = 111, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+
+Penalty:
+========
+    70
+
