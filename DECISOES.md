@@ -2344,6 +2344,18 @@ implementar):**
    comportamento, não limite. Um teste confere os padrões novos (1.800 s, 1.800 s, 60 min) e que
    o campo da tela chega ao `verificar`.
 
+**Defeito do teste 1-2, corrigido com autorização do Otávio (19/10).** Na suíte de fechamento
+da v1.3.0, o caso 1-2 falhou só no item "planilha abre": ele exigia as abas `["Escala",
+"Resumo", "Legenda"]`, e a planilha trouxe `['Escala', 'Resumo', 'Legenda', 'Prioridades']`.
+Causa: o teste é anterior à opção B, que acrescenta a aba "Prioridades" — acréscimo previsto
+no esperado registrado e commitado antes de implementar (`resultados/opcao_b_2026-10-19/
+ESPERADO.md`, linha 37: "as abas Escala, Resumo e Legenda não mudam; entra a aba
+'Prioridades'"). A ferramenta estava certa; o teste ficou desatualizado. Correção: a
+conferência, que era conjunta (abas **e** `max_row` da aba Escala = 41), foi separada em duas
+— abas == `["Escala", "Resumo", "Legenda", "Prioridades"]` e `wb["Escala"].max_row == 41` —,
+porque com a condição conjunta não se sabia se a segunda parte tinha passado. Nada mais mudou
+no teste nem na ferramenta.
+
 ---
 
 ## Modelo de entrada

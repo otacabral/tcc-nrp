@@ -199,8 +199,9 @@ def caso_experimento_a() -> None:
                                            "Experimento A")
     confere(r.tentativas == [(40, "viavel", 14, 26)], f"tentativas {r.tentativas}")
     wb = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))
-    confere(wb.sheetnames == ["Escala", "Resumo", "Legenda"]
-            and wb["Escala"].max_row == 41, f"planilha abre: {wb.sheetnames}")
+    confere(wb.sheetnames == ["Escala", "Resumo", "Legenda", "Prioridades"],
+            f"planilha abre, abas: {wb.sheetnames}")
+    confere(wb["Escala"].max_row == 41, f"planilha, aba Escala max_row: {wb['Escala'].max_row}")
     confere(r.conformidade["ok"], "conferencia de descanso: cumpre")
 
     print("2. mesma configuracao, 39 = 13 + 26")

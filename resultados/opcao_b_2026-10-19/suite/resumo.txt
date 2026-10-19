@@ -17,3 +17,13 @@ tela_9b-sem-teto | codigo 0 | 11 s | ponta a ponta pela tela OK
 tela_9c-tela | codigo 0 | 25 s | ponta a ponta pela tela OK
 tela_3 | codigo 127 | 84 s |       [prioridades] caminho: fundido
 PARADO: tela_3 falhou (ver resultados/opcao_b_2026-10-19/suite/tela_3.log)
+tela_3 | codigo 0 | 193 s | ponta a ponta pela tela OK
+tela_4 | codigo 0 | 186 s | ponta a ponta pela tela OK
+tela_5 | codigo 0 | 190 s | ponta a ponta pela tela OK
+tela_15 | codigo 0 | 190 s | ponta a ponta pela tela OK
+tela_7.1 | codigo 0 | 186 s | ponta a ponta pela tela OK
+tela_7.2 | codigo 0 | 218 s | ponta a ponta pela tela OK
+tela_8 | codigo 0 | 252 s | ponta a ponta pela tela OK
+tela_12 | codigo 0 | 379 s | ponta a ponta pela tela OK
+tela_1-2 | codigo 1 | 394 s | 1 FALHA(S)
+PARADO: tela_1-2 falhou (ver resultados/opcao_b_2026-10-19/suite/tela_1-2.log)
