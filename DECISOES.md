@@ -2154,6 +2154,119 @@ semana de testes prevista (08 a 12/10), o texto do TCC começa em 09/10. **Crono
 - reorganização das pastas (P18, opção A): 16–17/10;
 - entrega: **04/11**.
 
+*19/10: cronograma substituído por "2026-10-19 — Cronograma: ferramenta até 25/10, entrega em
+06/11".*
+
+---
+
+## 2026-10-14 — Função objetivo por níveis escolhidos pelo gestor (opção B)
+
+**Status: vigente — MUDANÇA DE FORMULAÇÃO da função objetivo da ferramenta. Implementação:
+pendente** (bloco seguinte da Orientação). Aprovada pelo Prof. Ormeu em 14/10/2026, 19h58
+(mensagem e áudio do Otávio); registrada em 19/10 a pedido da Orientação.
+
+**Decisão.** O gestor classifica cada critério — pedidos de folga, enfermeiro em posto de
+técnico e as suaves do INRC — em **Essencial / Importante / Desejável / Não considerar**. A
+otimização é **lexicográfica entre níveis**; dentro do nível, **peso 1 por violação**; empate =
+mesmo nível. **Padrão = a ferramenta atual**: pedidos de folga Essencial; enfermeiro em posto de
+técnico Importante; demais Não considerar. O equilíbrio de carga (etapa 2) continua como último
+passo fixo, depois dos níveis.
+
+**Motivo** (Otávio, 14/10, 18h; texto em `D:\TCC\escrita\RETORNO_ORMEU_14-10.md`, seção
+"Justificativa da opção B"). Peso é informação de **quantidade** ("um pedido negado vale 7 fins
+de semana incompletos"), que ninguém sabe justificar — nem o INRC, cujos pesos variam por
+instância (todas as suaves com peso 1 em `sprint01` e `long01`; de 3 a 10 em `medium_late05`).
+A descrição oficial da competição (`docs/nrpcompetition_description.pdf`, seção 2.2) chama a
+divisão entre duras e suaves de "rather arbitrary" e diz que unidades diferentes dão pesos
+diferentes. Ordem é informação de **prioridade** ("o pedido importa mais que o fim de semana
+completo"), que o gestor responde com segurança; a otimização por níveis usa só essa
+informação. **Custo declarado:** sem compensação entre níveis (é o significado de
+"Essencial"); compensação possível dentro do nível (empate).
+
+**Relação com o que existe.** A ferramenta já é um caso particular: a etapa 1 combina pedidos
+(peso W) e enfermeiro em posto de técnico (peso 1) com W maior que o máximo possível da segunda
+parcela ("2026-09-29 — Redesenho da ferramenta", item Objetivo; `ferramenta.pesos`). A opção B
+generaliza essa ordem fixa para uma ordem escolhida. Nada é superado enquanto não for
+implementada; depois, a entrada de 29/09 passa a descrever o caso padrão.
+
+**Teste obrigatório da implementação:** com a classificação padrão, XML, números e textos
+idênticos aos da `v1.2.3`.
+
+Diagnóstico para a implementação (como a etapa 1 combina hoje os critérios, gap do HiGHS, os 13
+critérios, limites superiores, orçamento): `resultados/relatorio_2026-10-19.md`, item 3.
+
+---
+
+## 2026-10-19 — Cronograma: ferramenta até 25/10, entrega em 06/11
+
+**Status: vigente.** Pedido da Orientação, 19/10. Substitui o cronograma de "2026-10-09 — Texto
+do TCC antecipado para 09/10".
+
+- **19 a 25/10:** modificações na ferramenta (opção B, orçamento configurável, validação por
+  restrição). **Congelamento dos números em 25/10** (substitui 16/10).
+- **20/10:** reunião com o orientador.
+- **26/10 a 01/11:** só escrita. **02 a 06/11:** revisão do orientador.
+- **Entrega: 06/11** (substitui 04/11).
+- Retirado "nada muda na ferramenta até 26/10".
+- **P18 (reorganizar pastas): CORTADA.** Mudar caminhos agora quebraria os comandos do
+  `NUMEROS_TCC.md`.
+- **P16 (melhorias de tela):** só se sobrar tempo nesta semana; o item "veredito próprio para
+  escala reprovada na conferência" segue com prioridade baixa.
+- **`MAPA_CODIGO.md`:** só depois dos itens 3, 4 e 7 da sessão de 19/10, se houver tempo, com
+  os caminhos atuais (sem P18).
+
+---
+
+## 2026-10-19 — Limitações declaradas: domingo no art. 67 e escala do art. 386
+
+**Status: vigente.** Pendentes desde 13/10; registradas em 19/10 a pedido da Orientação. Fontes:
+"2026-10-13 — Art. 67 com horários editáveis" (acima) e, só leitura, o fichamento da CLT da
+Redação (`D:\TCC\escrita\fontes\fichamentos\Camada 7 - Contexto Brasileiro e Hospitalar\clt.md`,
+CLT-003 e CLT-004) e `D:\TCC\escrita\REUNIAO_ORMEU_14-10.md`, item 5.
+
+**(a) Domingo no art. 67.** O art. 67 assegura 24 h consecutivas de descanso semanal que,
+"salvo motivo de conveniência pública ou necessidade imperiosa do serviço, deverá coincidir
+com o domingo, no todo ou em parte" (CLT-003). A ferramenta garante as 24 h (toda folga isolada
+≥ 24 h e no máximo 6 dias seguidos, entrada de 13/10) e as mede no relógio, mas **não impõe que
+o descanso caia no domingo**, nem com que frequência.
+
+**(b) Art. 386.** "Havendo trabalho aos domingos, será organizada uma escala de revezamento
+quinzenal, que favoreça o repouso dominical" (CLT-004; o artigo está no capítulo da proteção do
+trabalho da mulher). A ferramenta **não recebe o sexo dos profissionais** (decisão do trabalho)
+e **não impõe essa escala**.
+
+**Contorno pelo gestor, e do que ele depende.** O gestor pode pedir folga no domingo para quem
+precisar, como pedido de folga. Isso é **forma de uso, não cumprimento da lei**: o pedido é
+critério flexível. Hoje ele tem prioridade sobre enfermeiro em posto de técnico (peso W), mas
+pode ser negado quando a cobertura e as regras de descanso não o comportam. **Com a opção B, o
+contorno depende da classificação**: com pedidos em Essencial (o padrão), só perdem para as
+regras rígidas; em nível mais baixo, podem perder também para os critérios dos níveis acima;
+em "Não considerar", o contorno deixa de existir.
+
+**O que falta registrar (não inventado aqui):** se o domingo e o art. 386 vão como trabalho
+futuro (o fichamento CLT-004 sugere a 6.3, "como hipótese"); a frequência mínima de domingos
+livres que a jurisprudência ou norma aplicável exigiria para o art. 67 (não pesquisada); e se a
+jurisprudência sobre o art. 386 (o fichamento cita o RE 1.403.904 do STF) entra no texto — o
+fichamento proíbe citá-la sem o acórdão lido.
+
+---
+
+## 2026-10-19 — Orçamento por clique configurável, padrão 60 min
+
+**Status: vigente. Implementação: pendente, junto com a opção B, não antes.** Pedido da
+Orientação, 19/10.
+
+**Motivo.** Relato do Otávio: na reunião de 14/10, o Prof. Ormeu considerou razoável estender o
+tempo de execução até 1 h – 1 h 30.
+
+**Decisão.** O orçamento por clique da P12 ("2026-10-08 — P12 aprovada", 20 min) passa a
+**parâmetro da tela, padrão 60 min**.
+
+**O que continua valendo.** A bateria, a demonstração e todos os números do `NUMEROS_TCC.md`
+continuam válidos como estão, **declarados "com orçamento de 20 min"**. Não rodam de novo.
+Rodadas novas (caso realista A e B, sensibilidade) usam 60 min. Onde o orçamento mora hoje e o
+que muda para virar parâmetro: `resultados/relatorio_2026-10-19.md`, item 3e.
+
 ---
 
 ## Modelo de entrada

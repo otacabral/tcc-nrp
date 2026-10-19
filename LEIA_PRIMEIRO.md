@@ -27,9 +27,10 @@ cada arquivo de `D:\dev\tcc-nrp`, quais estão vigentes e em que ordem ler.
   colegas 42 → 12 h e 30 → 12 h), só aos ~29 min; a quebra de simetria não ajudou em 3 min. A
   limitação é de tempo, não de alcance; a ferramenta não muda. Trabalho futuro: `PROPOSTAS.md`,
   P19. Números: `resultados/NUMEROS_TCC.md`, seção 13.
-- **Validação encerrada em 09/10.** Até 16/10 (congelamento dos números), só correção de
-  defeito, com esperado registrado antes. Texto do TCC de 09/10 a 25/10; melhorias de tela de
-  26 a 29/10. Reorganização das pastas (P18, opção A) em 16–17/10.
+- **Validação encerrada em 09/10.** *Cronograma de 19/10* (`DECISOES.md`, "2026-10-19 —
+  Cronograma"): 19 a 25/10, modificações na ferramenta (opção B, orçamento configurável);
+  congelamento dos números em **25/10**; 26/10 a 01/11, só escrita; 02 a 06/11, revisão do
+  orientador; entrega **06/11**. P18 cortada; P16 só se sobrar tempo.
 
 ## Ordem de leitura
 

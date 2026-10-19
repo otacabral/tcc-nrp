@@ -1,6 +1,6 @@
 # Estado atual — ponto de partida para qualquer sessão
 
-**Atualizado em 11/10/2026** (notas de 10 e 11/10 abaixo; o corpo, das seções 1 a 7, é de 03/10 com
+**Atualizado em 11/10/2026; datas atualizadas em 19/10** (notas de 10 e 11/10 abaixo; o corpo, das seções 1 a 7, é de 03/10 com
 atualizações datadas). Este arquivo existe para responder, em uma leitura, *onde o
 trabalho está*. É o primeiro que qualquer assistente — Claude Code aqui no repositório ou o
 chat de Orientação ou de Redação, que leem esta pasta direto — deve ler (os chats começam
@@ -107,7 +107,9 @@ colunas. Warm start heurístico só como partida, e só se a escala exigir.
 | ~~14/10/2026~~ **16/10/2026** | **Congelamento de resultado numérico — adiado para 16/10** (decisão do Otávio, 06/10), para acomodar a semana de testes. Até lá, fechamento técnico (suíte, demonstração refeita se preciso, `v1.1`) e só correção de defeito, com esperado registrado antes. Depois, nenhum número novo entra. |
 | ~~13–25/10/2026~~ **09–25/10/2026** | Texto do TCC, antecipado para 09/10 (`DECISOES.md`, "2026-10-09 — Texto do TCC antecipado para 09/10"). |
 | 26–29/10/2026 | Melhoria de tela e textos de ajuda, com o rascunho com o orientador — sem mudar comportamento nem número; capturas finais refeitas no fim. |
-| **04/11/2026** | **Entrega.** |
+| 19–25/10/2026 | *Cronograma de 19/10* (`DECISOES.md`, "2026-10-19 — Cronograma"): modificações na ferramenta (opção B, orçamento configurável). **Números congelados em 25/10** (substitui 16/10). |
+| 26/10–01/11/2026 | Só escrita. 02–06/11: revisão do orientador. P18 cortada; P16 só se sobrar tempo. |
+| ~~04/11/2026~~ **06/11/2026** | **Entrega** (adiada em 19/10). |
 
 Em 02/10: oito dias até o congelamento das funcionalidades, doze até o de resultado numérico e cerca de cinco semanas até a entrega.
 

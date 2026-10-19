@@ -18,7 +18,7 @@ o trabalho está e aponta para os outros. Depois dele, conforme a tarefa:
 
 ## O que é o trabalho
 
-TCC de Engenharia de Produção (CEFET-RJ, entrega 04/11/2026). Uma **ferramenta de apoio à
+TCC de Engenharia de Produção (CEFET-RJ, entrega 06/11/2026, adiada de 04/11 em 19/10). Uma **ferramenta de apoio à
 decisão** que gera escalas de enfermagem a partir dos parâmetros de dimensionamento do COFEN
 e da legislação trabalhista brasileira, com o motor de otimização validado contra o benchmark
 INRC-2010, que tem ótimos publicados.
@@ -27,7 +27,9 @@ Escopo mudou em 24/09: antes era comparar regimes de jornada. Os experimentos da
 passam a ser validação e demonstração de uso. Os documentos antigos estão em
 `historico/escopo-comparacao-regimes/` — consulta, não referência ativa.
 
-**Congelamento de resultado numérico: 16/10/2026** (adiado de 14/10 em 06/10).
+**Congelamento de resultado numérico: 25/10/2026** (adiado de 16/10 em 19/10). Cronograma:
+19–25/10 modificações na ferramenta; 26/10–01/11 só escrita; 02–06/11 revisão do orientador
+(`DECISOES.md`, "2026-10-19 — Cronograma").
 
 ## Stack
 
