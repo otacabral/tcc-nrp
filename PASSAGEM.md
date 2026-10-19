@@ -1,55 +1,56 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 13/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 19/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- Versão citável: **v1.2.3** (13/10, correção do art. 67; nenhum número muda). Validação
-  encerrada em 09/10.
-- Números citáveis: `resultados/NUMEROS_TCC.md`.
-- P17 fechada, sem defeito.
-  - Nos limites da tela, a etapa 2 não melhorou em nenhuma das 5 resoluções sem prova.
-  - K5 com 1800 s: diferença entre colegas, enf. 42 → 12 h, aos ~29 min (Sub-MIP).
-  - Simetria sem efeito em 180 s.
-  - Limitação de tempo, não de alcance. P19 = trabalho futuro (a–d).
-- Nada muda na ferramenta até 26/10, exceto correção de defeito.
-- Reorganização dos chats (11/10): os chats leem esta pasta direto.
-  - Orientação só lê.
-  - Redação lê e escreve em `D:\TCC\escrita`.
-  - Só o Claude Code escreve aqui.
-  - Sem upload; as cópias no Projeto do claude.ai foram aposentadas.
+- Versão citável: **v1.2.3** (13/10). Tag no GitHub (conferido em 19/10). Os commits de 19/10
+  ainda não foram enviados (push do Otávio).
+- **Opção B aprovada** pelo Prof. Ormeu (14/10, 19h58) e registrada (`DECISOES.md`,
+  "2026-10-14 — Função objetivo por níveis escolhidos pelo gestor (opção B)"): MUDANÇA DE
+  FORMULAÇÃO, **implementação pendente**. Nada de código de produto mudou em 19/10.
+- **Validação por restrição nos 4 ótimos: feita e OK** (`resultados/validacao_restricoes_2026-10-19/`):
+  duras 0; penalidade por tipo e por profissional, avaliador × modelo, diferença 0; controle
+  positivo com 20 escalas perturbadas reavaliadas no avaliador oficial, OK. Seção proposta
+  para o `NUMEROS_TCC.md` no `resultados/relatorio_2026-10-19.md`, seção 4 — **não incluída,
+  aguarda aprovação**.
+- Números citáveis: `resultados/NUMEROS_TCC.md` (inalterado). Congelamento: **25/10**.
+- Reorganização dos chats (11/10): os chats leem esta pasta direto; só o Claude Code escreve
+  aqui; a Redação escreve em `D:\TCC\escrita`.
 
 ## Próxima tarefa
 
-- Claude Code: nada pendente da sessão de 13/10. Feito: correção do art. 67 com horários
-  editáveis, (a) + (b), com esperado commitado antes; suíte completa OK; tag `v1.2.3`
-  (`resultados/relatorio_2026-10-13a.md`).
-- Sessão de 11/10, feitos:
-  - Sub-MIP do HiGHS 1.15.1, registrada no `DECISOES.md`, P17 item d;
-  - busca das 207 + 36 escalas de 18/09: não encontradas (ver "Pendências com a Redação").
-  - "shell still running": era um comando travado do próprio Claude Code, já encerrado; nenhum
-    processo vivo, nenhuma rodada em andamento.
-- Otávio: e-mail ao orientador (confirmar se foi enviado).
-- Otávio: enviar a tag ao GitHub — `git push origin main` e depois `git push origin v1.2.3`.
-- Santos et al. (2016) está no acervo (achado pelo md5 em 13/10); caminho no `LEIA_PRIMEIRO.md`.
-  As cópias do Projeto podem ser apagadas sem perder o artigo.
-- 16–17/10: P18, opção A.
-- Depois da P18: MAPA_CODIGO.md (pedido da Redação, sustenta a 4.2 e o Apêndice C). Só
-  documentação; na mesma sessão da P18 ou na seguinte. Pedido de 11/10, em resumo:
-  1. todo `src/` e os scripts de `docs/`, com caminhos pós-P18: papel (produto, validação,
-     teste, experimento, diagnóstico) e módulos do projeto que importa ou chama;
-  2. fluxo de um clique no `ferramenta.py`, pelos nomes das funções, sem número de linha: conta
-     (veredito do quadro), etapa 1, etapa 2 com e sem prova, menor quadro, diagnóstico,
-     conferência fora do modelo (descanso no relógio), planilha;
-  3. índice reverso script → seções e linhas do `NUMEROS_TCC.md`, sem copiar comandos;
-  4. tirar "Rodando agora" e "O que isso sugere para a construção da ferramenta"; o escopo
-     anterior fica, marcado como histórico;
-  5. cabeçalho "conferido na versão <tag ou commit>, <data>";
-  6. conferir que todo comando da coluna "Comando" do `NUMEROS_TCC.md` aponta para arquivo que
-     existe (sem rodar); corrigir só o caminho e listar no relatório;
-  7. depois da P16 (fim de 29/10): reconferir os nomes de função do item 2 e atualizar a versão
-     no cabeçalho.
+- **Claude Code: implementação da opção B**, depois da decisão da Orientação sobre o
+  diagnóstico (`resultados/relatorio_2026-10-19.md`, seção 3). Decisões pendentes:
+  1. **pesos escalonados × resoluções em sequência** (3d): com 3 níveis no caso da
+     demonstração, o coeficiente de Essencial passa de 1,3 milhão e o gap padrão do HiGHS
+     (0,01%) deixa de provar o ótimo dos níveis de baixo; em sequência, cada nível fica abaixo
+     de 10.000 e a condição de 09/10 vale. A etapa 2 já é feita em sequência;
+  2. **quais critérios entram** (3c): máximo de dias seguidos, máximo de turnos e padrões
+     indesejados são rígidos pela CLT na ferramenta; a versão "preferência" deles exige família
+     própria no modelo. Habilidade alternativa contradiz a habilidade rígida. Pedido por turno
+     tinha virado trabalho futuro em 09/10;
+  3. **orçamento × limite por resolução** (3e): 60 min de orçamento não dão mais que 600 s a
+     uma resolução (etapa 1) nem mais que 180 s à etapa 2;
+  4. teste de identidade com a classificação padrão: rodar com o orçamento de 20 min, ou
+     registrar antes a troca dos textos "20 min" → "60 min".
+- Junto com a B: orçamento por clique configurável, padrão 60 min (`DECISOES.md`, 19/10).
+- Depois, se houver tempo: `MAPA_CODIGO.md` (caminhos atuais, sem P18); P16.
+- Otávio: enviar os commits — `git push origin main` (manda os commits de 19/10 para o GitHub;
+  a tag `v1.2.3` já está lá).
+- Otávio: aprovar (ou não) a seção 14 proposta para o `NUMEROS_TCC.md`.
+
+## Decisões da sessão de 19/10
+
+- Opção B registrada (aprovação do Ormeu, 14/10); orçamento configurável, padrão 60 min,
+  registrado (implementar junto com a B; bateria, demonstração e números atuais ficam
+  declarados "com orçamento de 20 min").
+- Cronograma: ferramenta 19–25/10; números congelados em 25/10; só escrita 26/10–01/11;
+  revisão do orientador 02–06/11; **entrega 06/11**. **P18 cortada.** P16 só se sobrar tempo.
+- Limitações declaradas: domingo no art. 67 e art. 386; o contorno pelo pedido de folga depende
+  da classificação na opção B.
+- Documentos novos: `docs/diferencas_inrc_ferramenta.md`, `docs/pesos_inrc.md`.
 
 ## Decisões da sessão de 13/10
 
@@ -82,6 +83,18 @@ fim de cada sessão (dele ou do chat).
 
 ## Pendências com a Redação
 
+- **19/10, prontos para leitura:** `docs/diferencas_inrc_ferramenta.md` (comparativo pedido
+  pelo orientador; sem afirmar eficiência), `docs/pesos_inrc.md` (o INRC não tem um conjunto
+  único de pesos: 41 instâncias só com peso 1, 28 com 1 a 10, e um 31 no `medium_late05`) e a
+  especificação dos testes (`resultados/relatorio_2026-10-19.md`, seção 8; versões de Pyomo,
+  Streamlit e Java das rodadas antigas não foram registradas).
+- **Contagem de Santos:** x + y + w + r + z pela definição, sem as folgas α (limite inferior),
+  tirada do fichamento; **conferir no artigo antes de ir ao texto**.
+- **Validação por restrição:** os números só vão ao texto depois de o Otávio aprovar a seção 14
+  proposta para o `NUMEROS_TCC.md`.
+- **Limitações (19/10):** domingo no art. 67 e art. 386 registrados no `DECISOES.md`; o que
+  falta (trabalho futuro? jurisprudência?) está listado lá.
+
 - **Art. 67 (13/10):** onde o texto disser que o modelo garante o descanso semanal "por
   construção" ou pelos horários, trocar pela regra explícita: toda folga isolada ≥ 24 h, mais
   no máximo 6 dias seguidos (`DECISOES.md`, "2026-10-13 — Art. 67 com horários editáveis"). E
@@ -104,8 +117,9 @@ fim de cada sessão (dele ou do chat).
 
 ## Cronograma
 
-- Números congelados: 16/10.
-- P18: 16–17/10.
-- Texto: até 25/10.
-- Tela (P16): 26–29/10.
-- Entrega: 04/11.
+- 19–25/10: modificações na ferramenta (opção B, orçamento configurável).
+- 20/10: reunião com o orientador.
+- **Números congelados: 25/10** (substitui 16/10).
+- 26/10–01/11: só escrita. 02–06/11: revisão do orientador.
+- **Entrega: 06/11** (substitui 04/11).
+- P18: cortada. P16: só se sobrar tempo.
