@@ -2269,6 +2269,83 @@ que muda para virar parâmetro: `resultados/relatorio_2026-10-19.md`, item 3e.
 
 ---
 
+## 2026-10-19 — Opção B: mecanismo, tempo e critérios expostos
+
+**Status: vigente — MUDANÇA DE FORMULAÇÃO** (complementa "2026-10-14 — Função objetivo por
+níveis escolhidos pelo gestor (opção B)"). Decisões da Orientação sobre o
+`resultados/relatorio_2026-10-19.md`, seção 3, aprovadas pelo Otávio em 19/10 (2º bloco).
+
+**(a) Mecanismo.** Níveis resolvidos **em sequência**, cada nível com o valor do anterior preso
+como restrição (o mesmo mecanismo da etapa 2). **Regra de fusão:** níveis vizinhos são
+resolvidos juntos por coeficiente (W = máximo do bloco de baixo + 1) somente se o objetivo
+máximo do bloco fundido for **< 10.000** (condição de "2026-10-09 — Condição das afirmações de
+ótimo provado"); caso contrário, resolução separada. Máximos por nível: as fórmulas do censo de
+19/10 (relatório, 3d). Motivo: com pesos escalonados em 3 níveis o coeficiente chega a ~1,36
+milhão e o gap padrão deixa de provar os níveis de baixo. Com a classificação padrão (pedidos ≤
+6 × 286 + enfermeiro em posto de técnico ≤ 285 = 2.001), a fusão reproduz o caminho atual.
+
+**(b) Tempo.** Orçamento por clique **60 min** (campo na tela, em minutos). Limite por
+resolução: **1.800 s em cada nível da etapa 1 e 1.800 s na etapa 2**, sempre min(limite, o que
+resta). Motivo: P17, o K5 melhorou a etapa 2 aos ~29 min com 1.800 s (`NUMEROS_TCC.md`, seção
+13). A bateria, a demonstração e os números atuais continuam válidos, declarados "orçamento 20
+min, 600 s / 180 s"; não rodam de novo.
+
+**(c) Critérios na tela** (numeração de Santos et al.):
+- **expostos:** 1 mínimo de turnos; 2 mínimo de dias seguidos; 3 máximo e mínimo de folgas
+  seguidas; 4 máximo e mínimo de fins de semana seguidos; 5 fins de semana em 4 semanas; 6 fim
+  de semana completo; 7 mesmo turno no fim de semana; 8 noturno antes de fim de semana livre;
+  9 duas folgas após noites; e os que já existem (pedido de folga no dia; enfermeiro em posto de
+  técnico);
+- **"já garantido pela CLT"**, na tabela, sem campo de preferência: máximo de dias seguidos;
+  máximo de turnos; sequências indesejadas. Preferência mais apertada = trabalho futuro (exige
+  família própria no modelo);
+- **fora:** habilidade alternativa (contradiz a habilidade rígida); pedidos por turno e pedidos
+  para trabalhar (trabalho futuro, mantida "2026-10-09 — Pedido por turno vira trabalho
+  futuro");
+- **sem conferência externa** (ⓘ na ajuda): fins de semana em 4 semanas; duas folgas após
+  noites; noturno antes de fim de semana livre (o avaliador não a pontua).
+
+**Decisões de implementação (Claude Code, 19/10; não óbvias, registradas antes de
+implementar):**
+1. **Peso dentro do bloco = coeficiente do nível.** Cada família considerada entra no contrato
+   (ou nos pedidos, ou no custo por atribuição) com peso igual ao coeficiente do seu nível no
+   bloco; num bloco de um nível só, peso 1. Assim a função objetivo do bloco é a soma das
+   parcelas das suas famílias, e o modelo (`modelo.py`) não muda. Famílias não consideradas
+   ficam como hoje no contrato (desligadas), para o XML da instância não mudar com o padrão.
+2. **Máximo de "enfermeiro em posto de técnico"** = total de postos de técnico do horizonte, e
+   de "pedido de folga" = número de pedidos — os mesmos da `ferramenta.pesos` de hoje (é o que
+   faz W = 286 na demonstração).
+3. **Nível resolvido sem prova:** o nível seguinte prende "≤ valor achado" (como a P14) e parte
+   da escala achada (como a P17). A escala é "sem prova" se algum nível não provou; o gap
+   mostrado é o do primeiro nível sem prova.
+4. **Situação, calculada antes de resolver:**
+   - "a CLT prevalece": o limite pedido vai além do que a lei permite no regime — mínimo de dias
+     seguidos acima do máximo de dias seguidos que as regras de descanso admitem (1 no 12×36, 6
+     nos demais); mínimo de turnos acima do teto legal de turnos do contrato. O critério continua
+     valendo; a escala sai legal e a preferência fica sem atender onde a lei impede;
+   - "nunca será atendido neste regime": fim de semana completo e mesmo turno no fim de semana
+     quando ninguém pode trabalhar dois dias seguidos (12×36) e o fim de semana tem demanda — quem
+     trabalha no fim de semana trabalha um dia só e viola;
+   - "já garantido pela CLT": as três linhas sem campo;
+   - "ok": os demais.
+   *Leitura do pedido da Orientação ("limite mais frouxo que a lei"):* com as três famílias
+   legais sem campo, nenhum limite exposto pode ser "mais frouxo" que a lei; a situação "a CLT
+   prevalece" ficou para o limite que **contradiz** a lei. Levar à Orientação.
+5. **Limite padrão de cada critério com parâmetro**, quando o gestor o liga: os valores do
+   contrato 0 do `medium_late05` (mínimo de turnos 10; mínimo de dias seguidos 3; máximo de
+   folgas seguidas 4; mínimo de folgas seguidas 3; máximo de fins de semana seguidos 3; mínimo 2).
+   Fins de semana em 4 semanas: 2 (nenhuma instância do INRC liga; valor de exemplo, sem fonte).
+   O gestor edita.
+6. **Resultado por critério:** contado na escala final, fora do modelo, por `avaliacao.py`
+   (excesso por família) e, para o noturno antes de fim de semana livre, que o `avaliacao.py` não
+   pontua, por `solucao.noites_antes_de_fim_de_semana_livre`; enfermeiro em posto de técnico e
+   pedidos, pela contagem que a tela já usa (`ferramenta.indicadores`).
+7. **Os testes da tela rodam com os limites da v1.2.3** (600 s / 180 s / 20 min): verificam
+   comportamento, não limite. Um teste confere os padrões novos (1.800 s, 1.800 s, 60 min) e que
+   o campo da tela chega ao `verificar`.
+
+---
+
 ## Modelo de entrada
 
 ```

@@ -262,3 +262,17 @@ operacional desta máquina (i5-10210U, HiGHS 1.15.1 via `appsi_highs`).
 |---|---|---|---|
 | B (quebra de simetria, 180 s): **sem melhora** | ordem por horas dentro dos grupos de idênticos (13 enf. e 5 téc.; 16 restrições); partida aceita 0,4091; nenhuma solução melhor; dual ~3e-14, gap 100%; escala final = partida | conferências 1–5 do script; **recontagem independente** das escalas gravadas (`p17_diagnostico_k5.recontar`, sem `ferramenta.indicadores` nem o modelo): critério 0,4091, penalidade 21, descanso e rígidas OK, inclusive desfeita a renumeração | 180 s, o limite da tela |
 | A (1.800 s): **melhora, 0,4091 → 0,1364** | melhoras aos 1.752,1 s (0,1705) e 1.797,4 s (0,1364), as duas pela heurística Sub-MIP do HiGHS (fonte "L" na legenda do log); diferença entre colegas: enf. 42 → 12 h (144–156 h), téc. 30 → 12 h (150–162 h); penalidade 21 (= etapa 1); dual ~2e-14, gap 100% | conferências 1–4 do script; **recontagem independente** das escalas gravadas: critério 0,1364 = melhor do log, penalidade 21, descanso e rígidas OK | a melhora veio a 3 s do fim: pode haver melhor com mais tempo; sem prova de ótimo; 1.800 s está fora do orçamento do clique (20 min) |
+
+## 14. Validação por restrição nos 4 ótimos (19/10/2026)
+
+Aprovada pelo Otávio em 19/10 (2º bloco). Esperado commitado antes (`8d20313`; controle,
+`d44daef`); relatório `resultados/relatorio_2026-10-19.md`, seção 4. Sem solver.
+
+| Número | O que é | Arquivo | Comando | Conferência | Ressalva |
+|---|---|---|---|---|---|
+| duras = **0** nas 4 escalas ótimas (56, 58, 197, 219) | cobertura pelo avaliador oficial; um turno por dia contado no XML; `conferir_rigidas`; restrições do modelo com x fixado | `resultados/validacao_restricoes_2026-10-19/tabela.md` | `python docs\diagnosticoalidacao_restricoes.py` | avaliador oficial (saídas de `resultados/<inst>_completo_avaliador.txt`) | o avaliador só checa cobertura; um-turno-por-dia vem da contagem no XML |
+| penalidade por tipo, avaliador × modelo: diferença **0** em todos os tipos; somas **56, 58, 197, 219** | 6 tipos com custo nas 4 escalas (máximo de turnos, dias seguidos, mínimos de dias e de folgas seguidos, pedido de folga, padrão indesejado) | idem, `por_tipo.csv` | idem | avaliador oficial | a coluna "modelo" é o próprio código da função objetivo, com x fixado; a independência está no avaliador |
+| diferença **0** por profissional (10, 10, 49, 49) e por profissional × tipo | | `por_profissional.csv` | idem | avaliador oficial | idem |
+| controle: 20 escalas perturbadas (penalidade 69–250), avaliador = modelo em todos os tipos e células; a conferência acusa as 20 contra a saída da original | | `controle/controle.md` | `python docs\diagnosticoalidacao_restricoes_controle.py` | avaliador oficial, rodado em 19/10 | perturbações aleatórias, semente 20261019; 11 tipos de violação exercitados |
+
+Substitui, como evidência de restrições, as 207 + 36 escalas de 18/09 (perdidas; seção 1).
