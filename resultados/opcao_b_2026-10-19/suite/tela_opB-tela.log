@@ -1,0 +1,25 @@
+2026-10-19 17:54:21.427 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-19 17:54:24.294 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+opB-tela. tabela, padrao, restaurar, aviso, orcamento
+   ok    grupos ['Pedidos e qualificação — 2 de 2 considerados', 'Sequências de trabalho e folga — 0 de 3 considerados', 'Fins de semana — 0 de 5 considerados', 'Noturno e carga — 0 de 3 considerados']
+   ok    grupo 1 aberto, 2 a 4 recolhidos
+   ok    importancia padrao
+   ok    tres linhas 'ja garantido pela CLT'
+   ok    contador muda
+   ok    restaurar padrao
+   ok    sem aviso no padrao
+   ok    aviso de mesmo nivel: ['Todos os critérios considerados estão no nível Importante: entre eles há compensação — uma violação de um vale o mesmo que uma de outro.']
+      [prioridades] caminho: fundido
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    padrao: orcamento None, prioridades None
+   ok    tabela de resultado na tela
+   ok    resultado por criterio: [('Essencial', 'Pedido de folga no dia', 0, 0), ('Importante', 'Enfermeiro em posto de técnico', 30, 8)]
+   ok    aba Prioridades: [['Essencial', 'Pedido de folga no dia', 0, 0], ['Importante', 'Enfermeiro em posto de técnico', 30, 8]]
+opB-tela. orcamento editado chega ao verificar
+      [prioridades] caminho: fundido
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    orcamento 120
+
+ponta a ponta pela tela OK

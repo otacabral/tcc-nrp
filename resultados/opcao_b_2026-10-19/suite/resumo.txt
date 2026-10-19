@@ -1,0 +1,19 @@
+a1_gravar_v123 | codigo 0 | 43 s | 81 casos, 243 arquivos em C:\Users\Otavio\AppData\Local\Temp\opcao_b_identidade\v123
+a1_gravar_nova | codigo 0 | 41 s | 81 casos, 243 arquivos em C:\Users\Otavio\AppData\Local\Temp\opcao_b_identidade\nova
+a1_comparar | codigo 0 | 5 s | 243 arquivos; 243 identicos; 0 diferentes
+a1_controle | codigo 0 | 2 s | controle: LP da etapa 1 com uma suave muda (ok)
+regressao | codigo 0 | 61 s | regressao OK: otimo provado, Tabela 6, espelho de avaliacao.py e decomposicao por profissional
+testes_entrada | codigo 0 | 9 s | testes das entradas OK
+tela_opB-padroes | codigo 0 | 3 s | ponta a ponta pela tela OK
+tela_opB-d | codigo 0 | 4 s | ponta a ponta pela tela OK
+tela_opB-b | codigo 0 | 4 s | ponta a ponta pela tela OK
+tela_opB-c | codigo 0 | 804 s | ponta a ponta pela tela OK
+tela_opB-e | codigo 0 | 1587 s | ponta a ponta pela tela OK
+tela_opB-tela | codigo 0 | 310 s | ponta a ponta pela tela OK
+tela_16 | codigo 0 | 4 s | ponta a ponta pela tela OK
+tela_4b | codigo 0 | 2 s | ponta a ponta pela tela OK
+tela_7.4 | codigo 0 | 2 s | ponta a ponta pela tela OK
+tela_9b-sem-teto | codigo 0 | 11 s | ponta a ponta pela tela OK
+tela_9c-tela | codigo 0 | 25 s | ponta a ponta pela tela OK
+tela_3 | codigo 127 | 84 s |       [prioridades] caminho: fundido
+PARADO: tela_3 falhou (ver resultados/opcao_b_2026-10-19/suite/tela_3.log)

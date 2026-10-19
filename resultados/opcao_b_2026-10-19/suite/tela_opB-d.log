@@ -1,0 +1,12 @@
+opB-d. situacao antes de resolver
+   ok    12x36, minimo de dias seguidos 2 e minimo de turnos 20: {'pedido_folga': 'ok', 'enf_posto_tec': 'ok', 'max_dias_seguidos': 'já garantido pela CLT', 'min_dias_seguidos': 'a CLT prevalece', 'max_folgas_seguidas': 'ok', 'min_folgas_seguidas': 'ok', 'seq_indesejadas': 'já garantido pela CLT', 'max_fds_seguidos': 'ok', 'min_fds_seguidos': 'ok', 'fds_4_semanas': 'ok', 'fds_completo': 'nunca será atendido neste regime', 'mesmo_turno_fds': 'nunca será atendido neste regime', 'max_turnos': 'já garantido pela CLT', 'min_turnos': 'a CLT prevalece', 'noturno_antes_fds': 'ok', 'folgas_apos_noites': 'ok'}
+   ok    minimo de turnos 10: ok
+   ok    12x36, fins de semana: nunca será atendido neste regime / nunca será atendido neste regime
+   ok    ja garantido pela CLT
+   ok    8 h em tres turnos: {'pedido_folga': 'ok', 'enf_posto_tec': 'ok', 'max_dias_seguidos': 'já garantido pela CLT', 'min_dias_seguidos': 'ok', 'max_folgas_seguidas': 'ok', 'min_folgas_seguidas': 'ok', 'seq_indesejadas': 'já garantido pela CLT', 'max_fds_seguidos': 'ok', 'min_fds_seguidos': 'ok', 'fds_4_semanas': 'ok', 'fds_completo': 'ok', 'mesmo_turno_fds': 'ok', 'max_turnos': 'já garantido pela CLT', 'min_turnos': 'ok', 'noturno_antes_fds': 'ok', 'folgas_apos_noites': 'ok'}
+opB-d. rodada pequena: mesmo turno e fim de semana completo no Essencial (12x36)
+      [prioridades] caminho: fundido
+   ok    veredito admite
+   ok    violacoes {'Pedido de folga no dia': (0, 0), 'Fim de semana completo': (8, 2), 'Mesmo turno no fim de semana': (8, 2), 'Enfermeiro em posto de técnico': (0, 0)}
+
+ponta a ponta pela tela OK

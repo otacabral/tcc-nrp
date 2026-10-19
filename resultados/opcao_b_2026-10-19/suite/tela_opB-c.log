@@ -1,0 +1,15 @@
+opB-c. plano da demonstracao, classificacao padrao
+   ok    padrao: [(['Essencial', 'Importante'], {'pedido_folga': 286, 'enf_posto_tec': 1}, 2001)]
+opB-c. plano com as suaves no Desejavel
+   ok    suaves no Desejavel: [(['Essencial', 'Importante'], {'pedido_folga': 286, 'enf_posto_tec': 1}, 2001), (['Desejável'], {'min_dias_seguidos': 1, 'max_folgas_seguidas': 1, 'min_folgas_seguidas': 1, 'max_fds_seguidos': 1, 'min_fds_seguidos': 1, 'fds_4_semanas': 1, 'fds_completo': 1, 'mesmo_turno_fds': 1, 'min_turnos': 1, 'noturno_antes_fds': 1, 'folgas_apos_noites': 1}, 5010)]
+opB-c. rodada da demonstracao com as suaves no Desejavel (600/180/20 min)
+      [prioridades] caminho: em sequência, 2 blocos
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    caminho em sequência, 2 blocos; tentativas [(30, 'viavel', 10, 20)]
+   ok    escala entregue e cumpre o descanso: O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 28,0%: distância máxima até a melhor possível).
+    O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 28,0%: distância máxima até a melhor possível). [{'niveis': ['Essencial', 'Importante'], 'valor': 24, 'provado': True, 'gap': 0.0}, {'niveis': ['Desejável'], 'valor': 2201, 'provado': False, 'gap': 0.28032712403452975}] [('Essencial', 'Pedido de folga no dia', 0, 0), ('Importante', 'Enfermeiro em posto de técnico', 24, 9), ('Desejável', 'Mínimo de dias seguidos de trabalho', 718, 30), ('Desejável', 'Máximo de folgas seguidas', 28, 4), ('Desejável', 'Mínimo de folgas seguidas', 656, 30), ('Desejável', 'Máximo de fins de semana seguidos trabalhados', 12, 12), ('Desejável', 'Mínimo de fins de semana seguidos trabalhados', 8, 6), ('Desejável', 'Fins de semana trabalhados em 4 semanas', 30, 18), ('Desejável', 'Fim de semana completo', 87, 29), ('Desejável', 'Mesmo turno no fim de semana', 87, 29), ('Desejável', 'Mínimo de turnos no período', 12, 4), ('Desejável', 'Noturno na véspera de fim de semana livre', 8, 8), ('Desejável', 'Duas folgas depois de noites', 117, 19)]
+
+ponta a ponta pela tela OK

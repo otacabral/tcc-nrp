@@ -1,0 +1,23 @@
+opB-b. caso pequeno, 3 niveis, caminho fundido
+      [prioridades] caminho: fundido
+   ok    fundido: veredito admite, provado True
+   ok    fundido: caminho fundido
+   ok    fundido: violacoes por nivel [(0, 0), (1, 1), (14, 2)]
+   ok    fundido: resultado por criterio {'Pedido de folga no dia': (0, 0), 'Enfermeiro em posto de técnico': (1, 1), 'Mínimo de turnos no período': (14, 2)}
+opB-b. caso pequeno, 3 niveis, caminho em sequencia
+      [prioridades] caminho: em sequência, 3 blocos
+   ok    em sequencia: veredito admite, provado True
+   ok    em sequencia: caminho em sequência, 3 blocos
+   ok    em sequencia: violacoes por nivel [(0, 0), (1, 1), (14, 2)]
+   ok    em sequencia: resultado por criterio {'Pedido de folga no dia': (0, 0), 'Enfermeiro em posto de técnico': (1, 1), 'Mínimo de turnos no período': (14, 2)}
+   ok    niveis [{'niveis': ['Essencial'], 'valor': 0, 'provado': True, 'gap': 0.0}, {'niveis': ['Importante'], 'valor': 1, 'provado': True, 'gap': 0.0}, {'niveis': ['Desejável'], 'valor': 14, 'provado': True, 'gap': 0.0}]
+opB-b. definicao a parte: cada nivel sozinho, com os anteriores presos
+   ok    definicao, nivel 1: optimal
+   ok    definicao, nivel 2: optimal
+   ok    definicao, nivel 3: optimal
+   ok    definicao: [0, 1, 14]
+opB-b. classificacao invertida (enfermeiro Essencial, pedidos Importante)
+      [prioridades] caminho: fundido
+   ok    invertida: {'Enfermeiro em posto de técnico': (0, 0), 'Pedido de folga no dia': (1, 1), 'Mínimo de turnos no período': (14, 1)}
+
+ponta a ponta pela tela OK

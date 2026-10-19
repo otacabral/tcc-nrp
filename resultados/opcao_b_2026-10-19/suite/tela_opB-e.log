@@ -1,0 +1,20 @@
+opB-e. caso pequeno (12x36, 1 + 2): padrao x todas as suaves no Essencial
+      [prioridades] caminho: fundido
+      [prioridades] caminho: em sequência, 2 blocos
+   ok    caso pequeno (12x36, 1 + 2): admite/3 x admite/3
+   ok    caso pequeno (12x36, 1 + 2): escala cumpre
+    em sequência, 2 blocos [('Essencial', 'Pedido de folga no dia', 0, 0), ('Essencial', 'Mínimo de dias seguidos de trabalho', 56, 3), ('Essencial', 'Máximo de folgas seguidas', 0, 0), ('Essencial', 'Mínimo de folgas seguidas', 31, 3), ('Essencial', 'Máximo de fins de semana seguidos trabalhados', 0, 0), ('Essencial', 'Mínimo de fins de semana seguidos trabalhados', 1, 1), ('Essencial', 'Fins de semana trabalhados em 4 semanas', 2, 2), ('Essencial', 'Fim de semana completo', 8, 3), ('Essencial', 'Mesmo turno no fim de semana', 8, 3), ('Essencial', 'Mínimo de turnos no período', 2, 1), ('Essencial', 'Noturno na véspera de fim de semana livre', 0, 0), ('Essencial', 'Duas folgas depois de noites', 0, 0), ('Importante', 'Enfermeiro em posto de técnico', 8, 1)]
+opB-e. caso 5 (8 h, 8 + 5): padrao x todas as suaves no Essencial
+      [prioridades] caminho: fundido
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+      [prioridades] caminho: em sequência, 2 blocos
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+   ok    caso 5 (8 h, 8 + 5): admite/13 x admite/13
+   ok    caso 5 (8 h, 8 + 5): escala cumpre
+    em sequência, 2 blocos [('Essencial', 'Pedido de folga no dia', 0, 0), ('Essencial', 'Mínimo de dias seguidos de trabalho', 2, 2), ('Essencial', 'Máximo de folgas seguidas', 1, 1), ('Essencial', 'Mínimo de folgas seguidas', 23, 7), ('Essencial', 'Máximo de fins de semana seguidos trabalhados', 0, 0), ('Essencial', 'Mínimo de fins de semana seguidos trabalhados', 4, 4), ('Essencial', 'Fins de semana trabalhados em 4 semanas', 7, 7), ('Essencial', 'Fim de semana completo', 0, 0), ('Essencial', 'Mesmo turno no fim de semana', 0, 0), ('Essencial', 'Mínimo de turnos no período', 0, 0), ('Essencial', 'Noturno na véspera de fim de semana livre', 0, 0), ('Essencial', 'Duas folgas depois de noites', 2, 2), ('Importante', 'Enfermeiro em posto de técnico', 52, 8)]
+
+ponta a ponta pela tela OK

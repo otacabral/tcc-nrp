@@ -5,43 +5,37 @@ fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- Versão citável: **v1.2.3** (13/10). Tag no GitHub (conferido em 19/10). Os commits de 19/10
-  ainda não foram enviados (push do Otávio).
-- **Opção B aprovada** pelo Prof. Ormeu (14/10, 19h58) e registrada (`DECISOES.md`,
-  "2026-10-14 — Função objetivo por níveis escolhidos pelo gestor (opção B)"): MUDANÇA DE
-  FORMULAÇÃO, **implementação pendente**. Nada de código de produto mudou em 19/10.
-- **Validação por restrição nos 4 ótimos: feita e OK** (`resultados/validacao_restricoes_2026-10-19/`):
-  duras 0; penalidade por tipo e por profissional, avaliador × modelo, diferença 0; controle
-  positivo com 20 escalas perturbadas reavaliadas no avaliador oficial, OK. Seção proposta
-  para o `NUMEROS_TCC.md` no `resultados/relatorio_2026-10-19.md`, seção 4 — **não incluída,
-  aguarda aprovação**.
-- Números citáveis: `resultados/NUMEROS_TCC.md` (inalterado). Congelamento: **25/10**.
-- Reorganização dos chats (11/10): os chats leem esta pasta direto; só o Claude Code escreve
-  aqui; a Redação escreve em `D:\TCC\escrita`.
+- **Opção B implementada** (19/10, 2º bloco; `DECISOES.md`, "2026-10-19 — Opção B: mecanismo,
+  tempo e critérios expostos"; `resultados/relatorio_2026-10-19b.md`). Com a classificação
+  padrão, a entrada do solver é idêntica à da v1.2.3 (243 de 243 arquivos).
+- **Suíte de fechamento INTERROMPIDA** por falta de memória (Claude Code encerrou o processo),
+  depois de 17 passos todos OK. Faltam 11 casos antigos da tela e o (a2) (bateria nível 1 e
+  demonstração). **Tag `v1.3.0` não criada.** Versão citável continua a **v1.2.3**.
+- `NUMEROS_TCC.md`: seção 14 (validação por restrição) incluída. Congelamento: **25/10**.
+- Nada enviado ao GitHub em 19/10.
 
 ## Próxima tarefa
 
-- **Claude Code: implementação da opção B**, depois da decisão da Orientação sobre o
-  diagnóstico (`resultados/relatorio_2026-10-19.md`, seção 3). Decisões pendentes:
-  1. **pesos escalonados × resoluções em sequência** (3d): com 3 níveis no caso da
-     demonstração, o coeficiente de Essencial passa de 1,3 milhão e o gap padrão do HiGHS
-     (0,01%) deixa de provar o ótimo dos níveis de baixo; em sequência, cada nível fica abaixo
-     de 10.000 e a condição de 09/10 vale. A etapa 2 já é feita em sequência;
-  2. **quais critérios entram** (3c): máximo de dias seguidos, máximo de turnos e padrões
-     indesejados são rígidos pela CLT na ferramenta; a versão "preferência" deles exige família
-     própria no modelo. Habilidade alternativa contradiz a habilidade rígida. Pedido por turno
-     tinha virado trabalho futuro em 09/10;
-  3. **orçamento × limite por resolução** (3e): 60 min de orçamento não dão mais que 600 s a
-     uma resolução (etapa 1) nem mais que 180 s à etapa 2;
-  4. teste de identidade com a classificação padrão: rodar com o orçamento de 20 min, ou
-     registrar antes a troca dos textos "20 min" → "60 min".
-- Junto com a B: orçamento por clique configurável, padrão 60 min (`DECISOES.md`, 19/10).
-- Depois, se houver tempo: `MAPA_CODIGO.md` (caminhos atuais, sem P18); P16.
-- Otávio: enviar os commits — `git push origin main` (manda os commits de 19/10 para o GitHub;
-  a tag `v1.2.3` já está lá).
-- Otávio: aprovar (ou não) a seção 14 proposta para o `NUMEROS_TCC.md`.
+- **Otávio: retomar a suíte** (fechar o Chrome antes), da raiz, com a `.venv`:
+  `RETOMAR=1 "C:\Program Files\Gitinash.exe" docs/diagnostico/fechar_v130.sh` — roda só o
+  que falta e termina com "TUDO OK" ou "PARADO" em `resultados/opcao_b_2026-10-19/suite/resumo.txt`.
+  Ou pedir ao Claude Code que a retome.
+- Se der "TUDO OK": tag — `git tag -a v1.3.0 -m "v1.3.0: opcao B"` (marca a versão) — e
+  `git push origin main` seguido de `git push origin v1.3.0` (envia os commits e a tag).
+- **Depois: caso realista A (Massens 2019)**, parâmetros a vir da Orientação.
+- Orientação: validar duas leituras de implementação (relatório 19b, seção 1): "a CLT prevalece"
+  = limite que contradiz a lei; limites padrão do `medium_late05` (fins de semana em 4 semanas
+  = 2, sem fonte).
 
-## Decisões da sessão de 19/10
+## Decisões da sessão de 19/10 (2º bloco)
+
+- Opção B: níveis em sequência, fusão por coeficiente se o bloco fundido < 10.000; 1.800 s por
+  nível e na etapa 2; orçamento 60 min editável; 13 critérios com campo, 3 "já garantido pela
+  CLT"; habilidade alternativa e pedidos por turno/para trabalhar fora.
+- Os testes da tela rodam com os limites da v1.2.3 (600/180/20 min); um teste confere os padrões
+  novos.
+
+## Decisões da sessão de 19/10 (1º bloco)
 
 - Opção B registrada (aprovação do Ormeu, 14/10); orçamento configurável, padrão 60 min,
   registrado (implementar junto com a B; bateria, demonstração e números atuais ficam
@@ -83,6 +77,9 @@ fim de cada sessão (dele ou do chat).
 
 ## Pendências com a Redação
 
+- **Opção B (19/10, 2º bloco):** a função objetivo da ferramenta passa a ser por níveis
+  escolhidos pelo gestor; o `GUIA_DE_USO.md` tem a seção nova; os números de antes ficam
+  declarados "orçamento 20 min, 600 s / 180 s". Ainda sem tag (suíte incompleta).
 - **19/10, prontos para leitura:** `docs/diferencas_inrc_ferramenta.md` (comparativo pedido
   pelo orientador; sem afirmar eficiência), `docs/pesos_inrc.md` (o INRC não tem um conjunto
   único de pesos: 41 instâncias só com peso 1, 28 com 1 a 10, e um 31 no `medium_late05`) e a
@@ -117,7 +114,7 @@ fim de cada sessão (dele ou do chat).
 
 ## Cronograma
 
-- 19–25/10: modificações na ferramenta (opção B, orçamento configurável).
+- 19–25/10: modificações na ferramenta (opção B implementada em 19/10; caso realista A a seguir).
 - 20/10: reunião com o orientador.
 - **Números congelados: 25/10** (substitui 16/10).
 - 26/10–01/11: só escrita. 02–06/11: revisão do orientador.
