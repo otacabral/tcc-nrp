@@ -1,0 +1,4 @@
+# (a1) 19/10/2026 17:10, v1.2.3 (worktree, tag) x arvore de trabalho com a opcao B
+243 arquivos; 243 identicos; 0 diferentes
+# controle positivo
+controle: LP da etapa 1 com uma suave muda (ok)

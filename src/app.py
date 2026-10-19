@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import ferramenta as fe  # noqa: E402
 import instancia_br as br  # noqa: E402
+import prioridades as pr  # noqa: E402
 
 ROTULO_GRAU = {
     "minimo": "Mínimo (4 h/paciente)",
@@ -179,11 +180,100 @@ with st.expander("4. Conferir com o COFEN (opcional) — pacientes por grau"):
         if valor > 0:
             pacientes[g] = valor
 
-gerar = st.button("Gerar escala", type="primary", key="gerar")
 
 
 def _data(valor) -> date:
     return pd.Timestamp(valor).date()
+
+
+def _entrada(prioridades) -> fe.Entrada:
+    return fe.Entrada(
+        turnos=turnos, grau=grau, n_enfermeiros=int(n_enf), n_tecnicos=int(n_tec),
+        demanda_turno=demanda_turno, demanda_fds=demanda_fds, demanda_data=demanda_data,
+        fim_de_semana=fim_de_semana, inicio=inicio,
+        nomes_enfermeiros=nomes_enf, nomes_tecnicos=nomes_tec,
+        indisponibilidades=[(str(l["Profissional"]), _data(l["De"]), _data(l["Até"]))
+                            for _, l in tabela_indisp.dropna().iterrows()],
+        pedidos=[(str(l["Profissional"]), _data(l["Data"]))
+                 for _, l in tabela_pedidos.dropna().iterrows()],
+        pacientes=pacientes or None, cargas=cargas, prioridades=prioridades)
+
+
+# --- prioridades da escala (opcao B; DECISOES.md, 14/10 e 19/10) ---------------------------
+st.header("Prioridades da escala")
+st.caption("Classifique cada critério. Os de nível Essencial vêm antes de todos os outros; "
+           "depois os Importantes; depois os Desejáveis. Dentro do mesmo nível, cada violação "
+           "conta 1. Uma preferência nunca torna a escala impossível: as regras da CLT "
+           "continuam rígidas e valem antes de tudo.")
+PADRAO = fe.prioridades_padrao()
+for _k, (_nivel, _limite) in PADRAO.items():      # padrao antes dos campos (sem value=)
+    st.session_state.setdefault(f"prio_{_k}", _nivel)
+    if _limite is not None:
+        st.session_state.setdefault(f"lim_{_k}", _limite)
+
+
+def _restaurar():
+    for k, (nivel, limite) in PADRAO.items():
+        st.session_state[f"prio_{k}"] = nivel
+        if limite is not None:
+            st.session_state[f"lim_{k}"] = limite
+
+
+st.button("Restaurar padrão", key="restaurar", on_click=_restaurar)
+escolha = {k: (st.session_state[f"prio_{k}"], st.session_state.get(f"lim_{k}"))
+           for k in PADRAO}
+try:
+    _base_prio = fe.montar(_entrada(escolha))
+    _limite_efetivo = fe.limite_efetivo(_base_prio)
+    situacao = pr.situacoes(_base_prio, pr.normalizar(escolha), _limite_efetivo)
+    _teto = _base_prio.contratos["0"].max_num_assignments.valor
+except (ValueError, TypeError, KeyError, ZeroDivisionError):
+    situacao, _limite_efetivo, _teto = {}, None, None   # entrada ainda incompleta
+for g, nome_grupo in enumerate(pr.GRUPOS):
+    crits = [c for c in pr.CRITERIOS if c.grupo == g]
+    campos = [c for c in crits if not c.clt]
+    k = sum(1 for c in campos if escolha[c.id][0] != pr.NAO)
+    with st.expander(f"{nome_grupo} — {k} de {len(campos)} considerados",
+                     expanded=(g == 0)):
+        cab = st.columns([3, 2, 1, 2])
+        for coluna, rotulo in zip(cab, ("Critério", "Importância", "Limite", "Situação")):
+            coluna.caption(rotulo)
+        for c in crits:
+            col = st.columns([3, 2, 1, 2])
+            if c.clt:
+                col[0].markdown(f":gray[{c.nome}]")
+                col[3].markdown(f":gray[{pr.GARANTIDO}]")
+                st.caption(c.ajuda)
+                continue
+            col[0].write(c.nome)
+            col[1].selectbox("Importância", pr.NIVEIS, key=f"prio_{c.id}",
+                             label_visibility="collapsed")
+            if c.limite is not None:
+                col[2].number_input(c.rotulo_limite, min_value=0, step=1, key=f"lim_{c.id}",
+                                    label_visibility="collapsed")
+            sit = situacao.get(c.id, "—")
+            col[3].write(sit)
+            ajuda = c.ajuda
+            extra = pr.explicar(c, sit, _limite_efetivo, _teto)
+            if extra:
+                ajuda += " " + extra
+            if c.sem_conferencia:
+                ajuda += (" ⓘ Sem conferência externa: nenhuma instância do benchmark INRC "
+                          "a usa ou o avaliador oficial não a pontua.")
+            st.caption(ajuda)
+_niveis = {nivel for nivel, _ in escolha.values() if nivel != pr.NAO}
+if sum(1 for nivel, _ in escolha.values() if nivel != pr.NAO) > 1 and len(_niveis) == 1:
+    st.info(f"Todos os critérios considerados estão no nível {_niveis.pop()}: entre eles há "
+            f"compensação — uma violação de um vale o mesmo que uma de outro.")
+
+# orcamento do clique (DECISOES.md, 19/10, item b): padrao = `fe.ORCAMENTO`, lido na chamada;
+# o campo so vai ao `verificar` quando o gestor o muda (os testes encurtam `fe.ORCAMENTO`)
+_orc_padrao = max(1, round(fe.ORCAMENTO / 60))
+orcamento_min = st.number_input("Orçamento do clique (minutos)", min_value=1, step=1,
+                                value=_orc_padrao, key="orcamento",
+                                help="Tempo máximo de um clique em \"Gerar escala\". Esgotado, "
+                                     "a ferramenta para e mostra só o que foi provado.")
+gerar = st.button("Gerar escala", type="primary", key="gerar")
 
 
 if gerar:
@@ -191,16 +281,7 @@ if gerar:
         if inicio.weekday() != 0:
             raise ValueError(f"o início precisa ser numa segunda-feira; "
                              f"{inicio:%d/%m/%Y} não é")
-        entrada = fe.Entrada(
-            turnos=turnos, grau=grau, n_enfermeiros=int(n_enf), n_tecnicos=int(n_tec),
-            demanda_turno=demanda_turno, demanda_fds=demanda_fds, demanda_data=demanda_data,
-            fim_de_semana=fim_de_semana, inicio=inicio,
-            nomes_enfermeiros=nomes_enf, nomes_tecnicos=nomes_tec,
-            indisponibilidades=[(str(l["Profissional"]), _data(l["De"]), _data(l["Até"]))
-                                for _, l in tabela_indisp.dropna().iterrows()],
-            pedidos=[(str(l["Profissional"]), _data(l["Data"]))
-                     for _, l in tabela_pedidos.dropna().iterrows()],
-            pacientes=pacientes or None, cargas=cargas)
+        entrada = _entrada(None if escolha == PADRAO else escolha)
         fe.montar(entrada)                    # erro de entrada aparece antes do solver
     except (ValueError, TypeError) as erro:
         st.session_state.pop("resultado", None)
@@ -223,7 +304,9 @@ if gerar:
 
         resultado = fe.verificar(entrada,
                                  progresso=lambda f, msg: barra.progress(f, text=msg),
-                                 aviso=aviso)
+                                 aviso=aviso,
+                                 orcamento=(None if orcamento_min == _orc_padrao
+                                            else orcamento_min * 60))
         barra.empty()
         provisoria.empty()
         st.session_state["resultado"] = (resultado, entrada)
@@ -296,6 +379,9 @@ if "resultado" in st.session_state:
             st.caption(f"Pedidos de folga negados: {ind['pedidos_total'] - ind['pedidos_atendidos']}"
                        f", em {br.plural(ind['com_pedido_negado'], 'profissional', 'profissionais')}; no máximo "
                        f"{ind['negados_max']} por pessoa.")
+        if r.criterios:
+            st.markdown("**Resultado por critério**")
+            st.dataframe(fe.tabela_criterios(r), hide_index=True)
     if r.qp:
         q1, q2 = st.columns(2)
         st.caption(f"CHS usada no QP: {r.chs:.1f} h por semana, a média das cargas "

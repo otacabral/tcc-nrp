@@ -130,6 +130,14 @@ from streamlit.testing.v1 import AppTest  # noqa: E402
 import ferramenta as fe  # noqa: E402
 import solucao  # noqa: E402
 import instancia_br as br  # noqa: E402
+import prioridades as pr  # noqa: E402
+
+# Opcao B (19/10; DECISOES.md, "2026-10-19 — Opcao B", decisao de implementacao 7): os testes
+# verificam comportamento, nao limite, e rodam com os limites da v1.2.3 (600 s, 180 s, 20 min),
+# com os quais os esperados foram registrados. Os padroes novos ficam guardados aqui e o caso
+# "opB-padroes" os confere.
+PADROES_NOVOS = (fe.TEMPO, fe.TEMPO_ETAPA2, fe.ORCAMENTO)
+fe.TEMPO, fe.TEMPO_ETAPA2, fe.ORCAMENTO = 600, 180, 20 * 60
 
 FALHAS: list[str] = []
 M12, M8, M6 = list(fe.MODELOS)
@@ -1032,12 +1040,248 @@ def caso_reprovada() -> None:
     confere(len(at.get("download_button")) == 0, "sem botao de planilha")
 
 
+# --- Opcao B (19/10): prioridades da escala --------------------------------------------------
+# Esperado registrado antes de implementar: resultados/opcao_b_2026-10-19/ESPERADO.md.
+
+def _pequeno(pedidos: bool = True, prioridades=None) -> fe.Entrada:
+    """12x36, 1 enfermeiro + 2 tecnicos, D com 1 tecnico por dia, N sem demanda; pedidos de
+    folga dos dois tecnicos no primeiro dia (ESPERADO.md, item b)."""
+    ini = br.primeira_segunda()
+    return fe.Entrada(turnos=M12_TURNOS, grau="intermediario", n_enfermeiros=1, n_tecnicos=2,
+                      demanda_turno={"D": (0, 1), "N": (0, 0)}, inicio=ini,
+                      pedidos=[("Téc 1", ini), ("Téc 2", ini)] if pedidos else [],
+                      prioridades=prioridades)
+
+
+def _por_criterio(r) -> dict:
+    return {nome: (v, k) for _, nome, v, k in r.criterios}
+
+
+def _todas_suaves(nivel) -> dict:
+    p = fe.prioridades_padrao()
+    for c in pr.CRITERIOS:
+        if not c.clt and c.id not in ("pedido_folga", "enf_posto_tec"):
+            p[c.id] = (nivel, c.limite)
+    return p
+
+
+def caso_opb_sequencia() -> None:
+    """(b) sequencia = definicao: (0, 1, 14), fundido e em sequencia, e a definicao a parte."""
+    import pyomo.environ as pyo
+    import experimento_a as ea
+    import modelo
+    p = dict(fe.prioridades_padrao(), min_turnos=(fe.DESEJAVEL, 14))
+    nomes = ("Pedido de folga no dia", "Enfermeiro em posto de técnico",
+             "Mínimo de turnos no período")
+    for rotulo, limite_fusao, caminho in (("fundido", pr.LIMITE_FUSAO, "fundido"),
+                                          ("em sequencia", 0, "em sequência, 3 blocos")):
+        print(f"opB-b. caso pequeno, 3 niveis, caminho {rotulo}")
+        original = pr.LIMITE_FUSAO
+        pr.LIMITE_FUSAO = limite_fusao
+        try:
+            r = fe.verificar(_pequeno(prioridades=p))
+        finally:
+            pr.LIMITE_FUSAO = original
+        c = _por_criterio(r)
+        confere(r.veredito == fe.ADMITE and r.provado, f"{rotulo}: veredito {r.veredito}, "
+                                                       f"provado {r.provado}")
+        confere(r.indicadores.get("caminho") == caminho,
+                f"{rotulo}: caminho {r.indicadores.get('caminho')}")
+        confere([c.get(n, (None,))[0] for n in nomes] == [0, 1, 14],
+                f"{rotulo}: violacoes por nivel {[c.get(n) for n in nomes]}")
+        confere(c.get(nomes[0]) == (0, 0) and c.get(nomes[1]) == (1, 1)
+                and c.get(nomes[2]) == (14, 2), f"{rotulo}: resultado por criterio {c}")
+        if limite_fusao == 0:
+            confere([n.get("valor") for n in r.indicadores.get("niveis", [])] == [0, 1, 14]
+                    and all(n.get("provado") for n in r.indicadores["niveis"]),
+                    f"niveis {r.indicadores.get('niveis')}")
+    print("opB-b. definicao a parte: cada nivel sozinho, com os anteriores presos")
+    inst = fe.montar(_pequeno(prioridades=p))
+    pn = pr.normalizar(p)
+    unidade, custo = pr.aplicar(inst, pn, {x.id: 1 for x in pr.CRITERIOS}, br.HABILIDADE_ENF)
+    m = ea.modelo_br(unidade, custo)
+    valores = []
+    for i, familias in enumerate((["day_off_requests"], ["custo_atribuicao"],
+                                  ["min_num_assignments"])):
+        expr = sum(m.parcela[f] for f in familias)
+        m.del_component(m.objetivo)
+        m.objetivo = pyo.Objective(expr=expr, sense=pyo.minimize)
+        res = modelo.resolver(m, tempo_limite=600, carregar=False)
+        confere(modelo.provou_otimo(res) and modelo.carregar_solucao(m, res),
+                f"definicao, nivel {i + 1}: {modelo.estado(res)}")
+        valores.append(round(pyo.value(expr)))
+        m.add_component(f"preso_{i}", pyo.Constraint(expr=expr <= valores[-1]))
+    confere(valores == [0, 1, 14], f"definicao: {valores}")
+    print("opB-b. classificacao invertida (enfermeiro Essencial, pedidos Importante)")
+    inv = dict(p, pedido_folga=(fe.IMPORTANTE, None), enf_posto_tec=(fe.ESSENCIAL, None))
+    r = fe.verificar(_pequeno(prioridades=inv))
+    c = _por_criterio(r)
+    confere([c.get(n, (None,))[0] for n in (nomes[1], nomes[0], nomes[2])] == [0, 1, 14],
+            f"invertida: {c}")
+
+
+def caso_opb_fusao() -> None:
+    """(c) o plano: padrao fundido; suaves no Desejavel em sequencia (2 blocos)."""
+    sys.path.insert(0, str(RAIZ / "docs" / "demonstracao"))
+    import caso_clinica_medica as cc
+    print("opB-c. plano da demonstracao, classificacao padrao")
+    inst = fe.montar(cc.entrada())
+    blocos = pr.planejar(inst, pr.normalizar(None), br.HABILIDADE_ENF)
+    confere(len(blocos) == 1 and blocos[0].coef == {"pedido_folga": 286, "enf_posto_tec": 1}
+            and blocos[0].maximo == 2001,
+            f"padrao: {[(b.niveis, b.coef, b.maximo) for b in blocos]}")
+    print("opB-c. plano com as suaves no Desejavel")
+    p = _todas_suaves(fe.DESEJAVEL)
+    blocos = pr.planejar(inst, pr.normalizar(p), br.HABILIDADE_ENF)
+    confere(len(blocos) == 2 and blocos[0].coef == {"pedido_folga": 286, "enf_posto_tec": 1}
+            and set(blocos[1].coef.values()) == {1} and len(blocos[1].coef) == 11,
+            f"suaves no Desejavel: {[(b.niveis, b.coef, b.maximo) for b in blocos]}")
+    print("opB-c. rodada da demonstracao com as suaves no Desejavel (600/180/20 min)")
+    e = cc.entrada()
+    e.prioridades = p
+    r = fe.verificar(e)
+    confere(r.indicadores.get("caminho") == "em sequência, 2 blocos",
+            f"caminho {r.indicadores.get('caminho')}; tentativas {r.tentativas}")
+    confere(bool(r.escala) and r.conformidade and r.conformidade["ok"],
+            f"escala entregue e cumpre o descanso: {r.frase()}")
+    print("   ", r.frase(), r.indicadores.get("niveis"), r.criterios)
+
+
+def caso_opb_situacao() -> None:
+    """(d) uma situacao por mensagem, e a rodada pequena do mesmo turno no fim de semana."""
+    print("opB-d. situacao antes de resolver")
+    p = dict(fe.prioridades_padrao(), min_dias_seguidos=(fe.NAO, 2), min_turnos=(fe.NAO, 20))
+    s = fe.situacoes(_pequeno(prioridades=p))
+    confere(s["min_dias_seguidos"] == pr.CLT_PREVALECE and s["min_turnos"] == pr.CLT_PREVALECE,
+            f"12x36, minimo de dias seguidos 2 e minimo de turnos 20: {s}")
+    s = fe.situacoes(_pequeno(prioridades=dict(p, min_turnos=(fe.NAO, 10))))
+    confere(s["min_turnos"] == pr.OK, f"minimo de turnos 10: {s['min_turnos']}")
+    confere(s["fds_completo"] == pr.NUNCA and s["mesmo_turno_fds"] == pr.NUNCA,
+            f"12x36, fins de semana: {s['fds_completo']} / {s['mesmo_turno_fds']}")
+    confere(all(s[k] == pr.GARANTIDO for k in ("max_dias_seguidos", "max_turnos",
+                                                "seq_indesejadas")), "ja garantido pela CLT")
+    s8 = fe.situacoes(_entrada(M8_TURNOS, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)}))
+    confere(s8["fds_completo"] == pr.OK and s8["mesmo_turno_fds"] == pr.OK
+            and s8["min_dias_seguidos"] == pr.OK
+            and all(s8[k] == pr.GARANTIDO for k in ("max_dias_seguidos", "max_turnos",
+                                                     "seq_indesejadas")),
+            f"8 h em tres turnos: {s8}")
+    print("opB-d. rodada pequena: mesmo turno e fim de semana completo no Essencial (12x36)")
+    p = dict(fe.prioridades_padrao(), fds_completo=(fe.ESSENCIAL, None),
+             mesmo_turno_fds=(fe.ESSENCIAL, None))
+    r = fe.verificar(_pequeno(pedidos=False, prioridades=p))
+    c = _por_criterio(r)
+    confere(r.veredito == fe.ADMITE and bool(r.escala), f"veredito {r.veredito}")
+    confere(c.get("Mesmo turno no fim de semana", (None,))[0] == 8
+            and c.get("Fim de semana completo", (None,))[0] == 8, f"violacoes {c}")
+
+
+def caso_opb_essencial() -> None:
+    """(e) todas as suaves no Essencial nao tornam impossivel a escala que a CLT admite."""
+    casos = (("caso pequeno (12x36, 1 + 2)", lambda pp: _pequeno(prioridades=pp)),
+             ("caso 5 (8 h, 8 + 5)", lambda pp: _entrada(
+                 M8_TURNOS, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)}, prioridades=pp)))
+    for rotulo, faz in casos:
+        print(f"opB-e. {rotulo}: padrao x todas as suaves no Essencial")
+        a = fe.verificar(faz(None))
+        b = fe.verificar(faz(_todas_suaves(fe.ESSENCIAL)))
+        confere(a.veredito == b.veredito == fe.ADMITE and a.menor_viavel == b.menor_viavel,
+                f"{rotulo}: {a.veredito}/{a.menor_viavel} x {b.veredito}/{b.menor_viavel}")
+        confere(bool(b.escala) and b.conformidade["ok"], f"{rotulo}: escala cumpre")
+        print("   ", b.indicadores.get("caminho"), b.criterios)
+
+
+def caso_opb_padroes() -> None:
+    """Os padroes novos: 1800 s, 1800 s, 60 min; o campo da tela abre em 60."""
+    print("opB-padroes. limites e orcamento padrao")
+    confere(PADROES_NOVOS == (1800, 1800, 3600), f"padroes {PADROES_NOVOS}")
+    guardado = fe.ORCAMENTO
+    fe.ORCAMENTO = PADROES_NOVOS[2]
+    try:
+        at = AppTest.from_file(str(RAIZ / "src" / "app.py"), default_timeout=300)
+        at.run()
+        confere(at.number_input(key="orcamento").value == 60,
+                f"campo de orcamento: {at.number_input(key='orcamento').value}")
+    finally:
+        fe.ORCAMENTO = guardado
+
+
+def caso_opb_tela() -> None:
+    """A tabela "Prioridades da escala" pela tela, e o "Resultado por criterio"."""
+    print("opB-tela. tabela, padrao, restaurar, aviso, orcamento")
+    at = AppTest.from_file(str(RAIZ / "src" / "app.py"), default_timeout=1800)
+    at.run()
+    grupos = [x for x in at.expander if any(x.label.startswith(g) for g in pr.GRUPOS)]
+    confere([x.label for x in grupos] == [
+        "Pedidos e qualificação — 2 de 2 considerados",
+        "Sequências de trabalho e folga — 0 de 3 considerados",
+        "Fins de semana — 0 de 5 considerados", "Noturno e carga — 0 de 3 considerados"],
+        f"grupos {[x.label for x in grupos]}")
+    confere(grupos and grupos[0].proto.expanded and not any(x.proto.expanded
+                                                            for x in grupos[1:]),
+            "grupo 1 aberto, 2 a 4 recolhidos")
+    padrao = {k: v[0] for k, v in fe.prioridades_padrao().items()}
+    confere({k: at.selectbox(key=f"prio_{k}").value for k in padrao} == padrao,
+            "importancia padrao")
+    confere(sum(1 for x in textos(at, "markdown") if pr.GARANTIDO in x) == 3,
+            "tres linhas 'ja garantido pela CLT'")
+    at.selectbox(key="prio_min_folgas_seguidas").set_value(fe.DESEJAVEL)
+    at.run()
+    confere(any(x.label == "Sequências de trabalho e folga — 1 de 3 considerados"
+                for x in at.expander), "contador muda")
+    at.button(key="restaurar").click()
+    at.run()
+    confere(at.selectbox(key="prio_min_folgas_seguidas").value == fe.NAO, "restaurar padrao")
+    confere(not any("estão no nível" in x for x in textos(at, "info")), "sem aviso no padrao")
+    at.selectbox(key="prio_pedido_folga").set_value(fe.IMPORTANTE)
+    at.run()
+    confere(any("Todos os critérios considerados estão no nível Importante" in x
+                for x in textos(at, "info")), f"aviso de mesmo nivel: {textos(at, 'info')}")
+    at.button(key="restaurar").click()
+    at.run()
+    capturado = {}
+    original = fe.verificar
+
+    def espiao(e, **kw):
+        capturado.update(kw, prioridades=e.prioridades)
+        return original(e, **kw)
+
+    fe.verificar = espiao
+    try:
+        caso5 = (M8, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)})
+        at = pela_tela(*caso5)
+        confere(capturado.get("orcamento") is None and capturado.get("prioridades") is None,
+                f"padrao: orcamento {capturado.get('orcamento')}, prioridades "
+                f"{capturado.get('prioridades')}")
+        r, e = at.session_state["resultado"]
+        confere("**Resultado por critério**" in textos(at, "markdown"),
+                "tabela de resultado na tela")
+        df = [d.value for d in at.dataframe if list(d.value.columns)[:2] == ["Nível", "Critério"]]
+        confere(len(df) == 1 and df[0].values.tolist() == [list(x) for x in r.criterios]
+                and len(r.criterios) == 2, f"resultado por criterio: {r.criterios}")
+        aba = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))["Prioridades"]
+        linhas = [list(x) for x in aba.iter_rows(min_row=2, values_only=True)]
+        confere(linhas == [list(x) for x in r.criterios], f"aba Prioridades: {linhas}")
+        print("opB-tela. orcamento editado chega ao verificar")
+        capturado.clear()
+        at.number_input(key="orcamento").set_value(2)
+        at.run()
+        at.button(key="gerar").click()
+        at.run()
+        confere(capturado.get("orcamento") == 120, f"orcamento {capturado.get('orcamento')}")
+    finally:
+        fe.verificar = original
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
          "9b-sem-teto": caso_9b_sem_teto, "9c-tela": caso_9c_tela,
          "7.4": casos_diagnostico_p7, "4b": casos_grau_alerta, "12": casos_p12,
-         "15": casos_p15, "16": caso_reprovada}
+         "15": casos_p15, "16": caso_reprovada,
+         "opB-b": caso_opb_sequencia, "opB-c": caso_opb_fusao, "opB-d": caso_opb_situacao,
+         "opB-e": caso_opb_essencial, "opB-padroes": caso_opb_padroes,
+         "opB-tela": caso_opb_tela}
 
 
 def main() -> int:

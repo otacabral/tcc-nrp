@@ -141,37 +141,85 @@ A tela é uma página só, de cima para baixo.
 - A ferramenta calcula o quadro de pessoal do Parecer e compara com a sua equipe. Isso não
   muda a escala.
 
+### Prioridades da escala
+
+Uma tabela, em quatro grupos (pedidos e qualificação; sequências de trabalho e folga; fins de
+semana; noturno e carga). Para cada critério, escolha a **importância**:
+
+- **Essencial** — vem antes de tudo: a ferramenta só abre mão de um Essencial se não houver
+  outra escala legal;
+- **Importante** — depois dos Essenciais;
+- **Desejável** — depois dos Importantes;
+- **Não considerar** — o critério não entra.
+
+Não há troca entre níveis: nenhuma quantidade de violações de um critério Importante compensa
+uma violação de um Essencial. Dentro do mesmo nível, cada violação conta 1 — se todos os
+critérios ficarem no mesmo nível, a tela avisa que entre eles há compensação.
+
+**Limite.** Alguns critérios têm um número (por exemplo, "mínimo de folgas seguidas: 3"). A
+tabela já vem com um valor de exemplo; edite-o.
+
+**Situação**, calculada antes de gerar a escala:
+- "ok";
+- "a CLT prevalece" — o limite pedido vai além do que a lei permite neste regime (por exemplo,
+  mínimo de 2 dias seguidos no 12×36, em que ninguém trabalha dois dias seguidos). O critério
+  vale, mas a escala continua legal e a preferência fica sem atender onde a lei impede;
+- "nunca será atendido neste regime" — no 12×36, fim de semana completo e mesmo turno no fim de
+  semana: quem trabalha no fim de semana trabalha um dia só;
+- "já garantido pela CLT" (linha cinza, sem campo) — máximo de dias seguidos, máximo de turnos e
+  sequências proibidas pelo descanso já são regras rígidas.
+
+O ⓘ na ajuda marca os critérios sem conferência externa: nenhuma instância do benchmark os usa
+ou o avaliador oficial não os pontua.
+
+**Uma preferência nunca torna a escala impossível.** As regras da CLT continuam rígidas; os
+critérios desta tabela só escolhem entre escalas legais.
+
+**Padrão** = a ferramenta de antes: pedido de folga Essencial; enfermeiro em posto de técnico
+Importante; o resto Não considerar. O botão **"Restaurar padrão"** volta a ele.
+
+**Pedido de folga no domingo.** A ferramenta não impõe que o descanso semanal caia no domingo
+(art. 67) nem a escala quinzenal do art. 386. Quem precisar pode pedir folga no domingo: é uma
+forma de uso, não o cumprimento da lei, e o pedido só é garantido se estiver em Essencial e a
+escala legal o comportar.
+
+### Orçamento do clique
+
+O campo **"Orçamento do clique (minutos)"**, padrão **60**, limita o tempo de um clique em
+"Gerar escala".
+
 Ao final, clique em **"Gerar escala"**.
 
 **O que a tela mostra durante o cálculo.** A barra diz em que fase o cálculo está e quanto
 tempo aquela fase pode levar:
 - "Conta: piso aritmético e alertas do COFEN" — contas rápidas, sem otimização;
-- "Quadro informado, 30 profissionais: etapa 1 (procurando escala legal), até 10 min";
+- "Quadro informado, 30 profissionais: etapa 1 (procurando escala legal), até 30 min";
 - "Busca do menor quadro, 29 profissionais: …" — quando a equipe informada não basta e a
   ferramenta testa quadros maiores;
 - "Escala pronta com 30 profissionais: etapa 2 (equilibrando a carga entre colegas), até
-  3 min".
+  30 min".
 
-Cada mensagem termina com "orçamento do clique: 20 min". **A barra não tem relógio**: ela muda
+Cada mensagem termina com "orçamento do clique: 60 min" (ou o valor que você pôs no campo). **A barra não tem relógio**: ela muda
 de mensagem quando muda de fase. Não feche nem recarregue a página enquanto a barra estiver na
 tela; o cálculo se perde.
 
 **A escala aparece antes do fim.** Assim que a etapa 1 acha a escala, ela aparece numa caixa
-com o aviso "Escala pronta; equilibrando a carga entre colegas (até 3 min)". Nesse intervalo
+com o aviso "Escala pronta; equilibrando a carga entre colegas (até 30 min)". Nesse intervalo
 não há botão de planilha (um clique interromperia o cálculo). Quando o equilíbrio termina, a
 caixa some e o resultado aparece, com a linha "Escala desta tela: …" dizendo qual escala vale.
 A planilha baixada é sempre a escala da tela.
 
-*Na demonstração (notebook com Intel Core i5-10210U e 12 GB), a escala apareceu entre 10 e
-30 s depois do clique, e o resultado final entre 1,5 e 3,5 min. Noutra máquina ou noutra
-unidade, os tempos são outros; os limites acima valem sempre.*
+*Na demonstração (notebook com Intel Core i5-10210U e 12 GB, com os limites de antes de
+19/10/2026: 10 min, 3 min e 20 min), a escala apareceu entre 10 e 30 s depois do clique, e o
+resultado final entre 1,5 e 3,5 min. Noutra máquina ou noutra unidade, os tempos são outros;
+os limites abaixo valem sempre.*
 
 **Quanto tempo leva, no máximo:**
-- cada quadro testado: até 10 minutos para achar a escala e até 3 minutos para equilibrar a
-  carga;
+- cada quadro testado: até 30 minutos para achar a escala — em cada nível de prioridade que
+  precisar de resolução própria — e até 30 minutos para equilibrar a carga;
 - se a equipe não bastar, a ferramenta testa quadros maiores, até 12 pessoas a mais;
-- **o clique inteiro tem um limite de 20 minutos.** Esgotado, a ferramenta para e mostra só o
-  que conseguiu provar.
+- **o clique inteiro tem o limite do orçamento (padrão 60 minutos).** Esgotado, a ferramenta
+  para e mostra só o que conseguiu provar.
 
 ---
 
@@ -183,9 +231,9 @@ unidade, os tempos são outros; os limites acima valem sempre.*
 |---|---|
 | **"O quadro informado admite escala legal. Escala gerada."** (verde) | A equipe dá conta. A escala está pronta. |
 | **"Falta 1; o menor quadro viável é 29. Escala gerada."** (amarelo) | A equipe informada não dá conta. A escala mostrada é a do menor quadro que dá. A ferramenta acrescenta as pessoas e diz quantas. |
-| **"Sem resposta em 10 min com 30 profissionais: o solver não achou escala nem provou que ela não existe."** (vermelho) | A ferramenta não achou escala no tempo. Isso **não** prova que falta gente; pode ser só tempo. Tente de novo ou simplifique a entrada. |
-| **"O quadro informado é insuficiente. Sem resposta em 10 min com 31 profissionais: o menor quadro viável não foi determinado."** (vermelho) | Está provado que a equipe informada não basta (a caixa do diagnóstico diz por quê), mas a ferramenta não conseguiu achar, no tempo, a escala de um quadro maior. |
-| **"O quadro informado é insuficiente; o menor quadro viável não foi determinado em 20 min."** (vermelho) | O mesmo, quando acaba o limite de 20 minutos do clique. |
+| **"Sem resposta em 30 min com 30 profissionais: o solver não achou escala nem provou que ela não existe."** (vermelho) | A ferramenta não achou escala no tempo. Isso **não** prova que falta gente; pode ser só tempo. Tente de novo ou simplifique a entrada. |
+| **"O quadro informado é insuficiente. Sem resposta em 30 min com 31 profissionais: o menor quadro viável não foi determinado."** (vermelho) | Está provado que a equipe informada não basta (a caixa do diagnóstico diz por quê), mas a ferramenta não conseguiu achar, no tempo, a escala de um quadro maior. |
+| **"O quadro informado é insuficiente; o menor quadro viável não foi determinado em 60 min."** (vermelho) | O mesmo, quando acaba o orçamento do clique (60 minutos, ou o valor do campo). |
 | **"Erro técnico ao resolver com 30 profissionais; detalhes no console."** (vermelho) | Uma falha do programa, não da equipe. A janela do PowerShell onde a ferramenta roda mostra o erro completo; copie esse texto se for pedir ajuda. |
 
 **"Pode haver uma melhor (gap ...)".** Às vezes aparece depois de "Escala gerada". A escala é
@@ -275,10 +323,11 @@ cada um com os números. Cada motivo, sozinho, já prova que não há escala:
 | Diferença máxima de carga entre colegas | Por categoria. Por exemplo, "1 plantão (12 h)": entre dois colegas da mesma categoria, a diferença de carga é de no máximo um plantão, já descontadas férias e contratos diferentes. |
 | Horas de contrato não utilizadas | Por categoria: horas contratadas menos horas escaladas. |
 | Diferença entre categorias | Quanto, em média, técnicos e enfermeiros cumprem do contrato. A ferramenta não tenta igualar isso: depende de quantos postos de cada categoria a demanda pede. |
+| Resultado por critério | Para cada critério considerado nas prioridades: o nível, quantas violações a escala tem e quantos profissionais elas atingem. Contado na escala entregue. |
 
 ### A planilha
 
-Clique em **"Baixar planilha (.xlsx)"**. Ela tem três abas:
+Clique em **"Baixar planilha (.xlsx)"**. Ela tem quatro abas:
 
 - **Escala:** uma linha por pessoa e uma coluna por dia.
   - O código é o turno.
@@ -286,6 +335,7 @@ Clique em **"Baixar planilha (.xlsx)"**. Ela tem três abas:
   - "indisp." é férias ou licença.
 - **Resumo:** o veredito e todos os números acima.
 - **Legenda:** horário de cada código.
+- **Prioridades:** o resultado por critério (nível, critério, violações, profissionais afetados).
 
 ---
 

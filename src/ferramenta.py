@@ -51,20 +51,22 @@ sys.path.insert(0, str(RAIZ / "docs"))
 import experimento_a as ea  # noqa: E402
 import instancia_br as br  # noqa: E402
 import modelo  # noqa: E402
+import prioridades as pr  # noqa: E402
 from conferencia_descanso_escala import (MIN_SEMANAL, cumpre, fmt_semanal,  # noqa: E402
                                          medir, semanal_sem_bordas)
 
 MARGEM = 12          # quantos quadros acima do informado tentar antes de desistir
-TEMPO = 600          # limite da etapa 1, em segundos (decidido em 05/10)
-# Limite da etapa 2 (equilibrio), decisao do Otavio em 05/10: max(120 s; 1,5 x o tempo em que
-# o caso de 88 profissionais da rodada com folga chegou a 90% da reducao final, 81,1 s),
-# arredondado para cima ao minuto: max(120; 121,7) -> 180 s. Ver PROPOSTAS.md, P1. A etapa 2
-# usa o menor entre este e o limite da etapa 1 (os testes encurtam `TEMPO`).
-TEMPO_ETAPA2 = 180
-# Orcamento total de um clique em "Gerar escala" (P12, DECISOES.md, "2026-10-08 — P12
-# aprovada"): cada resolucao recebe o menor entre o seu limite e o que resta dele; acabado, a
-# busca para e a tela mostra so o que foi provado. Lido na chamada: os testes o encurtam.
-ORCAMENTO = 20 * 60
+# Limites por resolucao e orcamento do clique (DECISOES.md, "2026-10-19 — Opcao B: mecanismo,
+# tempo e criterios expostos", item b): 1.800 s em cada nivel da etapa 1 e na etapa 2, sempre
+# o menor entre o limite e o que resta do orcamento; orcamento padrao de 60 min, editavel na
+# tela. Ate a v1.2.3 eram 600 s (05/10), 180 s (05/10; PROPOSTAS.md, P1) e 20 min (P12, 08/10)
+# — os numeros do NUMEROS_TCC.md foram medidos com esses. A etapa 2 usa o menor entre o seu
+# limite e o da etapa 1 (os testes encurtam `TEMPO`). Orcamento: cada resolucao recebe o menor
+# entre o seu limite e o que resta dele; acabado, a busca para e a tela mostra so o que foi
+# provado. Lidos na chamada: os testes os mudam.
+TEMPO = 1800
+TEMPO_ETAPA2 = 1800
+ORCAMENTO = 60 * 60
 # P15 (DECISOES.md, "2026-10-09 — P15"): ALERTA, nao trava, quando o descanso semanal medido
 # sem as bordas do horizonte fica abaixo disto. Sumula 110 do TST: 24 h + 11 h.
 SEMANAL_ALERTA_H = 35
@@ -110,6 +112,9 @@ class Entrada:
     # carga contratual semanal, por nome (ou id); quem nao aparece fica com 44 h, e quem a
     # varredura acrescenta tambem (DECISOES.md, "2026-10-02 — Carga por contrato")
     cargas: dict[str, float] = field(default_factory=dict)
+    # prioridades da escala (opcao B): id do criterio -> (importancia, limite); None = padrao,
+    # que e a ferramenta de antes (`prioridades.padrao`)
+    prioridades: dict | None = None
 
     @property
     def quadro(self) -> int:
@@ -137,6 +142,8 @@ class Resultado:
     alertas_descanso: list[str] = field(default_factory=list)   # P15: nao impedem a escala
 
     reprovacao: str | None = None   # 13/10: o que a conferencia de descanso mediu e reprovou
+    # opcao B: (nivel, criterio, violacoes, profissionais afetados) na escala entregue
+    criterios: list = field(default_factory=list)
 
     @property
     def faltam(self) -> int | None:
@@ -344,7 +351,32 @@ def indicadores(inst, escala) -> dict:
             "atribuicoes": len(escala)}
 
 
-# --- objetivo: pesos inteiros, depois equilibrio -------------------------------------------
+# --- objetivo: niveis do gestor, depois equilibrio ------------------------------------------
+
+DESEJAVEL, IMPORTANTE, ESSENCIAL, NAO = pr.DESEJAVEL, pr.IMPORTANTE, pr.ESSENCIAL, pr.NAO
+
+
+def prioridades_padrao() -> dict:
+    return pr.padrao()
+
+
+def modelo_etapa1(inst, prioridades=None):
+    """O modelo da etapa 1 com a classificacao do gestor (opcao B). Devolve (modelo, instancia
+    com os pesos aplicados, blocos). Cada criterio considerado entra com peso = coeficiente do
+    seu nivel no bloco (`prioridades.planejar`). Com a classificacao padrao, o bloco e um so,
+    com pedido = W e enfermeiro em posto de tecnico = 1 — o mesmo modelo de `pesos` (teste (a1)
+    da opcao B: LP identico ao da v1.2.3)."""
+    p = pr.normalizar(prioridades)
+    blocos = pr.planejar(inst, p, br.HABILIDADE_ENF)
+    inst, custo = pr.aplicar(inst, p, pr.coeficientes(blocos), br.HABILIDADE_ENF)
+    return ea.modelo_br(inst, custo), inst, blocos
+
+
+def situacoes(e: Entrada) -> dict[str, str]:
+    """A situacao de cada criterio, antes de resolver ("ok", "a CLT prevalece"...)."""
+    inst = montar(e)
+    return pr.situacoes(inst, pr.normalizar(e.prioridades), limite_efetivo(inst))
+
 
 def pesos(inst):
     """Objetivo da ferramenta em UMA resolucao, com pesos inteiros (DECISOES.md, "Redesenho"):
@@ -356,6 +388,9 @@ def pesos(inst):
     Como W passa o maior custo que os postos de tecnico podem somar, negar um pedido nunca
     compensa: primeiro atendem-se os pedidos, depois evita-se enfermeiro em posto de tecnico.
     Devolve (instancia com os pedidos pesados, custo por atribuicao, W).
+
+    Desde a opcao B (19/10), a ferramenta monta a etapa 1 por `modelo_etapa1`; esta funcao fica
+    como referencia do caminho de antes (a classificacao padrao o reproduz).
     """
     base = [s for s, t in inst.turnos.items() if br.HABILIDADE_ENF not in t.habilidades]
     enf = [p.id for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades]
@@ -528,8 +563,8 @@ def diferenca_entre_categorias(inst, escala) -> float | None:
     return c[TEC]["fracao_media"] - c[ENF]["fracao_media"] if ENF in c and TEC in c else None
 
 
-def resolver_com_objetivo(inst, tempo: int | None, aviso=None,
-                          prazo: float | None = None) -> tuple[str, object, object, dict]:
+def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | None = None,
+                          prioridades=None) -> tuple[str, object, object, dict]:
     """Etapa 1 (pesos) e, havendo escala provada otima, etapa 2 (equilibrio de horas).
 
     A etapa 2 so roda com a etapa 1 provada OTIMA: fixar num valor que nao e o otimo mediria
@@ -540,13 +575,26 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None,
     P12: `aviso(evento, **dados)` recebe "escala_etapa1" (inst, escala, limite) e "etapa2"
     (limite) antes de a etapa 2 comecar, para a tela mostrar a escala da etapa 1 ja. `prazo`
     (instante, em `time.time()`) corta o limite da etapa 2 pelo orcamento do clique; o da
-    etapa 1 quem corta e `verificar`, no `tempo` que passa."""
-    inst, custo, W = pesos(inst)
-    m = ea.modelo_br(inst, custo)
+    etapa 1 quem corta e `verificar`, no `tempo` que passa.
+
+    Opcao B (19/10): a etapa 1 resolve os blocos de niveis do gestor (`prioridades.planejar`)
+    de cima para baixo, cada um com o valor do anterior preso (`_niveis_em_sequencia`). Com um
+    bloco so (a classificacao padrao), e a resolucao unica de sempre."""
+    m, inst, blocos = modelo_etapa1(inst, prioridades)
+    presentes = [b for b in blocos if any(f in m.parcela for f in b.familias)]
+    caminho = pr.descrever(presentes)
+    print(f"      [prioridades] caminho: {caminho}", flush=True)
     t0 = time.time()
-    veredito, escala, provado, gap = resolver(m, tempo)
+    if len(presentes) <= 1:
+        veredito, escala, provado, gap = resolver(m, tempo)
+        niveis = []
+    else:
+        veredito, escala, provado, gap, niveis = _niveis_em_sequencia(m, presentes, tempo,
+                                                                      prazo)
+    W = pr.coeficientes(blocos).get("pedido_folga")
     info = {"peso_pedido": W, "tempo_etapa1": time.time() - t0, "tempo_etapa2": 0.0,
-            "provado": provado, "gap": gap, "etapa2": "nao rodou"}
+            "provado": provado, "gap": gap, "etapa2": "nao rodou", "caminho": caminho,
+            "blocos": [(b.niveis, dict(b.coef), b.maximo) for b in blocos], "niveis": niveis}
     if veredito != ea.VIAVEL:
         return veredito, inst, None, info
     z = modelo.valor_objetivo(m)
@@ -586,6 +634,45 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None,
         return veredito, inst, escala2, info
     info["etapa2"] = f"sem resposta ({v2}); fica a escala da etapa 1"
     return veredito, inst, escala, info
+
+
+def _niveis_em_sequencia(m, blocos, tempo, prazo):
+    """Etapa 1 da opcao B com mais de um bloco: resolve cada bloco com o objetivo so das suas
+    familias e prende o valor achado (`<=`, como a P14) antes do proximo, que parte da escala
+    anterior (como a P17). Devolve (veredito, escala, provado, gap, niveis): provado so se todos
+    provaram; gap = o do primeiro bloco sem prova. Se um bloco depois do primeiro nao entregar
+    escala (tempo ou erro), fica a escala do anterior, sem prova."""
+    import pyomo.environ as pyo
+    m.niveis_presos = pyo.ConstraintList()
+    niveis, escala, provado, gap, veredito = [], None, True, None, None
+    for i, b in enumerate(blocos):
+        expr = sum(m.parcela[f] for f in b.familias if f in m.parcela)
+        m.del_component(m.objetivo)
+        m.objetivo = pyo.Objective(expr=expr, sense=pyo.minimize)
+        limite = tempo
+        if prazo is not None:
+            resta = int(prazo - time.time())
+            limite = resta if limite is None else min(limite, resta)
+        if i and limite is not None and limite < 1:
+            niveis.append({"niveis": b.niveis, "veredito": "não rodou: orçamento"})
+            provado = False
+            break
+        v, e, p, g = resolver(m, limite, partida=bool(i))
+        if v != ea.VIAVEL:
+            niveis.append({"niveis": b.niveis, "veredito": v})
+            if i == 0:
+                return v, None, False, None, niveis
+            provado = False
+            break
+        veredito, escala = v, e
+        z = modelo.valor_objetivo(m)
+        niveis.append({"niveis": b.niveis, "valor": z, "provado": p, "gap": g})
+        if not p:
+            provado = False
+            gap = g if gap is None else gap
+        if i < len(blocos) - 1:
+            m.niveis_presos.add(expr <= z)
+    return veredito, escala, provado, gap, niveis
 
 
 # --- diagnostico da trava ----------------------------------------------------------------
@@ -792,8 +879,10 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
                 if aviso:
                     aviso(evento, quadro=quadro, **d)
 
+            # opcao B: a classificacao so vai quando o gestor a informou (None = padrao)
+            extra = {} if e.prioridades is None else {"prioridades": e.prioridades}
             veredito, inst, escala, info = resolver_com_objetivo(inst, limite, aviso_quadro,
-                                                                 prazo)
+                                                                 prazo, **extra)
             r.tentativas.append((quadro, veredito, _n_enf(inst),
                                  len(inst.profissionais) - _n_enf(inst)))
             if veredito in (ea.INDETERMINADO, ea.ERRO):
@@ -819,6 +908,8 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
             r.conformidade = conformidade
             r.alertas_descanso = alertas_descanso(inst, escala)
             r.indicadores = {**indicadores(inst, escala), **info}
+            r.criterios = pr.resultado(inst, escala, pr.normalizar(e.prioridades),
+                                       br.HABILIDADE_ENF)
             break
         if veredito != ea.INVIAVEL:
             decidido = False     # indeterminado ou erro: o minimo nao esta provado acima
@@ -972,12 +1063,22 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
         + [("indisp.", "", "", "férias ou licença")],
         columns=["Código", "Início", "Fim", "Descrição"])
 
+    criterios = tabela_criterios(r)
+
     saida = io.BytesIO()
     with pd.ExcelWriter(saida, engine="openpyxl") as w:
         escala.to_excel(w, sheet_name="Escala")
         resumo.to_excel(w, sheet_name="Resumo", index=False)
         legenda.to_excel(w, sheet_name="Legenda", index=False)
+        criterios.to_excel(w, sheet_name="Prioridades", index=False)
     return saida.getvalue()
+
+
+def tabela_criterios(r: Resultado):
+    """"Resultado por criterio" (opcao B): a tabela da tela e da aba Prioridades da planilha."""
+    import pandas as pd
+    return pd.DataFrame(r.criterios, columns=["Nível", "Critério", "Violações",
+                                              "Profissionais afetados"])
 
 
 def proxima_segunda(hoje: date | None = None) -> date:

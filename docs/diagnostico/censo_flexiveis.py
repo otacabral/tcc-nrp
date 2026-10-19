@@ -17,8 +17,6 @@ Formula de cada um em `LIMITES` (texto) e em `limite()` (conta).
 from __future__ import annotations
 
 import csv
-import itertools
-import math
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -26,6 +24,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RAIZ / "src"))
 
+import prioridades  # noqa: E402
 from parser import descobrir_instancias, ler_instancia  # noqa: E402
 
 SAIDA = RAIZ / "resultados" / "censo_flexiveis_2026-10-19"
@@ -63,72 +62,10 @@ LIMITES = {
 }
 
 
-def _pior_completo(tam: int) -> int:
-    """Fim de semana completo: tam x (blocos) - dias trabalhados, no pior padrao."""
-    pior = 0
-    for p in itertools.product((0, 1), repeat=tam):
-        blocos = sum(1 for k in range(tam) if p[k] and (k == 0 or not p[k - 1]))
-        pior = max(pior, tam * blocos - sum(p))
-    return pior
-
-
-def _pior_identico(tam: int, n_turnos: int) -> int:
-    """Turnos identicos: soma, por tipo usado, de (tam - dias com aquele tipo)."""
-    pior = 0
-    for p in itertools.product(range(n_turnos + 1), repeat=tam):   # 0 = folga
-        usados = Counter(t for t in p if t)
-        pior = max(pior, sum(tam - c for c in usados.values()))
-    return pior
-
-
 def limite(inst, fam: str, n: str) -> int:
-    c = inst.contrato_de(n)
-    D = len(inst.dias)
-    fds = inst.fins_de_semana(c.id)
-    F = len(fds)
-    if fam in CONTRATO:
-        r = getattr(c, fam)
-        if not r.ativa:
-            return 0
-        v = r.valor or 0
-        if fam in ("max_num_assignments", "max_consecutive_working_days",
-                   "max_consecutive_free_days"):
-            return max(0, D - v)
-        if fam == "min_num_assignments":
-            return min(v, D)
-        if fam in ("min_consecutive_working_days", "min_consecutive_free_days"):
-            return max(0, v - 1) * math.ceil(D / 2)
-        if fam == "max_consecutive_working_weekends":
-            return max(0, F - v)
-        if fam == "min_consecutive_working_weekends":
-            return max(0, v - 1) * math.ceil(F / 2)
-        if fam == "max_working_weekends_in_four_weeks":
-            return max(0, F - 3) * max(0, 4 - v)
-        if fam == "complete_weekends":
-            return sum(_pior_completo(len(f.datas)) for f in fds)
-        if fam == "identical_shift_types_during_weekend":
-            return sum(_pior_identico(len(f.datas), len(inst.turnos)) for f in fds)
-        if fam == "no_night_shift_before_free_weekend":
-            return F if any(t.noturno for t in inst.turnos.values()) else 0
-        if fam == "two_free_days_after_night_shifts":
-            return 2 * D if any(t.noturno for t in inst.turnos.values()) else 0
-        if fam == "alternative_skill_category":
-            tem = inst.profissionais[n].habilidades
-            return D if any(not t.habilidades <= tem for t in inst.turnos.values()) else 0
-    if fam == "unwanted_patterns":
-        total = 0
-        for pid in c.padroes_indesejados:
-            p = inst.padroes.get(pid)
-            if p is None or p.peso <= 0:
-                continue
-            fixo = p.entradas[0].dia
-            total += sum(1 for i, d in enumerate(inst.dias)
-                         if i + p.tamanho <= D + (1 if fixo != "Any" else 0)
-                         and (fixo == "Any" or d.strftime("%A") == fixo))
-        return total
-    tipo = {"day_off_requests": "folga_dia", "shift_off_requests": "folga_turno",
-            "day_on_requests": "trabalho_dia", "shift_on_requests": "trabalho_turno"}[fam]
-    return sum(1 for p in inst.pedidos if p.tipo == tipo and p.profissional == n and p.peso > 0)
+    """Desde 19/10 (2o bloco), a formula mora em `src/prioridades.py`, que a ferramenta usa
+    para a regra de fusao da opcao B; fonte unica."""
+    return prioridades.limite_por_profissional(inst, fam, n)
 
 
 def pesos_de(inst, fam: str) -> list[int]:

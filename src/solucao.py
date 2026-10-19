@@ -196,19 +196,27 @@ def noites_antes_de_fim_de_semana_livre(inst: Instancia,
     se um teste no avaliador tem o que medir: se este numero for zero, a ausencia de
     penalidade no avaliador nao prova nada.
     """
+    return sum(noites_antes_de_fim_de_semana_livre_por_pessoa(inst, escala).values())
+
+
+def noites_antes_de_fim_de_semana_livre_por_pessoa(inst: Instancia,
+                                                   escala) -> dict[str, int]:
+    """O mesmo, por profissional (so quem tem alguma). Usado tambem no resultado por criterio
+    da ferramenta (`prioridades.resultado`), porque o `avaliacao.py` nao pontua esta
+    restricao (o avaliador oficial nao a avalia; DECISOES.md, 18/09)."""
     por_pessoa: dict[str, dict[date, str]] = {}
     for (d, n, s) in escala:
         por_pessoa.setdefault(n, {})[d] = s
     noturnos = {s for s, t in inst.turnos.items() if t.noturno}
 
-    ocorrencias = 0
+    ocorrencias: dict[str, int] = {}
     for n, dias_trabalhados in por_pessoa.items():
         for fds in inst.fins_de_semana(inst.profissionais[n].contrato):
             if any(d in dias_trabalhados for d in fds.datas):
                 continue  # fim de semana trabalhado
             vespera = fds.datas[0] - timedelta(days=1)
             if dias_trabalhados.get(vespera) in noturnos:
-                ocorrencias += 1
+                ocorrencias[n] = ocorrencias.get(n, 0) + 1
     return ocorrencias
 
 
