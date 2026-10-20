@@ -27,3 +27,29 @@ tela_8 | codigo 0 | 252 s | ponta a ponta pela tela OK
 tela_12 | codigo 0 | 379 s | ponta a ponta pela tela OK
 tela_1-2 | codigo 1 | 394 s | 1 FALHA(S)
 PARADO: tela_1-2 falhou (ver resultados/opcao_b_2026-10-19/suite/tela_1-2.log)
+tela_1-2 | codigo 0 | 394 s | ponta a ponta pela tela OK
+tela_9 | codigo 0 | 556 s | ponta a ponta pela tela OK
+tela_7.3 | codigo 0 | 930 s | ponta a ponta pela tela OK
+a2_P01 | codigo 0 | 183 s | P01: O quadro informado admite escala legal. Escala gerada. | 181 s | falhas: nenhuma
+a2_P02 | codigo 0 | 47 s | P02: O quadro informado admite escala legal. Escala gerada. | 45 s | falhas: nenhuma
+a2_P03 | codigo 0 | 184 s | P03: O quadro informado admite escala legal. Escala gerada. | 182 s | falhas: nenhuma
+a2_P04 | codigo 0 | 6 s | P04: O quadro informado admite escala legal. Escala gerada. | 5 s | falhas: nenhuma
+a2_P05 | codigo 0 | 192 s | P05: Falta 1; o menor quadro viável é 15. Escala gerada. | 191 s | falhas: nenhuma
+a2_P06 | codigo 0 | 185 s | P06: O quadro informado admite escala legal. Escala gerada. | 184 s | falhas: nenhuma
+a2_P07 | codigo 0 | 100 s | P07: O quadro informado admite escala legal. Escala gerada. | 99 s | falhas: nenhuma
+a2_P08 | codigo 0 | 183 s | P08: O quadro informado admite escala legal. Escala gerada. | 182 s | falhas: nenhuma
+a2_P09 | codigo 0 | 55 s | P09: O quadro informado admite escala legal. Escala gerada. | 54 s | falhas: nenhuma
+a2_P10 | codigo 0 | 419 s | P10: O quadro informado admite escala legal. Escala gerada. | 417 s | falhas: nenhuma
+a2_P11 | codigo 0 | 186 s | P11: Falta 1; o menor quadro viável é 14. Escala gerada. | 185 s | falhas: nenhuma
+a2_P12 | codigo 0 | 83 s | P12: O quadro informado admite escala legal. Escala gerada. | 82 s | falhas: nenhuma
+a2_P13 | codigo 0 | 184 s | P13: O quadro informado admite escala legal. Escala gerada. | 183 s | falhas: nenhuma
+a2_P14 | codigo 0 | 183 s | P14: O quadro informado admite escala legal. Escala gerada. | 182 s | falhas: nenhuma
+a2_P15 | codigo 0 | 184 s | P15: O quadro informado admite escala legal. Escala gerada. | 182 s | falhas: nenhuma
+a2_P16 | codigo 0 | 186 s | P16: O quadro informado admite escala legal. Escala gerada. | 184 s | falhas: nenhuma
+a2_P17 | codigo 0 | 190 s | P17: O quadro informado admite escala legal. Escala gerada. | 189 s | falhas: nenhuma
+a2_P18 | codigo 0 | 200 s | P18: O quadro informado admite escala legal. Escala gerada. | 198 s | falhas: nenhuma
+a2_demo20 | codigo 0 | 193 s | {"tec": 20, "frase": "O quadro informado admite escala legal. Escala gerada.", "frase_vigente": "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.", "menor_viavel": 30, "tentativas": [[30, "viavel", 10, 20]], "diagnostico": null, "alertas": [], "enf_em_posto_tec": 24, "pedidos": "6 de 6", "descanso": true, "provado": true, "caminho": "fundido", "criterios": [["Essencial", "Pedido de folga no dia", 0, 0], ["Importante", "Enfermeiro em posto de técnico", 24, 10]], "fracao": [0.6818181818181818, 1.0], "diferenca": {"enfermeiros": "1 plantão (12 h)", "tecnicos": "0,6 plantão 
+a2_demo19 | codigo 0 | 98 s | {"tec": 19, "frase": "O quadro informado admite escala legal. Escala gerada.", "frase_vigente": "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.", "menor_viavel": 29, "tentativas": [[29, "viavel", 10, 19]], "diagnostico": null, "alertas": ["quadro de 29 abaixo do QP completo do Parecer (29,85, com IST de 15%); o núcleo assistencial, sem IST, é 25,96"], "enf_em_posto_tec": 36, "pedidos": "6 de 6", "descanso": true, "provado": true, "caminho": "fundido", "criterios": [["Essencial", "Pedido de folga no dia", 0, 0], ["Importante", "Enfermeiro em posto de técnico", 36, 9]], 
+a2_demo18 | codigo 0 | 210 s | {"tec": 18, "frase": "Falta 1; o menor quadro viável é 29. Escala gerada.", "frase_vigente": "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.", "menor_viavel": 29, "tentativas": [[28, "inviavel", 10, 18], [29, "viavel", 10, 19]], "diagnostico": ["alternancia", "Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). ter 03/11 e qua 04/11 somam 28 plantões, que precisam de 28 pessoas diferentes; descontadas férias e licenças, 27 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.", ["alt
+a2_comparar | codigo 0 | 1 s | TUDO IGUAL
+TUDO OK

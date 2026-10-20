@@ -1,0 +1,5 @@
+      [prioridades] caminho: fundido
+      [prioridades] caminho: fundido
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+{"tec": 18, "frase": "Falta 1; o menor quadro viável é 29. Escala gerada.", "frase_vigente": "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.", "menor_viavel": 29, "tentativas": [[28, "inviavel", 10, 18], [29, "viavel", 10, 19]], "diagnostico": ["alternancia", "Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). ter 03/11 e qua 04/11 somam 28 plantões, que precisam de 28 pessoas diferentes; descontadas férias e licenças, 27 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.", ["alt

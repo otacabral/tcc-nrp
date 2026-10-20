@@ -1,0 +1,7 @@
+P09: 8h, 6+9; esperado pela conta: GERA ESCALA (esperado) {'horas': 760.0, 'horas_enf': 384.0, 'ocupados_dia': 5, 'ocupados_dia_enf': 3}
+P09 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+P09 [    0.0 s] Quadro informado, 15 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+      [prioridades] caminho: fundido
+P09 [    0.8 s] Escala pronta com 15 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+P09 [   54.1 s] concluido
+P09: O quadro informado admite escala legal. Escala gerada. | 54 s | falhas: nenhuma

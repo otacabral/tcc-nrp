@@ -1,0 +1,9 @@
+P16: 8h, 9+7; esperado pela conta: GERA ESCALA (esperado) {'horas': 884.0, 'horas_enf': 868.0, 'ocupados_dia': 6, 'ocupados_dia_enf': 5}
+P16 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+P16 [    0.0 s] Quadro informado, 16 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+      [prioridades] caminho: fundido
+P16 [    3.9 s] Escala pronta com 16 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+P16 [  184.3 s] concluido
+P16: O quadro informado admite escala legal. Escala gerada. | 184 s | falhas: nenhuma

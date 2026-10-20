@@ -1,0 +1,4 @@
+      [prioridades] caminho: fundido
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+{"tec": 20, "frase": "O quadro informado admite escala legal. Escala gerada.", "frase_vigente": "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.", "menor_viavel": 30, "tentativas": [[30, "viavel", 10, 20]], "diagnostico": null, "alertas": [], "enf_em_posto_tec": 24, "pedidos": "6 de 6", "descanso": true, "provado": true, "caminho": "fundido", "criterios": [["Essencial", "Pedido de folga no dia", 0, 0], ["Importante", "Enfermeiro em posto de técnico", 24, 10]], "fracao": [0.6818181818181818, 1.0], "diferenca": {"enfermeiros": "1 plantão (12 h)", "tecnicos": "0,6 plantão 

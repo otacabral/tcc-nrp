@@ -1,0 +1,45 @@
+{
+ "caso": "P15",
+ "modelo": "6+12",
+ "equipe": "10+5",
+ "esperado": "GERA ESCALA (esperado)",
+ "folgas": {
+  "horas": 960.0,
+  "horas_enf": 584.0,
+  "ocupados_dia": 5,
+  "ocupados_dia_enf": 3
+ },
+ "veredito": "admite",
+ "frase": "O quadro informado admite escala legal. Escala gerada.",
+ "menor_viavel": 15,
+ "tentativas": [
+  [
+   15,
+   "viavel",
+   10,
+   5
+  ]
+ ],
+ "diagnostico": null,
+ "provado": true,
+ "gap": 0.0,
+ "tempo_etapa1": 1.753194808959961,
+ "tempo_etapa2": 180.58923768997192,
+ "etapa2": "ok",
+ "tempo_total": 182.48682928085327,
+ "progresso": [
+  "[    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min",
+  "[    0.0 s] Quadro informado, 15 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min",
+  "[    1.9 s] Escala pronta com 15 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min",
+  "[  182.5 s] concluido"
+ ],
+ "conferencia": {
+  "rigidas": [],
+  "descanso_cumpre": true,
+  "menor_folga_descanso_h": 0.0,
+  "max_consec": 6,
+  "acima_do_teto": [],
+  "trabalha_em_ferias": []
+ },
+ "falhas": []
+}

@@ -1,0 +1,9 @@
+P13: 12x36, 5+9; esperado pela conta: GERA ESCALA (esperado) {'horas': 328.0, 'horas_enf': 176.0, 'ocupados_dia': 1, 'ocupados_dia_enf': 1}
+P13 [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 20 min
+P13 [    0.0 s] Quadro informado, 14 profissionais: etapa 1 (procurando escala legal), até 10 min · orçamento do clique: 20 min
+      [prioridades] caminho: fundido
+P13 [    2.6 s] Escala pronta com 14 profissionais: etapa 2 (equilibrando a carga entre colegas), até 3 min · orçamento do clique: 20 min
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+P13 [  182.9 s] concluido
+P13: O quadro informado admite escala legal. Escala gerada. | 183 s | falhas: nenhuma
