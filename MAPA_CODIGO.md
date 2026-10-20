@@ -52,6 +52,32 @@ Não entram no produto, mas sustentam o capítulo que diz que ele está correto.
 | `src/escalabilidade.py` | Curva 40–200 profissionais: até que tamanho a prova fecha. Decide se o warm start heurístico é necessário. |
 | `src/escalabilidade_objetivo.py` | A mesma curva com o objetivo da ferramenta e 2 pedidos de folga por pessoa (P1, 02/10). Registra, por etapa, prova, gap e tempo até a primeira escala legal. |
 
+## Acréscimos de 19–20/10 (opção B, 3º bloco, Parte 6, Partes 7–9)
+
+**Núcleo (`src/`):**
+
+| Arquivo | O que faz |
+|---|---|
+| `src/prioridades.py` | **Opção B** (19/10): a função objetivo por níveis escolhidos pelo gestor. Só contas, sem solver: catálogo dos critérios, máximo de violações de cada um, plano de resolução (`planejar`: que níveis se fundem num bloco), aplicação dos pesos na instância (`aplicar`), resultado por critério, e a tabela "Pedidos e regras dos profissionais" (`Linha`, `traduzir`, `descumpridos`; 3º bloco, 19–20/10). |
+| `src/ferramenta.py` (20/10, tarde) | **Piso por pares de dias** (Parte 7, v1.4.1): `bloqueiam_o_dia_seguinte` (turnos que impedem qualquer turno no dia seguinte, tirados dos pares do gerador) e `pares_de_dias` (postos de d+1 + postos de d nesses turnos ≤ disponíveis em ao menos um dos dois dias; total e só enfermeiros). Entra no `piso` e no diagnóstico (motivo `pares`, "Dois dias seguidos"). |
+| `src/instancia_br.py` (20/10) | `DESCANSO_POR_TURNO`: parâmetro de pesquisa (vazio no produto) lido por `descanso_exigido` — fonte única do gerador e da conferência no relógio. |
+
+**Diagnóstico e suítes (`docs/diagnostico/`), sem entrar no produto:**
+
+| Arquivo | O que faz |
+|---|---|
+| `censo_flexiveis.py` | Censo das flexíveis nas 69 instâncias do INRC e limite superior de violações (19/10). Sem solver. |
+| `tamanho_modelos.py` | Tamanho do nosso modelo (Pyomo) e o de Santos et al. (2016) pela definição (19/10). Sem solver; não afirma eficiência. |
+| `validacao_restricoes.py`, `validacao_restricoes_controle.py` | Validação por restrição nos 4 ótimos (56, 58, 197, 219) contra a saída do avaliador oficial, e o controle positivo (19/10). |
+| `identidade_opcao_b.py`, `identidade_3bloco.py` | Identidade da entrada do solver (XML + LP das etapas 1 e 2) entre duas árvores (`git worktree`), byte a byte: 81 casos × 3 arquivos = 243. |
+| `identidade_opcao_b_rodadas.py` | Teste (a2): rodadas da bateria (P01–P18) e da demonstração com os limites da v1.2.3, comparadas com o registrado. Desde 20/10 (tarde), `A2_PISO_PARES=1` admite só as tentativas listadas em `ADMITIDAS` (Parte 7). |
+| `pedidos_avaliador.py` | Pedidos da tabela conferidos no avaliador oficial (20/10): escreve a instância com os pedidos (`escrever_instancia`). Os `teste4/5.md` e os `_avaliador.txt` (estes por `src/validar.py`) saem em CRLF: `write_text` em modo texto no Windows. |
+| `plantao12.py` | Parte 3 (20/10): plantão de 12 h no fim de semana; 22 inviável, 23 viável. |
+| `piso_pares.py` | Parte 7 (20/10, tarde): testes do piso por pares — segurança nas 224 rodadas registradas, entradas dos testes da tela, controle (Parte 3), casos A e B, sorteio pequeno com solver, e a tabela do item extra. |
+| `fase2.py` | Parte 9: uma rodada da fase 2 (casos A e B; 36 h e a hipótese D12 = 11 h), com o JSON por rodada e a conferência no avaliador oficial. `--montar` = sem solver. |
+| `fechar_v130.sh`, `fechar_v140.sh`, `fechar_v141.sh` | Suítes de fechamento de cada versão (um processo por teste, para na primeira falha, `RETOMAR=1`). A da v1.4.1 compara a identidade com a v1.4.0 (`../tcc-nrp-v140`); `PULAR_SOLVER=1` testa o script. |
+| `rodar_fase2.sh` | Parte 9: as cinco rodadas da fase 2, com a memória livre conferida antes de cada uma (`PULAR_SOLVER=1` testa o script). |
+
 ## Escopo anterior — referência, não produto
 
 Ficam em `docs/`. Produziram achados que vão ao texto como metodologia.
