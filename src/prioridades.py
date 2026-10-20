@@ -108,7 +108,8 @@ CRITERIOS = (
     Criterio("fds_4_semanas", 2, "Fins de semana trabalhados em 4 semanas",
              "max_working_weekends_in_four_weeks",
              "Ex.: com máximo 2, três fins de semana trabalhados em quatro semanas contam 1 "
-             "violação.", 2, "fins de semana", sem_conferencia=True),
+             "violação. O 2 do campo é valor de exemplo, sem fonte (suposição declarada).",
+             2, "fins de semana", sem_conferencia=True),
     Criterio("fds_completo", 2, "Fim de semana completo", "complete_weekends",
              "Trabalha os dias do fim de semana todos ou nenhum. Ex.: trabalhar só no sábado "
              "conta 1 violação."),
@@ -131,6 +132,26 @@ CRITERIOS = (
              "e trabalho na quarta: 1 violação.", sem_conferencia=True),
 )
 POR_ID = {c.id: c for c in CRITERIOS}
+
+# descricao de uma linha, para a tela (o texto longo, com exemplo, e a `ajuda`, no "?")
+RESUMO = {
+    "pedido_folga": "Folga pedida num dia.",
+    "enf_posto_tec": "Enfermeiro cobrindo vaga de técnico.",
+    "max_dias_seguidos": "Regra do hospital; a lei permite no máximo 6.",
+    "min_dias_seguidos": "Evita dia de trabalho isolado.",
+    "max_folgas_seguidas": "Evita folgas longas demais.",
+    "min_folgas_seguidas": "Evita folga isolada.",
+    "seq_indesejadas": "Sequências proibidas pelo descanso da CLT.",
+    "max_fds_seguidos": "Limita fins de semana seguidos trabalhados.",
+    "min_fds_seguidos": "Evita fim de semana trabalhado isolado.",
+    "fds_4_semanas": "Limita fins de semana trabalhados em 4 semanas.",
+    "fds_completo": "Trabalha o fim de semana inteiro ou nenhum dia dele.",
+    "mesmo_turno_fds": "O mesmo turno em todos os dias do fim de semana.",
+    "max_turnos": "Teto de turnos no período.",
+    "min_turnos": "Mínimo de turnos de cada pessoa no período.",
+    "noturno_antes_fds": "Evita noturno na véspera de fim de semana livre.",
+    "folgas_apos_noites": "Duas folgas depois de uma sequência de noturnos.",
+}
 CONTRATO = [c for c in CRITERIOS if c.familia not in (None, PEDIDO, CUSTO)]
 
 

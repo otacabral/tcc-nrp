@@ -34,11 +34,16 @@ import prioridades as pr  # noqa: E402
 ROTULO_GRAU = {
     "minimo": "Mínimo (4 h/paciente)",
     "intermediario": "Intermediário (6 h)",
-    "alta": "Alta dependência (10 h)",
-    "semi_intensivo": "Semi-intensivo (10 h)",
+    "alta": "Alta dependência (10 h; 36% enfermeiros)",
+    "semi_intensivo": "Semi-intensivo (10 h; 42% enfermeiros)",
     "intensivo": "Intensivo (18 h)",
 }
 CAT = {"enf": "enf", "tec": "téc"}
+# rotulo de tela dos turnos dos modelos prontos; o codigo (M, T, N, D) continua sendo o id na
+# instancia, no XML e na grade (DECISOES.md, "2026-10-19 — Tela orientada ao usuario"). Nome
+# digitado fora deste mapa (ex.: "D12") e o proprio codigo.
+ROTULO_TURNO = {"M": "Manhã", "T": "Tarde", "N": "Noite", "D": "Dia"}
+CODIGO_TURNO = {v: k for k, v in ROTULO_TURNO.items()}
 
 st.set_page_config(page_title="Escala de enfermagem", layout="wide")
 st.title("Escala de enfermagem")
@@ -57,16 +62,21 @@ grau = c3.selectbox("Grau de dependência predominante", list(br.GRAUS), index=1
 inicio = c4.date_input("Início (segunda-feira)", value=fe.proxima_segunda(),
                        format="DD/MM/YYYY", key="inicio")
 
-st.caption("Turnos: edite nome, início e fim (hora cheia). As regras de descanso da CLT saem "
-           "dos horários.")
+st.caption("Turnos: nome, início e fim (hora cheia).",
+           help="Edite os horários ou acrescente uma linha para um turno novo (ex.: D12, 7 a "
+                "19). As regras de descanso da CLT saem dos horários: 11 h entre turnos, 36 h "
+                "depois de turno de 12 h, e toda folga isolada de pelo menos 24 h.")
 tabela_turnos = st.data_editor(
-    pd.DataFrame(fe.MODELOS[modelo_turnos], columns=["Nome", "Início", "Fim"]),
+    pd.DataFrame([(ROTULO_TURNO.get(c, c), ini, fim) for c, ini, fim in fe.MODELOS[modelo_turnos]],
+                 columns=["Nome", "Início", "Fim"]),
     num_rows="dynamic", key=f"turnos_{modelo_turnos}", width="content",
     column_config={"Início": st.column_config.NumberColumn(min_value=0, max_value=23, step=1),
                    "Fim": st.column_config.NumberColumn(min_value=0, max_value=23, step=1)})
-turnos = [(str(l["Nome"]).strip(), int(l["Início"]), int(l["Fim"]))
+turnos = [(CODIGO_TURNO.get(str(l["Nome"]).strip(), str(l["Nome"]).strip()), int(l["Início"]),
+           int(l["Fim"]))
           for _, l in tabela_turnos.dropna().iterrows() if str(l["Nome"]).strip()]
-nomes_turno = [t[0] for t in turnos]
+nomes_turno = [t[0] for t in turnos]                        # codigos
+rotulo_turno = {c: ROTULO_TURNO.get(c, c) for c in nomes_turno}
 
 # --- b) equipe ----------------------------------------------------------------------------
 st.header("2. Equipe")
@@ -88,9 +98,9 @@ nomes_enf, nomes_tec = _nomes(texto_enf), _nomes(texto_tec)
 pessoas = ((nomes_enf or [f"Enf {i + 1}" for i in range(int(n_enf))])
            + (nomes_tec or [f"Téc {i + 1}" for i in range(int(n_tec))]))
 
-st.caption("Carga contratual semanal de cada profissional. O teto vale sobre o período, "
-           "não por semana (no 12×36 há semanas de 48 h e de 36 h), e desconta férias e "
-           "licenças. Padrão 44 h, o limite da Constituição.")
+st.caption("Carga contratual semanal de cada profissional (padrão 44 h).",
+           help="O teto vale sobre o período, não por semana (no 12×36 há semanas de 48 h e de "
+                "36 h), e desconta férias e licenças. 44 h é o limite da Constituição.")
 tabela_cargas = st.data_editor(
     pd.DataFrame({"Profissional": pessoas,
                   "Carga semanal (h)": [br.CARGA_CONTRATUAL_PADRAO] * len(pessoas)}),
@@ -119,16 +129,18 @@ com_fds = st.checkbox("Fim de semana com demanda própria", key="com_fds")
 demanda_turno, demanda_fds = {}, {}
 for nome in nomes_turno:
     colunas = st.columns(4 if com_fds else 2)
-    enf = colunas[0].number_input(f"{nome}: enfermeiros", min_value=0, value=1, step=1,
-                                  key=f"g_{nome}_enf")
-    tec = colunas[1].number_input(f"{nome}: técnicos", min_value=0, value=2, step=1,
-                                  key=f"g_{nome}_tec")
+    enf = colunas[0].number_input(f"{rotulo_turno[nome]}: enfermeiros", min_value=0, value=1,
+                                  step=1, key=f"g_{nome}_enf")
+    tec = colunas[1].number_input(f"{rotulo_turno[nome]}: técnicos", min_value=0, value=2,
+                                  step=1, key=f"g_{nome}_tec")
     demanda_turno[nome] = (int(enf), int(tec))
     if com_fds:
-        enf_f = colunas[2].number_input(f"{nome}: enfermeiros (fds)", min_value=0,
-                                        value=int(enf), step=1, key=f"f_{nome}_enf")
-        tec_f = colunas[3].number_input(f"{nome}: técnicos (fds)", min_value=0,
-                                        value=int(tec), step=1, key=f"f_{nome}_tec")
+        enf_f = colunas[2].number_input(f"{rotulo_turno[nome]}: enfermeiros (fim de semana)",
+                                        min_value=0, value=int(enf), step=1,
+                                        key=f"f_{nome}_enf")
+        tec_f = colunas[3].number_input(f"{rotulo_turno[nome]}: técnicos (fim de semana)",
+                                        min_value=0, value=int(tec), step=1,
+                                        key=f"f_{nome}_tec")
         demanda_fds[nome] = (int(enf_f), int(tec_f))
 
 dias = [inicio + timedelta(days=k) for k in range(br.DIAS_HORIZONTE)]
@@ -160,7 +172,7 @@ with st.expander("Demanda específica por data (feriados, eventos) — opcional"
 
 # --- d) conferir com o COFEN --------------------------------------------------------------
 pacientes = {}
-with st.expander("4. Conferir com o COFEN (opcional) — pacientes por grau"):
+with st.expander("Conferir com o COFEN (opcional) — pacientes por grau"):
     st.caption("Média diária de pacientes. Serve só para comparar o quadro com o QP do "
                "Parecer; não muda a escala.")
     colunas = st.columns(len(br.GRAUS))
@@ -196,7 +208,8 @@ def _regras() -> list:
         linhas.append(pr.Linha(
             profissional=str(l["Profissional"]),
             dia=None if _vazio(l["Dia"]) else _data(l["Dia"]),
-            turno=None if _vazio(l["Turno"]) else str(l["Turno"]),
+            turno=(None if _vazio(l["Turno"])
+                   else CODIGO_TURNO.get(str(l["Turno"]), str(l["Turno"]))),
             tipo=pr.FOLGA if _vazio(l["Tipo"]) else str(l["Tipo"]),
             importancia=None if _vazio(l["Importância"]) else str(l["Importância"])))
     return linhas
@@ -217,11 +230,14 @@ def _entrada(prioridades, regras=True, max_dias=True) -> fe.Entrada:
 
 
 # --- prioridades da escala (opcao B; DECISOES.md, 14/10 e 19/10) ---------------------------
-st.header("Prioridades da escala")
-st.caption("Classifique cada critério. Os de nível Essencial vêm antes de todos os outros; "
-           "depois os Importantes; depois os Desejáveis. Dentro do mesmo nível, cada violação "
-           "conta 1. Uma preferência nunca torna a escala impossível: as regras da CLT "
-           "continuam rígidas e valem antes de tudo.")
+# Tela orientada ao usuario (DECISOES.md, 2026-10-19): sem a coluna Situacao; as regras da CLT
+# ficam no back end; o texto longo vai para o "?" de cada linha e para o GUIA_DE_USO.
+st.header("4. Prioridades da escala")
+st.caption("Classifique cada critério: Essencial, Importante, Desejável ou Não considerar.",
+           help="Os de nível Essencial vêm antes de todos os outros; depois os Importantes; "
+                "depois os Desejáveis. Dentro do mesmo nível, cada violação conta 1. Uma "
+                "preferência nunca torna a escala impossível: as regras da CLT continuam "
+                "rígidas e valem antes de tudo.")
 PADRAO = fe.prioridades_padrao()
 for _k, (_nivel, _limite) in PADRAO.items():      # padrao antes dos campos (sem value=)
     st.session_state.setdefault(f"prio_{_k}", _nivel)
@@ -237,24 +253,30 @@ def _restaurar():
 
 
 st.button("Restaurar padrão", key="restaurar", on_click=_restaurar)
-escolha = {k: (st.session_state[f"prio_{k}"], st.session_state.get(f"lim_{k}"))
-           for k in PADRAO}
-try:
-    # sem o maximo do hospital: o limite efetivo aqui decide se o regime e so de 12 h
-    _base_prio = fe.montar(_entrada(escolha, regras=False, max_dias=False))
-    _limite_efetivo = fe.limite_efetivo(_base_prio)
-    situacao = pr.situacoes(_base_prio, pr.normalizar(escolha), _limite_efetivo)
-    _teto = _base_prio.contratos["0"].max_num_assignments.valor
-except (ValueError, TypeError, KeyError, ZeroDivisionError):
-    situacao, _limite_efetivo, _teto = {}, None, None   # entrada ainda incompleta
-# o pedido de folga no dia sai das Prioridades: a importancia e da linha da tabela de pedidos
-# (DECISOES.md, "2026-10-19 — Pedidos e regras por profissional")
-NA_TELA = [c for c in pr.CRITERIOS if c.id != "pedido_folga"]
 # regime em que ninguem trabalha dois dias seguidos (o 12x36), pelos horarios da tabela de turnos,
 # como `ferramenta.limite_efetivo` — sem depender de a equipe ja estar preenchida
 _pares = set(br.pares_proibidos_por_horario(
     [(n, ini, fe.duracao(ini, fim)) for n, ini, fim in turnos], None, descartar=False))
 _so_doze = bool(turnos) and all((s, 1, t) in _pares for s, _, _ in turnos for t, _, _ in turnos)
+# fora da tela: o pedido de folga no dia (a importancia e da linha da tabela de pedidos), as
+# linhas que a CLT ja garante e, no 12x36, as que nunca podem ser atendidas ou que a lei impede
+OCULTOS_12X36 = ("fds_completo", "mesmo_turno_fds", "min_dias_seguidos")
+NA_TELA = [c for c in pr.CRITERIOS
+           if c.id == "max_dias_seguidos"
+           or (c.id != "pedido_folga" and not c.clt
+               and not (_so_doze and c.id in OCULTOS_12X36))]
+_visiveis = {c.id for c in NA_TELA}
+# criterio oculto vale como o padrao ("Nao considerar"), mesmo se escolhido antes
+escolha = {k: (st.session_state[f"prio_{k}"], st.session_state.get(f"lim_{k}"))
+           if k in _visiveis or k == "pedido_folga" else PADRAO[k] for k in PADRAO}
+try:
+    _teto = fe.montar(_entrada(escolha, regras=False, max_dias=False)) \
+        .contratos["0"].max_num_assignments.valor
+except (ValueError, TypeError, KeyError, ZeroDivisionError):
+    _teto = None                                          # entrada ainda incompleta
+# limites presos pela lei
+_max_dias = int(st.session_state.get("max_dias", br.MAX_CONSECUTIVOS_GENERICO))
+TETO_LIMITE = {"min_dias_seguidos": _max_dias, "min_turnos": _teto}
 for g, nome_grupo in enumerate(pr.GRUPOS):
     crits = [c for c in NA_TELA if c.grupo == g]
     campos = [c for c in crits if not c.clt]
@@ -281,53 +303,47 @@ for g, nome_grupo in enumerate(pr.GRUPOS):
                 column_config={
                     "Profissional": st.column_config.SelectboxColumn(options=pessoas),
                     "Dia": st.column_config.DateColumn(format="DD/MM/YYYY"),
-                    "Turno": st.column_config.SelectboxColumn(options=nomes_turno),
+                    "Turno": st.column_config.SelectboxColumn(
+                        options=[rotulo_turno[c] for c in nomes_turno]),
                     "Tipo": st.column_config.SelectboxColumn(options=list(pr.TIPOS),
                                                              default=pr.FOLGA),
                     "Importância": st.column_config.SelectboxColumn(
                         options=list(pr.CONSIDERADOS))})
-        cab = st.columns([3, 2, 1, 2])
-        for coluna, rotulo in zip(cab, ("Critério", "Importância", "Limite", "Situação")):
+        cab = st.columns([3, 2, 1])
+        for coluna, rotulo in zip(cab, ("Critério", "Importância", "Limite")):
             coluna.caption(rotulo)
         for c in crits:
             if c.id == "max_dias_seguidos":
-                # regra do hospital, rigida (DECISOES.md, 2026-10-19); no 12x36 (limite efetivo
-                # 1) nao aparece: ninguem trabalha dois dias seguidos
+                # regra do hospital, rigida (DECISOES.md, 2026-10-19); no 12x36 nao aparece:
+                # ninguem trabalha dois dias seguidos
                 if _so_doze:
                     continue
-                col = st.columns([3, 2, 1, 2])
-                col[0].write("Máximo de dias seguidos de trabalho")
+                col = st.columns([3, 2, 1])
+                col[0].markdown("Máximo de dias seguidos de trabalho",
+                                help="Regra do hospital, rígida. A ferramenta usa o menor entre "
+                                     "o valor informado e o da lei (6, art. 67). Um valor menor "
+                                     "pode exigir mais gente: a tela diz quantos faltam.")
                 col[1].write("Obrigatória")
                 col[2].number_input("dias", min_value=1, max_value=br.MAX_CONSECUTIVOS_GENERICO,
                                     value=br.MAX_CONSECUTIVOS_GENERICO, step=1, key="max_dias",
                                     label_visibility="collapsed")
-                st.caption("Regra do hospital, rígida. A lei permite no máximo 6 (art. 67).",
-                           help="A ferramenta usa o menor entre o valor informado e o da lei. "
-                                "Um valor menor pode exigir mais gente: a tela diz quantos "
-                                "faltam.")
+                st.caption("Regra do hospital; a lei permite no máximo 6.")
                 continue
-            col = st.columns([3, 2, 1, 2])
-            if c.clt:
-                col[0].markdown(f":gray[{c.nome}]")
-                col[3].markdown(f":gray[{pr.GARANTIDO}]")
-                st.caption(c.ajuda)
-                continue
-            col[0].write(c.nome)
-            col[1].selectbox("Importância", pr.NIVEIS, key=f"prio_{c.id}",
-                             label_visibility="collapsed")
-            if c.limite is not None:
-                col[2].number_input(c.rotulo_limite, min_value=0, step=1, key=f"lim_{c.id}",
-                                    label_visibility="collapsed")
-            sit = situacao.get(c.id, "—")
-            col[3].write(sit)
+            col = st.columns([3, 2, 1])
             ajuda = c.ajuda
-            extra = pr.explicar(c, sit, _limite_efetivo, _teto)
-            if extra:
-                ajuda += " " + extra
             if c.sem_conferencia:
                 ajuda += (" ⓘ Sem conferência externa: nenhuma instância do benchmark INRC "
                           "a usa ou o avaliador oficial não a pontua.")
-            st.caption(ajuda)
+            col[0].markdown(c.nome, help=ajuda)
+            col[1].selectbox("Importância", pr.NIVEIS, key=f"prio_{c.id}",
+                             label_visibility="collapsed")
+            if c.limite is not None:
+                teto = TETO_LIMITE.get(c.id)
+                if teto is not None and st.session_state.get(f"lim_{c.id}", 0) > teto:
+                    st.session_state[f"lim_{c.id}"] = teto
+                col[2].number_input(c.rotulo_limite, min_value=0, max_value=teto, step=1,
+                                    key=f"lim_{c.id}", label_visibility="collapsed")
+            st.caption(pr.RESUMO[c.id])
 _usados = ([escolha[c.id][0] for c in NA_TELA if not c.clt and escolha[c.id][0] != pr.NAO]
            + [l.importancia or pr.importancia_padrao(l) for l in _regras()])
 _niveis = set(_usados)

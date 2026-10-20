@@ -1215,28 +1215,32 @@ def caso_opb_tela() -> None:
     grupos = [x for x in at.expander if any(x.label.startswith(g) for g in pr.GRUPOS)]
     confere([x.label for x in grupos] == [
         "Pedidos e qualificação — 1 de 1 considerados",
-        "Sequências de trabalho e folga — 0 de 3 considerados",
-        "Fins de semana — 0 de 5 considerados", "Noturno e carga — 0 de 3 considerados"],
+        "Sequências de trabalho e folga — 0 de 2 considerados",
+        "Fins de semana — 0 de 3 considerados", "Noturno e carga — 0 de 3 considerados"],
         f"grupos {[x.label for x in grupos]}")
     confere(grupos and grupos[0].proto.expanded and not any(x.proto.expanded
                                                             for x in grupos[1:]),
             "grupo 1 aberto, 2 a 4 recolhidos")
     # 3o bloco (20/10): o pedido de folga no dia saiu das Prioridades (a importancia e da linha
     # da tabela "Pedidos e regras dos profissionais", que fica no grupo 1)
-    padrao = {k: v[0] for k, v in fe.prioridades_padrao().items() if k != "pedido_folga"}
+    # 3o bloco, Parte 5 (20/10): no 12x36 ficam ocultos o minimo de dias seguidos, o fim de
+    # semana completo e o mesmo turno no fim de semana
+    padrao = {k: v[0] for k, v in fe.prioridades_padrao().items()
+              if k not in ("pedido_folga", "min_dias_seguidos", "fds_completo",
+                           "mesmo_turno_fds")}
     confere("**Pedidos e regras dos profissionais**" in textos(at, "markdown"),
             "tabela de pedidos e regras no grupo 1")
     confere({k: at.selectbox(key=f"prio_{k}").value for k in padrao} == padrao,
             "importancia padrao")
     # 3o bloco, Parte 4 (20/10): o maximo de dias seguidos virou campo do hospital, oculto no
     # 12x36 (o modelo padrao da tela); ficam duas linhas cinza
-    confere(sum(1 for x in textos(at, "markdown") if pr.GARANTIDO in x) == 2,
-            "duas linhas 'ja garantido pela CLT'")
+    confere(sum(1 for x in textos(at, "markdown") if pr.GARANTIDO in x) == 0,
+            "nenhuma linha 'ja garantido pela CLT' (Parte 5: regras da CLT no back end)")
     confere(not any(x.key == "max_dias" for x in at.number_input),
             "maximo de dias seguidos do hospital oculto no 12x36")
     at.selectbox(key="prio_min_folgas_seguidas").set_value(fe.DESEJAVEL)
     at.run()
-    confere(any(x.label == "Sequências de trabalho e folga — 1 de 3 considerados"
+    confere(any(x.label == "Sequências de trabalho e folga — 1 de 2 considerados"
                 for x in at.expander), "contador muda")
     at.button(key="restaurar").click()
     at.run()
@@ -1425,6 +1429,64 @@ def caso_max_dias() -> None:
                     f"diagnostico: {r.diagnostico and r.diagnostico[0]}")
 
 
+def caso_tela_limpa() -> None:
+    """Parte 5: limpeza da tela (esperado em resultados/tela_2026-10-20/ESPERADO.md)."""
+    at = AppTest.from_file(str(RAIZ / "src" / "app.py"), default_timeout=1800)
+    at.run()
+    print("tela-limpa. numeracao, rotulos, linhas fora")
+    confere([h.value for h in at.header] == ["1. Configuração da unidade", "2. Equipe",
+                                             "3. Demanda", "4. Prioridades da escala"],
+            f"cabecalhos {[h.value for h in at.header]}")
+    confere(any(x.label == "Conferir com o COFEN (opcional) — pacientes por grau"
+                for x in at.expander), "COFEN sem o 4.")
+    graus = at.selectbox(key="grau").options
+    confere("Alta dependência (10 h; 36% enfermeiros)" in graus
+            and "Semi-intensivo (10 h; 42% enfermeiros)" in graus, f"graus {graus}")
+    confere([x.label for x in at.number_input if x.key == "pac_alta"]
+            == ["Alta dependência (10 h; 36% enfermeiros)"], "grau no painel do COFEN")
+    todos = _todos_textos(at) + [x.label for x in at.number_input]
+    confere(not any("Situação" in t or pr.GARANTIDO in t or "(fds)" in t for t in todos),
+            "sem Situacao, sem 'ja garantido', sem '(fds)'")
+    confere([x.label for x in at.number_input if x.key and x.key.startswith("g_")]
+            == ["Dia: enfermeiros", "Dia: técnicos", "Noite: enfermeiros", "Noite: técnicos"],
+            "12x36: Dia e Noite")
+    ocultos = ("prio_min_dias_seguidos", "prio_fds_completo", "prio_mesmo_turno_fds")
+    chaves = {x.key for x in at.selectbox}
+    confere(not any(k in chaves for k in ocultos), "12x36: tres criterios ocultos")
+    at.checkbox(key="com_fds").check()
+    at.selectbox(key="modelo").set_value(M8)
+    at.run()
+    confere([x.label for x in at.number_input if x.key and x.key.startswith("f_")][:2]
+            == ["Manhã: enfermeiros (fim de semana)", "Manhã: técnicos (fim de semana)"],
+            "8 h: Manha, Tarde, Noite; '(fim de semana)'")
+    chaves = {x.key for x in at.selectbox}
+    confere(all(k in chaves for k in ocultos), "8 h: os tres criterios visiveis")
+    print("tela-limpa. caso 5 pela tela = o mesmo pelo back end")
+    capturado = {}
+    original = fe.verificar
+
+    def espiao(e, **kw):
+        capturado["e"] = e
+        return original(e, **kw)
+
+    fe.verificar = espiao
+    try:
+        at = pela_tela(M8, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)})
+    finally:
+        fe.verificar = original
+    e = capturado["e"]
+    confere(e.turnos == list(fe.MODELOS[M8]), f"codigos dos turnos: {e.turnos}")
+    r, _ = at.session_state["resultado"]
+    ref = fe.verificar(e)
+    confere(textos(at, "success") == [ADMITE_OK], f"veredito {textos(at, 'success')}")
+    confere((r.veredito, r.menor_viavel, r.indicadores["enf_em_posto_tec"],
+             r.indicadores["pedidos_total"]) ==
+            (ref.veredito, ref.menor_viavel, ref.indicadores["enf_em_posto_tec"],
+             ref.indicadores["pedidos_total"]),
+            f"tela {r.veredito} {r.indicadores['enf_em_posto_tec']} = back end "
+            f"{ref.veredito} {ref.indicadores['enf_em_posto_tec']}")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
@@ -1435,7 +1497,7 @@ CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeir
          "opB-e": caso_opb_essencial, "opB-padroes": caso_opb_padroes,
          "opB-tela": caso_opb_tela,
          "ped-2": caso_ped_contas, "ped-3": caso_ped_niveis, "ped-6": caso_ped_nunca_trava,
-         "max-dias": caso_max_dias}
+         "max-dias": caso_max_dias, "tela-limpa": caso_tela_limpa}
 
 
 def main() -> int:
