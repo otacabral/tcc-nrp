@@ -15,6 +15,7 @@ a tela, comparada com os valores do NUMEROS_TCC, secao 9.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -27,7 +28,10 @@ import bateria_rodar as brr  # noqa: E402
 import ferramenta as fe  # noqa: E402
 
 fe.TEMPO, fe.TEMPO_ETAPA2, fe.ORCAMENTO = 600, 180, 20 * 60
-SAIDA = RAIZ / "resultados" / "opcao_b_2026-10-19"
+# pasta de saida: a da v1.3.0 por padrao; a suite da v1.4.0 (20/10) passa outra pela variavel
+# de ambiente A2_SAIDA, para nao sobrescrever o registro da v1.3.0
+_A2 = os.environ.get("A2_SAIDA")
+SAIDA = Path(_A2) if _A2 else RAIZ / "resultados" / "opcao_b_2026-10-19"
 REGISTRADA = RAIZ / "resultados" / "bateria_2026-10-07"
 CAMPOS = ("veredito", "frase", "menor_viavel", "tentativas", "diagnostico", "provado",
           "etapa2", "falhas")
