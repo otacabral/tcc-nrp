@@ -35,3 +35,24 @@ classificação padrão, 44 h, sem férias, orçamento 60 min. Rodada de porte; 
 
 Parte 3: 14 + 9 = 23, igual ao resultado da ferramenta. A regra das 36 h entra na conta e no modelo
 (e na conferência de descanso) — a conta confere a aritmética, não a regra.
+
+## Sob D12 = 11 h — hipótese de sensibilidade, não regra da ferramenta (acréscimo de 20/10, Parte 6, antes de rodar)
+
+Mesmas regras do caso A (ver o ESPERADO do caso A): só a noite de domingo bloqueia a segunda
+inteira; a noite de sábado só pode fazer a N da segunda.
+
+| | Técnicos | Enfermeiros | Total |
+|---|---:|---:|---:|
+| Segunda: M + T + N | 55 | 10 | 65 |
+| Domingo N (bloqueia a segunda) | 17 | 2 | **19** |
+| Sábado N (só a N da segunda, que pede 17 + 2) | 17 | 2 | 19 |
+
+- Conta: 65 + 19 = **84 ≤ 89**; separando o sábado: 19 + 19 + 46 = 84.
+- Enfermeiros: 2 + 2 + 8 = 12 ≤ 15; técnicos: 17 + 17 + 38 = 72 ≤ 74 (folga de 2).
+- Carga 44 h: não aperta.
+
+**Esperado sob 11 h:** a conta (necessária, não suficiente) **cabe em 89**; o 89 fica dentro da
+busca (sem o problema da margem do caso com 36 h). Leitura preliminar do Otávio ("B deve caber"):
+**confere** quanto à conta. O veredito é do solver, e o risco de porte continua (NUMEROS_TCC §11–12).
+
+**Premissa compartilhada:** a mesma do caso A.

@@ -60,3 +60,35 @@ A regra das 36 h depois de turno ≥ 12 h entra **nos dois lados**: na conta à 
 (`instancia_br.descanso_exigido`, usada por `pares_proibidos_por_horario`), e também na
 conferência de descanso (`docs/conferencia_descanso_escala.py` importa as mesmas constantes). A
 conta confere a aritmética da segunda-feira, **não** a leitura legal da regra.
+
+## Sob D12 = 11 h — hipótese de sensibilidade, não regra da ferramenta (acréscimo de 20/10, Parte 6, antes de rodar)
+
+Pares que o gerador emite com `DESCANSO_POR_TURNO = {"D12": 11}` (conferido sem solver): do D12
+nenhum; da N, todos os de salto 1 e (N, 2, M/T/D12). Logo:
+- **domingo D12** (termina 19h) **não bloqueia** a segunda: M 7h fica a 12 h ≥ 11 h;
+- **domingo N** (termina segunda 7h) **bloqueia a segunda inteira**;
+- **sábado N** continua restrito: na segunda só pode N (M a 24 h, T a 30 h < 36 h);
+- sábado D12 → domingo D12 passa a ser permitido (12 h).
+
+| | Técnicos | Enfermeiros | Total |
+|---|---:|---:|---:|
+| Segunda: M + T + N | 14 | 3 | 17 |
+| Domingo N (bloqueia a segunda) | 4 | 1 | **5** |
+| Sábado N (só a N da segunda, que pede 4 + 1) | 4 | 1 | 5 |
+
+- Conta: 17 + 5 = **22 ≤ 24**; separando o sábado: domingo N 5 + sábado N 5 (cobrem a N da
+  segunda) + M e T da segunda 12 = **22**.
+- Enfermeiros: 1 + 1 + 2 = **4 ≤ 4 — sem folga nenhuma**.
+- Férias (16–18/01, as duas pessoas fora): técnicos exigidos 4 + 4 + 10 = 18, disponíveis
+  20 − 2 = **18 — sem folga nenhuma**; no total, 22 de 22.
+- Carga 44 h: não aperta.
+
+**Esperado sob 11 h:** a conta (condição **necessária**, não suficiente) **cabe em 24**, justa no
+fim de semana de 16–18/01. O veredito é do solver. **Leitura preliminar do Otávio** ("sob 11 h só a
+noite de domingo bloqueia a segunda; A deve caber"): **confere** quanto ao total — com a nuance de
+que a noite de sábado ainda prende a segunda à N, o que não muda o total porque a N de sábado e a
+da segunda pedem o mesmo número de pessoas.
+
+**Premissa compartilhada:** o 11 h do D12 e as 36 h da noite saem de `descanso_exigido`, a mesma
+fonte do modelo e da conferência no relógio. A conta confere a aritmética sob a hipótese, não a
+hipótese.
