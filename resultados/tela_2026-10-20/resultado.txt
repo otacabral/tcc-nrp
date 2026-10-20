@@ -1,1 +1,2 @@
 Parte 5 (20/10) — identidade (padrao) x v1.3.0: 243 arquivos; 243 identicos; 0 diferentes
+src/testes_ferramenta.py tela-limpa: OK (cabecalhos 1-4 antes de gerar; COFEN sem 4.; graus; sem Situacao/ja garantido/(fds); 12x36 Dia/Noite e 3 ocultos; 8 h Manha/Tarde/Noite e visiveis; caso 5 tela = back end, codigos M/T/N)
