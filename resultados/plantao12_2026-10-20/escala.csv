@@ -1,0 +1,24 @@
+Profissional,Categoria,Turnos,seg 04/01,ter 05/01,qua 06/01,qui 07/01,sex 08/01,sáb 09/01,dom 10/01,seg 11/01,ter 12/01,qua 13/01,qui 14/01,sex 15/01,sáb 16/01,dom 17/01,seg 18/01,ter 19/01,qua 20/01,qui 21/01,sex 22/01,sáb 23/01,dom 24/01,seg 25/01,ter 26/01,qua 27/01,qui 28/01,sex 29/01,sáb 30/01,dom 31/01
+Enf 1,Enfermeiro,3,,,,,,,N,,,,,,,D12,,,,,,,,M,,,,,,
+Enf 2,Enfermeiro,3,,,,,,,,M,,,,,,N,,,,,,,N,,,,,,,
+Enf 3,Enfermeiro,3,,,,,,,D12,,,,,,,D12,,,,,,,,T,,,,,,
+Enf 4,Enfermeiro,3,,,,,,,D12,,,,,,,N,,,,,,,,M,,,,,,
+Enf 5,Enfermeiro,3,,,,,,,N,,,,,,,D12,,,,,,,,T,,,,,,
+Téc 1,Técnico,16,N,,N,,N,,,T,T,T,M,M,N,,N,,N,,N,,N,,N,,N,,N,
+Téc 2,Técnico,21,T,T,M,T,M,D12,,T,T,M,M,T,D12,,T,N,,N,,,D12,,M,M,T,T,D12,
+Téc 3,Técnico,20,M,T,M,M,T,,N,,N,,N,,,D12,,T,T,T,T,D12,,T,M,T,T,M,N,
+Téc 4,Técnico,20,M,N,,N,,,D12,,T,T,T,M,D12,,T,M,T,M,M,,D12,,T,M,M,M,,D12
+Téc 5,Técnico,20,N,,N,,N,,,M,M,M,T,T,,D12,,M,M,T,M,D12,,T,T,T,M,T,D12,
+Téc 6,Técnico,16,,T,T,M,M,D12,,M,N,,N,,N,,N,,N,,N,,N,,N,,N,,N,
+Téc 7,Técnico,21,T,N,,N,,,D12,,M,T,M,M,D12,,M,M,M,T,M,D12,,M,M,M,M,M,D12,
+Téc 8,Técnico,17,T,T,T,T,T,D12,,T,N,,N,,N,,N,,N,,N,,,M,N,,N,,,D12
+Téc 9,Técnico,14,M,N,,N,,,N,,N,,N,,,N,,N,,N,,N,,N,,N,,N,,N
+Téc 10,Técnico,23,T,M,M,T,M,,D12,,T,M,M,T,D12,,T,M,T,T,T,D12,,M,M,T,M,T,D12,
+Téc 11,Técnico,20,,M,T,T,T,D12,,T,M,T,T,M,,,T,T,T,M,T,N,,N,,N,,N,,N
+Téc 12,Técnico,18,T,N,,N,,N,,N,,N,,N,,,T,T,M,M,T,,D12,,T,M,T,M,,D12
+Téc 13,Técnico,17,,M,M,T,T,N,,N,,N,,N,,N,,N,,N,,,D12,,T,M,T,T,,D12
+Téc 14,Técnico,21,M,T,T,M,T,N,,N,,N,,N,,,M,T,M,M,M,D12,,T,M,T,M,M,,D12
+Téc 15,Técnico,21,M,M,T,M,M,D12,,M,T,T,T,T,,,M,T,T,M,T,N,,N,,N,,N,,N
+Téc 16,Técnico,20,N,,N,,N,,,M,M,M,T,M,D12,,M,M,M,T,M,,D12,,T,T,T,T,D12,
+Téc 17,Técnico,16,N,,N,,N,,,T,M,M,M,T,N,,N,,N,,N,,N,,N,,N,,N,
+Téc 18,Técnico,16,,M,M,M,M,N,,N,,N,,N,,,M,N,,N,,N,,N,,N,,N,,N
