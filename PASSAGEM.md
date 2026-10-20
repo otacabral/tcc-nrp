@@ -1,6 +1,6 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 19/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 20/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
@@ -8,20 +8,15 @@ fim de cada sessão (dele ou do chat).
 - **Opção B implementada** (19/10, 2º bloco; `DECISOES.md`, "2026-10-19 — Opção B: mecanismo,
   tempo e critérios expostos"; `resultados/relatorio_2026-10-19b.md`). Com a classificação
   padrão, a entrada do solver é idêntica à da v1.2.3 (243 de 243 arquivos).
-- **Suíte de fechamento INTERROMPIDA** por falta de memória (Claude Code encerrou o processo),
-  depois de 17 passos todos OK. Faltam 11 casos antigos da tela e o (a2) (bateria nível 1 e
-  demonstração). **Tag `v1.3.0` não criada.** Versão citável continua a **v1.2.3**.
+- **Suíte de fechamento da v1.3.0: TUDO OK** (20/10; relançada pelo Otávio; o teste 1-2 foi
+  corrigido com autorização — `DECISOES.md`, defeito do teste 1-2). **Tag `v1.3.0` criada em
+  20/10. Versão citável passa a ser a v1.3.0.**
 - `NUMEROS_TCC.md`: seção 14 (validação por restrição) incluída. Congelamento: **25/10**.
 - Nada enviado ao GitHub em 19/10.
 
 ## Próxima tarefa
 
-- **Otávio: retomar a suíte** (fechar o Chrome antes), da raiz, com a `.venv`:
-  `RETOMAR=1 "C:\Program Files\Gitinash.exe" docs/diagnostico/fechar_v130.sh` — roda só o
-  que falta e termina com "TUDO OK" ou "PARADO" em `resultados/opcao_b_2026-10-19/suite/resumo.txt`.
-  Ou pedir ao Claude Code que a retome.
-- Se der "TUDO OK": tag — `git tag -a v1.3.0 -m "v1.3.0: opcao B"` (marca a versão) — e
-  `git push origin main` seguido de `git push origin v1.3.0` (envia os commits e a tag).
+- Suíte e tag da v1.3.0: feitas (20/10). Envio: `git push origin main` e `git push origin v1.3.0`.
 - **Depois: caso realista A (Massens 2019)**, parâmetros a vir da Orientação.
 - Orientação: validar duas leituras de implementação (relatório 19b, seção 1): "a CLT prevalece"
   = limite que contradiz a lei; limites padrão do `medium_late05` (fins de semana em 4 semanas
