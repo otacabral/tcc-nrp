@@ -5,22 +5,68 @@ fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- **Opção B implementada** (19/10, 2º bloco; `DECISOES.md`, "2026-10-19 — Opção B: mecanismo,
-  tempo e critérios expostos"; `resultados/relatorio_2026-10-19b.md`). Com a classificação
-  padrão, a entrada do solver é idêntica à da v1.2.3 (243 de 243 arquivos).
-- **Suíte de fechamento da v1.3.0: TUDO OK** (20/10; relançada pelo Otávio; o teste 1-2 foi
-  corrigido com autorização — `DECISOES.md`, defeito do teste 1-2). **Tag `v1.3.0` criada em
-  20/10. Versão citável passa a ser a v1.3.0.**
-- `NUMEROS_TCC.md`: seção 14 (validação por restrição) incluída. Congelamento: **25/10**.
-- Nada enviado ao GitHub em 19/10.
+- **3º bloco (19–20/10) feito, Partes 0 a 5** (`resultados/relatorio_2026-10-20.md`):
+  pedidos e regras dos profissionais (tabela com importância por linha; turno fixo como "Só este
+  turno"); máximo de dias seguidos do hospital (rígido, 1 a 6); tela limpa (sem Situação,
+  rótulos Manhã/Tarde/Noite, numeração 1–5). Identidade com a v1.3.0: **243/243** depois de cada
+  parte. Todos os testes rodados passaram; a Parte 3 (b) saiu diferente do esperado (abaixo).
+- **Tag `v1.3.0` criada em 20/10. Versão citável: v1.3.0.** A `v1.4.0` ainda **não existe**:
+  depende da suíte de fechamento, que é do Otávio.
+- **Parte 3 (b), plantão de 12 h:** esperado "admite com 22"; saiu 22 inviável (provado) e
+  escala legal com 23. Conta à mão: domingo só com turnos de 12 h ocupa 9 pessoas, que não podem
+  trabalhar na segunda (36 h de descanso); a segunda pede 14; 22 − 9 = 13. **Consequência para o
+  caso A: o quadro precisa cobrir a segunda-feira depois do fim de semana com plantão de 12 h.**
+- `NUMEROS_TCC.md`: sem mudança neste bloco. Congelamento: **25/10**.
+- Nada enviado ao GitHub desde 19/10.
 
 ## Próxima tarefa
 
-- Suíte e tag da v1.3.0: feitas (20/10). Envio: `git push origin main` e `git push origin v1.3.0`.
-- **Depois: caso realista A (Massens 2019)**, parâmetros a vir da Orientação.
-- Orientação: validar duas leituras de implementação (relatório 19b, seção 1): "a CLT prevalece"
-  = limite que contradiz a lei; limites padrão do `medium_late05` (fins de semana em 4 semanas
-  = 2, sem fonte).
+**1. Otávio: suíte de fechamento da v1.4.0**, com o Claude Code e o Chrome fechados. No
+PowerShell, da raiz, um comando por linha:
+
+    cd D:\dev\tcc-nrp
+    .\.venv\Scripts\Activate.ps1
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v140.sh
+
+Termina com "TUDO OK" ou "PARADO: ..." na última linha de
+`resultados/v140_2026-10-20/suite/resumo.txt`. Se for interrompida (memória, queda), **retomar**
+— pula o que já passou — com, um por linha:
+
+    cd D:\dev\tcc-nrp
+    .\.venv\Scripts\Activate.ps1
+    $env:RETOMAR = "1"
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v140.sh
+    Remove-Item Env:RETOMAR
+
+**Regra: se TUDO OK, tag v1.4.0** (marca a versão; um por linha):
+
+    git tag -a v1.4.0 -m "v1.4.0: pedidos e regras dos profissionais, maximo de dias do hospital, tela"
+
+Se "PARADO": não criar a tag; abrir o log indicado e trazer ao Claude Code.
+
+**Envio ao GitHub** (quando quiser; envia os commits e as tags; um por linha):
+
+    git push origin main
+    git push origin v1.3.0
+    git push origin v1.4.0
+
+**2. Depois: caso realista A (Massens 2019)** com **24 pessoas (Anexo B inteiro)**, em **duas
+rodadas**: (i) equipe fixa por turno ("Só este turno") em **Essencial**; (ii) rodízio livre (sem
+as linhas). **Orçamento 60 min** cada. Antes, fazer a conta da segunda-feira depois do fim de
+semana (Parte 3 b).
+
+**3.** Caso B, orçamento 60 min. **4.** Sensibilidade com 2 ou 3 ordens de prioridade.
+Congelamento dos números: **25/10**.
+
+## Decisões da sessão de 19–20/10 (3º bloco)
+
+- DECISOES: "Opção B: decisões 4 e 5" (5 aprovada; 4 substituída pela tela sem Situação);
+  "Pedidos e regras por profissional" (MUDANÇA DE FORMULAÇÃO; revê 09/10); "Máximo de dias
+  seguidos como regra do hospital"; "Tela orientada ao usuário". Testes da tela atualizados com
+  registro: 1-2 (aba Prioridades) e opB-tela (Partes 2, 4 e 5).
+- Leituras adotadas: relatório de 20/10, seção "Leituras adotadas" (9 itens).
+- Achado: o avaliador oficial não pontua DayOn/ShiftOn (limite 0 no código do jar); a ferramenta
+  só usa pedidos negativos, que ele pontua.
 
 ## Decisões da sessão de 19/10 (2º bloco)
 
@@ -72,6 +118,13 @@ fim de cada sessão (dele ou do chat).
 
 ## Pendências com a Redação
 
+- **3º bloco (20/10):** `GUIA_DE_USO.md` com a tabela "Pedidos e regras dos profissionais", o
+  máximo de dias seguidos do hospital e a tela sem Situação; o texto não pode mais citar a coluna
+  Situação nem "já garantido pela CLT" na tela. Fins de semana em 4 semanas = 2 é **valor de
+  exemplo, sem fonte (suposição declarada)**, nunca valor do INRC. Nota para o texto: com nível
+  sem prova, a prioridade entre níveis só é garantida nos provados. O avaliador oficial não
+  pontua DayOn/ShiftOn (relatório de 20/10) — pode ir como limitação do benchmark.
+
 - **Opção B (19/10, 2º bloco):** a função objetivo da ferramenta passa a ser por níveis
   escolhidos pelo gestor; o `GUIA_DE_USO.md` tem a seção nova; os números de antes ficam
   declarados "orçamento 20 min, 600 s / 180 s". Ainda sem tag (suíte incompleta).
@@ -109,7 +162,7 @@ fim de cada sessão (dele ou do chat).
 
 ## Cronograma
 
-- 19–25/10: modificações na ferramenta (opção B implementada em 19/10; caso realista A a seguir).
+- 19–25/10: modificações na ferramenta (opção B em 19/10; 3º bloco em 19–20/10; caso realista A a seguir).
 - 20/10: reunião com o orientador.
 - **Números congelados: 25/10** (substitui 16/10).
 - 26/10–01/11: só escrita. 02–06/11: revisão do orientador.
