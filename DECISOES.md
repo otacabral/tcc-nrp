@@ -2446,6 +2446,15 @@ campo não aceita valor acima da lei (6); no 12×36 a linha não aparece (o limi
 Padrão 6 = comportamento atual. É regra rígida, como a da CLT: pode levar a "faltam N", e isso é
 resultado, não defeito.
 
+**Teste opB-tela atualizado (20/10, Parte 4)**, como no precedente do teste 1-2: a linha cinza
+"Máximo de dias seguidos de trabalho — já garantido pela CLT" virou o campo do hospital; no
+12×36 (o modelo padrão da tela, em que o teste roda) o campo fica oculto. O esperado passa de
+"três linhas 'já garantido pela CLT'" para **duas** (sequências indesejadas; máximo de turnos) e
+ganha a conferência de que o campo novo **não aparece no 12×36**. Nenhum texto de resultado
+mudou. Resultado da Parte 4 (esperado em `resultados/max_dias_2026-10-20/ESPERADO.md`):
+identidade 243/243 com a v1.3.0; 7 recusado; com 6, admite 14; com 4, "Falta 1; o menor quadro
+viável é 15", maior sequência 4 na escala e no relógio, o 14 recusado pela conta (piso com L = 4).
+
 ---
 
 ## 2026-10-19 — Tela orientada ao usuário

@@ -202,7 +202,7 @@ def _regras() -> list:
     return linhas
 
 
-def _entrada(prioridades, regras=True) -> fe.Entrada:
+def _entrada(prioridades, regras=True, max_dias=True) -> fe.Entrada:
     return fe.Entrada(
         turnos=turnos, grau=grau, n_enfermeiros=int(n_enf), n_tecnicos=int(n_tec),
         demanda_turno=demanda_turno, demanda_fds=demanda_fds, demanda_data=demanda_data,
@@ -211,6 +211,8 @@ def _entrada(prioridades, regras=True) -> fe.Entrada:
         indisponibilidades=[(str(l["Profissional"]), _data(l["De"]), _data(l["Até"]))
                             for _, l in tabela_indisp.dropna().iterrows()],
         regras=_regras() if regras else [],
+        max_dias_seguidos=(int(st.session_state.get("max_dias", br.MAX_CONSECUTIVOS_GENERICO))
+                           if max_dias else br.MAX_CONSECUTIVOS_GENERICO),
         pacientes=pacientes or None, cargas=cargas, prioridades=prioridades)
 
 
@@ -238,7 +240,8 @@ st.button("Restaurar padrão", key="restaurar", on_click=_restaurar)
 escolha = {k: (st.session_state[f"prio_{k}"], st.session_state.get(f"lim_{k}"))
            for k in PADRAO}
 try:
-    _base_prio = fe.montar(_entrada(escolha, regras=False))
+    # sem o maximo do hospital: o limite efetivo aqui decide se o regime e so de 12 h
+    _base_prio = fe.montar(_entrada(escolha, regras=False, max_dias=False))
     _limite_efetivo = fe.limite_efetivo(_base_prio)
     situacao = pr.situacoes(_base_prio, pr.normalizar(escolha), _limite_efetivo)
     _teto = _base_prio.contratos["0"].max_num_assignments.valor
@@ -247,6 +250,11 @@ except (ValueError, TypeError, KeyError, ZeroDivisionError):
 # o pedido de folga no dia sai das Prioridades: a importancia e da linha da tabela de pedidos
 # (DECISOES.md, "2026-10-19 — Pedidos e regras por profissional")
 NA_TELA = [c for c in pr.CRITERIOS if c.id != "pedido_folga"]
+# regime em que ninguem trabalha dois dias seguidos (o 12x36), pelos horarios da tabela de turnos,
+# como `ferramenta.limite_efetivo` — sem depender de a equipe ja estar preenchida
+_pares = set(br.pares_proibidos_por_horario(
+    [(n, ini, fe.duracao(ini, fim)) for n, ini, fim in turnos], None, descartar=False))
+_so_doze = bool(turnos) and all((s, 1, t) in _pares for s, _, _ in turnos for t, _, _ in turnos)
 for g, nome_grupo in enumerate(pr.GRUPOS):
     crits = [c for c in NA_TELA if c.grupo == g]
     campos = [c for c in crits if not c.clt]
@@ -282,6 +290,22 @@ for g, nome_grupo in enumerate(pr.GRUPOS):
         for coluna, rotulo in zip(cab, ("Critério", "Importância", "Limite", "Situação")):
             coluna.caption(rotulo)
         for c in crits:
+            if c.id == "max_dias_seguidos":
+                # regra do hospital, rigida (DECISOES.md, 2026-10-19); no 12x36 (limite efetivo
+                # 1) nao aparece: ninguem trabalha dois dias seguidos
+                if _so_doze:
+                    continue
+                col = st.columns([3, 2, 1, 2])
+                col[0].write("Máximo de dias seguidos de trabalho")
+                col[1].write("Obrigatória")
+                col[2].number_input("dias", min_value=1, max_value=br.MAX_CONSECUTIVOS_GENERICO,
+                                    value=br.MAX_CONSECUTIVOS_GENERICO, step=1, key="max_dias",
+                                    label_visibility="collapsed")
+                st.caption("Regra do hospital, rígida. A lei permite no máximo 6 (art. 67).",
+                           help="A ferramenta usa o menor entre o valor informado e o da lei. "
+                                "Um valor menor pode exigir mais gente: a tela diz quantos "
+                                "faltam.")
+                continue
             col = st.columns([3, 2, 1, 2])
             if c.clt:
                 col[0].markdown(f":gray[{c.nome}]")

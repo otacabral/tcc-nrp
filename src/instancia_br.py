@@ -925,12 +925,14 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
                           n_enfermeiros, n_tecnicos, nomes_enfermeiros, nomes_tecnicos,
                           dias: int, inicio: date, descanso_clt: bool,
                           indisponibilidades, pedidos=(),
-                          fim_de_semana: str = "sab_dom", cargas=None) -> Instancia:
+                          fim_de_semana: str = "sab_dom", cargas=None,
+                          max_consecutivos: int = MAX_CONSECUTIVOS_GENERICO) -> Instancia:
     """Instancia com turnos e demanda do usuario. A CLT trava; o COFEN nao entra aqui.
 
     - regras de descanso GERADAS dos horarios (`pares_proibidos_por_horario`);
-    - no maximo 6 dias seguidos (art. 67, aproximado); a alternancia de quem faz so 12 h sai
-      sozinha da regra das 36 h;
+    - no maximo 6 dias seguidos (art. 67, aproximado), ou menos, se o hospital informar
+      (`max_consecutivos`, 1 a 6; DECISOES.md, "2026-10-19 — Maximo de dias seguidos como regra
+      do hospital"); a alternancia de quem faz so 12 h sai sozinha da regra das 36 h;
     - carga contratual semanal por profissional (`cargas`: nome ou id -> horas; quem nao
       aparece fica com 44 h). Dela sai o teto em HORAS no horizonte, rigido no modelo:
       carga x dias disponiveis / 7 (`Instancia.horas_devidas`), porque com turnos de duracoes
@@ -942,6 +944,10 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
     """
     if n_enfermeiros is None or n_tecnicos is None:
         raise ValueError("com turnos configurados, informe n_enfermeiros e n_tecnicos")
+    if not 1 <= max_consecutivos <= MAX_CONSECUTIVOS_GENERICO:
+        raise ValueError(f"máximo de dias seguidos {max_consecutivos}: use de 1 a "
+                         f"{MAX_CONSECUTIVOS_GENERICO} (acima de {MAX_CONSECUTIVOS_GENERICO} a "
+                         f"lei não permite, art. 67)")
     turnos = _validar_turnos(turnos)
     base = [(tid, ini, dur) for tid, ini, dur, _ in turnos]
     fim = inicio + timedelta(days=dias - 1)
@@ -953,7 +959,7 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
                              f"{CARGA_CONTRATUAL_PADRAO:g} h")
         carga_semanal[_id_profissional(profs, quem)] = float(horas)
     carga = max(carga_semanal.values()) * dias / 7
-    pares = pares_proibidos_por_horario(base, MAX_CONSECUTIVOS_GENERICO,
+    pares = pares_proibidos_por_horario(base, max_consecutivos,
                                         interjornada=descanso_clt)
     padroes = _padroes_de(pares, variantes=True)
     objetos = {}
@@ -968,7 +974,7 @@ def _construir_por_turnos(turnos, demanda_turno, demanda_fds, demanda_data, *,
         raise ValueError(f"fim de semana {fim_de_semana!r}; use {sorted(FIM_DE_SEMANA)}")
     contrato = _contrato(None, descanso_clt, tuple(padroes),
                          max_atribuicoes=math.floor(carga / min(d for _, _, d in base)),
-                         max_consecutivos=MAX_CONSECUTIVOS_GENERICO,
+                         max_consecutivos=max_consecutivos,
                          descricao="turnos configurados, carga contratual informada "
                                    "(limite legal de 44h/semana)")
     contrato = dataclasses.replace(contrato,
@@ -1008,7 +1014,7 @@ def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
               nomes_enfermeiros=None, nomes_tecnicos=None,
               indisponibilidades=(), turnos=None, demanda_turno=None, demanda_fds=None,
               demanda_data=None, pedidos=(), fim_de_semana: str = "sab_dom",
-              cargas=None) -> Instancia:
+              cargas=None, max_consecutivos: int | None = None) -> Instancia:
     """Monta a instancia brasileira.
 
     Tres caminhos, que nao se misturam:
@@ -1046,7 +1052,11 @@ def construir(grau: str | None = None, efetivo: int = 36, regime: str = "12x36",
             n_tecnicos=n_tecnicos, nomes_enfermeiros=nomes_enfermeiros,
             nomes_tecnicos=nomes_tecnicos, dias=dias, inicio=inicio,
             descanso_clt=descanso_clt, indisponibilidades=indisponibilidades,
-            pedidos=pedidos, fim_de_semana=fim_de_semana, cargas=cargas)
+            pedidos=pedidos, fim_de_semana=fim_de_semana, cargas=cargas,
+            max_consecutivos=(MAX_CONSECUTIVOS_GENERICO if max_consecutivos is None
+                              else max_consecutivos))
+    if max_consecutivos is not None:
+        raise ValueError("maximo de dias seguidos do hospital so vale com turnos configurados")
     if demanda_turno is not None or demanda_fds is not None or demanda_data is not None:
         raise ValueError("demanda por turno so vale com turnos configurados (turnos=...)")
     if pedidos or fim_de_semana != "sab_dom" or cargas:

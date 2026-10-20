@@ -1,0 +1,4 @@
+Parte 4 (20/10) — resultado
+identidade (padrao 6) x v1.3.0: 243 arquivos; 243 identicos; 0 diferentes
+src/testes_ferramenta.py max-dias: OK (7 recusado; 6 -> admite 14, maior sequencia 6; 4 -> Falta 1, menor viavel 15, maior sequencia 4 na escala e no relogio, 14 pela conta, diagnostico combinacao)
+src/testes_ferramenta.py opB-tela: OK (esperado atualizado: duas linhas cinza; campo oculto no 12x36)

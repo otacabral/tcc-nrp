@@ -1228,8 +1228,12 @@ def caso_opb_tela() -> None:
             "tabela de pedidos e regras no grupo 1")
     confere({k: at.selectbox(key=f"prio_{k}").value for k in padrao} == padrao,
             "importancia padrao")
-    confere(sum(1 for x in textos(at, "markdown") if pr.GARANTIDO in x) == 3,
-            "tres linhas 'ja garantido pela CLT'")
+    # 3o bloco, Parte 4 (20/10): o maximo de dias seguidos virou campo do hospital, oculto no
+    # 12x36 (o modelo padrao da tela); ficam duas linhas cinza
+    confere(sum(1 for x in textos(at, "markdown") if pr.GARANTIDO in x) == 2,
+            "duas linhas 'ja garantido pela CLT'")
+    confere(not any(x.key == "max_dias" for x in at.number_input),
+            "maximo de dias seguidos do hospital oculto no 12x36")
     at.selectbox(key="prio_min_folgas_seguidas").set_value(fe.DESEJAVEL)
     at.run()
     confere(any(x.label == "Sequências de trabalho e folga — 1 de 3 considerados"
@@ -1379,6 +1383,48 @@ def caso_ped_nunca_trava() -> None:
             f"descumpridos informados: {r.descumpridos}")
 
 
+def caso_max_dias() -> None:
+    """Parte 4: maximo de dias seguidos do hospital (esperado em
+    resultados/max_dias_2026-10-20/ESPERADO.md)."""
+    import dataclasses
+    import experimento_a as ea
+    from datetime import timedelta
+    base = fe.Entrada(turnos=[("M", 7, 13), ("T", 13, 19)], grau="intermediario",
+                      n_enfermeiros=0, n_tecnicos=14,
+                      demanda_turno={"M": (0, 6), "T": (0, 6)}, inicio=br.primeira_segunda())
+    print("max-dias. 7 (acima da lei) e erro de entrada")
+    try:
+        fe.montar(dataclasses.replace(base, max_dias_seguidos=7))
+        confere(False, "7 deveria ser recusado")
+    except ValueError as x:
+        confere("art. 67" in str(x), f"erro: {x}")
+    for L, piso, frase in ((6, 14, ADMITE_OK),
+                           (4, 15, "Falta 1; o menor quadro viável é 15. Escala gerada.")):
+        print(f"max-dias. maximo {L}")
+        e = dataclasses.replace(base, max_dias_seguidos=L)
+        inst = fe.montar(e)
+        confere(fe.limite_efetivo(inst) == L and fe.piso(inst) == piso,
+                f"limite efetivo {fe.limite_efetivo(inst)}, piso {fe.piso(inst)}")
+        r = fe.verificar(e)
+        confere(r.frase() == frase, f"veredito: {r.frase()}")
+        if not r.escala:
+            continue
+        dias = list(r.inst.dias)
+        trab = {(n, d) for d, n, _ in r.escala}
+        maior = 0
+        for n in r.inst.profissionais:
+            seq = 0
+            for d in dias:
+                seq = seq + 1 if (n, d) in trab else 0
+                maior = max(maior, seq)
+        confere(maior <= L and r.conformidade["max_consec"] <= L and r.conformidade["ok"],
+                f"maior sequencia na escala {maior}, no relogio {r.conformidade['max_consec']}")
+        if L == 4:
+            confere(r.tentativas[0][:2] == (14, "piso"), f"14 pela conta: {r.tentativas}")
+            confere(r.diagnostico is not None and r.diagnostico[0] == fe.COMBINACAO,
+                    f"diagnostico: {r.diagnostico and r.diagnostico[0]}")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
@@ -1388,7 +1434,8 @@ CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeir
          "opB-b": caso_opb_sequencia, "opB-c": caso_opb_fusao, "opB-d": caso_opb_situacao,
          "opB-e": caso_opb_essencial, "opB-padroes": caso_opb_padroes,
          "opB-tela": caso_opb_tela,
-         "ped-2": caso_ped_contas, "ped-3": caso_ped_niveis, "ped-6": caso_ped_nunca_trava}
+         "ped-2": caso_ped_contas, "ped-3": caso_ped_niveis, "ped-6": caso_ped_nunca_trava,
+         "max-dias": caso_max_dias}
 
 
 def main() -> int:
