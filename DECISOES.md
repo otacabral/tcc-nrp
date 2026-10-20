@@ -1877,7 +1877,7 @@ que a etapa 2 entregue escala), antes de a condição chegar; relatado no relat�
 
 ## 2026-10-09 — Pedido por turno vira trabalho futuro
 
-**Status: vigente.** Decidido pelo Otávio em 09/10. Não implementar antes de 16/10.
+**Status: REVISTA em 19/10** por "2026-10-19 — Pedidos e regras por profissional" (o pedido por turno passa a ser implementado). Registro original: Decidido pelo Otávio em 09/10. Não implementar antes de 16/10.
 
 **Motivo:** custo de ~1,5 dia; exige mudar um parâmetro de parada do solver (a tolerância
 relativa do HiGHS, que com pesos em três níveis deixaria de garantir a prioridade estrita) e,
@@ -2318,7 +2318,7 @@ implementar):**
 3. **Nível resolvido sem prova:** o nível seguinte prende "≤ valor achado" (como a P14) e parte
    da escala achada (como a P17). A escala é "sem prova" se algum nível não provou; o gap
    mostrado é o do primeiro nível sem prova.
-4. **Situação, calculada antes de resolver:**
+4. **Situação, calculada antes de resolver** *(SUBSTITUÍDA em 19/10 por "2026-10-19 — Tela orientada ao usuário": a coluna sai da tela)*:
    - "a CLT prevalece": o limite pedido vai além do que a lei permite no regime — mínimo de dias
      seguidos acima do máximo de dias seguidos que as regras de descanso admitem (1 no 12×36, 6
      nos demais); mínimo de turnos acima do teto legal de turnos do contrato. O critério continua
@@ -2355,6 +2355,102 @@ conferência, que era conjunta (abas **e** `max_row` da aba Escala = 41), foi se
 — abas == `["Escala", "Resumo", "Legenda", "Prioridades"]` e `wb["Escala"].max_row == 41` —,
 porque com a condição conjunta não se sabia se a segunda parte tinha passado. Nada mais mudou
 no teste nem na ferramenta.
+
+---
+
+## 2026-10-19 — Opção B: decisões 4 e 5
+
+**Status: vigente.** Decisão da Orientação sobre as duas leituras de implementação da entrada
+"2026-10-19 — Opção B: mecanismo, tempo e critérios expostos" (relatório 19b, seção 1), registrada
+em 20/10 (3º bloco).
+
+**Decisão 5 (limites padrão) — aprovada.** Os limites padrão dos critérios com parâmetro são os do
+contrato 0 do `medium_late05`. Motivo, do registro: o `medium_late05` foi escolhido por
+**cobertura** — é a instância que exercita todas as restrições que aparecem ligadas em alguma
+instância do benchmark ("2026-09-15 — Quinto alvo de validação: `medium_late05`").
+**Fins de semana em 4 semanas = 2** fica, marcado na ajuda da tela e no `GUIA_DE_USO.md` como
+"valor de exemplo, sem fonte (suposição declarada)". Nunca apresentá-lo como valor do INRC.
+
+**Decisão 4 (mensagens da coluna Situação) — SUBSTITUÍDA** por "2026-10-19 — Tela orientada ao
+usuário" (Parte 5 do 3º bloco): a coluna Situação sai da tela. As regras de cálculo ficam em
+`prioridades.situacoes` (back end), sem uso na tela.
+
+**Nota para o texto.** Com um nível resolvido sem prova (decisão de implementação 3), a
+prioridade entre níveis só é garantida nos níveis provados: um nível de baixo pode ter sido
+resolvido sobre um valor do nível de cima que não é o ótimo. A tela e o resultado por critério
+informam o gap do primeiro nível sem prova.
+
+---
+
+## 2026-10-19 — Pedidos e regras por profissional; revisa 2026-10-09 (Pedido por turno vira trabalho futuro)
+
+**Status: vigente — MUDANÇA DE FORMULAÇÃO** (extensão da opção B). Decisão do Otávio, 19/10,
+validada pela Orientação; registrada antes de implementar (20/10).
+
+**Por quê.** Hospitais brasileiros costumam ter equipes fixas por turno (caso Massens 2019:
+equipes de manhã, tarde e noite fixas) e profissionais com pedidos de dia e de turno. A
+ferramenta precisa distinguir **regra do hospital** de **desejo do profissional**.
+
+**O que muda.**
+- Uma tabela "Pedidos e regras dos profissionais": Profissional | Dia (em branco = todos os
+  dias) | Turno (em branco = o dia todo) | Tipo ∈ {Folga, Só este turno} | Importância ∈
+  {Essencial, Importante, Desejável}. Linha sem dia e sem turno é inválida.
+- **A importância fica na linha, não no critério:** o mesmo tipo pode ser regra do hospital
+  (Essencial) ou desejo do profissional (Desejável); quem distingue é o gestor. Padrão de linha
+  nova: Folga com dia e sem turno → Essencial (= v1.3.0); as demais → Desejável.
+- **Tradução, sempre para pedidos negativos já validados** (`DayOffRequest` / `ShiftOffRequest`
+  do INRC):
+  - Folga + dia → folga no dia;
+  - Folga + dia + turno → folga naquele turno daquele dia;
+  - Folga + turno → folga naquele turno em todos os dias;
+  - Só este turno (+ dia opcional) → folga em todos os outros turnos no(s) dia(s); várias linhas
+    "Só este turno" da mesma pessoa e dia se somam (Manhã e D12 = pode Manhã ou D12).
+- **Função objetivo:** cada linha pertence ao nível da sua Importância. Violação =
+  profissional-dia-turno trabalhado contra a linha; para folga no dia, a unidade que o motor já
+  usa (profissional-dia trabalhado), para preservar a identidade. Se várias linhas proíbem o
+  mesmo profissional-dia-turno, conta **uma** violação, no nível mais alto entre elas. Peso 1 por
+  violação dentro do nível. Entra no plano de níveis e na regra de fusão como os critérios
+  existentes; o máximo de violações de cada nível vem das linhas da tabela.
+- **Em Essencial nada é rígido:** a tela informa quantos pedidos foram descumpridos e de quem.
+  Cobertura e CLT continuam rígidas.
+- A tabela de Prioridades deixa de ter a linha "Pedido de folga no dia" (a importância é coluna
+  da tabela de pedidos). No grupo 1 ("Pedidos e qualificação") ficam a tabela de pedidos e a
+  linha "Enfermeiro em posto de técnico".
+- Sem linhas na tabela, nada muda (nível vazio não gera resolução).
+
+**Motivo da revisão de 09/10.** (i) A tolerância do solver deixou de ser problema: com os níveis
+em sequência (opção B), a prioridade entre níveis vem da sequência, não de pesos escalonados, e
+só se fundem níveis cujo bloco fica abaixo de 10.000; (ii) o motor já suporta
+`folga_turno`, validado pelas quatro instâncias da regressão (50 ou 245 pedidos de turno cada).
+A entrada "2026-10-09 — Pedido por turno vira trabalho futuro" fica marcada como revista.
+
+---
+
+## 2026-10-19 — Máximo de dias seguidos como regra do hospital (rígida)
+
+**Status: vigente — mudança de PARÂMETRO, não de formulação.** Registrada antes de implementar
+(20/10).
+
+O gestor informa um máximo de dias seguidos de trabalho; a ferramenta usa **min(hospital, CLT)**,
+pelo `max_consecutivos` de `instancia_br` (o mesmo parâmetro que hoje recebe o 6 do art. 67). O
+campo não aceita valor acima da lei (6); no 12×36 a linha não aparece (o limite efetivo já é 1).
+Padrão 6 = comportamento atual. É regra rígida, como a da CLT: pode levar a "faltam N", e isso é
+resultado, não defeito.
+
+---
+
+## 2026-10-19 — Tela orientada ao usuário
+
+**Status: vigente.** Registrada antes de implementar (20/10).
+
+- Sem a coluna Situação (substitui a decisão de implementação 4 da opção B; ver "2026-10-19 —
+  Opção B: decisões 4 e 5").
+- Explicações longas vão para o "?" de cada campo (parâmetro `help` do Streamlit) e para o
+  `GUIA_DE_USO.md`; na tela, uma linha por campo.
+- As regras da CLT ficam no back end: as linhas "Sequências indesejadas" e "Máximo de turnos no
+  período" saem da tela; no 12×36 saem também as que nunca podem ser atendidas ou que a lei
+  impede (fim de semana completo, mesmo turno no fim de semana, mínimo de dias seguidos).
+- Mensagens de resultado (veredito, alertas, diagnóstico, resultado por critério) não mudam.
 
 ---
 
