@@ -35,6 +35,11 @@ SAIDA = Path(_A2) if _A2 else RAIZ / "resultados" / "opcao_b_2026-10-19"
 REGISTRADA = RAIZ / "resultados" / "bateria_2026-10-07"
 CAMPOS = ("veredito", "frase", "menor_viavel", "tentativas", "diagnostico", "provado",
           "etapa2", "falhas")
+# Parte 7 (20/10, v1.4.1): quadros que a rodada registrada provou inviaveis pelo SOLVER e que a
+# conta por pares de dias passa a recusar sem solver — a tentativa vira (q, "piso", None, None).
+# Lista tirada sem solver e registrada antes da suite (resultados/piso_pares_2026-10-20/
+# seguranca.md). Vale so com A2_PISO_PARES=1 (suite da v1.4.1); qualquer outra diferenca falha.
+ADMITIDAS = {"P05": [14]}
 
 # NUMEROS_TCC.md, secao 9 (rodadas de 05/10, refeitas em 09/10)
 DEMO = {
@@ -74,6 +79,10 @@ def comparar() -> int:
     for nova in sorted((SAIDA / "bateria").glob("*.json")):
         a = json.loads((REGISTRADA / nova.name).read_text(encoding="utf-8"))
         b = json.loads(nova.read_text(encoding="utf-8"))
+        if os.environ.get("A2_PISO_PARES") == "1":
+            q_conta = ADMITIDAS.get(nova.stem, [])
+            a["tentativas"] = [[t[0], "piso", None, None] if t[0] in q_conta
+                               and t[1] == "inviavel" else t for t in a["tentativas"]]
         dif = [c for c in CAMPOS if json.dumps(a.get(c), default=str)
                != json.dumps(b.get(c), default=str)]
         if a.get("conferencia") and b.get("conferencia"):

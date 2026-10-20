@@ -326,17 +326,68 @@ def limite_efetivo(inst) -> int:
     return L
 
 
+def bloqueiam_o_dia_seguinte(inst) -> set[str]:
+    """Turnos-base que, feitos no dia d, impedem QUALQUER turno no dia d+1: o par de salto 1
+    com todos os turnos e proibido. Sai dos pares do gerador (`pares_proibidos_por_horario`, que
+    le `descanso_exigido`, inclusive `DESCANSO_POR_TURNO`), nunca de "duracao >= 12 h" fixo;
+    com o limite efetivo 1, todos (Parte 7, 20/10)."""
+    base = [(s, t.inicio.hour, t.duracao_h) for s, t in inst.turnos.items()
+            if br.HABILIDADE_ENF not in t.habilidades]
+    if limite_efetivo(inst) == 1:
+        return {s for s, _, _ in base}
+    L = inst.contratos["0"].max_consecutive_working_days.valor
+    pares = set(br.pares_proibidos_por_horario(base, L, descartar=False))
+    return {s for s, _, _ in base if all((s, 1, t) in pares for t, _, _ in base)}
+
+
+def pares_de_dias(inst, so_enfermeiros: bool = False) -> tuple:
+    """O pior par de dias seguidos (d, d+1) pela conta da Parte 7 (20/10; esperado em
+    resultados/piso_pares_2026-10-20/ESPERADO.md): postos de d+1 + postos de d em turnos que
+    bloqueiam d+1 <= pessoas disponiveis em pelo menos um dos dois dias. Condicao NECESSARIA:
+    quem faz turno que bloqueia d+1 nao trabalha em d+1, e cada um faz um turno por dia.
+
+    `so_enfermeiros`: so os postos de enfermeiro e os enfermeiros (tecnico nao cobre posto de
+    enfermeiro: habilidade rigida, `experimento_a.modelo_br`). Nao ha conta so de tecnicos:
+    enfermeiro cobre posto de tecnico, e ela recusaria quadro viavel.
+
+    Devolve (excesso, d0, d1, postos em d1, postos de d0 que bloqueiam d1, disponiveis, turnos
+    que bloqueiam), o par de maior excesso; excesso <= 0 = a conta nao recusa."""
+    bloqueia = bloqueiam_o_dia_seguinte(inst)
+    enf = {p.id for p in inst.profissionais.values() if br.HABILIDADE_ENF in p.habilidades}
+    grupo = enf if so_enfermeiros else set(inst.profissionais)
+    conta = [s for s, t in inst.turnos.items()
+             if not so_enfermeiros or br.HABILIDADE_ENF in t.habilidades]
+    base = {s: (s[:-1] if br.HABILIDADE_ENF in t.habilidades else s)
+            for s, t in inst.turnos.items()}
+    fora = {n: {d for m, d in inst.indisponiveis if m == n} for n in grupo}
+    pior = None
+    for d0, d1 in zip(inst.dias, inst.dias[1:]):
+        seguinte = sum(inst.demanda_de(d1, s) for s in conta)
+        antes = sum(inst.demanda_de(d0, s) for s in conta if base[s] in bloqueia)
+        livres = sum(1 for n in grupo if d0 not in fora[n] or d1 not in fora[n])
+        par = (seguinte + antes - livres, d0, d1, seguinte, antes, livres)
+        if pior is None or par[0] > pior[0]:
+            pior = par
+    if pior is None:
+        return (0, None, None, 0, 0, 0, [])
+    return (*pior, [s for s in inst.turnos if s in bloqueia])
+
+
 def piso(inst) -> int:
     """Menor quadro que a aritmetica admite, sem solver: o informado mais quantos acrescimos
     de 44 h faltam para as horas da demanda caberem nos tetos individuais (carga contratual
-    nos dias disponiveis), e a soma de dias seguidos quando o limite efetivo aperta."""
+    nos dias disponiveis), a soma de dias seguidos quando o limite efetivo aperta e, desde a
+    Parte 7 (20/10), o pior par de dias seguidos (`pares_de_dias`, no total e so enfermeiros):
+    quem a varredura acrescenta nao tem ferias, entao cada acrescimo cobre um do excesso."""
     horas = sum(q * inst.turnos[s].duracao_h for (_, s), q in inst.demanda.items())
     cobrem = sum(inst.horas_devidas(n) for n in inst.profissionais)
     capacidade = 0
     if horas > cobrem + 1e-9:
         capacidade = len(inst.profissionais) + math.ceil((horas - cobrem) / _teto_padrao()
                                                          - 1e-9)
-    return max(capacidade, ea.piso_de_alternancia(inst, limite_efetivo(inst)))
+    excesso = max(pares_de_dias(inst)[0], pares_de_dias(inst, so_enfermeiros=True)[0])
+    pares = len(inst.profissionais) + excesso if excesso > 0 else 0   # sem excesso, nada muda
+    return max(capacidade, ea.piso_de_alternancia(inst, limite_efetivo(inst)), pares)
 
 
 # --- veredito -----------------------------------------------------------------------------
@@ -707,10 +758,17 @@ def _niveis_em_sequencia(m, blocos, tempo, prazo, inst=None, p=None):
 
 # --- diagnostico da trava ----------------------------------------------------------------
 
-HORAS, ALTERNANCIA, CATEGORIA, DIA, COMBINACAO = (
-    "horas", "alternancia", "categoria", "dia", "combinacao")
+HORAS, ALTERNANCIA, CATEGORIA, DIA, COMBINACAO, PARES = (
+    "horas", "alternancia", "categoria", "dia", "combinacao", "pares")
 TITULO = {HORAS: "Horas", ALTERNANCIA: "Alternância do plantão de 12 h",
-          CATEGORIA: "Categoria", DIA: "Dia específico", COMBINACAO: "Combinação de regras"}
+          CATEGORIA: "Categoria", DIA: "Dia específico", COMBINACAO: "Combinação de regras",
+          PARES: "Dois dias seguidos"}
+NOME_DIA = ("segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo")
+
+
+def _no_dia(d: date) -> str:
+    """"na segunda", "no domingo"; sem a primeira letra, "a segunda", "o domingo"."""
+    return f"{'no' if d.weekday() >= 5 else 'na'} {NOME_DIA[d.weekday()]}"
 
 
 def teto_horas(inst, n: str, L: int | None = None) -> float:
@@ -808,6 +866,28 @@ def motivos_da_trava(inst) -> list[tuple[str, str]]:
                     f"licenças, {br.plural(livres, 'enfermeiro está disponível', 'enfermeiros estão disponíveis')} "
                     f"em pelo menos um dos dois dias. Pela conta, "
                     f"{_faltam(excesso, 'enfermeiro', 'enfermeiros')}.")))
+    else:
+        # Parte 7 (20/10): o par de dias com turnos que bloqueiam o dia seguinte; a alternancia
+        # acima (limite efetivo 1) fica como estava
+        for grupo, motivo, quem in ((False, PARES, ("pessoa", "pessoas")),
+                                    (True, CATEGORIA, ("enfermeiro", "enfermeiros"))):
+            excesso, d0, d1, seguinte, antes, livres, turnos = pares_de_dias(inst, grupo)
+            if excesso <= 0:
+                continue
+            de_enf = " de enfermeiro" if grupo else ""
+            base = ", ".join(s for s in turnos
+                             if br.HABILIDADE_ENF not in inst.turnos[s].habilidades)
+            motivos.append((motivo, (
+                f"A conta prévia do menor quadro provou, sem o solver, que este quadro não tem "
+                f"escala legal. {rotulo_dia(d0)} e {rotulo_dia(d1)}: {seguinte} "
+                f"{'posto' if seguinte == 1 else 'postos'}{de_enf} {_no_dia(d1)} + {antes} "
+                f"{_no_dia(d0)} em turnos que impedem {_no_dia(d1)[1:]} "
+                f"({base}: depois deles, o descanso exigido não deixa trabalhar no dia "
+                f"seguinte); são {seguinte + antes} {quem[1]} diferentes, e, descontadas férias "
+                f"e licenças, {br.plural(livres, quem[0] + ' está disponível', quem[1] + ' estão disponíveis')} "
+                f"em pelo menos um dos dois dias. Pela conta, "
+                f"{_faltam(excesso, quem[0], quem[1])}.")))
+            break
 
     N = len(inst.profissionais)
     for d in inst.dias:
