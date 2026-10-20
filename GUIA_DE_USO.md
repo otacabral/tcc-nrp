@@ -109,7 +109,16 @@ A tela é uma página só, de cima para baixo.
   - 8 h em três turnos;
   - 6 h de dia mais noturno de 12 h.
 
-  Na tabela logo abaixo você pode mudar o nome e o horário dos turnos, sempre em hora cheia.
+  Na tabela logo abaixo você pode mudar o nome e o horário dos turnos, sempre em hora cheia,
+  e acrescentar um turno (clique na linha vazia). Os turnos aparecem como Manhã, Tarde e Noite
+  (no 12×36, Dia e Noite); na grade da escala e na planilha aparecem pelas siglas M, T, N e D,
+  explicadas na legenda. Exemplo de turno novo: **D12, 7 às 19**, um plantão de 12 h de dia para
+  o fim de semana, com demanda 0 nos dias úteis. As regras de descanso da CLT saem dos horários:
+  11 h entre turnos, 36 h depois de um turno de 12 h, e toda folga isolada de pelo menos 24 h.
+  *Atenção:* com plantões só de 12 h no domingo, ninguém que trabalhou domingo trabalha segunda;
+  a segunda-feira precisa ser coberta por quem não trabalhou no domingo.
+- **Grau de dependência predominante.** Os rótulos trazem a proporção mínima de enfermeiros do
+  Parecer COFEN 1/2024 quando ela muda (Alta dependência: 36%; Semi-intensivo: 42%).
 - **Fim de semana.** Sábado e domingo, ou sexta a domingo.
 - **Grau de dependência predominante.** Serve para o alerta da proporção de enfermeiros,
   **só quando você não informa os pacientes** no painel do COFEN. Com pacientes informados, a
@@ -121,8 +130,9 @@ A tela é uma página só, de cima para baixo.
 
 - **Enfermeiros** e **Técnicos e auxiliares.** Quantas pessoas de cada categoria.
 - **Nomes (opcional).** Um nome por linha. Sem nomes, aparecem "Enf 1", "Téc 1" etc.
-- **Carga semanal.** Para cada pessoa, 30, 36, 40 ou 44 h. O padrão é 44 h. A carga vale
-  sobre o período inteiro, não semana a semana, e já desconta férias.
+- **Carga semanal.** Para cada pessoa, 30, 36, 40 ou 44 h. O padrão é 44 h, o limite da
+  Constituição. A carga vale sobre o período inteiro, não semana a semana (no 12×36 há semanas
+  de 48 h e de 36 h), e já desconta férias e licenças.
 - **Férias e licenças.** Clique na linha vazia da tabela para acrescentar uma linha. Escolha a
   pessoa e as datas de início e fim. Nesses dias a pessoa **não** é escalada.
 - **Pedidos de folga e turnos fixos** ficam em "Prioridades da escala", grupo 1 (abaixo).
@@ -134,13 +144,15 @@ A tela é uma página só, de cima para baixo.
 - **Demanda específica por data** (feriados, eventos): abra a seção e mude só os dias
   diferentes. A tabela já vem preenchida com a demanda acima.
 
-### 4. Conferir com o COFEN (opcional)
+### Conferir com o COFEN (opcional)
 
 - Informe a **média diária de pacientes** em cada grau de dependência.
 - A ferramenta calcula o quadro de pessoal do Parecer e compara com a sua equipe. Isso não
   muda a escala.
 
-### Prioridades da escala
+### 4. Prioridades da escala
+
+(O painel "Conferir com o COFEN", logo acima, é opcional e não tem número.)
 
 Uma tabela, em quatro grupos (pedidos e qualificação; sequências de trabalho e folga; fins de
 semana; noturno e carga). Para cada critério, escolha a **importância**:
@@ -156,20 +168,26 @@ uma violação de um Essencial. Dentro do mesmo nível, cada violação conta 1 
 critérios ficarem no mesmo nível, a tela avisa que entre eles há compensação.
 
 **Limite.** Alguns critérios têm um número (por exemplo, "mínimo de folgas seguidas: 3"). A
-tabela já vem com um valor de exemplo; edite-o.
+tabela já vem com um valor de exemplo, tirado de uma instância do benchmark INRC escolhida por
+exercitar todas as restrições (`medium_late05`); edite-o. Exceção: o **2 de "fins de semana
+trabalhados em 4 semanas" é valor de exemplo, sem fonte (suposição declarada)**. Onde a lei
+limita, o campo não passa do limite legal (mínimo de dias seguidos até o máximo de dias
+seguidos; mínimo de turnos até o teto legal de turnos).
 
-**Situação**, calculada antes de gerar a escala:
-- "ok";
-- "a CLT prevalece" — o limite pedido vai além do que a lei permite neste regime (por exemplo,
-  mínimo de 2 dias seguidos no 12×36, em que ninguém trabalha dois dias seguidos). O critério
-  vale, mas a escala continua legal e a preferência fica sem atender onde a lei impede;
-- "nunca será atendido neste regime" — no 12×36, fim de semana completo e mesmo turno no fim de
-  semana: quem trabalha no fim de semana trabalha um dia só;
-- "já garantido pela CLT" (linha cinza, sem campo) — máximo de dias seguidos, máximo de turnos e
-  sequências proibidas pelo descanso já são regras rígidas.
+Cada linha tem uma descrição curta; o texto completo, com exemplo, fica no **"?"**. O ⓘ no "?"
+marca os critérios sem conferência externa: nenhuma instância do benchmark os usa ou o avaliador
+oficial não os pontua.
 
-O ⓘ na ajuda marca os critérios sem conferência externa: nenhuma instância do benchmark os usa
-ou o avaliador oficial não os pontua.
+**O que a tela não mostra, porque a CLT já garante:** as sequências proibidas pelo descanso e o
+teto de turnos no período são regras rígidas, no motor. No 12×36 também saem da tabela "fim de
+semana completo", "mesmo turno no fim de semana" e "mínimo de dias seguidos": ninguém trabalha
+dois dias seguidos, então quem trabalha no fim de semana trabalha um dia só, e o mínimo de dias
+seguidos nunca seria atendido.
+
+**Máximo de dias seguidos de trabalho (grupo 2), regra do hospital, obrigatória.** Padrão 6, o
+máximo da lei (art. 67); aceita de 1 a 6. A ferramenta usa o menor entre o valor informado e o
+da lei. Um valor menor pode exigir mais gente, e a tela diz quantos faltam. Não aparece no
+12×36.
 
 **Uma preferência nunca torna a escala impossível.** As regras da CLT continuam rígidas; os
 critérios desta tabela só escolhem entre escalas legais.
