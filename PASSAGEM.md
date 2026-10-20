@@ -21,7 +21,7 @@ fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-**1. Otávio: suíte de fechamento da v1.4.0** — roda **depois** do ajuste de texto de 20/10 (diagnóstico "conta prévia", `cf1d893`), que mexeu em `src/`; por isso ela é a **última coisa antes da tag**, e a tag só vale se der **TUDO OK**. Com o Claude Code e o Chrome fechados. No
+**1. Otávio: suíte de fechamento da v1.4.0** — roda **depois da Parte 6** (parâmetro de descanso por turno, `2ee2f5e`) e do ajuste de texto (`cf1d893`), que mexeram em `src/`; é a **última coisa antes da tag**, e a tag só vale se der **TUDO OK**. A suíte inclui o teste novo `descanso-param`. Com o Claude Code e o Chrome fechados. No
 PowerShell, da raiz, um comando por linha:
 
     cd D:\dev\tcc-nrp
@@ -50,16 +50,26 @@ Se "PARADO": não criar a tag; abrir o log indicado e trazer ao Claude Code.
     git push origin v1.3.0
     git push origin v1.4.0
 
-**2. Depois (fase 2, só depois da tag v1.4.0): rodadas do caso A (Massens 2019)** com **24
-pessoas**, em **duas rodadas** — turno fixo ("Só este turno", Essencial) e rodízio livre —, e do
-**caso B** (89, rodízio livre); orçamento 60 min cada. **Fase 1 feita em 20/10**
-(`resultados/relatorio_2026-10-20b.md`): entradas em `resultados/caso_a_2026-10-20/entrada.py` e
-`resultados/caso_b_2026-10-20/entrada.py`, esperado commitado. Conta à mão: A não fecha com 24
-(≥ 28; ≥ 30 com as férias da entrada; enfermeiros 5 > 4); B não fecha com 89 (≥ 105), e a busca
-da ferramenta só vai até 101 (`MARGEM` = 12). **Antes da fase 2, o Otávio decide** com base no
-item B do relatório 20b (regra das 36 h no D12 sem motivo registrado; descanso não editável).
+**2. Fase 2 (esboço, a confirmar depois da tag v1.4.0)**, orçamento 60 min cada:
+- **Caso A com 36 h** (a regra do produto), turno fixo e rodízio livre — para registrar o achado
+  (conta à mão: não fecha com 24; ≥ 28, ≥ 30 com as férias da entrada);
+- **Casos A e B com D12 = 11 h**, rotulados **"hipótese de sensibilidade, não regra da
+  ferramenta"** (`instancia_br.DESCANSO_POR_TURNO = {"D12": 11}`, devolvido vazio ao fim) — conta
+  à mão: A 22 ≤ 24 (justa em 16–18/01), B 84 ≤ 89.
+- Entradas: `resultados/caso_a_2026-10-20/entrada.py`, `resultados/caso_b_2026-10-20/entrada.py`;
+  esperado commitado (com as duas hipóteses) nos `ESPERADO.md` dessas pastas.
+- **Risco:** a conta prévia da ferramenta dá **18 (A)** e **68 (B)** — não vê a segunda-feira —,
+  então cada quadro abaixo do mínimo precisa ser **provado inviável pelo solver dentro dos 60 min**.
+  Com 36 h, o caso B ainda esbarra na margem da busca (89 + 12 = 101 < 105).
 
 Sensibilidade: sem proposta nova até a decisão do Otávio. Congelamento dos números: **25/10**.
+
+## Decisões de 20/10 (Parte 6)
+
+- DECISOES "2026-10-20 — a posteriori: descanso depois do D12 como parâmetro de pesquisa": o
+  produto mantém 36 h; `DESCANSO_POR_TURNO` (vazio por padrão, fora da tela) só para experimento
+  rotulado. Testado: padrão 243/243 com a v1.3.0; D12 = 11 h libera D12 → M no dia seguinte, a noite
+  continua 36 h; o relógio acompanha o gerador. O texto não afirma que o hospital descumpre a lei.
 
 ## Decisões de 20/10 (fase 1 do caso A)
 
