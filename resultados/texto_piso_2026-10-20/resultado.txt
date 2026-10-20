@@ -1,0 +1,5 @@
+tentativas [(14, 'piso', None, None)] | motivo combinacao | solver chamado: False
+texto: Nenhuma conta simples explica: horas, alternância, categoria e cada dia fecham separados. A conta prévia do menor quadro provou, sem o solver, que as regras juntas — descanso entre turnos, dias seguidos, férias e licenças — não admitem escala com este quadro.
+sem o parametro, identico ao de antes: True
+OK
+identidade x v1.3.0: 243 arquivos; 243 identicos; 0 diferentes

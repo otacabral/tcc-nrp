@@ -823,19 +823,23 @@ def motivos_da_trava(inst) -> list[tuple[str, str]]:
     return motivos
 
 
-def diagnosticar(inst) -> tuple[str, str, list[str]]:
+def diagnosticar(inst, por_conta: bool = False) -> tuple[str, str, list[str]]:
     """Por que o quadro informado nao tem escala legal (especificacao, Etapa 7; P7, 05/10).
     Devolve (motivo principal, explicacao, todos os motivos): a explicacao junta, um paragrafo
     por motivo, todas as contas simples que disparam (`motivos_da_trava`).
 
     So contas, sem solver. Chamado quando o quadro informado ja foi provado inviavel (pelo
     solver ou pelo piso); se nenhuma conta simples explica, e a combinacao de regras.
+    `por_conta`: quem recusou o quadro foi o piso (conta previa), nao o solver — so a frase
+    muda (20/10, resultados/texto_piso_2026-10-20/ESPERADO.md).
     """
     motivos = motivos_da_trava(inst)
     if motivos:
         return motivos[0][0], "\n\n".join(t for _, t in motivos), [m for m, _ in motivos]
+    quem = ("A conta prévia do menor quadro provou, sem o solver, que" if por_conta
+            else "O solver provou que")
     return COMBINACAO, ("Nenhuma conta simples explica: horas, alternância, categoria e cada "
-                        "dia fecham separados. O solver provou que as regras juntas — "
+                        f"dia fecham separados. {quem} as regras juntas — "
                         "descanso entre turnos, dias seguidos, férias e licenças — não "
                         "admitem escala com este quadro."), [COMBINACAO]
 
@@ -946,7 +950,7 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
             decidido = False     # indeterminado ou erro: o minimo nao esta provado acima
             break
     if r.veredito != ADMITE and r.tentativas and r.tentativas[0][1] in ("piso", ea.INVIAVEL):
-        r.diagnostico = diagnosticar(base)
+        r.diagnostico = diagnosticar(base, por_conta=r.tentativas[0][1] == "piso")
     if decidido and r.veredito == NAO_DECIDIDO:
         r.veredito = SEM_VIAVEL  # toda a faixa foi provada inviavel
     progresso(1.0, "concluido")

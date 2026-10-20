@@ -2481,6 +2481,23 @@ mudou.
 
 ---
 
+## 2026-10-20 — Diagnóstico "combinação": a frase diz quem provou (conta prévia ou solver)
+
+**Status: vigente.** Ajuste de texto pedido pela Orientação (item 7 das leituras adotadas do
+relatório de 20/10). Esperado registrado antes: `resultados/texto_piso_2026-10-20/ESPERADO.md`.
+
+Quando nenhuma conta simples explica a trava, o texto dizia sempre "O solver provou que as regras
+juntas… não admitem escala com este quadro" — inclusive quando o quadro informado foi recusado
+pelo **piso** (conta prévia), sem solver (ex.: máximo de 4 dias seguidos do hospital). Agora
+`diagnosticar(inst, por_conta)` diz "A conta prévia do menor quadro provou, sem o solver, que…"
+quando a primeira tentativa foi "piso"; no resto, a frase de antes, idêntica. Nenhuma lógica nova
+(o "piso" já estava em `r.tentativas`); entrada do solver idêntica (243/243 × v1.3.0).
+**Teste:** nenhum teste conferia a frase; o `max-dias` ganhou duas conferências (o texto novo no
+caso do piso; o de antes sem o parâmetro) — acréscimo, como no precedente do 1-2. Conferido aqui
+sem solver (`verificar(margem=0)`): OK.
+
+---
+
 ## Modelo de entrada
 
 ```

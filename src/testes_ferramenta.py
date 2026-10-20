@@ -1427,6 +1427,12 @@ def caso_max_dias() -> None:
             confere(r.tentativas[0][:2] == (14, "piso"), f"14 pela conta: {r.tentativas}")
             confere(r.diagnostico is not None and r.diagnostico[0] == fe.COMBINACAO,
                     f"diagnostico: {r.diagnostico and r.diagnostico[0]}")
+            # 20/10, ajuste de texto: quem recusou o 14 foi a conta previa, nao o solver
+            confere("A conta prévia do menor quadro provou" in r.diagnostico[1]
+                    and "O solver provou" not in r.diagnostico[1],
+                    f"texto do diagnostico: {r.diagnostico[1]}")
+            confere("O solver provou que" in fe.diagnosticar(fe.montar(e))[1],
+                    "sem o parametro, o texto de antes")
 
 
 def caso_tela_limpa() -> None:
