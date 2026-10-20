@@ -2498,6 +2498,33 @@ sem solver (`verificar(margem=0)`): OK.
 
 ---
 
+## 2026-10-20 — a posteriori: descanso depois do D12 como parâmetro de pesquisa
+
+**Status: vigente. Registro A POSTERIORI — não é o motivo original da regra.** Pedido da
+Orientação, 20/10 (Parte 6), depois do diagnóstico do relatório 20b, item B.
+
+**Fato.** A regra vem de "2026-09-29 — Redesenho da ferramenta": "abaixo de 36 h depois de turno
+de 12 h ou mais (art. 59-A)". Ela é aplicada pela **duração** do turno, sem olhar o regime
+(`instancia_br.descanso_exigido`). Nenhuma entrada deste arquivo discute se ela vale para um
+plantão **avulso** de 12 h (o D12, 7–19, no fim de semana) dentro de um regime de 6 h; as entradas
+anteriores (08/09, 21/09) tratam do regime 12×36.
+
+**Decisão.**
+- O **produto mantém 36 h** depois de todo turno de 12 h ou mais: leitura conservadora, e a
+  entrada do solver fica idêntica à da v1.3.0.
+- **Para pesquisa**, passa a existir um parâmetro de descanso **por código de turno**
+  (`instancia_br.DESCANSO_POR_TURNO`, vazio por padrão), **não exposto na tela nem na
+  `Entrada`**, usado só em experimentos rotulados **"hipótese de sensibilidade, não regra da
+  ferramenta"**. Valor testado: **D12 → 11 h** (interjornada, art. 66). A noite de 12 h continua
+  com 36 h.
+- O gerador de pares (`pares_proibidos_por_horario`) e a conferência no relógio
+  (`docs/conferencia_descanso_escala.medir`) leem a **mesma** fonte (`descanso_exigido`), como no
+  art. 67.
+- O texto do TCC **não afirma que o hospital descumpre a lei**: a sensibilidade mostra o efeito de
+  uma leitura, não julga a prática.
+
+---
+
 ## Modelo de entrada
 
 ```
