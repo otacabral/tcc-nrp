@@ -1493,6 +1493,59 @@ def caso_tela_limpa() -> None:
             f"{ref.veredito} {ref.indicadores['enf_em_posto_tec']}")
 
 
+def caso_descanso_parametro() -> None:
+    """Parte 6: descanso depois do D12 como parametro de pesquisa (esperado em
+    resultados/descanso_d12_2026-10-20/ESPERADO.md). Hipotese de sensibilidade, nao regra."""
+    from datetime import timedelta
+    sys.path.insert(0, str(RAIZ / "docs"))
+    from conferencia_descanso_escala import cumpre, medir
+    T4 = [("M", 7, 6, "M"), ("T", 13, 6, "T"), ("N", 19, 12, "N"), ("D12", 7, 12, "D12")]
+    d1 = br.primeira_segunda()
+    dia_ = [d1 + timedelta(days=k) for k in range(7)]
+    zero = {t[0]: (0, 0) for t in T4}
+
+    def caso(seq):
+        """seq = [(k do dia, turno)]: demanda de 1 tecnico; 1 tecnico so."""
+        dd = {(dia_[k], t, "tec"): 1 for k, t in seq}
+        return br.construir(turnos=T4, demanda_turno=zero, demanda_data=dd, n_enfermeiros=0,
+                            n_tecnicos=1, dias=7, inicio=d1)
+
+    seqs = {"D12 d1, M d2 (12 h)": [(0, "D12"), (1, "M")],
+            "N d1, M d2 (0 h)": [(0, "N"), (1, "M")],
+            "N d1, M d3 (24 h)": [(0, "N"), (2, "M")]}
+    esperado = {"padrao": {"D12 d1, M d2 (12 h)": "inviavel", "N d1, M d2 (0 h)": "inviavel",
+                           "N d1, M d3 (24 h)": "inviavel"},
+                "D12 = 11 h": {"D12 d1, M d2 (12 h)": "viavel", "N d1, M d2 (0 h)": "inviavel",
+                               "N d1, M d3 (24 h)": "inviavel"}}
+    try:
+        for rotulo, param in (("padrao", {}), ("D12 = 11 h", {"D12": 11})):
+            br.DESCANSO_POR_TURNO.clear()
+            br.DESCANSO_POR_TURNO.update(param)
+            print(f"descanso-param. {rotulo}")
+            pares = set(br.pares_proibidos_por_horario(
+                [(t[0], t[1], t[2]) for t in T4], 6, descartar=False))
+            confere((("D12", 1, "M") in pares) == (rotulo == "padrao")
+                    and ("N", 1, "M") in pares and ("N", 2, "M") in pares,
+                    f"gerador: (D12,1,M) {('D12', 1, 'M') in pares}, (N,1,M) e (N,2,M) presentes")
+            for nome, seq in seqs.items():
+                v, _, _, _ = fe.resolver_com_objetivo(caso(seq), 60)
+                confere(v == esperado[rotulo][nome], f"{nome}: {v}")
+                inst = caso(seq)
+                n = next(iter(inst.profissionais))
+                escala = tuple((dia_[k], n, t) for k, t in seq)
+                m = medir(inst, escala)
+                ok = cumpre(inst, m)
+                confere(ok == (esperado[rotulo][nome] == "viavel"),
+                        f"{nome}: relogio {'cumpre' if ok else 'reprova'} (exigido no pior "
+                        f"{m['exigido_no_pior']} h)")
+                if nome.startswith("D12") and not ok:
+                    confere("art. 59-A" in fe.reprovacao(inst, m), "reprovacao cita o art. 59-A")
+    finally:
+        br.DESCANSO_POR_TURNO.clear()
+    confere(br.descanso_exigido(12, "D12") == 36 and br.descanso_exigido(6, "M") == 11,
+            "dicionario vazio de novo: a regra de sempre")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
@@ -1503,7 +1556,8 @@ CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeir
          "opB-e": caso_opb_essencial, "opB-padroes": caso_opb_padroes,
          "opB-tela": caso_opb_tela,
          "ped-2": caso_ped_contas, "ped-3": caso_ped_niveis, "ped-6": caso_ped_nunca_trava,
-         "max-dias": caso_max_dias, "tela-limpa": caso_tela_limpa}
+         "max-dias": caso_max_dias, "tela-limpa": caso_tela_limpa,
+         "descanso-param": caso_descanso_parametro}
 
 
 def main() -> int:

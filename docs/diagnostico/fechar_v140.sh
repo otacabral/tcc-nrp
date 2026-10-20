@@ -47,7 +47,7 @@ roda id_controle "$PY" docs/diagnostico/identidade_3bloco.py --controle "$BASE/c
 roda regressao "$PY" src/regressao.py --todos
 roda testes_entrada "$PY" src/testes_entrada.py
 roda avaliador_pedidos "$PY" docs/diagnostico/pedidos_avaliador.py
-for caso in ped-2 ped-3 ped-6 max-dias tela-limpa \
+for caso in ped-2 ped-3 ped-6 max-dias tela-limpa descanso-param \
             opB-padroes opB-d opB-b opB-c opB-e opB-tela \
             16 4b 7.4 9b-sem-teto 9c-tela 3 4 5 15 7.1 7.2 8 12 1-2 9 7.3; do
     roda "tela_$caso" "$PY" src/testes_ferramenta.py "$caso"

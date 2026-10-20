@@ -1,0 +1,10 @@
+Parte 6 (20/10) — descanso depois do D12 como parametro de pesquisa (hipotese de sensibilidade, nao regra da ferramenta)
+identidade (padrao) x v1.3.0: 243 arquivos; 243 identicos; 0 diferentes
+regressao --todos: OK; testes_entrada: OK
+src/testes_ferramenta.py descanso-param: OK
+  padrao: (D12,1,M) proibido; D12 d1 -> M d2 inviavel (solver) e reprova no relogio (exigido 36 h, art. 59-A)
+  D12 = 11 h: (D12,1,M) liberado; D12 d1 -> M d2 viavel e cumpre no relogio (exigido 11 h)
+  N d1 -> M d2 e N d1 -> M d3: inviaveis e reprovados nos dois (noite de 12 h continua 36 h)
+  dicionario vazio ao fim: a regra de sempre
+Implementacao: so constantes -> padrao de um parametro por codigo de turno (instancia_br.DESCANSO_POR_TURNO);
+gerador e conferencia no relogio leem a mesma descanso_exigido. Regra de parada nao acionada.

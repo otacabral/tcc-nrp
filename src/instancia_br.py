@@ -125,10 +125,23 @@ POS_TURNO_LONGO = 36   # art. 59-A: doze horas seguidas por trinta e seis de des
 TURNO_LONGO = 12       # a partir de quantas horas de turno vale o descanso de 36 h
 DESCANSO_SEMANAL = 24  # art. 67: toda folga isolada (salto 2) da ao menos isto (13/10)
 
+# PARAMETRO DE PESQUISA (DECISOES.md, "2026-10-20 — a posteriori: descanso depois do D12"):
+# codigo do turno -> horas de descanso exigidas depois dele, no lugar da regra acima. Vazio no
+# produto (= a regra de sempre). Nao vai a tela nem a `Entrada`: so experimentos rotulados
+# "hipotese de sensibilidade, nao regra da ferramenta" o preenchem, e o devolvem vazio.
+DESCANSO_POR_TURNO: dict[str, int] = {}
 
-def descanso_exigido(duracao_h: float) -> int:
+
+def descanso_exigido(duracao_h: float, turno: str | None = None) -> int:
     """Descanso minimo depois de um turno desta duracao. Escrever 36 h para turno de 8 h
-    reprova escala legal — foi o que a conferencia fez em 23/09."""
+    reprova escala legal — foi o que a conferencia fez em 23/09.
+
+    `turno`: o codigo, para o parametro de pesquisa `DESCANSO_POR_TURNO` (a variante de
+    enfermeiro, codigo + "E", usa o valor do codigo). Sem entrada no dicionario, a regra."""
+    if turno is not None and DESCANSO_POR_TURNO:
+        for chave in (turno, turno[:-1] if turno.endswith("E") else None):
+            if chave in DESCANSO_POR_TURNO:
+                return DESCANSO_POR_TURNO[chave]
     return POS_TURNO_LONGO if duracao_h >= TURNO_LONGO else INTERJORNADA
 
 
@@ -620,7 +633,7 @@ def pares_proibidos_por_horario(turnos, max_consecutivos: int | None,
     """
     proibidos = set()
     for s, ini_s, dur_s in turnos:
-        exigido = descanso_exigido(dur_s)
+        exigido = descanso_exigido(dur_s, s)
         for k in (1, 2, 3, 4):
             if exigido == INTERJORNADA and not interjornada:
                 break

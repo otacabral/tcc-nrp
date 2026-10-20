@@ -190,7 +190,7 @@ def medir(inst, escala) -> dict:
                 menor_geral, pior_geral = intervalo, (n, turnos[k], turnos[k + 1])
             # o exigido depende do turno que TERMINA: 36 h depois de turno de 12 h ou mais,
             # 11 h depois dos demais. Vem dos horarios, nao de uma lista de regimes.
-            exigido = descanso_exigido(duracao_h(inst.turnos[turnos[k][1]]))
+            exigido = descanso_exigido(duracao_h(inst.turnos[turnos[k][1]]), turnos[k][1])
             if intervalo - exigido < menor_folga:
                 menor_folga, exigido_no_pior = intervalo - exigido, exigido
                 pior_folga = (n, turnos[k], turnos[k + 1], intervalo)
