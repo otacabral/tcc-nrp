@@ -21,7 +21,7 @@ fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-**1. Otávio: suíte de fechamento da v1.4.0**, com o Claude Code e o Chrome fechados. No
+**1. Otávio: suíte de fechamento da v1.4.0** — roda **depois** do ajuste de texto de 20/10 (diagnóstico "conta prévia", `cf1d893`), que mexeu em `src/`; por isso ela é a **última coisa antes da tag**, e a tag só vale se der **TUDO OK**. Com o Claude Code e o Chrome fechados. No
 PowerShell, da raiz, um comando por linha:
 
     cd D:\dev\tcc-nrp
@@ -50,13 +50,24 @@ Se "PARADO": não criar a tag; abrir o log indicado e trazer ao Claude Code.
     git push origin v1.3.0
     git push origin v1.4.0
 
-**2. Depois: caso realista A (Massens 2019)** com **24 pessoas (Anexo B inteiro)**, em **duas
-rodadas**: (i) equipe fixa por turno ("Só este turno") em **Essencial**; (ii) rodízio livre (sem
-as linhas). **Orçamento 60 min** cada. Antes, fazer a conta da segunda-feira depois do fim de
-semana (Parte 3 b).
+**2. Depois (fase 2, só depois da tag v1.4.0): rodadas do caso A (Massens 2019)** com **24
+pessoas**, em **duas rodadas** — turno fixo ("Só este turno", Essencial) e rodízio livre —, e do
+**caso B** (89, rodízio livre); orçamento 60 min cada. **Fase 1 feita em 20/10**
+(`resultados/relatorio_2026-10-20b.md`): entradas em `resultados/caso_a_2026-10-20/entrada.py` e
+`resultados/caso_b_2026-10-20/entrada.py`, esperado commitado. Conta à mão: A não fecha com 24
+(≥ 28; ≥ 30 com as férias da entrada; enfermeiros 5 > 4); B não fecha com 89 (≥ 105), e a busca
+da ferramenta só vai até 101 (`MARGEM` = 12). **Antes da fase 2, o Otávio decide** com base no
+item B do relatório 20b (regra das 36 h no D12 sem motivo registrado; descanso não editável).
 
-**3.** Caso B, orçamento 60 min. **4.** Sensibilidade com 2 ou 3 ordens de prioridade.
-Congelamento dos números: **25/10**.
+Sensibilidade: sem proposta nova até a decisão do Otávio. Congelamento dos números: **25/10**.
+
+## Decisões de 20/10 (fase 1 do caso A)
+
+- Diagnóstico "combinação": "A conta prévia do menor quadro provou…" quando foi o piso
+  (`DECISOES.md`, 2026-10-20). Entrada do solver idêntica (243/243).
+- Achado de leitura: a regra das 36 h vale por **duração** (≥ 12 h), registrada em "2026-09-29 —
+  Redesenho da ferramenta" com base no art. 59-A; **não há motivo registrado** para aplicá-la a um
+  plantão de 12 h avulso (D12) fora do regime 12×36. Não é editável sem código.
 
 ## Decisões da sessão de 19–20/10 (3º bloco)
 
