@@ -2525,6 +2525,30 @@ anteriores (08/09, 21/09) tratam do regime 12×36.
 
 ---
 
+## 2026-10-20 — a posteriori: fundamento das 36 h para qualquer plantão de 12 h ou mais
+
+**Status: vigente. Registro A POSTERIORI — justificativa nova, não era o motivo registrado em
+29/09.** Pedido da Orientação, 20/10 (tarde). Sem mudança de código.
+
+**Justificativa (do Otávio).** O art. 59 da CLT limita a jornada diária a 8 h, mais até 2 h
+extras. O art. 59-A admite 12 h seguidas como **exceção**, por acordo individual escrito ou
+convenção/acordo coletivo, e vincula essa exceção a 36 h ininterruptas de descanso. Logo, um
+turno de 12 h ou mais só cabe dentro do desenho do art. 59-A, e a regra da ferramenta — 36 h
+depois de todo turno com duração ≥ 12 h, sem olhar se o turno é noturno nem se o regime da
+unidade é 12×36 — segue esse desenho. É a leitura que sustenta a decisão de manter as 36 h no
+produto ("2026-10-20 — a posteriori: descanso depois do D12 como parâmetro de pesquisa").
+
+**Declarações.**
+- (a) É **justificativa nova**: o registro de 29/09 ("Redesenho da ferramenta") cita o art. 59-A
+  mas não discute o plantão de 12 h avulso; este texto não reescreve o motivo daquela data.
+- (b) A **convenção coletiva** do hospital do caso **não foi lida**. Ela pode prever outro arranjo
+  (compensação, banco de horas); a ferramenta não a conhece.
+- (c) O texto **nunca afirma que o hospital descumpre a lei**. A frase admitida é: "a regra, como
+  modelada, segue o art. 59-A". A sensibilidade com D12 = 11 h continua rotulada como hipótese,
+  não regra da ferramenta.
+
+---
+
 ## Modelo de entrada
 
 ```
