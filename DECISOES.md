@@ -2549,6 +2549,30 @@ produto ("2026-10-20 — a posteriori: descanso depois do D12 como parâmetro de
 
 ---
 
+## 2026-10-20 — Piso por pares de dias (v1.4.1)
+
+**Status: vigente.** Pedido da Orientação, 20/10 (tarde, Parte 7). Esperado em
+`resultados/piso_pares_2026-10-20/ESPERADO.md` (`946e38c`), código em `0b1defe`.
+
+**Decisão.** O piso da ferramenta (`ferramenta.piso`, que decide quais quadros vão ao solver)
+ganha uma condição necessária: em cada par de dias seguidos, postos do segundo dia + postos do
+primeiro em turnos que **bloqueiam o segundo inteiro** ≤ pessoas disponíveis em ao menos um dos
+dois (férias descontadas); também só com enfermeiros (técnico não cobre posto de enfermeiro:
+habilidade rígida). "Bloqueia" sai dos pares do gerador (`pares_proibidos_por_horario`), nunca
+de "duração ≥ 12 h" fixo: acompanha horários editados e o `DESCANSO_POR_TURNO`. O diagnóstico
+ganha o motivo "Dois dias seguidos" ("A conta prévia do menor quadro provou…", com o par e os
+números); a "alternância" do 12×36 fica como estava.
+
+**Por quê.** Sem ela, a conta prévia dava 18 (caso A) e 68 (caso B), e cada quadro abaixo do
+mínimo gastava orçamento do solver; com ela, 30 e 105 (o B fica todo recusado pela conta até 101).
+
+**Ressalvas.** A entrada do solver não muda (243/243 idênticos à v1.4.0). Mudam só tentativas
+antes provadas pelo solver, que passam à conta (na suíte: P05, 14; demo18, 28; tela 7.3, 4). A
+conta compartilha a regra de descanso com o modelo: confere a aritmética e a coerência, não a
+leitura legal. Testes: `resultados/relatorio_2026-10-20c.md`, Parte 7.
+
+---
+
 ## Modelo de entrada
 
 ```

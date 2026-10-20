@@ -1,68 +1,111 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 20/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 20/10/2026 (tarde). Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- **3º bloco (19–20/10) feito, Partes 0 a 5** (`resultados/relatorio_2026-10-20.md`):
-  pedidos e regras dos profissionais (tabela com importância por linha; turno fixo como "Só este
-  turno"); máximo de dias seguidos do hospital (rígido, 1 a 6); tela limpa (sem Situação,
-  rótulos Manhã/Tarde/Noite, numeração 1–5). Identidade com a v1.3.0: **243/243** depois de cada
-  parte. Todos os testes rodados passaram; a Parte 3 (b) saiu diferente do esperado (abaixo).
-- **Tag `v1.3.0` criada em 20/10. Versão citável: v1.3.0.** A `v1.4.0` ainda **não existe**:
-  depende da suíte de fechamento, que é do Otávio.
-- **Parte 3 (b), plantão de 12 h:** esperado "admite com 22"; saiu 22 inviável (provado) e
-  escala legal com 23. Conta à mão: domingo só com turnos de 12 h ocupa 9 pessoas, que não podem
-  trabalhar na segunda (36 h de descanso); a segunda pede 14; 22 − 9 = 13. **Consequência para o
-  caso A: o quadro precisa cobrir a segunda-feira depois do fim de semana com plantão de 12 h.**
-- `NUMEROS_TCC.md`: sem mudança neste bloco. Congelamento: **25/10**.
-- Nada enviado ao GitHub desde 19/10.
+- **Versão citável: v1.4.0** (suíte TUDO OK em `resultados/v140_2026-10-20/suite/resumo.txt`; tag
+  criada e enviada pelo Otávio com main e v1.3.0). A tag v1.4.0 não se mexe.
+- **Sessão de 20/10 (tarde), Partes 0, 1 e 7 a 11** (`resultados/relatorio_2026-10-20c.md`):
+  - Parte 0: o `git status` já estava limpo; nada a descartar. O `pedidos_avaliador.py` (e o
+    `validar.py`) regravam em CRLF — só registrado.
+  - Parte 1: DECISOES "a posteriori: fundamento das 36 h para qualquer plantão de 12 h ou mais".
+  - **Parte 7 — piso por pares de dias (vira v1.4.1)**: a ferramenta recusa sem solver os quadros
+    que dois dias seguidos já provam insuficientes. Caso A (36 h): piso 18 → **30**; caso B (36 h):
+    68 → **105**, veredito "Não há escala legal até 101…" pela conta, sem solver. Sob D12 = 11 h a
+    conta não recusa nem A (24) nem B (89). Nenhum quadro viável recusado em 224 rodadas
+    registradas; sorteio pequeno 40/40 (semente 20261020). Entrada do solver 243/243 idêntica à
+    v1.4.0.
+  - Parte 8: `fechar_v141.sh` pronto e testado sem solver. Parte 9: `rodar_fase2.sh` pronto e
+    testado sem solver; ESPERADO de A e B atualizados. Parte 10: MAPA_CODIGO.
+- **A v1.4.1 ainda não existe**: depende da suíte, que é do Otávio.
+- `NUMEROS_TCC.md`: sem mudança. Congelamento dos números: **25/10**.
+- Nada enviado ao GitHub nesta sessão.
 
 ## Próxima tarefa
 
-**1. Otávio: suíte de fechamento da v1.4.0** — roda **depois da Parte 6** (parâmetro de descanso por turno, `2ee2f5e`) e do ajuste de texto (`cf1d893`), que mexeram em `src/`; é a **última coisa antes da tag**, e a tag só vale se der **TUDO OK**. A suíte inclui o teste novo `descanso-param`. Com o Claude Code e o Chrome fechados. No
+**1. Otávio: suíte de fechamento da v1.4.1.** Com o Claude Code e o Chrome fechados. No
 PowerShell, da raiz, um comando por linha:
 
     cd D:\dev\tcc-nrp
     .\.venv\Scripts\Activate.ps1
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v140.sh
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v141.sh
 
 Termina com "TUDO OK" ou "PARADO: ..." na última linha de
-`resultados/v140_2026-10-20/suite/resumo.txt`. Se for interrompida (memória, queda), **retomar**
-— pula o que já passou — com, um por linha:
+`resultados/v141_<data>/suite/resumo.txt` (a data do dia em que começou). Se for interrompida
+(memória, queda), **retomar** — pula o que já passou e continua na mesma pasta —, um por linha:
 
     cd D:\dev\tcc-nrp
     .\.venv\Scripts\Activate.ps1
     $env:RETOMAR = "1"
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v140.sh
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v141.sh
     Remove-Item Env:RETOMAR
 
-**Regra: se TUDO OK, tag v1.4.0** (marca a versão; um por linha):
+Diferença esperada e já admitida: na a2, o P05 tem o quadro 14 recusado pela conta (antes, pelo
+solver). Qualquer outra diferença é falha.
 
-    git tag -a v1.4.0 -m "v1.4.0: pedidos e regras dos profissionais, maximo de dias do hospital, tela"
+**2. Se TUDO OK: tag v1.4.1 e envio** (um por linha; a tag marca a versão, o push manda os
+commits e a tag ao GitHub):
+
+    git tag -a v1.4.1 -m "v1.4.1: piso por pares de dias"
+    git push origin main
+    git push origin v1.4.1
 
 Se "PARADO": não criar a tag; abrir o log indicado e trazer ao Claude Code.
 
-**Envio ao GitHub** (quando quiser; envia os commits e as tags; um por linha):
+**3. Depois da tag: fase 2** (cinco rodadas, até 60 min cada; termina com "TUDO OK" ou
+"PARADO: ..." em `resultados/fase2_<data>/resumo.txt`). Um por linha:
 
-    git push origin main
-    git push origin v1.3.0
-    git push origin v1.4.0
+    cd D:\dev\tcc-nrp
+    .\.venv\Scripts\Activate.ps1
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/rodar_fase2.sh
 
-**2. Fase 2 (esboço, a confirmar depois da tag v1.4.0)**, orçamento 60 min cada:
-- **Caso A com 36 h** (a regra do produto), turno fixo e rodízio livre — para registrar o achado
-  (conta à mão: não fecha com 24; ≥ 28, ≥ 30 com as férias da entrada);
-- **Casos A e B com D12 = 11 h**, rotulados **"hipótese de sensibilidade, não regra da
-  ferramenta"** (`instancia_br.DESCANSO_POR_TURNO = {"D12": 11}`, devolvido vazio ao fim) — conta
-  à mão: A 22 ≤ 24 (justa em 16–18/01), B 84 ≤ 89.
-- Entradas: `resultados/caso_a_2026-10-20/entrada.py`, `resultados/caso_b_2026-10-20/entrada.py`;
-  esperado commitado (com as duas hipóteses) nos `ESPERADO.md` dessas pastas.
-- **Risco:** a conta prévia da ferramenta dá **18 (A)** e **68 (B)** — não vê a segunda-feira —,
-  então cada quadro abaixo do mínimo precisa ser **provado inviável pelo solver dentro dos 60 min**.
-  Com 36 h, o caso B ainda esbarra na margem da busca (89 + 12 = 101 < 105).
+Retomar, se interrompida:
 
-Sensibilidade: sem proposta nova até a decisão do Otávio. Congelamento dos números: **25/10**.
+    cd D:\dev\tcc-nrp
+    .\.venv\Scripts\Activate.ps1
+    $env:RETOMAR = "1"
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/rodar_fase2.sh
+    Remove-Item Env:RETOMAR
+
+Ordem: A36_livre, A36_fixo, A11_fixo, B11_livre, B36_livre. As de 11 h saem como
+`HIPOTESE_SENSIBILIDADE_*` — hipótese de sensibilidade, não regra da ferramenta. Antes de cada
+rodada o script lê a memória livre; abaixo de 3 GB, para ("PARADO: menos de 3 GB livres") —
+fechar programas e retomar. "Não decidido" não é falha. Esperados: os `ESPERADO.md` de
+`resultados/caso_a_2026-10-20/` e `caso_b_2026-10-20/` (seção "Depois da Parte 7").
+
+Sensibilidade com 2 ou 3 ordens de critérios: **sem proposta até a decisão do Otávio**.
+Congelamento dos números: **25/10**.
+
+## Worktrees de leitura (D:\dev)
+
+`D:\dev\tcc-nrp-v123`, `D:\dev\tcc-nrp-v130` e `D:\dev\tcc-nrp-v140` são **worktrees de leitura**
+(cópias da v1.2.3, v1.3.0 e v1.4.0 para as conferências de identidade). Ninguém trabalha nelas;
+o Claude Code só abre `D:\dev\tcc-nrp`. As da v1.2.3 e v1.3.0 têm cópias de scripts de identidade
+deixadas pelas suítes antigas, por isso o `--force`. Para removê-las **depois da entrega**, da
+raiz, um por linha:
+
+    cd D:\dev\tcc-nrp
+    git worktree remove --force ..\tcc-nrp-v123
+    git worktree remove --force ..\tcc-nrp-v130
+    git worktree remove --force ..\tcc-nrp-v140
+
+(apaga só as pastas; as tags e o histórico ficam).
+
+## Decisões de 20/10 (tarde)
+
+- DECISOES "2026-10-20 — a posteriori: fundamento das 36 h para qualquer plantão de 12 h ou mais"
+  (art. 59 e 59-A; justificativa nova; convenção coletiva não lida; o texto não afirma
+  descumprimento: "a regra, como modelada, segue o art. 59-A").
+- DECISOES "2026-10-20 — Piso por pares de dias (v1.4.1)".
+- Leitura registrada: técnico nunca cobre posto de enfermeiro (habilidade rígida; o critério
+  "habilidade alternativa" não entra no modelo da ferramenta); por isso a conta só de
+  enfermeiros existe e a só de técnicos não.
+- Item extra (só leitura): 53 quadros provados inviáveis pelo solver nas rodadas registradas; a
+  conta nova recusa 34. As contas do diagnóstico (horas por categoria, dia específico,
+  alternância com férias) não entram no piso — registrado, **sem proposta** (decisão da
+  Orientação).
 
 ## Decisões de 20/10 (Parte 6)
 
@@ -138,6 +181,13 @@ Sensibilidade: sem proposta nova até a decisão do Otávio. Congelamento dos n�
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **20/10 (tarde):** (1) fundamento das 36 h: a frase admitida é "a regra, como modelada, segue o
+  art. 59-A" — nunca "o hospital descumpre"; a convenção coletiva do caso não foi lida. (2) Na
+  v1.4.1 o diagnóstico tem o motivo novo "Dois dias seguidos" (a conta da segunda-feira depois
+  do fim de semana com plantão de 12 h); o `GUIA_DE_USO.md` ainda não o cita. (3) A conta prévia
+  é condição necessária e compartilha a regra de descanso com o modelo: confere a aritmética,
+  não a lei. Números da fase 2 só depois das rodadas.
 
 - **3º bloco (20/10):** `GUIA_DE_USO.md` com a tabela "Pedidos e regras dos profissionais", o
   máximo de dias seguidos do hospital e a tela sem Situação; o texto não pode mais citar a coluna
