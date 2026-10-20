@@ -2470,6 +2470,15 @@ viável é 15", maior sequência 4 na escala e no relógio, o 14 recusado pela c
   impede (fim de semana completo, mesmo turno no fim de semana, mínimo de dias seguidos).
 - Mensagens de resultado (veredito, alertas, diagnóstico, resultado por critério) não mudam.
 
+**Implementada em 20/10 (Parte 5).** Decisões de implementação e esperado em
+`resultados/tela_2026-10-20/ESPERADO.md` (rótulos dos turnos só na tela, com os códigos M, T, N,
+D inalterados na instância, no XML e na grade; critério oculto no 12×36 vale como "Não
+considerar"). Identidade com a v1.3.0: 243/243. **Teste opB-tela atualizado**, como no precedente
+do 1-2: no 12×36 (modelo padrão da tela) os grupos passam a "Sequências de trabalho e folga — 0 de
+2" e "Fins de semana — 0 de 3" (três critérios ocultos), a importância padrão conferida exclui os
+ocultos, e as linhas "já garantido pela CLT" passam de 2 a **0**. Nenhum texto de resultado
+mudou.
+
 ---
 
 ## Modelo de entrada
