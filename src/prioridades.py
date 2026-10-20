@@ -43,6 +43,15 @@ OK, CLT_PREVALECE, NUNCA, GARANTIDO = ("ok", "a CLT prevalece", "nunca será ate
 
 PEDIDO, CUSTO = "day_off_requests", "custo_atribuicao"
 
+# Pedidos e regras dos profissionais (DECISOES.md, "2026-10-19 — Pedidos e regras por
+# profissional"): a importancia e da LINHA. No plano de niveis, os pedidos de cada nivel sao um
+# "criterio" a parte, de id REGRAS + nivel.
+FOLGA, SO_TURNO = "Folga", "Só este turno"
+TIPOS = (FOLGA, SO_TURNO)
+REGRAS = "regras@"
+NOME_REGRAS = "Pedidos e regras dos profissionais"
+FAMILIAS_PEDIDO = (PEDIDO, "shift_off_requests")
+
 
 @dataclass(frozen=True)
 class Criterio:
@@ -242,7 +251,7 @@ def maximo(inst, crit: Criterio, habilidade_enf: str) -> int:
         base = postos_base(inst, habilidade_enf)
         return sum(q for (_, s), q in inst.demanda.items() if s in base)
     if crit.familia == PEDIDO:
-        return sum(1 for p in inst.pedidos if p.tipo == "folga_dia")
+        return sum(1 for p in inst.pedidos if p.tipo == "folga_dia" and p.nivel is None)
     return sum(limite_por_profissional(inst, crit.familia, n) for n in inst.profissionais)
 
 
@@ -262,9 +271,9 @@ def aplicar(inst, p, coef: dict[str, int], habilidade_enf: str):
     if mudancas:
         inst = dataclasses.replace(
             inst, contratos={**inst.contratos, "0": dataclasses.replace(contrato, **mudancas)})
-    w = coef.get("pedido_folga", 0) if p["pedido_folga"][0] != NAO else 0
     inst = dataclasses.replace(
-        inst, pedidos=tuple(dataclasses.replace(x, peso=w) for x in inst.pedidos))
+        inst, pedidos=tuple(dataclasses.replace(x, peso=peso_do_pedido(x, p, coef))
+                            for x in inst.pedidos))
     custo = {}
     if p["enf_posto_tec"][0] != NAO:
         base = postos_base(inst, habilidade_enf)
@@ -281,31 +290,41 @@ class Bloco:
 
     @property
     def familias(self) -> list[str]:
-        return [POR_ID[k].familia for k in self.coef]
+        saida = []
+        for k in self.coef:
+            for f in (FAMILIAS_PEDIDO if k.startswith(REGRAS) else (POR_ID[k].familia,)):
+                if f not in saida:
+                    saida.append(f)
+        return saida
 
 
 def planejar(inst, p, habilidade_enf: str) -> list[Bloco]:
     """Os blocos de resolucao, de cima (Essencial) para baixo. Regra de fusao: de baixo para
     cima, o nivel de cima entra no bloco com coeficiente (maximo do bloco + 1) se o maximo do
     bloco fundido ficar abaixo de `LIMITE_FUSAO`; senao comeca bloco novo, com coeficiente 1."""
-    unidade, _ = aplicar(inst, p, {c.id: 1 for c in CRITERIOS}, habilidade_enf)
+    unidade, _ = aplicar(inst, p, {**{c.id: 1 for c in CRITERIOS},
+                                   **{REGRAS + n: 1 for n in CONSIDERADOS}}, habilidade_enf)
+    regras = maximo_regras(inst)
     niveis = []
     for nivel in CONSIDERADOS:
-        crits = [c for c in considerados(p) if p[c.id][0] == nivel]
-        if crits:
-            niveis.append((nivel, crits, sum(maximo(unidade, c, habilidade_enf)
-                                             for c in crits)))
+        ids = [c.id for c in considerados(p) if p[c.id][0] == nivel]
+        u = sum(maximo(unidade, POR_ID[k], habilidade_enf) for k in ids)
+        if nivel in regras:          # sem linhas no nivel, nada (nivel vazio nao resolve)
+            ids.append(REGRAS + nivel)
+            u += regras[nivel]
+        if ids:
+            niveis.append((nivel, ids, u))
     blocos: list[Bloco] = []
-    for nivel, crits, u in reversed(niveis):
+    for nivel, ids, u in reversed(niveis):
         atual = blocos[-1] if blocos else None
         if atual is not None:
             k = atual.maximo + 1
             if k * u + atual.maximo < LIMITE_FUSAO:
                 atual.niveis.insert(0, nivel)
-                atual.coef = {**{c.id: k for c in crits}, **atual.coef}
+                atual.coef = {**{i: k for i in ids}, **atual.coef}
                 atual.maximo += k * u
                 continue
-        blocos.append(Bloco([nivel], {c.id: 1 for c in crits}, u))
+        blocos.append(Bloco([nivel], {i: 1 for i in ids}, u))
     return list(reversed(blocos))
 
 
@@ -380,7 +399,8 @@ def resultado(inst, escala, p, habilidade_enf: str) -> list[tuple[str, str, int,
                 continue
             if c.familia == PEDIDO:
                 quem = Counter(x.profissional for x in inst.pedidos
-                               if x.tipo == "folga_dia" and (x.profissional, x.data) in trabalhados)
+                               if x.tipo == "folga_dia" and x.nivel is None
+                               and (x.profissional, x.data) in trabalhados)
             elif c.familia == CUSTO:
                 enf = {x.id for x in inst.profissionais.values()
                        if habilidade_enf in x.habilidades}
@@ -392,4 +412,156 @@ def resultado(inst, escala, p, habilidade_enf: str) -> list[tuple[str, str, int,
                 quem = por_familia.get(c.familia, Counter())
             quem = +quem   # tira os zeros
             linhas.append((nivel, c.nome, sum(quem.values()), len(quem)))
+        if any(x.nivel == nivel for x in inst.pedidos):
+            quem = Counter(n for nv, n in descumpridos(inst, escala) if nv == nivel)
+            linhas.append((nivel, NOME_REGRAS, sum(quem.values()), len(quem)))
     return linhas
+
+
+# --- pedidos e regras dos profissionais (DECISOES.md, 2026-10-19; esperado em
+# resultados/pedidos_2026-10-20/ESPERADO.md) ----------------------------------------------------
+
+@dataclass(frozen=True)
+class Linha:
+    """Uma linha da tabela "Pedidos e regras dos profissionais". `dia` None = todos os dias;
+    `turno` None = o dia todo; `importancia` None = o padrao (`importancia_padrao`)."""
+    profissional: str
+    dia: object | None
+    turno: str | None
+    tipo: str = FOLGA
+    importancia: str | None = None
+
+
+def importancia_padrao(linha: Linha) -> str:
+    """Folga com dia e sem turno: Essencial (= a v1.3.0); as demais: Desejavel."""
+    if linha.tipo == FOLGA and linha.dia is not None and linha.turno is None:
+        return ESSENCIAL
+    return DESEJAVEL
+
+
+def _rank(nivel: str) -> int:
+    return len(CONSIDERADOS) - CONSIDERADOS.index(nivel)    # Essencial = o mais alto
+
+
+def traduzir(inst, linhas, habilidade_enf: str, id_de=lambda quem: quem) -> tuple:
+    """As linhas da tabela como pedidos NEGATIVOS do INRC (`folga_dia`, `folga_turno`), com o
+    nivel de cada um em `Pedido.nivel` e peso 1. Turnos `u` sao os da tela (o posto de tecnico);
+    para enfermeiro, u vale tambem pelo posto de enfermeiro (u + "E").
+
+    Por profissional-dia-turno, o nivel e o mais alto entre as linhas que o proibem (uma
+    violacao so). "So este turno": por (profissional, dia), os turnos permitidos sao a uniao das
+    linhas "So este turno" que valem no dia, no nivel mais alto entre elas. Dia com TODOS os
+    turnos proibidos no mesmo nivel vira um `folga_dia` (a unidade de hoje); senao, um
+    `folga_turno` por turno proibido. Levanta ValueError com mensagem legivel."""
+    from instancia import Pedido
+    turnos_tela = [s for s, t in inst.turnos.items() if habilidade_enf not in t.habilidades]
+    dias = list(inst.dias)
+    proib: dict[tuple, dict[str, str]] = {}      # (n, d) -> {u: nivel}, na ordem de entrada
+    so: dict[tuple, tuple[set, str]] = {}         # (n, d) -> (permitidos, nivel)
+
+    def marca(n, d, u, nivel):
+        cel = proib.setdefault((n, d), {})
+        if u not in cel or _rank(nivel) > _rank(cel[u]):
+            cel[u] = nivel
+
+    for k, l in enumerate(linhas, 1):
+        quem = f"linha {k} ({l.profissional})"
+        if l.tipo not in TIPOS:
+            raise ValueError(f"{quem}: tipo {l.tipo!r}; use {' ou '.join(TIPOS)}")
+        nivel = l.importancia or importancia_padrao(l)
+        if nivel not in CONSIDERADOS:
+            raise ValueError(f"{quem}: importância {nivel!r}")
+        if l.dia is None and l.turno is None:
+            raise ValueError(f"{quem}: informe o dia, o turno ou os dois")
+        if l.tipo == SO_TURNO and l.turno is None:
+            raise ValueError(f"{quem}: \"{SO_TURNO}\" precisa do turno")
+        if l.turno is not None and l.turno not in turnos_tela:
+            raise ValueError(f"{quem}: turno {l.turno!r} não existe; use {turnos_tela}")
+        if l.dia is not None and l.dia not in dias:
+            raise ValueError(f"{quem}: dia {l.dia:%d/%m/%Y} fora do período")
+        try:
+            n = id_de(l.profissional)
+        except (ValueError, KeyError):
+            n = None
+        if n not in inst.profissionais:
+            raise ValueError(f"{quem}: profissional inexistente")
+        for d in ([l.dia] if l.dia is not None else dias):
+            if l.tipo == FOLGA:
+                for u in ([l.turno] if l.turno is not None else turnos_tela):
+                    marca(n, d, u, nivel)
+            else:
+                proib.setdefault((n, d), {})       # guarda a ordem de entrada
+                perm, nv = so.get((n, d), (set(), nivel))
+                so[(n, d)] = (perm | {l.turno}, max(nv, nivel, key=_rank))
+    for (n, d), (perm, nivel) in so.items():
+        for u in turnos_tela:
+            if u not in perm:
+                marca(n, d, u, nivel)
+    pedidos = []
+    for (n, d), cel in proib.items():
+        if not cel:
+            continue
+        enf = habilidade_enf in inst.profissionais[n].habilidades
+        if set(cel) == set(turnos_tela) and len(set(cel.values())) == 1:
+            pedidos.append(Pedido(tipo="folga_dia", profissional=n, data=d, peso=1,
+                                  nivel=next(iter(cel.values()))))
+            continue
+        for u in turnos_tela:
+            if u not in cel:
+                continue
+            for s in ((u, f"{u}E") if enf else (u,)):
+                if s in inst.turnos:
+                    pedidos.append(Pedido(tipo="folga_turno", profissional=n, data=d, peso=1,
+                                          turno=s, nivel=cel[u]))
+    return tuple(pedidos)
+
+
+def peso_do_pedido(x, p, coef: dict) -> int:
+    """Peso de um pedido: o coeficiente do seu nivel no bloco; 0 se o nivel nao e considerado.
+    Pedido sem nivel (caminho antigo): o nivel do criterio "pedido_folga"."""
+    if x.nivel is None:
+        return coef.get("pedido_folga", 0) if p["pedido_folga"][0] != NAO else 0
+    return coef.get(REGRAS + x.nivel, 0) if x.nivel in CONSIDERADOS else 0
+
+
+def maximo_regras(inst) -> dict[str, int]:
+    """Maximo de violacoes dos pedidos da tabela, por nivel: os `folga_dia` do nivel mais os
+    pares (profissional, dia) com algum `folga_turno` do nivel (um turno por dia)."""
+    saida: dict[str, set] = {}
+    for x in inst.pedidos:
+        if x.nivel is not None:
+            saida.setdefault(x.nivel, set()).add((x.tipo == "folga_dia", x.profissional, x.data))
+    return {nv: len(v) for nv, v in saida.items()}
+
+
+def tem_regras(inst) -> bool:
+    return any(x.nivel is not None for x in inst.pedidos)
+
+
+def expressao_pedidos(m, inst, niveis, p):
+    """A parte dos pedidos no objetivo de um bloco em sequencia: so os pedidos dos `niveis` do
+    bloco, com o peso ja aplicado (`aplicar`)."""
+    termos = []
+    for x in inst.pedidos:
+        nivel = x.nivel if x.nivel is not None else p["pedido_folga"][0]
+        if x.peso <= 0 or nivel not in niveis:
+            continue
+        if x.tipo == "folga_dia":
+            termos.append(x.peso * m.y[x.profissional, x.data])
+        elif x.tipo == "folga_turno" and (x.profissional, x.turno, x.data) in m.X:
+            termos.append(x.peso * m.x[x.profissional, x.turno, x.data])
+    return sum(termos)
+
+
+def descumpridos(inst, escala) -> list[tuple[str, str]]:
+    """(nivel, profissional) de cada pedido da tabela descumprido na escala — uma entrada por
+    profissional-dia-turno (ou profissional-dia, no `folga_dia`)."""
+    feito = {(n, d): s for d, n, s in escala}
+    saida = []
+    for x in inst.pedidos:
+        if x.nivel is None:
+            continue
+        s = feito.get((x.profissional, x.data))
+        if s is not None and (x.tipo == "folga_dia" or s == x.turno):
+            saida.append((x.nivel, x.profissional))
+    return saida

@@ -1214,14 +1214,18 @@ def caso_opb_tela() -> None:
     at.run()
     grupos = [x for x in at.expander if any(x.label.startswith(g) for g in pr.GRUPOS)]
     confere([x.label for x in grupos] == [
-        "Pedidos e qualificação — 2 de 2 considerados",
+        "Pedidos e qualificação — 1 de 1 considerados",
         "Sequências de trabalho e folga — 0 de 3 considerados",
         "Fins de semana — 0 de 5 considerados", "Noturno e carga — 0 de 3 considerados"],
         f"grupos {[x.label for x in grupos]}")
     confere(grupos and grupos[0].proto.expanded and not any(x.proto.expanded
                                                             for x in grupos[1:]),
             "grupo 1 aberto, 2 a 4 recolhidos")
-    padrao = {k: v[0] for k, v in fe.prioridades_padrao().items()}
+    # 3o bloco (20/10): o pedido de folga no dia saiu das Prioridades (a importancia e da linha
+    # da tabela "Pedidos e regras dos profissionais", que fica no grupo 1)
+    padrao = {k: v[0] for k, v in fe.prioridades_padrao().items() if k != "pedido_folga"}
+    confere("**Pedidos e regras dos profissionais**" in textos(at, "markdown"),
+            "tabela de pedidos e regras no grupo 1")
     confere({k: at.selectbox(key=f"prio_{k}").value for k in padrao} == padrao,
             "importancia padrao")
     confere(sum(1 for x in textos(at, "markdown") if pr.GARANTIDO in x) == 3,
@@ -1234,7 +1238,7 @@ def caso_opb_tela() -> None:
     at.run()
     confere(at.selectbox(key="prio_min_folgas_seguidas").value == fe.NAO, "restaurar padrao")
     confere(not any("estão no nível" in x for x in textos(at, "info")), "sem aviso no padrao")
-    at.selectbox(key="prio_pedido_folga").set_value(fe.IMPORTANTE)
+    at.selectbox(key="prio_min_folgas_seguidas").set_value(fe.IMPORTANTE)
     at.run()
     confere(any("Todos os critérios considerados estão no nível Importante" in x
                 for x in textos(at, "info")), f"aviso de mesmo nivel: {textos(at, 'info')}")
@@ -1274,6 +1278,107 @@ def caso_opb_tela() -> None:
         fe.verificar = original
 
 
+# --- Pedidos e regras dos profissionais (3o bloco, 20/10) -------------------------------------
+# Esperado registrado antes de implementar: resultados/pedidos_2026-10-20/ESPERADO.md.
+
+T8 = [("M", 7, 8, "M"), ("T", 15, 8, "T"), ("N", 23, 8, "N")]
+
+
+def _sete_dias(demanda, n_tec, nomes=None, demanda_data=None):
+    """Modelo 8 h, 7 dias a partir da primeira segunda, so tecnicos."""
+    return br.construir(turnos=T8, demanda_turno=demanda, demanda_data=demanda_data,
+                        n_enfermeiros=0, n_tecnicos=n_tec, nomes_tecnicos=nomes, dias=7,
+                        inicio=br.primeira_segunda())
+
+
+def _resolver_regras(inst, regras, tempo=120):
+    inst = fe.com_regras(inst, regras)
+    v, inst_p, escala, info = fe.resolver_com_objetivo(inst, tempo)
+    por_nivel = {}
+    if escala:
+        for nivel, nome, viol, _ in pr.resultado(inst_p, escala, pr.normalizar(None),
+                                                 br.HABILIDADE_ENF):
+            if nome == pr.NOME_REGRAS:
+                por_nivel[nivel] = viol
+    return v, inst_p, escala, info, por_nivel
+
+
+def caso_ped_contas() -> None:
+    """2. turno fixo e "Folga + turno": compativel = 0; forcado = exatamente 4 (conta a mao)."""
+    L = pr.Linha
+    equipes = [L(n, None, t, pr.SO_TURNO) for n, t in zip("ABCDEF", "MMTTNN")]
+    sem_noite = [L(n, None, "N", pr.FOLGA) for n in "ABCD"]
+    for rotulo, demanda, regras, k in (
+            ("2a. turno fixo compativel", (1, 1, 1), equipes, 0),
+            ("2b. turno fixo, manha 2", (2, 1, 1), equipes, 4),
+            ("2c. folga no noturno compativel", (1, 1, 1), sem_noite, 0),
+            ("2d. folga no noturno, noite 2", (1, 1, 2), sem_noite, 4)):
+        print(rotulo)
+        inst = _sete_dias({s: (0, q) for s, q in zip("MTN", demanda)}, 6, list("ABCDEF"))
+        v, _, escala, info, por_nivel = _resolver_regras(inst, regras)
+        confere(v == "viavel" and info["provado"], f"viavel e provado: {v}, {info['provado']}")
+        confere(por_nivel == {pr.DESEJAVEL: k}, f"violacoes {por_nivel}, esperado {k}")
+
+
+def caso_ped_niveis() -> None:
+    """3. niveis por linha: conflito na mesma pessoa; tres linhas na mesma celula."""
+    L = pr.Linha
+    d1 = br.primeira_segunda()
+    zero = {"M": (0, 0), "T": (0, 0), "N": (0, 0)}
+    casos = [("3a. L1 Essencial, L2 Desejavel", fe.ESSENCIAL, fe.DESEJAVEL, "T", None),
+             ("3a. invertida", fe.DESEJAVEL, fe.ESSENCIAL, "M", None),
+             ("3a. em sequencia forcada (fusao zerada)", fe.ESSENCIAL, fe.DESEJAVEL, "T", 0),
+             ("3a. invertida, em sequencia forcada", fe.DESEJAVEL, fe.ESSENCIAL, "M", 0)]
+    original = pr.LIMITE_FUSAO
+    for rotulo, n1, n2, turno, fusao in casos:
+        print(rotulo)
+        pr.LIMITE_FUSAO = original if fusao is None else fusao
+        inst = _sete_dias(zero, 2, demanda_data={(d1, "M", "tec"): 1, (d1, "T", "tec"): 1})
+        regras = [L("Téc 1", d1, "M", pr.FOLGA, n1), L("Téc 1", d1, "M", pr.SO_TURNO, n2)]
+        v, inst_p, escala, info, por_nivel = _resolver_regras(inst, regras)
+        tec1 = [s for d, n, s in escala
+                if inst_p.profissionais[n].nome == "Téc 1" and d == d1]
+        confere(info["provado"] and por_nivel.get(fe.ESSENCIAL, 0) == 0
+                and por_nivel.get(fe.DESEJAVEL, 0) == 1,
+                f"Essencial 0, Desejavel 1: {por_nivel}")
+        confere(tec1 == [turno], f"Tec 1 no d1: {tec1}, esperado {turno}")
+        if fusao == 0:
+            confere(info["caminho"].startswith("em sequência"), f"caminho {info['caminho']}")
+    pr.LIMITE_FUSAO = original
+    print("3b. tres linhas na mesma celula: uma violacao, no Essencial")
+    inst = _sete_dias(zero, 1, demanda_data={(d1, "M", "tec"): 1})
+    regras = [L("Téc 1", d1, None, pr.FOLGA, fe.DESEJAVEL),
+              L("Téc 1", d1, "M", pr.FOLGA, fe.ESSENCIAL),
+              L("Téc 1", None, "M", pr.FOLGA, fe.DESEJAVEL)]
+    v, inst_p, escala, info, por_nivel = _resolver_regras(inst, regras)
+    confere(v == "viavel" and por_nivel.get(fe.ESSENCIAL) == 1
+            and por_nivel.get(fe.DESEJAVEL, 0) == 0,
+            f"uma violacao no Essencial: {por_nivel}")
+    confere(sum(1 for _ in pr.descumpridos(inst_p, escala)) == 1, "uma so descumprida")
+
+
+def caso_ped_nunca_trava() -> None:
+    """6. pedidos nunca tornam impossivel uma escala que a CLT admite."""
+    L = pr.Linha
+    print("6a. caso 2a com folga Essencial em todos os turnos para todos")
+    inst = _sete_dias({"M": (0, 1), "T": (0, 1), "N": (0, 1)}, 6, list("ABCDEF"))
+    regras = [L(n, None, t, pr.FOLGA, fe.ESSENCIAL) for n in "ABCDEF" for t in "MTN"]
+    v, _, escala, info, por_nivel = _resolver_regras(inst, regras)
+    confere(v == "viavel" and por_nivel == {fe.ESSENCIAL: 21},
+            f"viavel com 21 no Essencial: {v}, {por_nivel}")
+    print("6b. 12x36 1 + 2 pelo verificar, folga Essencial em todos os turnos para os 3")
+    import dataclasses
+    e = _pequeno(pedidos=False)
+    e = dataclasses.replace(e, regras=[L(n, None, t, pr.FOLGA, fe.ESSENCIAL)
+                                       for n in ("Enf 1", "Téc 1", "Téc 2") for t in "DN"])
+    r = fe.verificar(e)
+    confere(r.veredito == fe.ADMITE and r.menor_viavel == 3,
+            f"admite 3: {r.veredito}, {r.menor_viavel}")
+    confere(r.conformidade and r.conformidade["ok"], "escala cumpre o descanso")
+    confere(any(x[0] == fe.ESSENCIAL for x in r.descumpridos),
+            f"descumpridos informados: {r.descumpridos}")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
@@ -1282,7 +1387,8 @@ CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeir
          "15": casos_p15, "16": caso_reprovada,
          "opB-b": caso_opb_sequencia, "opB-c": caso_opb_fusao, "opB-d": caso_opb_situacao,
          "opB-e": caso_opb_essencial, "opB-padroes": caso_opb_padroes,
-         "opB-tela": caso_opb_tela}
+         "opB-tela": caso_opb_tela,
+         "ped-2": caso_ped_contas, "ped-3": caso_ped_niveis, "ped-6": caso_ped_nunca_trava}
 
 
 def main() -> int:

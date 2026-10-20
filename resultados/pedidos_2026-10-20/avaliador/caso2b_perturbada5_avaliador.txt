@@ -1,0 +1,42 @@
+Schedule:
+=========
+
+Employee 0 |M     |      |      |M     |M     |M     |M     |
+Employee 1 |      |M     |  T   |  T   |    N |M     |M     |
+Employee 2 |M     |  T   |M     |      |      |  T   |      |
+Employee 3 |  T   |      |M     |      |  T   |      |  T   |
+Employee 4 |      |M     |      |M     |M     |      |    N |
+Employee 5 |    N |    N |    N |    N |      |    N |      |
+
+Violations:
+===========
+
+    Employee: 0
+    ===============
+    Employee: 1
+    ===============
+         Maximum number of assignments: excess = 1 , pos = 41, cost = 1
+         Requested shift off: excess = 1 , pos = 4, cost = 1
+         Requested shift off: excess = 1 , pos = 6, cost = 1
+         Requested shift off: excess = 1 , pos = 9, cost = 1
+         Unwanted pattern: N-M: excess = 1 , pos = 41, cost = 1
+    Employee: 2
+    ===============
+         Unwanted pattern: T-M: excess = 1 , pos = 12, cost = 1
+         Requested shift off: excess = 1 , pos = 0, cost = 1
+         Requested shift off: excess = 1 , pos = 4, cost = 1
+    Employee: 3
+    ===============
+         Requested shift off: excess = 1 , pos = 4, cost = 1
+    Employee: 4
+    ===============
+         Requested shift off: excess = 1 , pos = 2, cost = 1
+         Requested shift off: excess = 1 , pos = 6, cost = 1
+         Requested shift off: excess = 1 , pos = 8, cost = 1
+    Employee: 5
+    ===============
+
+Penalty:
+========
+    12
+

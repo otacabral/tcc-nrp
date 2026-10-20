@@ -1,0 +1,390 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SchedulingPeriod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="br_turnos_e6" xsi:noNamespaceSchemaLocation="competition.xsd">
+  <StartDate>2027-01-04</StartDate>
+  <EndDate>2027-01-10</EndDate>
+  <Skills>
+    <Skill>Enfermagem</Skill>
+    <Skill>Enfermeiro</Skill>
+  </Skills>
+  <ShiftTypes>
+    <Shift ID="M">
+      <StartTime>07:00:00</StartTime>
+      <EndTime>15:00:00</EndTime>
+      <Description>M</Description>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Shift>
+    <Shift ID="ME">
+      <StartTime>07:00:00</StartTime>
+      <EndTime>15:00:00</EndTime>
+      <Description>M (enfermeiro)</Description>
+      <Skills>
+        <Skill>Enfermeiro</Skill>
+      </Skills>
+    </Shift>
+    <Shift ID="T">
+      <StartTime>15:00:00</StartTime>
+      <EndTime>23:00:00</EndTime>
+      <Description>T</Description>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Shift>
+    <Shift ID="TE">
+      <StartTime>15:00:00</StartTime>
+      <EndTime>23:00:00</EndTime>
+      <Description>T (enfermeiro)</Description>
+      <Skills>
+        <Skill>Enfermeiro</Skill>
+      </Skills>
+    </Shift>
+    <Shift ID="N">
+      <StartTime>23:00:00</StartTime>
+      <EndTime>07:00:00</EndTime>
+      <Description>N</Description>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Shift>
+    <Shift ID="NE">
+      <StartTime>23:00:00</StartTime>
+      <EndTime>07:00:00</EndTime>
+      <Description>N (enfermeiro)</Description>
+      <Skills>
+        <Skill>Enfermeiro</Skill>
+      </Skills>
+    </Shift>
+  </ShiftTypes>
+  <Patterns>
+    <Pattern ID="clt_N_M" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>N</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>M</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_N_ME" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>N</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>ME</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_NE_M" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>NE</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>M</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_NE_ME" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>NE</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>ME</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_N_T" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>N</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>T</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_N_TE" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>N</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>TE</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_NE_T" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>NE</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>T</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_NE_TE" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>NE</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>TE</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_T_M" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>T</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>M</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_T_ME" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>T</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>ME</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_TE_M" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>TE</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>M</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+    <Pattern ID="clt_TE_ME" weight="1">
+      <PatternEntries>
+        <PatternEntry index="0">
+          <ShiftType>TE</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+        <PatternEntry index="1">
+          <ShiftType>ME</ShiftType>
+          <Day>Any</Day>
+        </PatternEntry>
+      </PatternEntries>
+    </Pattern>
+  </Patterns>
+  <Contracts>
+    <Contract ID="0">
+      <Description>turnos configurados, carga contratual informada (limite legal de 44h/semana)</Description>
+      <SingleAssignmentPerDay weight="1">true</SingleAssignmentPerDay>
+      <MaxNumAssignments on="1" weight="1">5</MaxNumAssignments>
+      <MinNumAssignments on="0" weight="0">0</MinNumAssignments>
+      <MaxConsecutiveWorkingDays on="1" weight="1">6</MaxConsecutiveWorkingDays>
+      <MinConsecutiveWorkingDays on="1" weight="1">1</MinConsecutiveWorkingDays>
+      <MaxConsecutiveFreeDays on="0" weight="0">28</MaxConsecutiveFreeDays>
+      <MinConsecutiveFreeDays on="1" weight="1">1</MinConsecutiveFreeDays>
+      <MaxConsecutiveWorkingWeekends on="0" weight="0">0</MaxConsecutiveWorkingWeekends>
+      <MinConsecutiveWorkingWeekends on="0" weight="0">0</MinConsecutiveWorkingWeekends>
+      <MaxWorkingWeekendsInFourWeeks on="0" weight="0">0</MaxWorkingWeekendsInFourWeeks>
+      <WeekendDefinition>SaturdaySunday</WeekendDefinition>
+      <CompleteWeekends weight="0">false</CompleteWeekends>
+      <IdenticalShiftTypesDuringWeekend weight="0">false</IdenticalShiftTypesDuringWeekend>
+      <NoNightShiftBeforeFreeWeekend weight="0">false</NoNightShiftBeforeFreeWeekend>
+      <AlternativeSkillCategory weight="0">false</AlternativeSkillCategory>
+      <UnwantedPatterns>
+        <Pattern>clt_N_M</Pattern>
+        <Pattern>clt_N_ME</Pattern>
+        <Pattern>clt_NE_M</Pattern>
+        <Pattern>clt_NE_ME</Pattern>
+        <Pattern>clt_N_T</Pattern>
+        <Pattern>clt_N_TE</Pattern>
+        <Pattern>clt_NE_T</Pattern>
+        <Pattern>clt_NE_TE</Pattern>
+        <Pattern>clt_T_M</Pattern>
+        <Pattern>clt_T_ME</Pattern>
+        <Pattern>clt_TE_M</Pattern>
+        <Pattern>clt_TE_ME</Pattern>
+      </UnwantedPatterns>
+    </Contract>
+  </Contracts>
+  <Employees>
+    <Employee ID="0">
+      <ContractID>0</ContractID>
+      <Name>A</Name>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Employee>
+    <Employee ID="1">
+      <ContractID>0</ContractID>
+      <Name>B</Name>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Employee>
+    <Employee ID="2">
+      <ContractID>0</ContractID>
+      <Name>C</Name>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Employee>
+    <Employee ID="3">
+      <ContractID>0</ContractID>
+      <Name>D</Name>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Employee>
+    <Employee ID="4">
+      <ContractID>0</ContractID>
+      <Name>E</Name>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Employee>
+    <Employee ID="5">
+      <ContractID>0</ContractID>
+      <Name>F</Name>
+      <Skills>
+        <Skill>Enfermagem</Skill>
+      </Skills>
+    </Employee>
+  </Employees>
+  <CoverRequirements>
+    <DayOfWeekCover>
+      <Day>Monday</Day>
+      <Cover>
+        <Shift>M</Shift>
+        <Preferred>2</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>N</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>T</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+    </DayOfWeekCover>
+    <DayOfWeekCover>
+      <Day>Tuesday</Day>
+      <Cover>
+        <Shift>M</Shift>
+        <Preferred>2</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>N</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>T</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+    </DayOfWeekCover>
+    <DayOfWeekCover>
+      <Day>Wednesday</Day>
+      <Cover>
+        <Shift>M</Shift>
+        <Preferred>2</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>N</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>T</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+    </DayOfWeekCover>
+    <DayOfWeekCover>
+      <Day>Thursday</Day>
+      <Cover>
+        <Shift>M</Shift>
+        <Preferred>2</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>N</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>T</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+    </DayOfWeekCover>
+    <DayOfWeekCover>
+      <Day>Friday</Day>
+      <Cover>
+        <Shift>M</Shift>
+        <Preferred>2</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>N</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>T</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+    </DayOfWeekCover>
+    <DayOfWeekCover>
+      <Day>Saturday</Day>
+      <Cover>
+        <Shift>M</Shift>
+        <Preferred>2</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>N</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>T</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+    </DayOfWeekCover>
+    <DayOfWeekCover>
+      <Day>Sunday</Day>
+      <Cover>
+        <Shift>M</Shift>
+        <Preferred>2</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>N</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+      <Cover>
+        <Shift>T</Shift>
+        <Preferred>1</Preferred>
+      </Cover>
+    </DayOfWeekCover>
+  </CoverRequirements>
+<DayOffRequests><DayOff weight="1"><EmployeeID>0</EmployeeID><Date>2027-01-05</Date></DayOff><DayOff weight="1"><EmployeeID>2</EmployeeID><Date>2027-01-07</Date></DayOff></DayOffRequests><ShiftOffRequests><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>0</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>1</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>2</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>N</ShiftTypeID><EmployeeID>3</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>4</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-04</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-05</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-06</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-07</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-08</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-09</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>M</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-10</Date></ShiftOff><ShiftOff weight="1"><ShiftTypeID>T</ShiftTypeID><EmployeeID>5</EmployeeID><Date>2027-01-10</Date></ShiftOff></ShiftOffRequests></SchedulingPeriod>

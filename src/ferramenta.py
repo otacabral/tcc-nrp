@@ -108,6 +108,10 @@ class Entrada:
     nomes_tecnicos: list[str] | None = None
     indisponibilidades: list[tuple[str, date, date]] = field(default_factory=list)
     pedidos: list[tuple[str, date]] = field(default_factory=list)
+    # tabela "Pedidos e regras dos profissionais" (`prioridades.Linha`; DECISOES.md, "2026-10-19
+    # — Pedidos e regras por profissional"): cada linha com a sua importancia. `pedidos` acima e
+    # o caminho antigo (folga no dia, no nivel do criterio "pedido_folga")
+    regras: list = field(default_factory=list)
     pacientes: dict[str, float] | None = None           # painel "Conferir com o COFEN"
     # carga contratual semanal, por nome (ou id); quem nao aparece fica com 44 h, e quem a
     # varredura acrescenta tambem (DECISOES.md, "2026-10-02 — Carga por contrato")
@@ -144,6 +148,8 @@ class Resultado:
     reprovacao: str | None = None   # 13/10: o que a conferencia de descanso mediu e reprovou
     # opcao B: (nivel, criterio, violacoes, profissionais afetados) na escala entregue
     criterios: list = field(default_factory=list)
+    # pedidos e regras da tabela descumpridos: (nivel, nome do profissional, quantos)
+    descumpridos: list = field(default_factory=list)
 
     @property
     def faltam(self) -> int | None:
@@ -280,13 +286,24 @@ def montar(e: Entrada, acrescimo: int = 0, horas_enf: float | None = None,
         nomes_tec = e.nomes_tecnicos
     else:
         n_enf, n_tec, nomes_enf, nomes_tec = equipe(e, acrescimo, horas_enf)
-    return br.construir(
+    inst = br.construir(
         turnos=[(nome, ini, duracao(ini, fim), nome) for nome, ini, fim in e.turnos],
         demanda_turno=e.demanda_turno, demanda_fds=e.demanda_fds,
         demanda_data=e.demanda_data, fim_de_semana=e.fim_de_semana, inicio=e.inicio,
         n_enfermeiros=n_enf, n_tecnicos=n_tec, nomes_enfermeiros=nomes_enf,
         nomes_tecnicos=nomes_tec, indisponibilidades=e.indisponibilidades,
         pedidos=e.pedidos, cargas=e.cargas)
+    return com_regras(inst, e.regras)
+
+
+def com_regras(inst, regras):
+    """A instancia com os pedidos da tabela "Pedidos e regras dos profissionais" traduzidos
+    (`prioridades.traduzir`) depois dos do caminho antigo. Sem linhas, a mesma instancia."""
+    if not regras:
+        return inst
+    novos = pr.traduzir(inst, regras, br.HABILIDADE_ENF,
+                        id_de=lambda q: br._id_profissional(inst.profissionais, q))
+    return dataclasses.replace(inst, pedidos=inst.pedidos + novos)
 
 
 def limite_efetivo(inst) -> int:
@@ -589,8 +606,8 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | No
         veredito, escala, provado, gap = resolver(m, tempo)
         niveis = []
     else:
-        veredito, escala, provado, gap, niveis = _niveis_em_sequencia(m, presentes, tempo,
-                                                                      prazo)
+        veredito, escala, provado, gap, niveis = _niveis_em_sequencia(
+            m, presentes, tempo, prazo, inst, pr.normalizar(prioridades))
     W = pr.coeficientes(blocos).get("pedido_folga")
     info = {"peso_pedido": W, "tempo_etapa1": time.time() - t0, "tempo_etapa2": 0.0,
             "provado": provado, "gap": gap, "etapa2": "nao rodou", "caminho": caminho,
@@ -636,17 +653,27 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | No
     return veredito, inst, escala, info
 
 
-def _niveis_em_sequencia(m, blocos, tempo, prazo):
+def _niveis_em_sequencia(m, blocos, tempo, prazo, inst=None, p=None):
     """Etapa 1 da opcao B com mais de um bloco: resolve cada bloco com o objetivo so das suas
     familias e prende o valor achado (`<=`, como a P14) antes do proximo, que parte da escala
     anterior (como a P17). Devolve (veredito, escala, provado, gap, niveis): provado so se todos
     provaram; gap = o do primeiro bloco sem prova. Se um bloco depois do primeiro nao entregar
-    escala (tempo ou erro), fica a escala do anterior, sem prova."""
+    escala (tempo ou erro), fica a escala do anterior, sem prova.
+
+    Com pedidos da tabela "Pedidos e regras" (`inst`, com os pesos aplicados), os pedidos de
+    um bloco sao so os dos seus niveis (`prioridades.expressao_pedidos`), porque a mesma familia
+    do modelo junta pedidos de niveis diferentes."""
     import pyomo.environ as pyo
     m.niveis_presos = pyo.ConstraintList()
     niveis, escala, provado, gap, veredito = [], None, True, None, None
+    por_nivel = inst is not None and pr.tem_regras(inst)
     for i, b in enumerate(blocos):
-        expr = sum(m.parcela[f] for f in b.familias if f in m.parcela)
+        if por_nivel:
+            expr = (sum(m.parcela[f] for f in b.familias
+                        if f in m.parcela and f not in pr.FAMILIAS_PEDIDO)
+                    + pr.expressao_pedidos(m, inst, b.niveis, p))
+        else:
+            expr = sum(m.parcela[f] for f in b.familias if f in m.parcela)
         m.del_component(m.objetivo)
         m.objetivo = pyo.Objective(expr=expr, sense=pyo.minimize)
         limite = tempo
@@ -910,6 +937,7 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
             r.indicadores = {**indicadores(inst, escala), **info}
             r.criterios = pr.resultado(inst, escala, pr.normalizar(e.prioridades),
                                        br.HABILIDADE_ENF)
+            r.descumpridos = descumpridos(inst, escala)
             break
         if veredito != ea.INVIAVEL:
             decidido = False     # indeterminado ou erro: o minimo nao esta provado acima
@@ -1072,6 +1100,15 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
         legenda.to_excel(w, sheet_name="Legenda", index=False)
         criterios.to_excel(w, sheet_name="Prioridades", index=False)
     return saida.getvalue()
+
+
+def descumpridos(inst, escala) -> list[tuple[str, str, int]]:
+    """Pedidos e regras da tabela descumpridos na escala: (nivel, nome, quantos), do nivel mais
+    alto para o mais baixo e, dentro do nivel, na ordem da equipe."""
+    from collections import Counter
+    conta = Counter(pr.descumpridos(inst, escala))
+    return [(nivel, inst.profissionais[n].nome, conta[(nivel, n)])
+            for nivel in pr.CONSIDERADOS for n in inst.profissionais if conta[(nivel, n)]]
 
 
 def tabela_criterios(r: Resultado):

@@ -101,25 +101,15 @@ cargas = {str(l["Profissional"]): float(l["Carga semanal (h)"])
           for _, l in tabela_cargas.dropna().iterrows()
           if float(l["Carga semanal (h)"]) != br.CARGA_CONTRATUAL_PADRAO}
 
-f1, f2 = st.columns(2)
-with f1:
-    st.caption("Férias e licenças — nesses dias a pessoa não é escalada (regra rígida).")
-    tabela_indisp = st.data_editor(
-        pd.DataFrame({"Profissional": pd.Series(dtype="str"),
-                      "De": pd.Series(dtype="datetime64[ns]"),
-                      "Até": pd.Series(dtype="datetime64[ns]")}),
-        num_rows="dynamic", key="indisp", width="stretch",
-        column_config={"Profissional": st.column_config.SelectboxColumn(options=pessoas),
-                       "De": st.column_config.DateColumn(format="DD/MM/YYYY"),
-                       "Até": st.column_config.DateColumn(format="DD/MM/YYYY")})
-with f2:
-    st.caption("Pedidos de folga — atendidos quando possível; nunca impedem a escala.")
-    tabela_pedidos = st.data_editor(
-        pd.DataFrame({"Profissional": pd.Series(dtype="str"),
-                      "Data": pd.Series(dtype="datetime64[ns]")}),
-        num_rows="dynamic", key="pedidos", width="stretch",
-        column_config={"Profissional": st.column_config.SelectboxColumn(options=pessoas),
-                       "Data": st.column_config.DateColumn(format="DD/MM/YYYY")})
+st.caption("Férias e licenças — nesses dias a pessoa não é escalada (regra rígida).")
+tabela_indisp = st.data_editor(
+    pd.DataFrame({"Profissional": pd.Series(dtype="str"),
+                  "De": pd.Series(dtype="datetime64[ns]"),
+                  "Até": pd.Series(dtype="datetime64[ns]")}),
+    num_rows="dynamic", key="indisp", width="content",
+    column_config={"Profissional": st.column_config.SelectboxColumn(options=pessoas),
+                   "De": st.column_config.DateColumn(format="DD/MM/YYYY"),
+                   "Até": st.column_config.DateColumn(format="DD/MM/YYYY")})
 
 # --- c) demanda ---------------------------------------------------------------------------
 st.header("3. Demanda")
@@ -186,7 +176,33 @@ def _data(valor) -> date:
     return pd.Timestamp(valor).date()
 
 
-def _entrada(prioridades) -> fe.Entrada:
+def _vazio(valor) -> bool:
+    try:
+        return valor is None or bool(pd.isna(valor)) or str(valor).strip() == ""
+    except (TypeError, ValueError):
+        return False
+
+
+def _regras() -> list:
+    """As linhas da tabela "Pedidos e regras dos profissionais" (vazia antes de ela aparecer).
+    Linha sem profissional e ignorada; o resto e validado por `prioridades.traduzir`."""
+    tabela = globals().get("tabela_regras")
+    if tabela is None:
+        return []
+    linhas = []
+    for _, l in tabela.iterrows():
+        if _vazio(l["Profissional"]):
+            continue
+        linhas.append(pr.Linha(
+            profissional=str(l["Profissional"]),
+            dia=None if _vazio(l["Dia"]) else _data(l["Dia"]),
+            turno=None if _vazio(l["Turno"]) else str(l["Turno"]),
+            tipo=pr.FOLGA if _vazio(l["Tipo"]) else str(l["Tipo"]),
+            importancia=None if _vazio(l["Importância"]) else str(l["Importância"])))
+    return linhas
+
+
+def _entrada(prioridades, regras=True) -> fe.Entrada:
     return fe.Entrada(
         turnos=turnos, grau=grau, n_enfermeiros=int(n_enf), n_tecnicos=int(n_tec),
         demanda_turno=demanda_turno, demanda_fds=demanda_fds, demanda_data=demanda_data,
@@ -194,8 +210,7 @@ def _entrada(prioridades) -> fe.Entrada:
         nomes_enfermeiros=nomes_enf, nomes_tecnicos=nomes_tec,
         indisponibilidades=[(str(l["Profissional"]), _data(l["De"]), _data(l["Até"]))
                             for _, l in tabela_indisp.dropna().iterrows()],
-        pedidos=[(str(l["Profissional"]), _data(l["Data"]))
-                 for _, l in tabela_pedidos.dropna().iterrows()],
+        regras=_regras() if regras else [],
         pacientes=pacientes or None, cargas=cargas, prioridades=prioridades)
 
 
@@ -223,18 +238,46 @@ st.button("Restaurar padrão", key="restaurar", on_click=_restaurar)
 escolha = {k: (st.session_state[f"prio_{k}"], st.session_state.get(f"lim_{k}"))
            for k in PADRAO}
 try:
-    _base_prio = fe.montar(_entrada(escolha))
+    _base_prio = fe.montar(_entrada(escolha, regras=False))
     _limite_efetivo = fe.limite_efetivo(_base_prio)
     situacao = pr.situacoes(_base_prio, pr.normalizar(escolha), _limite_efetivo)
     _teto = _base_prio.contratos["0"].max_num_assignments.valor
 except (ValueError, TypeError, KeyError, ZeroDivisionError):
     situacao, _limite_efetivo, _teto = {}, None, None   # entrada ainda incompleta
+# o pedido de folga no dia sai das Prioridades: a importancia e da linha da tabela de pedidos
+# (DECISOES.md, "2026-10-19 — Pedidos e regras por profissional")
+NA_TELA = [c for c in pr.CRITERIOS if c.id != "pedido_folga"]
 for g, nome_grupo in enumerate(pr.GRUPOS):
-    crits = [c for c in pr.CRITERIOS if c.grupo == g]
+    crits = [c for c in NA_TELA if c.grupo == g]
     campos = [c for c in crits if not c.clt]
     k = sum(1 for c in campos if escolha[c.id][0] != pr.NAO)
     with st.expander(f"{nome_grupo} — {k} de {len(campos)} considerados",
                      expanded=(g == 0)):
+        if g == 0:
+            st.markdown("**Pedidos e regras dos profissionais**")
+            st.caption("Folga ou turno fixo, de cada profissional. Importância em branco: "
+                       "Essencial para folga num dia; Desejável nos demais.",
+                       help="Dia em branco = todos os dias; turno em branco = o dia todo. "
+                            "\"Só este turno\" = a pessoa só trabalha naquele turno (várias "
+                            "linhas da mesma pessoa somam os turnos). Nenhum pedido torna a "
+                            "escala impossível: se a cobertura exigir, a ferramenta descumpre "
+                            "o menor número possível, começando pelos de menor importância, "
+                            "e diz quantos e de quem.")
+            tabela_regras = st.data_editor(
+                pd.DataFrame({"Profissional": pd.Series(dtype="str"),
+                              "Dia": pd.Series(dtype="datetime64[ns]"),
+                              "Turno": pd.Series(dtype="str"),
+                              "Tipo": pd.Series(dtype="str"),
+                              "Importância": pd.Series(dtype="str")}),
+                num_rows="dynamic", key="regras", width="stretch",
+                column_config={
+                    "Profissional": st.column_config.SelectboxColumn(options=pessoas),
+                    "Dia": st.column_config.DateColumn(format="DD/MM/YYYY"),
+                    "Turno": st.column_config.SelectboxColumn(options=nomes_turno),
+                    "Tipo": st.column_config.SelectboxColumn(options=list(pr.TIPOS),
+                                                             default=pr.FOLGA),
+                    "Importância": st.column_config.SelectboxColumn(
+                        options=list(pr.CONSIDERADOS))})
         cab = st.columns([3, 2, 1, 2])
         for coluna, rotulo in zip(cab, ("Critério", "Importância", "Limite", "Situação")):
             coluna.caption(rotulo)
@@ -261,8 +304,10 @@ for g, nome_grupo in enumerate(pr.GRUPOS):
                 ajuda += (" ⓘ Sem conferência externa: nenhuma instância do benchmark INRC "
                           "a usa ou o avaliador oficial não a pontua.")
             st.caption(ajuda)
-_niveis = {nivel for nivel, _ in escolha.values() if nivel != pr.NAO}
-if sum(1 for nivel, _ in escolha.values() if nivel != pr.NAO) > 1 and len(_niveis) == 1:
+_usados = ([escolha[c.id][0] for c in NA_TELA if not c.clt and escolha[c.id][0] != pr.NAO]
+           + [l.importancia or pr.importancia_padrao(l) for l in _regras()])
+_niveis = set(_usados)
+if len(_usados) > 1 and len(_niveis) == 1:
     st.info(f"Todos os critérios considerados estão no nível {_niveis.pop()}: entre eles há "
             f"compensação — uma violação de um vale o mesmo que uma de outro.")
 
@@ -379,6 +424,14 @@ if "resultado" in st.session_state:
             st.caption(f"Pedidos de folga negados: {ind['pedidos_total'] - ind['pedidos_atendidos']}"
                        f", em {br.plural(ind['com_pedido_negado'], 'profissional', 'profissionais')}; no máximo "
                        f"{ind['negados_max']} por pessoa.")
+        if r.descumpridos:
+            por_nivel = {}
+            for nivel, nome, q in r.descumpridos:
+                por_nivel.setdefault(nivel, []).append(f"{nome} {q}")
+            st.caption("Pedidos e regras descumpridos — " + "; ".join(
+                f"{nivel}: {', '.join(v)}" for nivel, v in por_nivel.items()) + ".")
+        elif e.regras:
+            st.caption("Todos os pedidos e regras da tabela foram atendidos.")
         if r.criterios:
             st.markdown("**Resultado por critério**")
             st.dataframe(fe.tabela_criterios(r), hide_index=True)

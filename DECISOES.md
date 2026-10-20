@@ -2418,6 +2418,15 @@ ferramenta precisa distinguir **regra do hospital** de **desejo do profissional*
   linha "Enfermeiro em posto de técnico".
 - Sem linhas na tabela, nada muda (nível vazio não gera resolução).
 
+**Teste opB-tela atualizado com autorização prévia do pedido (20/10)**, como no precedente do
+teste 1-2: com a linha "Pedido de folga no dia" fora da tabela de Prioridades, o grupo 1 passa
+de "2 de 2" para "1 de 1 considerados", a conferência da importância padrão deixa de incluir
+`pedido_folga` (não há mais campo), e o aviso de mesmo nível é provocado pondo "mínimo de folgas
+seguidas" em Importante (antes, o pedido de folga em Importante). Acrescentada a conferência de
+que a tabela "Pedidos e regras dos profissionais" aparece no grupo 1. O texto de resultado não
+mudou. O critério `pedido_folga` continua no back end (caminho antigo, `Entrada.pedidos`) e na
+linha "Pedido de folga no dia" do resultado por critério, que fica 0 quando só há a tabela nova.
+
 **Motivo da revisão de 09/10.** (i) A tolerância do solver deixou de ser problema: com os níveis
 em sequência (opção B), a prioridade entre níveis vem da sequência, não de pesos escalonados, e
 só se fundem níveis cujo bloco fica abaixo de 10.000; (ii) o motor já suporta

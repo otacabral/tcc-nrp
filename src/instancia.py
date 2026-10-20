@@ -168,6 +168,9 @@ class Pedido:
     data: date
     peso: int
     turno: str | None = None
+    # nivel da opcao B (so a ferramenta): o da linha da tabela "Pedidos e regras dos
+    # profissionais"; None = pedido do INRC ou do caminho antigo da ferramenta. O modelo nao le.
+    nivel: str | None = None
 
 
 @dataclass(frozen=True)

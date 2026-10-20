@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Solution>
+  <SchedulingPeriodID>br_turnos_e1</SchedulingPeriodID>
+  <Competitor>TCC-CEFET</Competitor>
+  <SoftConstraintsPenalty>0</SoftConstraintsPenalty>
+  <Assignment>
+    <Date>2027-01-05</Date>
+    <Employee>0</Employee>
+    <ShiftType>T</ShiftType>
+  </Assignment>
+</Solution>

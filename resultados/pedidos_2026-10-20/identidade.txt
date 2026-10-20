@@ -1,0 +1,10 @@
+Parte 2 (20/10), teste 1 — entrada do solver x v1.3.0 (worktree ../tcc-nrp-v130), classificacao padrao
+docs/diagnostico/identidade_3bloco.py; comparacao por docs/diagnostico/identidade_opcao_b.py --comparar
+
+81 casos (11 entradas com pedidos), 243 arquivos (XML da instancia, LP etapa 1, LP etapa 2)
+1a  sem linhas novas                         v1.3.0 x nova:   243 arquivos; 243 identicos; 0 diferentes
+1b  pedidos como "Folga + dia, Essencial"    v1.3.0 x regras: 243 arquivos; 243 identicos; 0 diferentes
+controle: LP da etapa 1 com uma linha "Folga + turno" a mais muda (ok)
+
+Observacao: o XML da instancia nao traz pedidos (instancia_br.escrever_xml nao os escreve);
+quem prova a identidade dos pedidos e o LP.

@@ -1,0 +1,38 @@
+Schedule:
+=========
+
+Employee 0 |M     |    N |      |M     |M     |M     |M     |
+Employee 1 |      |M     |M     |      |M     |M     |  T   |
+Employee 2 |M     |  T   |  T   |      |      |  T   |      |
+Employee 3 |  T   |      |M     |  T   |  T   |      |M     |
+Employee 4 |      |M     |      |M     |    N |    N |    N |
+Employee 5 |    N |      |    N |    N |      |      |      |
+
+Violations:
+===========
+
+    Employee: 0
+    ===============
+         Maximum number of assignments: excess = 1 , pos = 41, cost = 1
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 1
+    ===============
+         Requested shift off: excess = 1 , pos = 12, cost = 1
+    Employee: 2
+    ===============
+         Requested shift off: excess = 1 , pos = 0, cost = 1
+    Employee: 3
+    ===============
+         Requested shift off: excess = 1 , pos = 4, cost = 1
+         Requested shift off: excess = 1 , pos = 12, cost = 1
+    Employee: 4
+    ===============
+         Requested shift off: excess = 1 , pos = 2, cost = 1
+         Requested shift off: excess = 1 , pos = 6, cost = 1
+    Employee: 5
+    ===============
+
+Penalty:
+========
+    8
+

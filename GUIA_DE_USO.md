@@ -125,8 +125,7 @@ A tela é uma página só, de cima para baixo.
   sobre o período inteiro, não semana a semana, e já desconta férias.
 - **Férias e licenças.** Clique na linha vazia da tabela para acrescentar uma linha. Escolha a
   pessoa e as datas de início e fim. Nesses dias a pessoa **não** é escalada.
-- **Pedidos de folga.** Mesma coisa: a pessoa e o dia. A ferramenta tenta atender, mas um
-  pedido nunca impede a escala.
+- **Pedidos de folga e turnos fixos** ficam em "Prioridades da escala", grupo 1 (abaixo).
 
 ### 3. Demanda
 
@@ -175,8 +174,32 @@ ou o avaliador oficial não os pontua.
 **Uma preferência nunca torna a escala impossível.** As regras da CLT continuam rígidas; os
 critérios desta tabela só escolhem entre escalas legais.
 
-**Padrão** = a ferramenta de antes: pedido de folga Essencial; enfermeiro em posto de técnico
-Importante; o resto Não considerar. O botão **"Restaurar padrão"** volta a ele.
+**Padrão** = a ferramenta de antes: pedido de folga num dia Essencial; enfermeiro em posto de
+técnico Importante; o resto Não considerar. O botão **"Restaurar padrão"** volta a ele.
+
+**Pedidos e regras dos profissionais** (grupo 1). Uma linha por pedido ou regra:
+
+| Coluna | O que é |
+|---|---|
+| Profissional | quem |
+| Dia | em branco = todos os dias |
+| Turno | em branco = o dia todo |
+| Tipo | **Folga** (não trabalhar) ou **Só este turno** (trabalhar só neste turno) |
+| Importância | Essencial, Importante ou Desejável; em branco = Essencial para folga num dia, Desejável nos demais |
+
+Exemplos:
+- Ana pediu folga em 20/11: Ana · 20/11 · (branco) · Folga · Essencial.
+- Bruno nunca faz noite: Bruno · (branco) · Noite · Folga.
+- Equipe fixa da manhã (regra do hospital): Carla · (branco) · Manhã · Só este turno · Essencial.
+  Para quem pode fazer Manhã ou Dia 12 h, duas linhas "Só este turno", uma para cada turno.
+- Linha sem dia e sem turno não vale (a tela avisa).
+
+A importância é **da linha**: a mesma regra pode ser do hospital (Essencial) ou um desejo do
+profissional (Desejável). Mesmo em Essencial, **nada desta tabela é rígido**: se a cobertura
+exigir, a ferramenta descumpre o menor número possível de pedidos, começando pelos de menor
+importância, e a tela diz quantos e de quem ("Pedidos e regras descumpridos — Essencial: Ana 1;
+Desejável: Bruno 2."). A cobertura e a CLT continuam rígidas. Se duas linhas proíbem o mesmo
+turno do mesmo dia da mesma pessoa, conta uma violação só, no nível mais alto.
 
 **Pedido de folga no domingo.** A ferramenta não impõe que o descanso semanal caia no domingo
 (art. 67) nem a escala quinzenal do art. 386. Quem precisar pode pedir folga no domingo: é uma
