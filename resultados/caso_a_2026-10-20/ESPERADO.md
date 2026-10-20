@@ -92,3 +92,21 @@ da segunda pedem o mesmo número de pessoas.
 **Premissa compartilhada:** o 11 h do D12 e as 36 h da noite saem de `descanso_exigido`, a mesma
 fonte do modelo e da conferência no relógio. A conta confere a aritmética sob a hipótese, não a
 hipótese.
+
+## Depois da Parte 7 (v1.4.1) — quem prova: conta x solver (acréscimo de 20/10, tarde, antes de rodar)
+
+A ferramenta passa a fazer a conta da segunda-feira sozinha (`ferramenta.pares_de_dias`, "piso
+por pares de dias"; esperado em `resultados/piso_pares_2026-10-20/ESPERADO.md`), conferida sem
+solver (`docs/diagnostico/piso_pares.py --casos`):
+
+- **36 h (A36_livre e A36_fixo):** piso **30** (era 18). Pior par: dom 17/01 e seg 18/01 — 17
+  postos na segunda + 11 no domingo em turnos que impedem a segunda (D12, N); disponíveis 22
+  (as duas pessoas de férias estão fora). Enfermeiros: 3 + 2 = 5 > 4. **24 a 29 são recusados
+  pela conta**, sem solver; o solver começa em **30**. O diagnóstico de 24 deixa de ser
+  "combinação": passa a ser **"Dois dias seguidos"**, com "A conta prévia do menor quadro
+  provou…" e os números acima.
+- **D12 = 11 h (A11_fixo) — hipótese de sensibilidade, não regra da ferramenta:** piso 18; a
+  conta **não** recusa 24 (17 + 5 = 22 ≤ 22 em 17–18/01; enfermeiros 3 + 1 = 4 ≤ 4). O veredito
+  do 24 é do solver.
+- O que continua igual: a conta é condição necessária, não suficiente; o menor quadro viável com
+  36 h pode ser maior que 30 (os acréscimos entram primeiro como enfermeiros).

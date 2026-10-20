@@ -56,3 +56,16 @@ busca (sem o problema da margem do caso com 36 h). Leitura preliminar do Otávio
 **confere** quanto à conta. O veredito é do solver, e o risco de porte continua (NUMEROS_TCC §11–12).
 
 **Premissa compartilhada:** a mesma do caso A.
+
+## Depois da Parte 7 (v1.4.1) — quem prova: conta x solver (acréscimo de 20/10, tarde, antes de rodar)
+
+Conferido sem solver (`docs/diagnostico/piso_pares.py --casos`):
+
+- **36 h (B36_livre):** piso **105** (era 68). Pior par: dom 10/01 e seg 11/01 — 65 + 40 contra
+  89 disponíveis. Como 105 > 101 (89 + `MARGEM` 12), **todos os quadros de 89 a 101 são recusados
+  pela conta**: veredito **"Não há escala legal até 101 profissionais; o menor quadro viável está
+  acima disso."**, provado pela conta, **sem solver, em segundos** (conferido: 13 tentativas,
+  todas "piso"). Diagnóstico: "Dois dias seguidos". A rodada B36 deixa de medir porte.
+- **D12 = 11 h (B11_livre) — hipótese de sensibilidade, não regra da ferramenta:** piso 68; a
+  conta não recusa 89 (65 + 19 = 84 ≤ 89; enfermeiros 10 + 2 = 12 ≤ 15). O veredito é do solver,
+  e o risco de porte continua.
