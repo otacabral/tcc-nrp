@@ -43,6 +43,13 @@ OK, CLT_PREVALECE, NUNCA, GARANTIDO = ("ok", "a CLT prevalece", "nunca será ate
 
 PEDIDO, CUSTO = "day_off_requests", "custo_atribuicao"
 
+# Preferencias com familia propria (DECISOES.md, "2026-10-21 — Maximo de dias seguidos e maximo de
+# turnos tambem como preferencia"): familia -> a familia INRC de mesma expressao, que na
+# ferramenta e rigida e guarda o limite legal.
+PREF_DIAS, PREF_TURNOS = "pref_max_consecutive_working_days", "pref_max_num_assignments"
+LEGAL_DA_PREFERENCIA = {PREF_DIAS: "max_consecutive_working_days",
+                        PREF_TURNOS: "max_num_assignments"}
+
 # Pedidos e regras dos profissionais (DECISOES.md, "2026-10-19 — Pedidos e regras por
 # profissional"): a importancia e da LINHA. No plano de niveis, os pedidos de cada nivel sao um
 # "criterio" a parte, de id REGRAS + nivel.
@@ -79,9 +86,12 @@ CRITERIOS = (
     Criterio("enf_posto_tec", 0, "Enfermeiro em posto de técnico", CUSTO,
              "Turno em que um enfermeiro cobre vaga de técnico. Ex.: faltam técnicos no sábado "
              "e um enfermeiro cobre: 1 violação.", nivel=IMPORTANTE),
-    Criterio("max_dias_seguidos", 1, "Máximo de dias seguidos de trabalho", None,
-             "A CLT já limita: no máximo 6 dias seguidos (art. 67); no 12×36, nenhum dia "
-             "seguido (36 h de descanso). Preferência mais apertada: trabalho futuro."),
+    # 21/10: maximo de dias seguidos e maximo de turnos tambem como preferencia (DECISOES.md,
+    # "2026-10-21 — ..."); o limite rigido (lei e hospital) continua, e o usado e o menor dos dois
+    Criterio("max_dias_seguidos", 1, "Máximo de dias seguidos (preferência)", PREF_DIAS,
+             "Preferência do hospital, abaixo do limite obrigatório (o campo acima; a lei permite "
+             "no máximo 6, art. 67). Ex.: com preferência 4, cinco dias seguidos contam 1 "
+             "violação; mais de 6 nunca acontece.", 5, "dias"),
     Criterio("min_dias_seguidos", 1, "Mínimo de dias seguidos de trabalho",
              "min_consecutive_working_days",
              "Evita dia de trabalho isolado. Ex.: com mínimo 3, trabalhar só na terça, entre "
@@ -117,9 +127,10 @@ CRITERIOS = (
              "identical_shift_types_during_weekend",
              "Quem trabalha no fim de semana faz o mesmo turno em todos os dias dele. Ex.: "
              "diurno no sábado e noturno no domingo contam 2 violações."),
-    Criterio("max_turnos", 3, "Máximo de turnos no período", None,
-             "A CLT já limita: o teto de horas da carga contratual nos dias disponíveis. "
-             "Preferência mais apertada: trabalho futuro."),
+    Criterio("max_turnos", 3, "Máximo de turnos no período", PREF_TURNOS,
+             "Preferência do hospital, abaixo do teto obrigatório (a carga contratual nos dias "
+             "disponíveis continua valendo). Ex.: com máximo 18, quem fez 20 turnos conta 2 "
+             "violações. O campo não passa do teto legal de turnos.", 18, "turnos"),
     Criterio("min_turnos", 3, "Mínimo de turnos no período", "min_num_assignments",
              "Ex.: com mínimo 10, quem fez 8 turnos conta 2 violações.", 10, "turnos"),
     Criterio("noturno_antes_fds", 3, "Noturno na véspera de fim de semana livre",
@@ -137,7 +148,7 @@ POR_ID = {c.id: c for c in CRITERIOS}
 RESUMO = {
     "pedido_folga": "Folga pedida num dia.",
     "enf_posto_tec": "Enfermeiro cobrindo vaga de técnico.",
-    "max_dias_seguidos": "Regra do hospital; a lei permite no máximo 6.",
+    "max_dias_seguidos": "Preferência, abaixo do máximo obrigatório.",
     "min_dias_seguidos": "Evita dia de trabalho isolado.",
     "max_folgas_seguidas": "Evita folgas longas demais.",
     "min_folgas_seguidas": "Evita folga isolada.",
@@ -147,7 +158,7 @@ RESUMO = {
     "fds_4_semanas": "Limita fins de semana trabalhados em 4 semanas.",
     "fds_completo": "Trabalha o fim de semana inteiro ou nenhum dia dele.",
     "mesmo_turno_fds": "O mesmo turno em todos os dias do fim de semana.",
-    "max_turnos": "Teto de turnos no período.",
+    "max_turnos": "Preferência de teto de turnos de cada pessoa no período.",
     "min_turnos": "Mínimo de turnos de cada pessoa no período.",
     "noturno_antes_fds": "Evita noturno na véspera de fim de semana livre.",
     "folgas_apos_noites": "Duas folgas depois de uma sequência de noturnos.",
@@ -205,7 +216,8 @@ FAMILIAS_CONTRATO = ["max_num_assignments", "min_num_assignments",
                      "max_working_weekends_in_four_weeks", "complete_weekends",
                      "identical_shift_types_during_weekend",
                      "no_night_shift_before_free_weekend",
-                     "two_free_days_after_night_shifts", "alternative_skill_category"]
+                     "two_free_days_after_night_shifts", "alternative_skill_category",
+                     PREF_DIAS, PREF_TURNOS]
 
 
 def limite_por_profissional(inst, fam: str, n: str) -> int:
@@ -222,7 +234,7 @@ def limite_por_profissional(inst, fam: str, n: str) -> int:
             return 0
         v = r.valor or 0
         if fam in ("max_num_assignments", "max_consecutive_working_days",
-                   "max_consecutive_free_days"):
+                   "max_consecutive_free_days", PREF_DIAS, PREF_TURNOS):
             return max(0, D - v)
         if fam == "min_num_assignments":
             return min(v, D)
@@ -278,6 +290,20 @@ def maximo(inst, crit: Criterio, habilidade_enf: str) -> int:
 
 # --- aplicar a classificacao na instancia -------------------------------------------------------
 
+def limite_legal(contrato, familia: str) -> int | None:
+    """O limite rigido que uma preferencia nao pode passar (o da familia INRC de mesma expressao,
+    que na ferramenta guarda a lei e o hospital); None se a familia nao e preferencia."""
+    legal = LEGAL_DA_PREFERENCIA.get(familia)
+    return getattr(contrato, legal).valor if legal is not None else None
+
+
+def limite_usado(contrato, familia: str, limite):
+    """min(preferencia, legal) — a regra do campo rigido do hospital (DECISOES.md, 21/10,
+    decisao de implementacao 3). As outras familias, o limite como veio."""
+    legal = limite_legal(contrato, familia)
+    return limite if legal is None or limite is None else min(limite, legal)
+
+
 def aplicar(inst, p, coef: dict[str, int], habilidade_enf: str):
     """A instancia com os criterios considerados no contrato e nos pedidos, cada um com peso =
     `coef[id]`, e o custo por atribuicao. Devolve (instancia, custo). Criterio nao considerado:
@@ -288,7 +314,7 @@ def aplicar(inst, p, coef: dict[str, int], habilidade_enf: str):
         nivel, limite = p[c.id]
         if nivel != NAO:
             mudancas[c.familia] = Flexivel(presente=True, ligada=True, peso=coef[c.id],
-                                           valor=limite)
+                                           valor=limite_usado(contrato, c.familia, limite))
     if mudancas:
         inst = dataclasses.replace(
             inst, contratos={**inst.contratos, "0": dataclasses.replace(contrato, **mudancas)})
@@ -429,6 +455,8 @@ def resultado(inst, escala, p, habilidade_enf: str) -> list[tuple[str, str, int,
                                and habilidade_enf not in inst.turnos[s].habilidades)
             elif c.familia == "no_night_shift_before_free_weekend":
                 quem = Counter(noites_antes_de_fim_de_semana_livre_por_pessoa(inst, escala))
+            elif c.familia in LEGAL_DA_PREFERENCIA:
+                quem = violacoes_preferencia(inst, escala, c.familia, p[c.id][1])
             else:
                 quem = por_familia.get(c.familia, Counter())
             quem = +quem   # tira os zeros
@@ -437,6 +465,23 @@ def resultado(inst, escala, p, habilidade_enf: str) -> list[tuple[str, str, int,
             quem = Counter(n for nv, n in descumpridos(inst, escala) if nv == nivel)
             linhas.append((nivel, NOME_REGRAS, sum(quem.values()), len(quem)))
     return linhas
+
+
+def violacoes_preferencia(inst, escala, familia: str, limite: int) -> Counter:
+    """Excesso por profissional de uma preferencia (`PREF_DIAS`, `PREF_TURNOS`), fora do modelo:
+    o `avaliacao.py` na familia INRC de mesma expressao, com o limite da preferencia no lugar do
+    legal (o mesmo min(preferencia, legal) do modelo)."""
+    from avaliacao import violacoes
+    alvo = LEGAL_DA_PREFERENCIA[familia]
+    contratos = {k: dataclasses.replace(
+        c, **{alvo: Flexivel(presente=True, ligada=True, peso=1,
+                             valor=limite_usado(c, familia, limite))})
+        for k, c in inst.contratos.items()}
+    quem = Counter()
+    for v in violacoes(dataclasses.replace(inst, contratos=contratos), escala):
+        if v.restricao == alvo:
+            quem[v.profissional] += v.excesso
+    return quem
 
 
 # --- pedidos e regras dos profissionais (DECISOES.md, 2026-10-19; esperado em

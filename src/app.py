@@ -260,11 +260,12 @@ _pares = set(br.pares_proibidos_por_horario(
 _so_doze = bool(turnos) and all((s, 1, t) in _pares for s, _, _ in turnos for t, _, _ in turnos)
 # fora da tela: o pedido de folga no dia (a importancia e da linha da tabela de pedidos), as
 # linhas que a CLT ja garante e, no 12x36, as que nunca podem ser atendidas ou que a lei impede
-OCULTOS_12X36 = ("fds_completo", "mesmo_turno_fds", "min_dias_seguidos")
+# 21/10: o maximo de dias seguidos e preferencia (com o campo rigido do hospital na mesma linha
+# do grupo); no 12x36 os dois ficam ocultos
+OCULTOS_12X36 = ("fds_completo", "mesmo_turno_fds", "min_dias_seguidos", "max_dias_seguidos")
 NA_TELA = [c for c in pr.CRITERIOS
-           if c.id == "max_dias_seguidos"
-           or (c.id != "pedido_folga" and not c.clt
-               and not (_so_doze and c.id in OCULTOS_12X36))]
+           if c.id != "pedido_folga" and not c.clt
+           and not (_so_doze and c.id in OCULTOS_12X36)]
 _visiveis = {c.id for c in NA_TELA}
 # criterio oculto vale como o padrao ("Nao considerar"), mesmo se escolhido antes
 escolha = {k: (st.session_state[f"prio_{k}"], st.session_state.get(f"lim_{k}"))
@@ -276,7 +277,8 @@ except (ValueError, TypeError, KeyError, ZeroDivisionError):
     _teto = None                                          # entrada ainda incompleta
 # limites presos pela lei
 _max_dias = int(st.session_state.get("max_dias", br.MAX_CONSECUTIVOS_GENERICO))
-TETO_LIMITE = {"min_dias_seguidos": _max_dias, "min_turnos": _teto}
+TETO_LIMITE = {"min_dias_seguidos": _max_dias, "min_turnos": _teto,
+               "max_dias_seguidos": _max_dias, "max_turnos": _teto}
 for g, nome_grupo in enumerate(pr.GRUPOS):
     crits = [c for c in NA_TELA if c.grupo == g]
     campos = [c for c in crits if not c.clt]
@@ -314,10 +316,8 @@ for g, nome_grupo in enumerate(pr.GRUPOS):
             coluna.caption(rotulo)
         for c in crits:
             if c.id == "max_dias_seguidos":
-                # regra do hospital, rigida (DECISOES.md, 2026-10-19); no 12x36 nao aparece:
-                # ninguem trabalha dois dias seguidos
-                if _so_doze:
-                    continue
+                # regra do hospital, rigida (DECISOES.md, 2026-10-19), e logo abaixo a
+                # preferencia (21/10); no 12x36 nenhuma das duas aparece (OCULTOS_12X36)
                 col = st.columns([3, 2, 1])
                 col[0].markdown("Máximo de dias seguidos de trabalho",
                                 help="Regra do hospital, rígida. A ferramenta usa o menor entre "
@@ -328,7 +328,6 @@ for g, nome_grupo in enumerate(pr.GRUPOS):
                                     value=br.MAX_CONSECUTIVOS_GENERICO, step=1, key="max_dias",
                                     label_visibility="collapsed")
                 st.caption("Regra do hospital; a lei permite no máximo 6.")
-                continue
             col = st.columns([3, 2, 1])
             ajuda = c.ajuda
             if c.sem_conferencia:

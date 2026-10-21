@@ -217,6 +217,11 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
         r = c.min_num_assignments
         if r.ativa:
             nova_folga("min_num_assignments", r.peso, r.valor - sum(y))
+        # preferencia de teto de turnos (so a ferramenta; ausente no INRC): mesma expressao do
+        # max_num_assignments, familia propria — aquele e rigido na ferramenta
+        r = c.pref_max_num_assignments
+        if r.ativa:
+            nova_folga("pref_max_num_assignments", r.peso, sum(y) - r.valor)
 
         # dias consecutivos de trabalho: janela deslizante de tamanho limite+1
         r = c.max_consecutive_working_days
@@ -224,6 +229,14 @@ def _adicionar_flexiveis(m, inst: Instancia, elegiveis, habilidade_rigida,
             L = r.valor
             for i in range(nd - L):
                 nova_folga("max_consecutive_working_days", r.peso, sum(y[i:i + L + 1]) - L)
+        # preferencia de maximo de dias seguidos (so a ferramenta; ausente no INRC): a mesma
+        # janela, familia propria, abaixo do limite rigido
+        r = c.pref_max_consecutive_working_days
+        if r.ativa and r.valor < nd:
+            L = r.valor
+            for i in range(nd - L):
+                nova_folga("pref_max_consecutive_working_days", r.peso,
+                           sum(y[i:i + L + 1]) - L)
 
         # minimo de dias consecutivos: um indicador por (inicio, tamanho de bloco curto).
         # Bloco de tamanho R comeca em t se y[t-1]=0, y[t..t+R-1]=1 e y[t+R]=0. Fora do

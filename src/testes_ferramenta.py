@@ -1159,13 +1159,17 @@ def caso_opb_situacao() -> None:
     confere(s["min_turnos"] == pr.OK, f"minimo de turnos 10: {s['min_turnos']}")
     confere(s["fds_completo"] == pr.NUNCA and s["mesmo_turno_fds"] == pr.NUNCA,
             f"12x36, fins de semana: {s['fds_completo']} / {s['mesmo_turno_fds']}")
-    confere(all(s[k] == pr.GARANTIDO for k in ("max_dias_seguidos", "max_turnos",
-                                                "seq_indesejadas")), "ja garantido pela CLT")
+    # 21/10 (DECISOES.md, "Maximo de dias seguidos e maximo de turnos tambem como preferencia";
+    # esperado em resultados/preferencias_2026-10-21/ESPERADO.md): os dois maximos viraram
+    # preferencia ("ok"); so as sequencias indesejadas continuam "ja garantido pela CLT"
+    confere(s["seq_indesejadas"] == pr.GARANTIDO
+            and s["max_dias_seguidos"] == s["max_turnos"] == pr.OK,
+            f"ja garantido pela CLT so as sequencias: {s}")
     s8 = fe.situacoes(_entrada(M8_TURNOS, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)}))
     confere(s8["fds_completo"] == pr.OK and s8["mesmo_turno_fds"] == pr.OK
             and s8["min_dias_seguidos"] == pr.OK
-            and all(s8[k] == pr.GARANTIDO for k in ("max_dias_seguidos", "max_turnos",
-                                                     "seq_indesejadas")),
+            and s8["max_dias_seguidos"] == s8["max_turnos"] == pr.OK
+            and s8["seq_indesejadas"] == pr.GARANTIDO,
             f"8 h em tres turnos: {s8}")
     print("opB-d. rodada pequena: mesmo turno e fim de semana completo no Essencial (12x36)")
     p = dict(fe.prioridades_padrao(), fds_completo=(fe.ESSENCIAL, None),
@@ -1216,7 +1220,8 @@ def caso_opb_tela() -> None:
     confere([x.label for x in grupos] == [
         "Pedidos e qualificação — 1 de 1 considerados",
         "Sequências de trabalho e folga — 0 de 2 considerados",
-        "Fins de semana — 0 de 3 considerados", "Noturno e carga — 0 de 3 considerados"],
+        # 21/10: o maximo de turnos virou preferencia (3 -> 4 no grupo 4)
+        "Fins de semana — 0 de 3 considerados", "Noturno e carga — 0 de 4 considerados"],
         f"grupos {[x.label for x in grupos]}")
     confere(grupos and grupos[0].proto.expanded and not any(x.proto.expanded
                                                             for x in grupos[1:]),
@@ -1225,9 +1230,10 @@ def caso_opb_tela() -> None:
     # da tabela "Pedidos e regras dos profissionais", que fica no grupo 1)
     # 3o bloco, Parte 5 (20/10): no 12x36 ficam ocultos o minimo de dias seguidos, o fim de
     # semana completo e o mesmo turno no fim de semana
+    # 21/10: o maximo de dias seguidos (preferencia) tambem fica oculto no 12x36
     padrao = {k: v[0] for k, v in fe.prioridades_padrao().items()
               if k not in ("pedido_folga", "min_dias_seguidos", "fds_completo",
-                           "mesmo_turno_fds")}
+                           "mesmo_turno_fds", "max_dias_seguidos")}
     confere("**Pedidos e regras dos profissionais**" in textos(at, "markdown"),
             "tabela de pedidos e regras no grupo 1")
     confere({k: at.selectbox(key=f"prio_{k}").value for k in padrao} == padrao,
@@ -1546,6 +1552,34 @@ def caso_descanso_parametro() -> None:
             "dicionario vazio de novo: a regra de sempre")
 
 
+def caso_pref_tela() -> None:
+    """21/10: o maximo de turnos (preferencia) na tela padrao (12x36), com o teto legal no campo
+    (esperado em resultados/preferencias_2026-10-21/ESPERADO.md, "pref-tela")."""
+    print("pref-tela. maximo de turnos com campo e nivel; dias seguidos oculto no 12x36")
+    at = AppTest.from_file(str(RAIZ / "src" / "app.py"), default_timeout=1800)
+    at.run()
+    # sem equipe a instancia nao monta e nao ha teto; com equipe, o campo ganha o teto legal
+    at.number_input(key="n_enf").set_value(4)
+    at.number_input(key="n_tec").set_value(8)
+    at.run()
+    confere(at.selectbox(key="prio_max_turnos").value == fe.NAO,
+            f"importancia padrao: {at.selectbox(key='prio_max_turnos').value}")
+    campo = next((x for x in at.number_input if x.key == "lim_max_turnos"), None)
+    confere(campo is not None, "campo de limite do maximo de turnos")
+    if campo is None:
+        return
+    # teto legal de turnos da tela padrao, pela conta: 44 h x 28 dias / 7 = 176 h; turno mais
+    # curto 12 h -> 14 turnos
+    teto = int(br.CARGA_CONTRATUAL_PADRAO * br.DIAS_HORIZONTE / 7 // 12)
+    confere(teto == 14 and campo.max == teto, f"maximo do campo {campo.max} (teto {teto})")
+    confere(campo.value == teto, f"padrao 18 rebaixado ao teto: {campo.value}")
+    confere(not any(x.key == "prio_max_dias_seguidos" for x in at.selectbox)
+            and not any(x.key == "lim_max_dias_seguidos" for x in at.number_input),
+            "dias seguidos (preferencia) oculto no 12x36")
+    confere(any(x.label == "Noturno e carga — 0 de 4 considerados" for x in at.expander),
+            "grupo 4 com 4 criterios")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
@@ -1557,7 +1591,7 @@ CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeir
          "opB-tela": caso_opb_tela,
          "ped-2": caso_ped_contas, "ped-3": caso_ped_niveis, "ped-6": caso_ped_nunca_trava,
          "max-dias": caso_max_dias, "tela-limpa": caso_tela_limpa,
-         "descanso-param": caso_descanso_parametro}
+         "descanso-param": caso_descanso_parametro, "pref-tela": caso_pref_tela}
 
 
 def main() -> int:

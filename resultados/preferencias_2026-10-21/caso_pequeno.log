@@ -1,0 +1,16 @@
+(c1) ('Importante', 4) dias; ('Não considerar', 18) turnos
+      [prioridades] caminho: fundido
+   O quadro informado admite escala legal. Escala gerada. | caminho fundido | [('Essencial', 'Pedido de folga no dia', 0, 0), ('Importante', 'Enfermeiro em posto de técnico', 0, 0), ('Importante', 'Máximo de dias seguidos (preferência)', 96, 14)]
+   ok    veredito admite, menor viavel 14, provado True
+   ok    caminho fundido (esperado fundido)
+   ok    maior sequencia na escala 6, no relogio 6, descanso ok
+   ok    dias seguidos acima de 4: script 96, resultado por criterio 96, esperado 96
+(c2) ('Importante', 4) dias; ('Desejável', 23) turnos
+      [prioridades] caminho: em sequência, 2 blocos
+   O quadro informado admite escala legal. Escala gerada. | caminho em sequência, 2 blocos | [('Essencial', 'Pedido de folga no dia', 0, 0), ('Importante', 'Enfermeiro em posto de técnico', 0, 0), ('Importante', 'Máximo de dias seguidos (preferência)', 96, 14), ('Desejável', 'Máximo de turnos no período', 14, 14)]
+   ok    veredito admite, menor viavel 14, provado True
+   ok    caminho em sequência, 2 blocos (esperado em sequência, 2 blocos)
+   ok    maior sequencia na escala 6, no relogio 6, descanso ok
+   ok    dias seguidos acima de 4: script 96, resultado por criterio 96, esperado 96
+   ok    turnos acima de 23: script 14, resultado por criterio 14, esperado 14
+caso pequeno OK

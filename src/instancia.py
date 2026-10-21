@@ -10,7 +10,7 @@ Nomes dos atributos de restricao: mantidos iguais aos do esquema oficial, em sna
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, time, timedelta
 
 # indice = date.weekday(): 0 = segunda
@@ -139,6 +139,12 @@ class Contrato:
     no_night_shift_before_free_weekend: Flexivel
     two_free_days_after_night_shifts: Flexivel
     alternative_skill_category: Flexivel
+    # Preferencias da ferramenta (DECISOES.md, "2026-10-21 — Maximo de dias seguidos e maximo de
+    # turnos tambem como preferencia"): a mesma expressao das familias INRC de mesmo nome sem o
+    # prefixo, em familia propria, porque na ferramenta aquelas sao rigidas (limite legal). Fora
+    # de RESTRICOES e do XML; ausentes por padrao, entao nada muda no INRC.
+    pref_max_consecutive_working_days: Flexivel = field(default_factory=Flexivel.ausente)
+    pref_max_num_assignments: Flexivel = field(default_factory=Flexivel.ausente)
 
     @property
     def dias_fim_de_semana(self) -> tuple[int, ...]:

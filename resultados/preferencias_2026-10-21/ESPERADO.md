@@ -68,3 +68,25 @@ rodada; acréscimo 0, e 6 nas do caso A (o quadro 30, que foi ao solver): 8 caso
   (preferência) não aparece.
 
 Qualquer outra diferença na suíte é falha.
+
+---
+
+## Acréscimo a posteriori (21/10, depois de rodar o (c)) — o esperado de 56 estava errado
+
+**O que deu:** (c1) e (c2) com **96** violações da preferência de dias seguidos, provado; contagem
+do script = resultado por critério (96 = 96); (c2) turnos 14 = 14, como esperado.
+
+**Por que o 56 estava errado:** a conta ignorou a cobertura. Com sequências 5, 5, 5, 5, 4 as
+folgas de cada pessoa só podem cair nos dias 4, 5, 10, 11, 16, 17, 22 e 23 (contando do 0), mas a
+demanda (12 de 14 por dia) exige **2 folgas em todos os 28 dias**. O 56 é inatingível.
+
+**A conta certa (limite inferior, feita depois de ver o resultado):** a violação é uma janela de
+5 dias seguidos toda trabalhada (é a expressão do modelo). Cada pessoa tem 24 janelas: 14 × 24 =
+336. Uma folga no dia d quebra no máximo w(d) janelas da pessoa, w = 1, 2, 3, 4, 5, …, 5, 4, 3, 2,
+1 (soma nos 28 dias = 120). Com exatamente 2 folgas por dia, no máximo 2 × 120 = 240 janelas
+quebradas: **violações ≥ 336 − 240 = 96**, com igualdade se ninguém tiver duas folgas na mesma
+janela. O solver achou e provou 96. O teste (c) passa a esperar 96 — conta registrada **depois**
+do resultado, então vale como conferência da coerência, não como previsão.
+
+**Ajuste do teste pref-tela (sem mudar o esperado):** na tela vazia a instância não monta e não
+há teto legal; o teste preenche a equipe (4 + 8) antes de conferir o campo.
