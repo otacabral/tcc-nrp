@@ -22,6 +22,10 @@ fim de cada sessão (dele ou do chat).
     Testado: controle OK; identidade nas 5 entradas da fase 2, 24/24; caso pequeno 96 = 96 (o
     esperado de 56 estava errado — ver o ESPERADO, acréscimo a posteriori); pref-tela e opB-d OK.
   - Worktree de leitura `D:\dev\tcc-nrp-v141` criado; `fechar_v142.sh` pronto e testado sem solver.
+- **Suíte da v1.4.2 parada em tela_opB-c** (21/10): o teste esperava 11 critérios no Desejável;
+  com as duas preferências são 13 (máximo 5.010 + 690 + 420 = 6.120; nenhuma outra diferença no
+  plano, conferido contra a v1.4.1). Teste atualizado com autorização do Otávio; registrado no
+  ESPERADO (segundo acréscimo a posteriori) e no DECISOES. Retomar com `RETOMAR=1`.
 - **A v1.4.2 ainda não existe**: depende da suíte, que é do Otávio.
 - `NUMEROS_TCC.md`: sem mudança. Congelamento dos números: **25/10**.
 - Nada enviado ao GitHub nesta sessão.

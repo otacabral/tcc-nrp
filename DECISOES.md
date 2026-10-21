@@ -2647,6 +2647,12 @@ orientador pediu em 14/10: manter o modelo perto do INRC e endurecer só o que a
 o limite legal); a contagem é do `avaliacao.py`, que foi conferido contra o avaliador nas
 famílias INRC de mesma expressão.
 
+**Teste opB-c atualizado a posteriori (21/10, suíte da v1.4.2; autorizado pelo Otávio, como o
+precedente do 1-2):** "todas as suaves no Desejável" passa de 11 para 13 critérios e o máximo do
+bloco, de 5.010 para 6.120 (+ 690 dos dias seguidos, + 420 dos turnos); conferido contra a v1.4.1
+que não há outra diferença no plano (`resultados/preferencias_2026-10-21/ESPERADO.md`, segundo
+acréscimo).
+
 ---
 
 ## Modelo de entrada

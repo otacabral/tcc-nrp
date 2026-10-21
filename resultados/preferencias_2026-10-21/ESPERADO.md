@@ -90,3 +90,24 @@ do resultado, então vale como conferência da coerência, não como previsão.
 
 **Ajuste do teste pref-tela (sem mudar o esperado):** na tela vazia a instância não monta e não
 há teto legal; o teste preenche a equipe (4 + 8) antes de conferir o campo.
+
+---
+
+## Acréscimo a posteriori (21/10, suíte da v1.4.2 parada em tela_opB-c) — não previsto antes
+
+O teste opB-c ("plano com as suaves no Desejável") exigia 11 critérios no bloco Desejável. Com as
+duas preferências novas, "todas as suaves" passa a ter 13. **Este esperado não previu isso** (a
+decisão 6 listou opB-d, opB-tela e opB-e, e esqueceu o opB-c).
+
+Conferido pelo código, comparando o plano da v1.4.1 (worktree `..\tcc-nrp-v141`) com o novo, na
+mesma entrada (demonstração, 30 pessoas, 28 dias): bloco 1 idêntico (Essencial + Importante,
+pedido 286, enfermeiro em posto de técnico 1, máximo 2.001); no bloco Desejável, os 11 critérios
+antigos com o mesmo coeficiente, o mesmo limite e o mesmo máximo; **a única diferença são
+`max_dias_seguidos` e `max_turnos`**. Máximo do bloco: 5.010 (v1.4.1) + 690 (dias: 30 × (28 − 5)) +
+420 (turnos: 30 × (28 − 14), o 18 rebaixado ao teto legal de 14) = **6.120**. O teste passa a
+conferir 13 critérios, os dois novos presentes e o máximo 6.120. O resto do opB-c já tinha passado
+na suíte (2 blocos; escala entregue e descanso cumprido; Essencial + Importante = 24, provado).
+
+Os outros testes ainda não rodados na suíte foram conferidos: só o opB-e usa "todas as suaves", e
+confere veredito e escala, não o plano (passou com o código novo antes da suíte, assim como o
+opB-tela); os demais não usam a classificação, e as rodadas a2 usam a padrão.

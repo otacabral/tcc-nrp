@@ -1134,8 +1134,13 @@ def caso_opb_fusao() -> None:
     print("opB-c. plano com as suaves no Desejavel")
     p = _todas_suaves(fe.DESEJAVEL)
     blocos = pr.planejar(inst, pr.normalizar(p), br.HABILIDADE_ENF)
+    # 21/10, a posteriori (suite da v1.4.2; ESPERADO de preferencias_2026-10-21): o Desejavel
+    # ganhou as duas preferencias novas, 11 -> 13 criterios; maximo 5010 (v1.4.1) + 690
+    # (dias: 30 x (28 - 5)) + 420 (turnos: 30 x (28 - 14), o 18 rebaixado ao teto legal 14) = 6120
     confere(len(blocos) == 2 and blocos[0].coef == {"pedido_folga": 286, "enf_posto_tec": 1}
-            and set(blocos[1].coef.values()) == {1} and len(blocos[1].coef) == 11,
+            and set(blocos[1].coef.values()) == {1} and len(blocos[1].coef) == 13
+            and {"max_dias_seguidos", "max_turnos"} <= set(blocos[1].coef)
+            and blocos[1].maximo == 6120,
             f"suaves no Desejavel: {[(b.niveis, b.coef, b.maximo) for b in blocos]}")
     print("opB-c. rodada da demonstracao com as suaves no Desejavel (600/180/20 min)")
     e = cc.entrada()
