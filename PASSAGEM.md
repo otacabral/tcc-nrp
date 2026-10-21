@@ -1,87 +1,74 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 20/10/2026 (tarde). Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 21/10/2026 (manhã). Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- **Versão citável: v1.4.0** (suíte TUDO OK em `resultados/v140_2026-10-20/suite/resumo.txt`; tag
-  criada e enviada pelo Otávio com main e v1.3.0). A tag v1.4.0 não se mexe.
-- **Sessão de 20/10 (tarde), Partes 0, 1 e 7 a 11** (`resultados/relatorio_2026-10-20c.md`):
-  - Parte 0: o `git status` já estava limpo; nada a descartar. O `pedidos_avaliador.py` (e o
-    `validar.py`) regravam em CRLF — só registrado.
-  - Parte 1: DECISOES "a posteriori: fundamento das 36 h para qualquer plantão de 12 h ou mais".
-  - **Parte 7 — piso por pares de dias (vira v1.4.1)**: a ferramenta recusa sem solver os quadros
-    que dois dias seguidos já provam insuficientes. Caso A (36 h): piso 18 → **30**; caso B (36 h):
-    68 → **105**, veredito "Não há escala legal até 101…" pela conta, sem solver. Sob D12 = 11 h a
-    conta não recusa nem A (24) nem B (89). Nenhum quadro viável recusado em 224 rodadas
-    registradas; sorteio pequeno 40/40 (semente 20261020). Entrada do solver 243/243 idêntica à
-    v1.4.0.
-  - Parte 8: `fechar_v141.sh` pronto e testado sem solver. Parte 9: `rodar_fase2.sh` pronto e
-    testado sem solver; ESPERADO de A e B atualizados. Parte 10: MAPA_CODIGO.
-- **A v1.4.1 ainda não existe**: depende da suíte, que é do Otávio.
+- **Versão citável: v1.4.1** (suíte TUDO OK em `resultados/v141_2026-10-20/suite/resumo.txt`; tag
+  criada pelo Otávio). A tag v1.4.1 não se mexe.
+- **Sessão de 21/10 (manhã), Partes 0 a 6** (`resultados/relatorio_2026-10-21.md`):
+  - Parte 0, **fase 2 rodada na v1.4.1** (`resultados/fase2_2026-10-21/`, TUDO OK): A36 livre e
+    fixo → "Faltam 6; o menor quadro viável é 30" (24–29 pela conta; 30 = 10 enf. + 20 téc.; 13
+    turnos de enfermeiro em posto de técnico no livre, 14 no fixo); B36 → "Não há escala legal até
+    101" pela conta, sem solver; A11 (hipótese) admite 24, provado; B11 (hipótese) admite 89 sem
+    prova. Avaliador oficial sem violação de dura nas quatro escalas.
+  - **Achado:** no B11 o avaliador tinha parado sem memória e o "sem violação" foi lido de um
+    stack trace (o 43 era número de linha). Reconferido com `-Xmx6g`: 714, sem violação de dura.
+    Correção de defeito no `src/validar.py` (falha alto; `-Xmx6g`).
+  - Proposta da seção 15 do `NUMEROS_TCC.md` (casos A e B) no relatório, **não gravada**.
+  - Partes 1–5: máximo de dias seguidos e máximo de turnos **também como preferência** (famílias
+    próprias no modelo; rígidas iguais); tela com nível e limite; padrão "Não considerar".
+    Testado: controle OK; identidade nas 5 entradas da fase 2, 24/24; caso pequeno 96 = 96 (o
+    esperado de 56 estava errado — ver o ESPERADO, acréscimo a posteriori); pref-tela e opB-d OK.
+  - Worktree de leitura `D:\dev\tcc-nrp-v141` criado; `fechar_v142.sh` pronto e testado sem solver.
+- **A v1.4.2 ainda não existe**: depende da suíte, que é do Otávio.
 - `NUMEROS_TCC.md`: sem mudança. Congelamento dos números: **25/10**.
 - Nada enviado ao GitHub nesta sessão.
 
 ## Próxima tarefa
 
-**1. Otávio: suíte de fechamento da v1.4.1.** Com o Claude Code e o Chrome fechados. No
+**1. Otávio: suíte de fechamento da v1.4.2.** Com o Claude Code e o Chrome fechados. No
 PowerShell, da raiz, um comando por linha:
 
     cd D:\dev\tcc-nrp
     .\.venv\Scripts\Activate.ps1
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v141.sh
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v142.sh
 
 Termina com "TUDO OK" ou "PARADO: ..." na última linha de
-`resultados/v141_<data>/suite/resumo.txt` (a data do dia em que começou). Se for interrompida
+`resultados/v142_<data>/suite/resumo.txt` (a data do dia em que começou). Se for interrompida
 (memória, queda), **retomar** — pula o que já passou e continua na mesma pasta —, um por linha:
 
     cd D:\dev\tcc-nrp
     .\.venv\Scripts\Activate.ps1
     $env:RETOMAR = "1"
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v141.sh
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v142.sh
     Remove-Item Env:RETOMAR
 
-Diferença esperada e já admitida: na a2, o P05 tem o quadro 14 recusado pela conta (antes, pelo
-solver). Qualquer outra diferença é falha.
+Diferenças esperadas e já admitidas: as da v1.4.1 (P05, 14 pela conta) e as do
+`resultados/preferencias_2026-10-21/ESPERADO.md` (opB-d, opB-tela e opB-e atualizados; pref-tela
+novo; caso pequeno com 96). Qualquer outra diferença é falha.
 
-**2. Se TUDO OK: tag v1.4.1 e envio** (um por linha; a tag marca a versão, o push manda os
+**2. Se TUDO OK: tag v1.4.2 e envio** (um por linha; a tag marca a versão, o push manda os
 commits e a tag ao GitHub):
 
-    git tag -a v1.4.1 -m "v1.4.1: piso por pares de dias"
+    git tag -a v1.4.2 -m "v1.4.2: maximo de dias seguidos e maximo de turnos tambem como preferencia"
     git push origin main
-    git push origin v1.4.1
+    git push origin v1.4.2
 
 Se "PARADO": não criar a tag; abrir o log indicado e trazer ao Claude Code.
 
-**3. Depois da tag: fase 2** (cinco rodadas, até 60 min cada; termina com "TUDO OK" ou
-"PARADO: ..." em `resultados/fase2_<data>/resumo.txt`). Um por linha:
-
-    cd D:\dev\tcc-nrp
-    .\.venv\Scripts\Activate.ps1
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/rodar_fase2.sh
-
-Retomar, se interrompida:
-
-    cd D:\dev\tcc-nrp
-    .\.venv\Scripts\Activate.ps1
-    $env:RETOMAR = "1"
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/rodar_fase2.sh
-    Remove-Item Env:RETOMAR
-
-Ordem: A36_livre, A36_fixo, A11_fixo, B11_livre, B36_livre. As de 11 h saem como
-`HIPOTESE_SENSIBILIDADE_*` — hipótese de sensibilidade, não regra da ferramenta. Antes de cada
-rodada o script lê a memória livre; abaixo de 3 GB, para ("PARADO: menos de 3 GB livres") —
-fechar programas e retomar. "Não decidido" não é falha. Esperados: os `ESPERADO.md` de
-`resultados/caso_a_2026-10-20/` e `caso_b_2026-10-20/` (seção "Depois da Parte 7").
+**3. Otávio: aprovar (ou corrigir) a seção 15 proposta para o `NUMEROS_TCC.md`** (casos A e B), no
+`resultados/relatorio_2026-10-21.md`. Só depois os números vão ao texto.
 
 Sensibilidade com 2 ou 3 ordens de critérios: **sem proposta até a decisão do Otávio**.
 Congelamento dos números: **25/10**.
 
 ## Worktrees de leitura (D:\dev)
 
-`D:\dev\tcc-nrp-v123`, `D:\dev\tcc-nrp-v130` e `D:\dev\tcc-nrp-v140` são **worktrees de leitura**
-(cópias da v1.2.3, v1.3.0 e v1.4.0 para as conferências de identidade). Ninguém trabalha nelas;
+`D:\dev\tcc-nrp-v123`, `D:\dev\tcc-nrp-v130`, `D:\dev\tcc-nrp-v140` e `D:\dev\tcc-nrp-v141` são
+**worktrees de leitura** (cópias da v1.2.3, v1.3.0, v1.4.0 e v1.4.1 para as conferências de
+identidade). Ninguém trabalha nelas;
 o Claude Code só abre `D:\dev\tcc-nrp`. As da v1.2.3 e v1.3.0 têm cópias de scripts de identidade
 deixadas pelas suítes antigas, por isso o `--force`. Para removê-las **depois da entrega**, da
 raiz, um por linha:
@@ -90,8 +77,19 @@ raiz, um por linha:
     git worktree remove --force ..\tcc-nrp-v123
     git worktree remove --force ..\tcc-nrp-v130
     git worktree remove --force ..\tcc-nrp-v140
+    git worktree remove --force ..\tcc-nrp-v141
 
 (apaga só as pastas; as tags e o histórico ficam).
+
+## Decisões de 21/10 (manhã)
+
+- DECISOES "2026-10-21 — Máximo de dias seguidos e máximo de turnos também como preferência"
+  (MUDANÇA DE FORMULAÇÃO; revisa o item c de "2026-10-19 — Opção B"): famílias de preferência
+  separadas das rígidas, com a expressão do INRC; limite usado = min(preferência, legal); padrão
+  "Não considerar"; limites padrão 5 e 18 (contrato 0 do `medium_late05`).
+- DECISOES "2026-10-21 — Correção de defeito: avaliador sem memória lido como 'sem violação'".
+- Limitação declarada (caso A): a busca tenta só a composição da regra `equipe` e "todos
+  enfermeiros"; o 30 vale para qualquer composição, mas 10 + 20 não é ótimo de custo.
 
 ## Decisões de 20/10 (tarde)
 
@@ -181,6 +179,15 @@ raiz, um por linha:
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **21/10:** (1) números da fase 2 só depois de o Otávio aprovar a seção 15 proposta
+  (`resultados/relatorio_2026-10-21.md`); A11 e B11 só como "HIPÓTESE DE SENSIBILIDADE — NÃO REGRA
+  DA FERRAMENTA". (2) A penalidade do avaliador (288, 216, 96, 714) não vai ao texto como
+  resultado: só "sem violação de dura". (3) O `GUIA_DE_USO.md` ainda não cita as duas
+  preferências novas da tela. (4) A preferência não tem conferência no avaliador oficial (o XML só
+  tem a versão rígida); a contagem é do `avaliacao.py`. (5) O texto não pode mais dizer que
+  máximo de dias seguidos e máximo de turnos são só "garantidos pela CLT": viraram também
+  preferência classificável (na v1.4.2, se a suíte fechar).
 
 - **20/10 (tarde):** (1) fundamento das 36 h: a frase admitida é "a regra, como modelada, segue o
   art. 59-A" — nunca "o hospital descumpre"; a convenção coletiva do caso não foi lida. (2) Na

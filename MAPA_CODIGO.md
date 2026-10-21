@@ -78,6 +78,19 @@ Não entram no produto, mas sustentam o capítulo que diz que ele está correto.
 | `fechar_v130.sh`, `fechar_v140.sh`, `fechar_v141.sh` | Suítes de fechamento de cada versão (um processo por teste, para na primeira falha, `RETOMAR=1`). A da v1.4.1 compara a identidade com a v1.4.0 (`../tcc-nrp-v140`); `PULAR_SOLVER=1` testa o script. |
 | `rodar_fase2.sh` | Parte 9: as cinco rodadas da fase 2, com a memória livre conferida antes de cada uma (`PULAR_SOLVER=1` testa o script). |
 
+## Acréscimos de 21/10 (preferências de dias seguidos e de turnos; defeito do avaliador)
+
+| Arquivo | O que mudou |
+|---|---|
+| `src/instancia.py` | `Contrato.pref_max_consecutive_working_days` e `pref_max_num_assignments` (ausentes por padrão; fora de `RESTRICOES` e do XML). |
+| `src/modelo.py` | Duas famílias de **preferência**, com folga e a expressão do INRC (janela de dias seguidos; teto de turnos), separadas das rígidas, que não mudaram. Só existem quando ativas. |
+| `src/prioridades.py` | "Máximo de dias seguidos (preferência)" e "Máximo de turnos no período" viram critérios com nível e limite (`PREF_DIAS`, `PREF_TURNOS`); `limite_usado` = min(preferência, legal); `violacoes_preferencia` conta fora do modelo pelo `avaliacao.py`. |
+| `src/app.py` | As duas linhas na tela, com importância e limite (máximo = o legal); a de dias abaixo do campo rígido do hospital; oculta no 12×36. |
+| `src/validar.py` | Correção de defeito: avaliador que para (código ≠ 0 ou "Exception in thread") levanta `AvaliadorIndisponivel`; JVM com `-Xmx6g` (`MEMORIA_JAVA`). |
+| `src/testes_ferramenta.py` | Caso novo `pref-tela`; opB-d e opB-tela atualizados com registro. |
+| `docs/diagnostico/preferencias.py` | Testes (b) controle, (c) caso pequeno com solver e (e) identidade nas cinco entradas da fase 2 (`--raiz` grava com o código de outra árvore). |
+| `docs/diagnostico/fechar_v142.sh` | Suíte da v1.4.2: a da v1.4.1 com a identidade contra `../tcc-nrp-v141` e os testes das preferências; `RETOMAR=1`, `PULAR_SOLVER=1`. |
+
 ## Escopo anterior — referência, não produto
 
 Ficam em `docs/`. Produziram achados que vão ao texto como metodologia.
