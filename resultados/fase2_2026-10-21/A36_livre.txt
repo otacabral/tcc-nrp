@@ -1,0 +1,16 @@
+# Fase 2 — A36_livre
+
+- versão v1.4.1 (9afa334)
+- frase: Faltam 6; o menor quadro viável é 30. Escala gerada.
+- frase vigente: Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.
+- piso (conta prévia): 30; menor viável: 30; provado: sim; gap: None
+- tentativas: [{'quadro': 24, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 25, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 26, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 27, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 28, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 29, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 30, 'status': 'viavel', 'enfermeiros': 10, 'tecnicos': 20, 'segundos': 12.3, 'quem_provou': 'solver'}]
+- diagnóstico: {'motivo': 'pares', 'frase': 'A conta prévia do menor quadro provou, sem o solver, que este quadro não tem escala legal. dom 17/01 e seg 18/01: 17 postos na segunda + 11 no domingo em turnos que impedem a segunda (N, D12: depois deles, o descanso exigido não deixa trabalhar no dia seguinte); são 28 pessoas diferentes, e, descontadas férias e licenças, 22 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, faltam pelo menos 6 pessoas.'}
+- critérios: [{'nivel': 'Essencial', 'nome': 'Pedido de folga no dia', 'violacoes': 0}, {'nivel': 'Importante', 'nome': 'Enfermeiro em posto de técnico', 'violacoes': 13}]
+- Só este turno descumpridas: None
+- menor descanso no relógio: {'D12': 36.0, 'N': 36.0}
+- alertas COFEN: ['4 enfermeiros em 24 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 8 — grau informado na tela']
+- avaliador: {'xsd_instancia': [], 'xsd_escala': [], 'penalidade_avaliador': 288, 'hard_constraints_violation': 'não', 'erros_avaliador': [], 'premissa': 'a cobertura é conferida fora do modelo (avaliador oficial); a conferência do descanso no relógio compartilha a premissa com o modelo (descanso_exigido)'}
+- tempo total: 1813 s (limite operacional, não resultado)
+
+A36_livre: Faltam 6; o menor quadro viável é 30. Escala gerada. | menor viável 30 | tentativas [(24, 'conta'), (25, 'conta'), (26, 'conta'), (27, 'conta'), (28, 'conta'), (29, 'conta'), (30, 'viavel')] | avaliador: não | 1813 s

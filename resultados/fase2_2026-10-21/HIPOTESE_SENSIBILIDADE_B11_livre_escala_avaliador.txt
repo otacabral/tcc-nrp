@@ -1,0 +1,11 @@
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at dds.nrp.core.constraints.numbering.PatternCondition.buildNumbering(PatternCondition.java:45)
+	at dds.nrp.core.constraints.numbering.PatternCondition.<init>(PatternCondition.java:17)
+	at dds.nrp.core.constraints.numbering.PatternConditionBuilder.buildSTFF_Any(PatternConditionBuilder.java:245)
+	at dds.nrp.core.constraints.numbering.PatternConditionBuilder.buildPatternCondition(PatternConditionBuilder.java:53)
+	at dds.nrp.core.constraints.numbering.ScheduleEvaluator.buildConditionsList(ScheduleEvaluator.java:103)
+	at dds.nrp.core.constraints.numbering.ScheduleEvaluator.<init>(ScheduleEvaluator.java:36)
+	at dds.nrp.core.Schedule.createEvaluationStructure(Schedule.java:182)
+	at dds.nrp.core.Schedule.<init>(Schedule.java:58)
+	at dds.nrp.core.tools.ScheduleParser.parse(ScheduleParser.java:43)
+	at dds.nrp.core.evaluation.ScheduleEvaluator.main(ScheduleEvaluator.java:112)

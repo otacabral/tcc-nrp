@@ -1,0 +1,17 @@
+HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA
+# Fase 2 — B11_livre
+
+- versão v1.4.1 (9afa334)
+- frase: O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 100,0%: distância máxima até a melhor possível).
+- frase vigente: Escala desta tela: a da etapa 1. O equilíbrio de carga não achou, no tempo disponível, escala mais equilibrada sem piorar o resultado da etapa 1.
+- piso (conta prévia): 68; menor viável: 89; provado: não; gap: 1.0
+- tentativas: [{'quadro': 89, 'status': 'viavel', 'enfermeiros': 15, 'tecnicos': 74, 'segundos': 1802.4, 'quem_provou': 'solver'}]
+- diagnóstico: None
+- critérios: [{'nivel': 'Essencial', 'nome': 'Pedido de folga no dia', 'violacoes': 0}, {'nivel': 'Importante', 'nome': 'Enfermeiro em posto de técnico', 'violacoes': 1}]
+- Só este turno descumpridas: None
+- menor descanso no relógio: {'D12': 12.0, 'N': 36.0}
+- alertas COFEN: ['15 enfermeiros em 89 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 30 — grau informado na tela']
+- avaliador: {'xsd_instancia': [], 'xsd_escala': [], 'penalidade_avaliador': 43, 'hard_constraints_violation': 'não', 'erros_avaliador': [], 'premissa': 'a cobertura é conferida fora do modelo (avaliador oficial); a conferência do descanso no relógio compartilha a premissa com o modelo (descanso_exigido)'}
+- tempo total: 3602 s (limite operacional, não resultado)
+
+[HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA] B11_livre: O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 100,0%: distância máxima até a melhor possível). | menor viável 89 | tentativas [(89, 'viavel')] | avaliador: não | 3602 s

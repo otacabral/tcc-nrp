@@ -2298,7 +2298,9 @@ min, 600 s / 180 s"; não rodam de novo.
   técnico);
 - **"já garantido pela CLT"**, na tabela, sem campo de preferência: máximo de dias seguidos;
   máximo de turnos; sequências indesejadas. Preferência mais apertada = trabalho futuro (exige
-  família própria no modelo);
+  família própria no modelo); *(REVISADO em 21/10 para o máximo de dias seguidos e o máximo de
+  turnos por "2026-10-21 — Máximo de dias seguidos e máximo de turnos também como preferência";
+  sequências indesejadas continuam só rígidas)*
 - **fora:** habilidade alternativa (contradiz a habilidade rígida); pedidos por turno e pedidos
   para trabalhar (trabalho futuro, mantida "2026-10-09 — Pedido por turno vira trabalho
   futuro");
@@ -2570,6 +2572,80 @@ mínimo gastava orçamento do solver; com ela, 30 e 105 (o B fica todo recusado 
 antes provadas pelo solver, que passam à conta (na suíte: P05, 14; demo18, 28; tela 7.3, 4). A
 conta compartilha a regra de descanso com o modelo: confere a aritmética e a coerência, não a
 leitura legal. Testes: `resultados/relatorio_2026-10-20c.md`, Parte 7.
+
+---
+
+## 2026-10-21 — Correção de defeito: avaliador sem memória lido como "sem violação"
+
+**Status: vigente — correção de defeito** (não muda modelo nem formulação).
+
+**O defeito.** Na fase 2 (21/10), a rodada B11_livre (89 profissionais) registrou "penalidade
+do avaliador 43, sem violação de dura". O avaliador oficial, nas duas chamadas, tinha parado com
+`java.lang.OutOfMemoryError: Java heap space` (heap padrão da JVM nesta máquina: ~3 GB). O
+`validar._numero` não achou número de penalidade e caiu no "último inteiro da saída" — o 43 era
+o número de linha `ScheduleEvaluator.java:43` do stack trace —, e o `fase2.py` procurou "Hard"
+nas linhas de erro de uma saída que não tinha nenhuma: "não". **Conferência que não rodou foi
+registrada como conferência aprovada.** As outras três escalas da fase 2 (A36_livre, A36_fixo,
+A11_fixo) têm a saída completa; nelas o número bate com o da saída detalhada.
+
+**Reconferência (21/10, mesmo XML, sem tocar na escala):** `java -Xmx6g …`: penalidade do
+avaliador **714**, saída detalhada completa, nenhuma linha "Hard constraints". Saídas em
+`resultados/fase2_2026-10-21/HIPOTESE_SENSIBILIDADE_B11_livre_escala_avaliador_Xmx6g*.txt`. Os
+arquivos originais ficam como estão (evidência do defeito).
+
+**Correção.** `validar._executar`: código de saída diferente de 0 ou "Exception in thread" na
+saída levanta `AvaliadorIndisponivel` (o `fase2.py` já registra isso como "avaliador não
+rodou"); e a JVM do avaliador roda com `-Xmx6g` (`validar.MEMORIA_JAVA`). Nenhum número citável
+muda: os da regressão vêm de instâncias pequenas, com saída completa.
+
+---
+
+## 2026-10-21 — Máximo de dias seguidos e máximo de turnos também como preferência
+
+**Status: vigente — MUDANÇA DE FORMULAÇÃO** (revisa "2026-10-19 — Opção B: mecanismo, tempo e
+critérios expostos", item c: "preferência mais apertada = trabalho futuro"). Pedido do Otávio,
+21/10, via chat de Orientação; registrada antes de implementar.
+
+**Decisão.** Os dois limites passam a existir em dois papéis, em famílias separadas do modelo:
+- **rígido**, como hoje: máximo de dias seguidos = min(hospital, 6) (art. 67 e "2026-10-19 —
+  Máximo de dias seguidos como regra do hospital"); teto de turnos e teto de horas do contrato.
+  Nada disso muda, e o teto de turnos rígido **não** sai (tirá-lo quebraria a identidade com a
+  v1.4.1 sem ganho);
+- **preferência**, critério classificável como os outros (Essencial, Importante, Desejável, Não
+  considerar), com a mesma expressão do INRC e folga α:
+  - máximo de dias seguidos: α ≥ Σ_{d=t..t+Lp} y − Lp, por profissional e janela, com
+    Lp ≤ min(L_hospital, 6);
+  - máximo de turnos: α ≥ Σ_d y − γp, por profissional, com γp ≤ o teto de turnos do contrato.
+
+**Por quê.** A CLT trava; a preferência do hospital é critério classificável — o que o
+orientador pediu em 14/10: manter o modelo perto do INRC e endurecer só o que a lei exige.
+
+**Decisões de implementação (Claude Code, 21/10; não óbvias):**
+1. **Famílias próprias:** `pref_max_consecutive_working_days` e `pref_max_num_assignments`,
+   campos novos do contrato (`instancia.Contrato`), ausentes por padrão. Não vão ao XML do INRC
+   (o formato não tem duas versões da mesma restrição); ficam fora de `RESTRICOES`. Sem elas
+   ativas, o modelo não ganha variável nem restrição: com a classificação padrão, o LP é o da
+   v1.4.1.
+2. **Padrão: "Não considerar"**; limite padrão quando o gestor liga: os do contrato 0 do
+   `medium_late05`, como os outros critérios ("Opção B", decisão de implementação 5) — 5 dias
+   seguidos e 18 turnos.
+3. **Limite acima do legal:** a tela não aceita (o campo tem o legal como máximo). No back end,
+   o limite usado é **min(preferência, legal)** — a mesma regra do campo rígido do hospital; uma
+   preferência no legal ou acima nunca é violada, porque a rígida já a garante.
+4. **No 12×36 a linha de dias seguidos não aparece**, como o campo rígido (ninguém trabalha dois
+   dias seguidos; nenhuma preferência ≥ 1 seria violada).
+5. **Resultado por critério:** contado fora do modelo pelo `avaliacao.py` (a semântica conferida
+   contra o avaliador oficial), com o contrato da família INRC correspondente trocado pelo
+   limite da preferência.
+6. **Testes atualizados com registro** (como o precedente do 1-2): opB-d (as duas linhas deixam
+   de ser "já garantido pela CLT"); opB-tela (o grupo "Noturno e carga" passa de 3 para 4
+   critérios; o máximo de dias seguidos fica oculto no 12×36); opB-e (o "todas as suaves no
+   Essencial" passa a incluir as duas preferências). Esperado em
+   `resultados/preferencias_2026-10-21/ESPERADO.md`.
+
+**Ressalva.** O avaliador oficial não confere a preferência (o XML só tem a versão rígida, com
+o limite legal); a contagem é do `avaliacao.py`, que foi conferido contra o avaliador nas
+famílias INRC de mesma expressão.
 
 ---
 

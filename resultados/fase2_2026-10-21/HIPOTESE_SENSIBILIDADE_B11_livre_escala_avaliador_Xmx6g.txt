@@ -1,0 +1,993 @@
+Schedule:
+=========
+
+Employee  0 | ME      |   TE    |     NE  |        |        |        |        |     NE  |        |     NE  |        |        |        |     NE  |        |     NE  |        |     NE  |        |        |     NE  |        |     NE  |        |        |   TE    |        |        |
+Employee  1 |        |        | ME      |     NE  |        |        |       D12E|        | ME      |   TE    | ME      | ME      |        |       D12E|     NE  |        |     NE  |        |     NE  |        |        |   TE    |        |   TE    |     NE  |        |        |        |
+Employee  2 |        |   TE    |   TE    |        | ME      |     NE  |        |     NE  |        |     NE  |        |        |        |     NE  |        |     NE  |        |     NE  |        |        |        |   TE    |   TE    |     NE  |        |        |     NE  |        |
+Employee  3 |   TE    |     NE  |        |        |        |       D12E|     NE  |        |        | ME      |   TE    |   TE    |        |        | ME      |   TE    | ME      |   TE    |   TE    |        |       D12E|   TE    |   TE    |   TE    |   TE    |        |       D12E|        |
+Employee  4 |        |   TE    |        | ME      |   TE    |        |        |   TE    | ME      | ME      |     NE  |        |     NE  |        |        |   TE    |   TE    |   TE    |   TE    |        |        |        |        |   TE    |   TE    |        |        |       D12E|
+Employee  5 | ME      |   TE    |   TE    |   TE    |     NE  |        |        |   TE    |   TE    |   TE    | ME      |     NE  |        |        | ME      |   TE    |   TE    |   TE    |   TE    |       D12E|        |   TE    |   TE    |   TE    |        |   TE    |       D12E|     NE  |
+Employee  6 |     NE  |        |        |   TE    |   TE    |        |        |   TE    |     NE  |        |        |        |        |        | ME      | ME      |        | ME      | ME      |        |     NE  |        |        | ME      |   TE    |   TE    |        |        |
+Employee  7 |        | ME      |   TE    |        | ME      |       D12E|        |   TE    |        | ME      |        |     NE  |        |        |   TE    |        | ME      | ME      |        |     NE  |        |     NE  |        |     NE  |        |     NE  |        |        |
+Employee  8 |   TE    | ME      |   TE    |   TE    |   TE    |        |        |        |   TE    |   TE    |   TE    | ME      |        |    N   |        |        | ME      |        |   TE    |        |        | ME      |   TE    | ME      |   TE    |   TE    |        |        |
+Employee  9 | ME      | ME      | ME      |   TE    | ME      |        |        | ME      |   TE    |        |   TE    | ME      |     NE  |        |     NE  |        |     NE  |        |        |       D12E|       D12E| ME      | ME      |        | ME      | ME      |        |        |
+Employee 10 |     NE  |        |        | ME      |   TE    |        |        | ME      |   TE    |   TE    |   TE    |   TE    |       D12E|        |   TE    | ME      |        |   TE    |     NE  |        |        |        | ME      |        | ME      |     NE  |        |        |
+Employee 11 |        |        | ME      | ME      |     NE  |        |     NE  |        |     NE  |        |     NE  |        |        |        |   TE    | ME      |   TE    |        | ME      |        |        | ME      | ME      | ME      | ME      | ME      |        |     NE  |
+Employee 12 | ME      | ME      | ME      | ME      | ME      |     NE  |        |        | ME      |        | ME      |   TE    |        |        |   TE    |        |   TE    | ME      |        |        |        | ME      | ME      | ME      | ME      | ME      |        |        |
+Employee 13 |   TE    |     NE  |        |     NE  |        |        |        | ME      | ME      |        | ME      | ME      |       D12E|        | ME      | ME      |        |        | ME      |        |        |        |     NE  |        |        | ME      |        |       D12E|
+Employee 14 |   TE    |        |     NE  |        |        |        |       D12E| ME      |        | ME      |        |   TE    |        |       D12E|        |   TE    | ME      | ME      | ME      |     NE  |        |     NE  |        |        |     NE  |        |     NE  |        |
+Employee 15 |M       |  T     |M       |  T     |M       |      D12 |        |  T     |  T     |M       |  T     |M       |      D12 |        |    N   |        |    N   |        |    N   |        |        |  T     |M       |  T     |M       |  T     |      D12 |        |
+Employee 16 |        |M       |  T     |M       |  T     |      D12 |      D12 |        |  T     |M       |  T     |M       |        |      D12 |  T     |M       |M       |M       |  T     |        |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 17 |  T     |  T     |  T     |  T     |M       |      D12 |        |  T     |M       |  T     |M       |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 18 |        |  T     |M       |M       |  T     |        |      D12 |M       |  T     |  T     |M       |M       |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 19 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |M       |    N   |        |    N   |        |        |      D12 |  T     |  T     |M       |  T     |M       |        |      D12 |
+Employee 20 |        |M       |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |      D12 |    N   |        |    N   |        |        |  T     |      D12 |      D12 |
+Employee 21 |        |  T     |  T     |M       |  T     |    N   |        |    N   |        |        |M       |  T     |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 22 |  T     |    N   |        |    N   |        |        |      D12 |M       |  T     |  T     |  T     |  T     |        |      D12 |M       |  T     |  T     |M       |M       |        |      D12 |  T     |  T     |M       |M       |M       |        |      D12 |
+Employee 23 |    N   |        |    N   |        |    N   |        |        |M       |M       |  T     |M       |M       |      D12 |        |M       |M       |M       |  T     |M       |      D12 |        |  T     |M       |  T     |M       |M       |        |      D12 |
+Employee 24 |M       |M       |M       |  T     |  T     |        |      D12 |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |  T     |M       |    N   |        |
+Employee 25 |  T     |    N   |        |    N   |        |    N   |        |    N   |        |        |M       |    N   |        |        |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |
+Employee 26 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |  T     |M       |M       |  T     |  T     |        |      D12 |M       |M       |M       |M       |        |      D12 |    N   |
+Employee 27 |        |M       |M       |M       |M       |      D12 |    N   |        |        |M       |  T     |  T     |      D12 |        |M       |M       |  T     |M       |M       |      D12 |        |  T     |M       |  T     |  T     |M       |        |      D12 |
+Employee 28 |M       |  T     |  T     |  T     |  T     |        |      D12 |  T     |M       |  T     |  T     |    N   |        |        |  T     |M       |M       |M       |  T     |      D12 |        |        |  T     |M       |M       |M       |      D12 |    N   |
+Employee 29 |    N   |        |    N   |        |    N   |        |        |  T     |M       |  T     |M       |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |
+Employee 30 |        |  T     |    N   |        |    N   |        |    N   |        |        |M       |  T     |M       |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |        |M       |  T     |  T     |  T     |      D12 |        |
+Employee 31 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |M       |  T     |  T     |  T     |    N   |        |        |  T     |  T     |  T     |M       |M       |      D12 |        |
+Employee 32 |        |M       |M       |  T     |M       |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 33 |M       |  T     |        |M       |M       |      D12 |    N   |        |    N   |        |    N   |        |        |      D12 |  T     |  T     |  T     |    N   |        |        |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 34 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |M       |M       |  T     |      D12 |        |M       |  T     |M       |  T     |  T     |      D12 |        |
+Employee 35 |    N   |        |    N   |        |        |      D12 |      D12 |M       |  T     |  T     |    N   |        |    N   |        |    N   |        |        |M       |  T     |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 36 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |        |      D12 |M       |  T     |M       |M       |M       |        |      D12 |
+Employee 37 |        |  T     |M       |  T     |M       |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |M       |  T     |M       |  T     |M       |    N   |        |
+Employee 38 |  T     |    N   |        |    N   |        |        |      D12 |M       |  T     |  T     |  T     |  T     |        |    N   |        |    N   |        |    N   |        |        |    N   |        |    N   |        |    N   |        |        |      D12 |
+Employee 39 |  T     |        |M       |  T     |M       |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |
+Employee 40 |M       |M       |M       |  T     |M       |      D12 |        |M       |  T     |M       |  T     |M       |      D12 |        |M       |M       |M       |  T     |M       |      D12 |        |M       |M       |M       |M       |  T     |    N   |        |
+Employee 41 |M       |M       |  T     |  T     |  T     |        |      D12 |  T     |    N   |        |    N   |        |    N   |        |        |  T     |  T     |M       |M       |      D12 |    N   |        |        |  T     |M       |  T     |      D12 |        |
+Employee 42 |    N   |        |    N   |        |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |      D12 |      D12 |M       |  T     |    N   |        |    N   |        |    N   |
+Employee 43 |  T     |M       |M       |M       |  T     |      D12 |        |M       |M       |M       |M       |  T     |      D12 |        |  T     |  T     |M       |M       |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 44 |        |    N   |        |    N   |        |        |    N   |        |    N   |        |    N   |        |        |      D12 |    N   |        |    N   |        |    N   |        |        |M       |M       |M       |  T     |  T     |        |      D12 |
+Employee 45 |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |  T     |      D12 |      D12 |
+Employee 46 |  T     |M       |  T     |  T     |M       |        |      D12 |M       |  T     |M       |M       |  T     |        |      D12 |  T     |M       |M       |M       |  T     |        |      D12 |  T     |  T     |M       |M       |M       |        |        |
+Employee 47 |        |  T     |  T     |M       |M       |        |      D12 |  T     |M       |  T     |  T     |M       |        |      D12 |  T     |  T     |M       |  T     |M       |        |      D12 |M       |M       |  T     |M       |M       |        |        |
+Employee 48 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |  T     |  T     |M       |M       |M       |        |      D12 |M       |M       |M       |M       |    N   |        |    N   |
+Employee 49 |  T     |    N   |        |        |  T     |      D12 |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |M       |  T     |  T     |    N   |        |        |    N   |
+Employee 50 |M       |  T     |  T     |  T     |  T     |    N   |        |    N   |        |    N   |        |        |      D12 |      D12 |M       |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 51 |    N   |        |        |M       |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 52 |        |M       |  T     |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |  T     |      D12 |    N   |        |    N   |        |        |  T     |      D12 |      D12 |
+Employee 53 |M       |    N   |        |    N   |        |        |        |M       |M       |M       |  T     |  T     |      D12 |        |  T     |  T     |  T     |M       |M       |    N   |        |    N   |        |    N   |        |        |      D12 |      D12 |
+Employee 54 |        |  T     |M       |M       |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |  T     |M       |  T     |  T     |  T     |        |        |
+Employee 55 |        |  T     |M       |  T     |M       |      D12 |        |M       |M       |  T     |M       |  T     |        |      D12 |M       |  T     |M       |  T     |  T     |        |      D12 |  T     |M       |  T     |M       |M       |        |      D12 |
+Employee 56 |        |M       |M       |  T     |  T     |      D12 |    N   |        |    N   |        |        |M       |        |      D12 |  T     |  T     |  T     |  T     |M       |        |      D12 |  T     |  T     |  T     |  T     |  T     |        |      D12 |
+Employee 57 |        |M       |  T     |M       |M       |      D12 |        |  T     |M       |  T     |  T     |M       |      D12 |        |M       |  T     |  T     |  T     |  T     |        |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 58 |M       |    N   |        |    N   |        |        |        |M       |M       |  T     |  T     |M       |    N   |        |    N   |        |    N   |        |        |      D12 |      D12 |M       |M       |    N   |        |    N   |        |    N   |
+Employee 59 |        |M       |  T     |M       |  T     |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |  T     |  T     |  T     |  T     |        |        |
+Employee 60 |  T     |  T     |  T     |  T     |    N   |        |        |M       |M       |M       |  T     |M       |      D12 |        |M       |M       |  T     |  T     |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 61 |    N   |        |    N   |        |    N   |        |        |M       |M       |M       |M       |  T     |      D12 |        |M       |  T     |M       |  T     |  T     |      D12 |        |M       |M       |  T     |  T     |M       |      D12 |        |
+Employee 62 |  T     |  T     |M       |  T     |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |
+Employee 63 |M       |    N   |        |    N   |        |        |      D12 |  T     |  T     |  T     |    N   |        |    N   |        |        |M       |  T     |  T     |  T     |      D12 |        |M       |  T     |M       |M       |  T     |      D12 |        |
+Employee 64 |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |M       |M       |M       |M       |    N   |        |        |  T     |M       |  T     |  T     |M       |      D12 |        |
+Employee 65 |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |      D12 |      D12 |    N   |        |    N   |        |    N   |        |        |  T     |  T     |  T     |  T     |  T     |      D12 |        |
+Employee 66 |        |  T     |  T     |  T     |M       |        |      D12 |M       |M       |M       |M       |M       |        |      D12 |  T     |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 67 |    N   |        |    N   |        |    N   |        |        |  T     |  T     |M       |M       |  T     |      D12 |        |M       |M       |  T     |M       |M       |      D12 |        |M       |  T     |  T     |M       |M       |      D12 |        |
+Employee 68 |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |  T     |  T     |      D12 |    N   |        |    N   |        |    N   |        |    N   |        |
+Employee 69 |  T     |M       |M       |M       |M       |    N   |        |        |  T     |M       |M       |M       |      D12 |    N   |        |    N   |        |    N   |        |        |      D12 |  T     |M       |M       |M       |M       |        |      D12 |
+Employee 70 |M       |    N   |        |    N   |        |        |        |  T     |  T     |M       |M       |M       |    N   |        |    N   |        |    N   |        |    N   |        |        |M       |M       |M       |  T     |  T     |      D12 |        |
+Employee 71 |    N   |        |    N   |        |    N   |        |        |  T     |M       |  T     |  T     |  T     |      D12 |        |M       |  T     |  T     |M       |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 72 |M       |  T     |M       |  T     |M       |      D12 |        |  T     |  T     |  T     |M       |  T     |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |  T     |  T     |  T     |  T     |      D12 |        |
+Employee 73 |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |      D12 |        |  T     |M       |  T     |M       |  T     |      D12 |        |M       |M       |  T     |  T     |  T     |        |      D12 |
+Employee 74 |    N   |        |    N   |        |    N   |        |        |M       |M       |  T     |M       |  T     |      D12 |        |  T     |M       |M       |M       |  T     |      D12 |        |  T     |M       |M       |M       |  T     |    N   |        |
+Employee 75 |M       |    N   |        |    N   |        |        |      D12 |M       |M       |M       |M       |M       |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 76 |M       |M       |  T     |M       |M       |      D12 |        |  T     |  T     |M       |M       |M       |      D12 |        |M       |M       |  T     |  T     |M       |      D12 |        |M       |    N   |        |    N   |        |    N   |        |
+Employee 77 |M       |    N   |        |    N   |        |        |      D12 |M       |  T     |  T     |  T     |  T     |        |      D12 |  T     |M       |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 78 |  T     |M       |  T     |M       |  T     |        |        |  T     |  T     |M       |  T     |  T     |        |      D12 |  T     |M       |M       |  T     |  T     |        |      D12 |    N   |        |    N   |        |    N   |        |        |
+Employee 79 |        |  T     |M       |  T     |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |M       |M       |  T     |    N   |        |    N   |        |    N   |        |    N   |        |        |
+Employee 80 |  T     |M       |M       |        |  T     |      D12 |      D12 |M       |  T     |    N   |        |    N   |        |        |  T     |  T     |  T     |  T     |M       |        |      D12 |  T     |    N   |        |    N   |        |    N   |        |
+Employee 81 |        |    N   |        |    N   |        |        |      D12 |  T     |  T     |  T     |  T     |M       |        |      D12 |M       |    N   |        |    N   |        |        |      D12 |M       |M       |M       |    N   |        |    N   |        |
+Employee 82 |  T     |M       |  T     |M       |  T     |        |        |M       |M       |  T     |  T     |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |        |
+Employee 83 |  T     |M       |M       |M       |  T     |        |      D12 |  T     |M       |M       |  T     |M       |        |        |M       |  T     |M       |M       |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 84 |  T     |        |M       |M       |M       |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |  T     |M       |  T     |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |
+Employee 85 |M       |  T     |  T     |  T     |  T     |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |  T     |M       |M       |M       |      D12 |        |  T     |  T     |M       |M       |  T     |    N   |        |
+Employee 86 |  T     |  T     |  T     |M       |  T     |        |      D12 |  T     |M       |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |  T     |M       |      D12 |      D12 |
+Employee 87 |    N   |        |    N   |        |    N   |        |        |  T     |  T     |M       |M       |  T     |        |      D12 |M       |M       |  T     |  T     |M       |        |      D12 |M       |  T     |M       |M       |M       |        |    N   |
+Employee 88 |  T     |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |    N   |        |        |M       |M       |  T     |  T     |M       |        |      D12 |  T     |  T     |M       |  T     |M       |        |      D12 |
+
+Violations:
+===========
+
+    Employee: 44
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 88
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 45
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 46
+    ================
+    Employee: 47
+    ================
+    Employee: 48
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 49
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 50
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 51
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 52
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 53
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 10
+    ================
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 54
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 11
+    ================
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 55
+    ================
+    Employee: 12
+    ================
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 56
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 13
+    ================
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 57
+    ================
+    Employee: 14
+    ================
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 58
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 15
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 59
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 16
+    ================
+    Employee: 17
+    ================
+    Employee: 18
+    ================
+    Employee: 19
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 0
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 1
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 2
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 3
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 4
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 5
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 6
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 7
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 8
+    ===============
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 9
+    ===============
+         Unwanted pattern: NE-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: NE-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 60
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 61
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 62
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 63
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 20
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 64
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 21
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 65
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 22
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 66
+    ================
+    Employee: 23
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 67
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 24
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 68
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 25
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 69
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 26
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 27
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 28
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 29
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 70
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 71
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 72
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 73
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 30
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 74
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 31
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 75
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 32
+    ================
+    Employee: 76
+    ================
+    Employee: 33
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 77
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 34
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 78
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 35
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 79
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 36
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 37
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 38
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 39
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 80
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 81
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 82
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 83
+    ================
+    Employee: 40
+    ================
+    Employee: 84
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 41
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 85
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 42
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 86
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+    Employee: 43
+    ================
+    Employee: 87
+    ================
+         Unwanted pattern: N-null-D12: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-D12E: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-M: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-ME: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-T: excess = 1 , pos = 223, cost = 1
+         Unwanted pattern: N-null-TE: excess = 1 , pos = 223, cost = 1
+
+Penalty:
+========
+    714
+

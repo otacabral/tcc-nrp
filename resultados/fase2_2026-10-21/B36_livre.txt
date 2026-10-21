@@ -1,0 +1,16 @@
+# Fase 2 — B36_livre
+
+- versão v1.4.1 (9afa334)
+- frase: Não há escala legal até 101 profissionais; o menor quadro viável está acima disso.
+- frase vigente: None
+- piso (conta prévia): 105; menor viável: None; provado: None; gap: None
+- tentativas: [{'quadro': 89, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 90, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 91, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 92, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 93, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 94, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 95, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 96, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 97, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 98, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 99, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 100, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}, {'quadro': 101, 'status': 'piso', 'enfermeiros': None, 'tecnicos': None, 'segundos': None, 'quem_provou': 'conta'}]
+- diagnóstico: {'motivo': 'pares', 'frase': 'A conta prévia do menor quadro provou, sem o solver, que este quadro não tem escala legal. dom 10/01 e seg 11/01: 65 postos na segunda + 40 no domingo em turnos que impedem a segunda (N, D12: depois deles, o descanso exigido não deixa trabalhar no dia seguinte); são 105 pessoas diferentes, e, descontadas férias e licenças, 89 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, faltam pelo menos 16 pessoas.'}
+- critérios: []
+- Só este turno descumpridas: None
+- menor descanso no relógio: None
+- alertas COFEN: ['15 enfermeiros em 89 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 30 — grau informado na tela']
+- avaliador: None
+- tempo total: 0 s (limite operacional, não resultado)
+
+B36_livre: Não há escala legal até 101 profissionais; o menor quadro viável está acima disso. | menor viável None | tentativas [(89, 'conta'), (90, 'conta'), (91, 'conta'), (92, 'conta'), (93, 'conta'), (94, 'conta'), (95, 'conta'), (96, 'conta'), (97, 'conta'), (98, 'conta'), (99, 'conta'), (100, 'conta'), (101, 'conta')] | avaliador: - | 0 s

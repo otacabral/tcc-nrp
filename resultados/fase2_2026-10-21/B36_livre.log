@@ -1,0 +1,19 @@
+B36_livre: caso_b_2026-10-20, quadro 89 (15 + 74); DESCANSO_POR_TURNO = {}
+B36_livre: montado; piso (conta prévia) 105; turnos que bloqueiam o dia seguinte ['D12', 'N']
+B36_livre [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 60 min
+B36_livre [    0.0 s] Quadro informado, 89 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 90 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 91 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 92 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 93 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 94 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 95 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 96 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 97 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 98 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 99 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 100 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] Busca do menor quadro, 101 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min
+B36_livre [    0.0 s] concluido
+DESCANSO_POR_TURNO ao fim: {}
+B36_livre: Não há escala legal até 101 profissionais; o menor quadro viável está acima disso. | menor viável None | tentativas [(89, 'conta'), (90, 'conta'), (91, 'conta'), (92, 'conta'), (93, 'conta'), (94, 'conta'), (95, 'conta'), (96, 'conta'), (97, 'conta'), (98, 'conta'), (99, 'conta'), (100, 'conta'), (101, 'conta')] | avaliador: - | 0 s

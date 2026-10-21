@@ -1,0 +1,152 @@
+{
+ "aviso": "regra do produto (36 h depois de turno ≥ 12 h)",
+ "rodada": "B36_livre",
+ "caso": "caso_b_2026-10-20",
+ "descanso_por_turno": {},
+ "versao": "v1.4.1",
+ "commit": "9afa33434a42cbd03098de48147223581f57fa55",
+ "alteracoes_locais": false,
+ "orcamento_s": 3600,
+ "limite_por_nivel_s": 1800,
+ "frase": "Não há escala legal até 101 profissionais; o menor quadro viável está acima disso.",
+ "frase_vigente": null,
+ "veredito": "sem_viavel",
+ "quadro_informado": 89,
+ "piso": 105,
+ "tentativas": [
+  {
+   "quadro": 89,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 90,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 91,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 92,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 93,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 94,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 95,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 96,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 97,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 98,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 99,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 100,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  },
+  {
+   "quadro": 101,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "segundos": null,
+   "quem_provou": "conta"
+  }
+ ],
+ "menor_viavel": null,
+ "provado": null,
+ "gap": null,
+ "diagnostico": {
+  "motivo": "pares",
+  "frase": "A conta prévia do menor quadro provou, sem o solver, que este quadro não tem escala legal. dom 10/01 e seg 11/01: 65 postos na segunda + 40 no domingo em turnos que impedem a segunda (N, D12: depois deles, o descanso exigido não deixa trabalhar no dia seguinte); são 105 pessoas diferentes, e, descontadas férias e licenças, 89 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, faltam pelo menos 16 pessoas."
+ },
+ "criterios": [],
+ "so_este_turno_descumpridas": null,
+ "alertas_cofen": [
+  "15 enfermeiros em 89 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 30 — grau informado na tela"
+ ],
+ "tempo_total_s": 0.0,
+ "progresso": [
+  "[    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 60 min",
+  "[    0.0 s] Quadro informado, 89 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 90 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 91 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 92 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 93 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 94 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 95 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 96 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 97 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 98 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 99 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 100 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] Busca do menor quadro, 101 profissionais: inviável pela conta, sem solver · orçamento do clique: 60 min",
+  "[    0.0 s] concluido"
+ ]
+}

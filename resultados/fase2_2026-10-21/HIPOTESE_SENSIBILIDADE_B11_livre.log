@@ -1,0 +1,14 @@
+HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA
+B11_livre: caso_b_2026-10-20, quadro 89 (15 + 74); DESCANSO_POR_TURNO = {'D12': 11}
+B11_livre: montado; piso (conta prévia) 68; turnos que bloqueiam o dia seguinte ['N']
+B11_livre [    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 60 min
+B11_livre [    0.0 s] Quadro informado, 89 profissionais: etapa 1 (procurando escala legal), até 30 min · orçamento do clique: 60 min
+      [prioridades] caminho: fundido
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+B11_livre [ 1802.4 s] Escala pronta com 89 profissionais: etapa 2 (equilibrando a carga entre colegas), até 1797 s · orçamento do clique: 60 min
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+B11_livre [ 3601.5 s] concluido
+DESCANSO_POR_TURNO ao fim: {}
+[HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA] B11_livre: O quadro informado admite escala legal. Escala gerada; pode haver uma melhor (gap 100,0%: distância máxima até a melhor possível). | menor viável 89 | tentativas [(89, 'viavel')] | avaliador: não | 3602 s

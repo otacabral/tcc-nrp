@@ -1,0 +1,73 @@
+{
+ "aviso": "HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA",
+ "rodada": "A11_fixo",
+ "caso": "caso_a_2026-10-20",
+ "descanso_por_turno": {
+  "D12": 11
+ },
+ "versao": "v1.4.1",
+ "commit": "9afa33434a42cbd03098de48147223581f57fa55",
+ "alteracoes_locais": false,
+ "orcamento_s": 3600,
+ "limite_por_nivel_s": 1800,
+ "frase": "O quadro informado admite escala legal. Escala gerada.",
+ "frase_vigente": "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.",
+ "veredito": "admite",
+ "quadro_informado": 24,
+ "piso": 18,
+ "tentativas": [
+  {
+   "quadro": 24,
+   "status": "viavel",
+   "enfermeiros": 4,
+   "tecnicos": 20,
+   "segundos": 4.9,
+   "quem_provou": "solver"
+  }
+ ],
+ "menor_viavel": 24,
+ "provado": "sim",
+ "gap": null,
+ "diagnostico": null,
+ "criterios": [
+  {
+   "nivel": "Essencial",
+   "nome": "Pedido de folga no dia",
+   "violacoes": 0
+  },
+  {
+   "nivel": "Essencial",
+   "nome": "Pedidos e regras dos profissionais",
+   "violacoes": 0
+  },
+  {
+   "nivel": "Importante",
+   "nome": "Enfermeiro em posto de técnico",
+   "violacoes": 0
+  }
+ ],
+ "so_este_turno_descumpridas": [],
+ "alertas_cofen": [
+  "4 enfermeiros em 24 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 8 — grau informado na tela"
+ ],
+ "tempo_total_s": 145.5,
+ "progresso": [
+  "[    0.0 s] Conta: piso aritmético e alertas do COFEN · orçamento do clique: 60 min",
+  "[    0.0 s] Quadro informado, 24 profissionais: etapa 1 (procurando escala legal), até 30 min · orçamento do clique: 60 min",
+  "[    4.9 s] Escala pronta com 24 profissionais: etapa 2 (equilibrando a carga entre colegas), até 30 min · orçamento do clique: 60 min",
+  "[  145.5 s] concluido"
+ ],
+ "menor_descanso_h": {
+  "D12": 12.0,
+  "N": 36.0
+ },
+ "conferencia_descanso": true,
+ "avaliador": {
+  "xsd_instancia": [],
+  "xsd_escala": [],
+  "penalidade_avaliador": 96,
+  "hard_constraints_violation": "não",
+  "erros_avaliador": [],
+  "premissa": "a cobertura é conferida fora do modelo (avaliador oficial); a conferência do descanso no relógio compartilha a premissa com o modelo (descanso_exigido)"
+ }
+}

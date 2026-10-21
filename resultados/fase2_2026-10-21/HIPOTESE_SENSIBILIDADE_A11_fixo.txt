@@ -1,0 +1,17 @@
+HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA
+# Fase 2 — A11_fixo
+
+- versão v1.4.1 (9afa334)
+- frase: O quadro informado admite escala legal. Escala gerada.
+- frase vigente: Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas.
+- piso (conta prévia): 18; menor viável: 24; provado: sim; gap: None
+- tentativas: [{'quadro': 24, 'status': 'viavel', 'enfermeiros': 4, 'tecnicos': 20, 'segundos': 4.9, 'quem_provou': 'solver'}]
+- diagnóstico: None
+- critérios: [{'nivel': 'Essencial', 'nome': 'Pedido de folga no dia', 'violacoes': 0}, {'nivel': 'Essencial', 'nome': 'Pedidos e regras dos profissionais', 'violacoes': 0}, {'nivel': 'Importante', 'nome': 'Enfermeiro em posto de técnico', 'violacoes': 0}]
+- Só este turno descumpridas: []
+- menor descanso no relógio: {'D12': 12.0, 'N': 36.0}
+- alertas COFEN: ['4 enfermeiros em 24 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 8 — grau informado na tela']
+- avaliador: {'xsd_instancia': [], 'xsd_escala': [], 'penalidade_avaliador': 96, 'hard_constraints_violation': 'não', 'erros_avaliador': [], 'premissa': 'a cobertura é conferida fora do modelo (avaliador oficial); a conferência do descanso no relógio compartilha a premissa com o modelo (descanso_exigido)'}
+- tempo total: 146 s (limite operacional, não resultado)
+
+[HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA] A11_fixo: O quadro informado admite escala legal. Escala gerada. | menor viável 24 | tentativas [(24, 'viavel')] | avaliador: não | 146 s
