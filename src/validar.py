@@ -34,6 +34,10 @@ AVALIADOR = RAIZ / "avaliador"
 JAR = AVALIADOR / "evaluator.jar"
 CLASSE = "dds.nrp.core.evaluation.ScheduleEvaluator"
 TEMPO_LIMITE = 300  # segundos
+# Heap da JVM do avaliador (DECISOES.md, "2026-10-21 — Correcao de defeito: avaliador sem
+# memoria lido como sem violacao"): com o padrao (~3 GB nesta maquina) o avaliador estoura na
+# instancia de 89 profissionais do caso B.
+MEMORIA_JAVA = "-Xmx6g"
 
 
 class AvaliadorIndisponivel(RuntimeError):
@@ -56,15 +60,20 @@ def _executar(argumentos: list[str]) -> str:
         raise AvaliadorIndisponivel("; ".join(problemas))
     # CORRIGIDO EM 06/10 (DECISOES.md, "Correcao de defeito: src/validar.py"): o classpath
     # tinha so o evaluator.jar, sem dom4j/jaxen/jaxb-api; o curinga, como no README, leva todos.
-    comando = ["java", "-cp", str(AVALIADOR / "*"), CLASSE, *argumentos]
+    comando = ["java", MEMORIA_JAVA, "-cp", str(AVALIADOR / "*"), CLASSE, *argumentos]
     try:
         processo = subprocess.run(comando, capture_output=True, text=True,
                                   timeout=TEMPO_LIMITE, check=False)
     except subprocess.TimeoutExpired as erro:
         raise AvaliadorIndisponivel(f"avaliador excedeu {TEMPO_LIMITE}s") from erro
     saida = (processo.stdout or "") + (processo.stderr or "")
-    if processo.returncode != 0 and not saida.strip():
-        raise AvaliadorIndisponivel(f"avaliador terminou com codigo {processo.returncode}")
+    # CORRIGIDO EM 21/10: o avaliador que parou (sem memoria, por exemplo) devolvia um stack
+    # trace, e `_numero` lia como penalidade um numero de linha dele. Saida de quem parou nao e
+    # conferencia: falha alto.
+    if processo.returncode != 0 or "Exception in thread" in saida:
+        primeira = next((l for l in saida.splitlines() if l.strip()), "")
+        raise AvaliadorIndisponivel(f"avaliador terminou com codigo {processo.returncode}: "
+                                    f"{primeira[:200]}")
     return saida
 
 
