@@ -105,7 +105,7 @@ seguidos: a trava é só a da CLT; a regra do hospital é preferência").
 | `docs/diagnostico/fechar_v143.sh` | Suíte reduzida da v1.4.3: identidade contra `../tcc-nrp-v142`, regressão, entradas, piso e os testes da tela do campo, da preferência de dias, dos textos novos e da barra; `RETOMAR=1`, `PULAR_SOLVER=1`. |
 | `src/app.py` (textos, 21/10 noite) | Textos para o gestor (sem termos de Pesquisa Operacional); sem a linha pequena sob cada critério; campo "Tempo máximo para gerar a escala (minutos)" (key `orcamento`); legenda de QP e IST; `_equilibrio` traduz o estado do equilíbrio de carga; **barra pelo relógio**: `fe.verificar` numa thread de trabalho que não chama o Streamlit, a thread do script anda a barra (decorrido ÷ tempo máximo, até 99%) e desenha a escala provisória; no fim, ~3 s até 100%. |
 | `src/ferramenta.py`, `src/prioridades.py` (textos, 21/10 noite) | Só redação: frases do resultado, diagnóstico, barra, planilha, "?" dos critérios; `prioridades.RESUMO` removido (a linha pequena saiu da tela); coluna "Nível" → "Importância". Nenhuma conta mudou. Antes × depois em `resultados/textos_tela_2026-10-21.md`. |
-| `.streamlit/config.toml` | Tema claro (`base = "light"`). |
+| `.streamlit/config.toml` | Tema escuro (`base = "dark"`; o claro foi trocado no mesmo dia, a pedido do Otávio). |
 
 ## Escopo anterior — referência, não produto
 

@@ -35,7 +35,7 @@ fim de cada sessão (dele ou do chat).
     .\.venv\Scripts\Activate.ps1
     streamlit run src\app.py
 
-Conferir os textos contra `resultados/textos_tela_2026-10-21.md`, o tema claro e a barra (gerar
+Conferir os textos contra `resultados/textos_tela_2026-10-21.md`, o tema escuro e a barra (gerar
 uma escala pequena). Aprovar ou pedir ajustes ao Claude Code. **Só depois** rodar a suíte.
 
 **1. Otávio: suíte reduzida da v1.4.3** (~1 h 30 nesta máquina, i5-10210U, HiGHS 1.15.1; o opB-e
@@ -100,7 +100,8 @@ raiz, um por linha:
 
 - DECISOES "2026-10-21 — Textos para o gestor, tema claro e barra pelo relógio" (TELA e
   REDAÇÃO): textos sem termos de Pesquisa Operacional; "?" dos critérios com exemplos conferidos;
-  campo "Tempo máximo para gerar a escala"; tema claro; barra pelo relógio com o cálculo numa
+  campo "Tempo máximo para gerar a escala"; tema escuro (o claro, trocado no mesmo dia a pedido
+  do Otávio); barra pelo relógio com o cálculo numa
   thread de trabalho (plano B não usado).
 
 ## Decisões de 21/10 (noite, v1.4.3)

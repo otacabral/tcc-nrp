@@ -2734,7 +2734,8 @@ acréscimo da noite).
   valem para sábado e domingo.
 - **Campo "Tempo máximo para gerar a escala (minutos)"**, o antigo "Orçamento do clique", com a
   mesma chave (`orcamento`) e o mesmo padrão (60 min).
-- **Tema claro:** `.streamlit/config.toml` com `base = "light"`.
+- **Tema claro:** `.streamlit/config.toml` com `base = "light"`. *Revisado no mesmo dia (21/10,
+  Otávio, ao ver a tela): tema **escuro**, `base = "dark"` — o claro ficou feio.*
 - **Barra pelo relógio:** fração = tempo decorrido ÷ tempo máximo, até 99% enquanto calcula, com o
   texto da parte em que está; ao terminar, completa até 100% em ~3 s e só então mostra o
   resultado. *Implementação (Claude Code, não óbvia):* o cálculo (`fe.verificar`) roda numa
