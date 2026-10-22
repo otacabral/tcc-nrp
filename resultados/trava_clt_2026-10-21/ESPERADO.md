@@ -176,3 +176,99 @@ da v1.4.2, i5-10210U, HiGHS 1.15.1, mais ~3 s por clique do fechamento da barra)
 Esperado: todos OK, com os resultados da v1.4.2. Já rodados nesta sessão com o código novo, antes
 da suíte: pref-tela, max-dias, 9c-tela, 16, 4b, 7.4, opB-d, 8, 12, opB-tela, 4, 15, tela-limpa —
 todos OK; identidade sem solver 243/243 (sem linhas e com linhas) e 24/24.
+
+---
+
+## Acréscimo de 22/10, registrado ANTES de implementar: divisão proporcional do tempo máximo e resultado por nível
+
+Pedido do Otávio (v1.4.3, acréscimo de 22/10). A suíte da v1.4.3 ainda não rodou; roda uma só,
+depois disto e da revisão dele.
+
+**Escopo:** `src/ferramenta.py` (distribuição do tempo e textos do resultado) e `src/app.py`
+(textos e arrumação da seção 5). `modelo.py`, `instancia_br.py` e o que vai ao solver não mudam.
+
+**Regra (parâmetro de projeto, sem calibração).** Etapa 1 : etapa 2 = 50 : 50; dentro da etapa 1,
+Essencial : Importante : Desejável = 50 : 30 : 20. No início de cada parte k:
+`tempo_k = tempo que resta × peso_k ÷ (soma dos pesos das partes que ainda faltam, incluindo k)`.
+
+*Leitura adotada (Claude Code; levar ao Otávio):* os pesos do pedido são 0,25 / 0,15 / 0,10 /
+0,50 com os três níveis. Com nível vazio, a leitura literal ("nível vazio não entra", e os outros
+pesos ficam como estão) daria, no padrão fundido Essencial+Importante, 0,40 : 0,50 → 26,7 + 33,3
+min a 60 min, e não os 30 + 30 que o item 6 pede. Para os dois valerem juntos, **a etapa 1 fica
+sempre com 50%, e os 50 : 30 : 20 se dividem entre os níveis presentes**: Essencial+Importante
+fundidos = 0,50 (80/80 da etapa 1); com os três separados, 0,25 / 0,15 / 0,10 (o mesmo do pedido).
+
+**(a) Identidade inalterada:** 243/243 e 24/24 contra a v1.4.2 — o tempo não entra no LP nem no XML.
+
+**(b) Divisão no início (minutos; antes de qualquer sobra):**
+
+| Níveis | Pesos (etapa 1 … ; etapa 2) | 20 min | 60 min | 120 min |
+|---|---|---|---|---|
+| 1 nível, ou bloco fundido (o padrão) | 0,50 ; 0,50 | 10 + 10 | **30 + 30** | 60 + 60 |
+| 2 separados: Essencial, Importante | 0,3125 / 0,1875 ; 0,50 | 6,2 / 3,8 + 10 | 18,8 / 11,2 + 30 | 37,5 / 22,5 + 60 |
+| 2 separados: Essencial, Desejável | 0,357 / 0,143 ; 0,50 | 7,1 / 2,9 + 10 | 21,4 / 8,6 + 30 | 42,9 / 17,1 + 60 |
+| 2 separados: Importante, Desejável | 0,30 / 0,20 ; 0,50 | 6,0 / 4,0 + 10 | 18,0 / 12,0 + 30 | 36,0 / 24,0 + 60 |
+| 3 separados | 0,25 / 0,15 / 0,10 ; 0,50 | 5 / 3 / 2 + 10 | 15 / 9 / 6 + 30 | 30 / 18 / 12 + 60 |
+| 3 níveis, Essencial+Importante fundidos, Desejável à parte | 0,40 / 0,10 ; 0,50 | 8 / 2 + 10 | 24 / 6 + 30 | 48 / 12 + 60 |
+
+Padrão a 60 min = **30 + 30**, igual ao de hoje (1.800 s + 1.800 s).
+
+**(c) Conta, sem solver** (60 min, 3 níveis separados), feita pela função da ferramenta com
+tempos gastos simulados: início 15 / 9 / 6 / 30; Essencial prova em 2 min → Importante 11,6
+(58 × 0,15 ÷ 0,75); se o Importante usa tudo → Desejável 7,7, etapa 2 38,7; se o Desejável prova
+em 1 min → etapa 2 45,4. Conferido antes de registrar com a mesma fórmula.
+
+**(d) Caso pequeno com solver, 3 níveis separados, tempo curto** (`docs/diagnostico/
+tempo_proporcional.py --caso`; o mesmo caso do teste de 40 com 20 pedidos, em que a primeira
+escala aparece perto dos 17 s nesta máquina): tempo máximo de 60 s. Esperado: o Essencial
+recebe 15 s; se acabar sem escala, a **proteção da primeira escala** roda de novo com todo o tempo
+que resta (recomeça: sem escala não há de onde partir — custo declarado) e a escala sai; cada
+parte seguinte recebe `resta × peso ÷ soma`, com a sobra de quem terminou antes; a soma dos
+limites não passa do tempo máximo. A escala é entregue e cumpre o descanso. Com tempo máximo
+de 10 min, sem proteção (o Essencial acha a escala na sua fatia), a sobra passa adiante: limite
+de cada parte > a fatia do início quando a anterior termina antes. O script imprime limite e
+tempo gasto de cada parte.
+
+**(e) Testes que dependem do tempo ou do texto do resultado, e o que pode mudar:**
+- `TEMPO` e `TEMPO_ETAPA2` passam a `None` na ferramenta (sem teto fixo); ficam como **teto
+  opcional, só para os testes** (que os põem em 600 / 180 / 20 min, ou 25 s e 3 s no teste 8).
+  Com teto, a proteção da primeira escala continua, mas a cadeia inteira da primeira resolução
+  não passa do teto. `resolver_com_objetivo(inst, tempo)` chamado sem `prazo` (testes ped e
+  descanso-param, `pedidos_avaliador.py`) usa o teto por resolução, como antes.
+- `opB-padroes`: conferia `(TEMPO, TEMPO_ETAPA2, ORCAMENTO) == (1800, 1800, 3600)` → passa a
+  `(None, None, 3600)` (atualizado com registro).
+- `8`: 8a/8c/8d sem mudança (teto do teste); 8b: o aviso passa de "…pode haver uma melhor: esta
+  escala pode ser até X pior…" a "…Escala gerada; pode haver uma melhor." (o gap sai da frase e
+  vai para as frases por nível).
+- `12`: 12d (tempo máximo 3 s) continua "o menor quadro viável não foi determinado em 3 s": o
+  Essencial recebe 1 s, e a proteção usa os ~2 s restantes.
+- `opB-tela`: a tabela "Resultado por critério" passa a uma tabela por nível (ou bloco), cada uma
+  com a sua frase acima; a conferência passa a "as tabelas juntas = `r.criterios`".
+- `opB-b`, `opB-c`, `opB-e`: com mais de um bloco, cada nível recebe a sua fatia em vez de 600 s;
+  no caso pequeno (opB-b) os três provam em segundos (sem mudança esperada); no opB-c, o bloco
+  Desejável recebe menos tempo — o teste confere caminho, escala e descanso, não prova.
+- `15`: o alerta curto não traz mais "Súmula 110" (vai para o "?"); 15d: a linha do descanso
+  passa a "menor descanso semanal: …".
+- `9c-tela`: nenhum texto novo contém "provad"; a etapa 2 continua presa nos 20 s do teste.
+- Rodadas a2 (fora da suíte): com os tetos 600/180/20 min, o caminho fundido recebe 600 s, como
+  antes; os campos "frase" das rodadas sem prova passariam a "pode haver uma melhor." sem o gap.
+
+**(f) NUMEROS_TCC:** não muda. Os números foram medidos com os limites antigos (600 s, 180 s,
+20 min até a v1.2.3; 1.800 s por resolução depois), declarados no próprio arquivo.
+
+**Resultado por nível (texto):** provado → "<Nível>: N violações — a melhor possível."; sem prova
+com limite útil → "<Nível>: N violações. Nenhuma escala tem menos de M." (M = limite inferior do
+solver, arredondado para cima; nunca acima de N); sem limite útil → "…Não deu tempo de saber
+quanto dá para melhorar."; não rodou → "<Nível>: não deu tempo de otimizar; a escala mantém o
+resultado dos níveis acima."; bloco fundido → uma frase para o bloco. *Decisão de implementação
+(não óbvia):* num bloco fundido o objetivo do solver soma os níveis com coeficientes (o de cima =
+máximo do resto do bloco + 1), e o limite inferior não é contagem de violações. O M do bloco é
+dado só para o nível de cima: M = ⌈(limite − (coef − 1)) ÷ coef⌉, porque o resto do bloco vale no
+máximo coef − 1. Etapa 2: "Equilíbrio entre colegas: o melhor possível." / "…pode haver uma
+escala mais equilibrada." As três frases do TCC não mudam.
+
+**Parte extra (seção 5):** alerta de descanso semanal em uma linha (o texto mora em
+`ferramenta.alertas_descanso`, dentro do escopo; o fundamento vai para o "?"); diferença entre
+categorias sem número negativo; "maior sequência de trabalho na escala: N dias", "menor descanso
+entre turnos", "menor descanso semanal"; legendas num expander "Detalhes da escala", fechado;
+"sem pedidos" no lugar de "0 de 0"; frases por nível junto da tabela.
