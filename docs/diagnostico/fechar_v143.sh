@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Fecha a v1.4.3 (21/10: a trava do maximo de dias seguidos e so a da CLT; a regra do hospital e
-# preferencia). Suite REDUZIDA (DECISOES.md, "2026-10-21 — Maximo de dias seguidos: a trava e so a
+# preferencia; textos da tela para o gestor, tema claro e barra pelo relogio). Suite REDUZIDA (DECISOES.md, "2026-10-21 — Maximo de dias seguidos: a trava e so a
 # da CLT"): a mudanca e so de entrada e tela, modelo e solver intocados, e a identidade prova que o
 # problema enviado ao solver nao mudou. Um processo por teste, NA ORDEM, parando na PRIMEIRA
 # falha. Da raiz:
@@ -72,9 +72,13 @@ roda piso_casos "$PY" docs/diagnostico/piso_pares.py --casos
 roda pref_caso_pequeno "$PY" docs/diagnostico/preferencias.py --caso-pequeno
 roda regressao "$PY" src/regressao.py --todos
 roda testes_entrada "$PY" src/testes_entrada.py
-# testes da tela que usam o campo removido ou a preferencia de dias (motivo de cada um no
-# ESPERADO); os longos por ultimo
-for caso in pref-tela max-dias opB-d opB-tela opB-c opB-e; do
+# testes da tela (motivo de cada um no ESPERADO): os que usam o campo removido ou a preferencia
+# de dias (pref-tela, max-dias, opB-d, opB-tela, opB-c, opB-e); os que conferem textos que
+# mudaram em 21/10 (8, 12, opB-tela, pref-tela, max-dias) ou que os textos novos nao podem
+# quebrar (4, 9c-tela, tela-limpa, 15, 16, 7.4, 4b); e os que passam pela barra nova clicando em
+# "Gerar escala" (todos os anteriores que usam a tela, mais o 5). Os longos por ultimo.
+for caso in pref-tela max-dias opB-d 16 4b 7.4 9c-tela 4 5 15 8 12 opB-tela tela-limpa \
+            opB-c opB-e; do
     roda "tela_$caso" "$PY" src/testes_ferramenta.py "$caso"
 done
 echo "TUDO OK" | tee -a "$RESUMO"

@@ -19,6 +19,8 @@ from __future__ import annotations
 
 import io
 import sys
+import threading
+import time
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -45,10 +47,26 @@ CAT = {"enf": "enf", "tec": "téc"}
 ROTULO_TURNO = {"M": "Manhã", "T": "Tarde", "N": "Noite", "D": "Dia"}
 CODIGO_TURNO = {v: k for k, v in ROTULO_TURNO.items()}
 
+
+def _equilibrio(etapa2: str) -> str:
+    """O estado do equilibrio de carga (`indicadores["etapa2"]`) em texto para o gestor. O valor
+    guardado nao muda: `frase_vigente` e os registros das rodadas o leem."""
+    if etapa2.startswith("não rodou: o orçamento"):
+        return "não foi feito: o tempo máximo acabou"
+    if etapa2.startswith("não melhorou"):
+        return "não foi possível equilibrar mais no tempo disponível; fica a escala encontrada"
+    if etapa2.startswith("sem resposta (erro"):
+        return "erro técnico ao equilibrar; fica a escala encontrada"
+    if etapa2.startswith("sem resposta"):
+        return "sem resposta no tempo disponível; fica a escala encontrada"
+    if etapa2 in ("nao rodou", "não rodou"):
+        return "não foi feito"
+    return etapa2
+
 st.set_page_config(page_title="Escala de enfermagem", layout="wide")
 st.title("Escala de enfermagem")
-st.caption("A CLT trava a escala; o COFEN só alerta. Horizonte de 28 dias, começando numa "
-           "segunda-feira.")
+st.caption("A escala sempre cumpre a CLT; as recomendações do COFEN aparecem como alerta, sem "
+           "impedir a escala. O período é de 28 dias, começando numa segunda-feira.")
 
 # --- a) configuracao da unidade -----------------------------------------------------------
 st.header("1. Configuração da unidade")
@@ -63,9 +81,10 @@ inicio = c4.date_input("Início (segunda-feira)", value=fe.proxima_segunda(),
                        format="DD/MM/YYYY", key="inicio")
 
 st.caption("Turnos: nome, início e fim (hora cheia).",
-           help="Edite os horários ou acrescente uma linha para um turno novo (ex.: D12, 7 a "
-                "19). As regras de descanso da CLT saem dos horários: 11 h entre turnos, 36 h "
-                "depois de turno de 12 h, e toda folga isolada de pelo menos 24 h.")
+           help="Edite os horários ou acrescente uma linha para um turno novo (ex.: D12, das 7 "
+                "às 19). A ferramenta tira dos horários as regras de descanso da CLT: 11 h "
+                "entre um turno e outro, 36 h depois de um plantão de 12 h, e pelo menos 24 h "
+                "em toda folga de um dia só.")
 tabela_turnos = st.data_editor(
     pd.DataFrame([(ROTULO_TURNO.get(c, c), ini, fim) for c, ini, fim in fe.MODELOS[modelo_turnos]],
                  columns=["Nome", "Início", "Fim"]),
@@ -98,9 +117,13 @@ nomes_enf, nomes_tec = _nomes(texto_enf), _nomes(texto_tec)
 pessoas = ((nomes_enf or [f"Enf {i + 1}" for i in range(int(n_enf))])
            + (nomes_tec or [f"Téc {i + 1}" for i in range(int(n_tec))]))
 
-st.caption("Carga contratual semanal de cada profissional (padrão 44 h).",
-           help="O teto vale sobre o período, não por semana (no 12×36 há semanas de 48 h e de "
-                "36 h), e desconta férias e licenças. 44 h é o limite da Constituição.")
+st.caption("Horas por semana do contrato de cada profissional (padrão 44 h).",
+           help="Horas por semana do contrato desta pessoa (padrão 44 h, o máximo da "
+                "Constituição). A ferramenta não confere semana a semana: soma as horas do mês "
+                "inteiro e compara com o total que o contrato permite no período, descontando "
+                "férias e licenças. Exemplo: com 44 h por semana, em 4 semanas a pessoa pode "
+                "fazer até 176 h. No plantão 12×36 há semanas de 48 h e semanas de 36 h; isso é "
+                "permitido, desde que o total do mês não passe de 176 h.")
 tabela_cargas = st.data_editor(
     pd.DataFrame({"Profissional": pessoas,
                   "Carga semanal (h)": [br.CARGA_CONTRATUAL_PADRAO] * len(pessoas)}),
@@ -111,7 +134,7 @@ cargas = {str(l["Profissional"]): float(l["Carga semanal (h)"])
           for _, l in tabela_cargas.dropna().iterrows()
           if float(l["Carga semanal (h)"]) != br.CARGA_CONTRATUAL_PADRAO}
 
-st.caption("Férias e licenças — nesses dias a pessoa não é escalada (regra rígida).")
+st.caption("Férias e licenças: nesses dias a pessoa nunca é escalada.")
 tabela_indisp = st.data_editor(
     pd.DataFrame({"Profissional": pd.Series(dtype="str"),
                   "De": pd.Series(dtype="datetime64[ns]"),
@@ -173,8 +196,8 @@ with st.expander("Demanda específica por data (feriados, eventos) — opcional"
 # --- d) conferir com o COFEN --------------------------------------------------------------
 pacientes = {}
 with st.expander("Conferir com o COFEN (opcional) — pacientes por grau"):
-    st.caption("Média diária de pacientes. Serve só para comparar o quadro com o QP do "
-               "Parecer; não muda a escala.")
+    st.caption("Média de pacientes por dia em cada grau de dependência. Serve só para comparar "
+               "a equipe com o quadro recomendado pelo Parecer do COFEN; não muda a escala.")
     colunas = st.columns(len(br.GRAUS))
     for coluna, g in zip(colunas, br.GRAUS):
         valor = coluna.number_input(ROTULO_GRAU[g], min_value=0.0, value=0.0, step=1.0,
@@ -232,10 +255,16 @@ def _entrada(prioridades, regras=True) -> fe.Entrada:
 # ficam no back end; o texto longo vai para o "?" de cada linha e para o GUIA_DE_USO.
 st.header("4. Prioridades da escala")
 st.caption("Classifique cada critério: Essencial, Importante, Desejável ou Não considerar.",
-           help="Os de nível Essencial vêm antes de todos os outros; depois os Importantes; "
-                "depois os Desejáveis. Dentro do mesmo nível, cada violação conta 1. Uma "
-                "preferência nunca torna a escala impossível: as regras da CLT continuam "
-                "rígidas e valem antes de tudo.")
+           help="Aqui você diz o que é mais importante para a sua equipe. Cada vez que a "
+                "escala deixa de atender um critério, isso conta como uma violação (por "
+                "exemplo, um pedido de folga negado conta 1). A ferramenta procura a escala com "
+                "o menor número de violações, nesta ordem: primeiro reduz ao máximo as "
+                "violações dos critérios Essenciais; depois, sem piorar os Essenciais, reduz as "
+                "dos Importantes; por último, sem piorar os anteriores, as dos Desejáveis. "
+                "Nenhuma quantidade de critérios Desejáveis atendidos compensa um Essencial "
+                "descumprido. 'Não considerar' faz a ferramenta ignorar o critério. As regras "
+                "da CLT (descanso entre plantões, no máximo 6 dias seguidos) não estão nesta "
+                "lista: são sempre cumpridas, qualquer que seja a sua classificação.")
 PADRAO = fe.prioridades_padrao()
 for _k, (_nivel, _limite) in PADRAO.items():      # padrao antes dos campos (sem value=)
     st.session_state.setdefault(f"prio_{_k}", _nivel)
@@ -250,7 +279,9 @@ def _restaurar():
             st.session_state[f"lim_{k}"] = limite
 
 
-st.button("Restaurar padrão", key="restaurar", on_click=_restaurar)
+st.button("Restaurar padrão", key="restaurar", on_click=_restaurar,
+          help="Volta à classificação inicial: enfermeiro em posto de técnico Importante; os "
+               "outros critérios, Não considerar.")
 # regime em que ninguem trabalha dois dias seguidos (o 12x36), pelos horarios da tabela de turnos,
 # como `ferramenta.limite_efetivo` — sem depender de a equipe ja estar preenchida
 _pares = set(br.pares_proibidos_por_horario(
@@ -315,8 +346,9 @@ for g, nome_grupo in enumerate(pr.GRUPOS):
             col = st.columns([3, 2, 1])
             ajuda = c.ajuda
             if c.sem_conferencia:
-                ajuda += (" ⓘ Sem conferência externa: nenhuma instância do benchmark INRC "
-                          "a usa ou o avaliador oficial não a pontua.")
+                ajuda += (" ⓘ Sem conferência externa: este critério não pôde ser conferido "
+                          "contra o banco de testes internacional usado para validar a "
+                          "ferramenta (INRC-2010); a contagem é só da ferramenta.")
             col[0].markdown(c.nome, help=ajuda)
             col[1].selectbox("Importância", pr.NIVEIS, key=f"prio_{c.id}",
                              label_visibility="collapsed")
@@ -326,21 +358,24 @@ for g, nome_grupo in enumerate(pr.GRUPOS):
                     st.session_state[f"lim_{c.id}"] = teto
                 col[2].number_input(c.rotulo_limite, min_value=0, max_value=teto, step=1,
                                     key=f"lim_{c.id}", label_visibility="collapsed")
-            st.caption(pr.RESUMO[c.id])
 _usados = ([escolha[c.id][0] for c in NA_TELA if not c.clt and escolha[c.id][0] != pr.NAO]
            + [l.importancia or pr.importancia_padrao(l) for l in _regras()])
 _niveis = set(_usados)
 if len(_usados) > 1 and len(_niveis) == 1:
-    st.info(f"Todos os critérios considerados estão no nível {_niveis.pop()}: entre eles há "
-            f"compensação — uma violação de um vale o mesmo que uma de outro.")
+    st.info(f"Todos os critérios considerados estão no nível {_niveis.pop()}: entre eles, uma "
+            f"violação de um vale o mesmo que uma de outro, e a ferramenta pode trocar uma pela "
+            f"outra.")
 
 # orcamento do clique (DECISOES.md, 19/10, item b): padrao = `fe.ORCAMENTO`, lido na chamada;
 # o campo so vai ao `verificar` quando o gestor o muda (os testes encurtam `fe.ORCAMENTO`)
 _orc_padrao = max(1, round(fe.ORCAMENTO / 60))
-orcamento_min = st.number_input("Orçamento do clique (minutos)", min_value=1, step=1,
-                                value=_orc_padrao, key="orcamento",
-                                help="Tempo máximo de um clique em \"Gerar escala\". Esgotado, "
-                                     "a ferramenta para e mostra só o que foi provado.")
+orcamento_min = st.number_input("Tempo máximo para gerar a escala (minutos)", min_value=1,
+                                step=1, value=_orc_padrao, key="orcamento",
+                                help="Quanto tempo a ferramenta pode usar para procurar a melhor "
+                                     "escala. Se achar a melhor antes, termina antes. Se o tempo "
+                                     "acabar, entrega a melhor escala encontrada até ali e avisa "
+                                     "se ainda poderia existir uma melhor. Padrão: 60 minutos. "
+                                     "Equipes grandes podem precisar de mais tempo.")
 gerar = st.button("Gerar escala", type="primary", key="gerar")
 
 
@@ -353,31 +388,68 @@ if gerar:
         fe.montar(entrada)                    # erro de entrada aparece antes do solver
     except (ValueError, TypeError) as erro:
         st.session_state.pop("resultado", None)
-        st.error(f"Entrada inválida: {erro}")
+        st.error(f"Dados incompletos ou inválidos: {erro}")
     else:
-        barra = st.progress(0.0, text="preparando")
+        orcamento = None if orcamento_min == _orc_padrao else orcamento_min * 60
+        barra = st.progress(0.0, text="Preparando")
         # P12: a escala da etapa 1 aparece aqui enquanto a etapa 2 equilibra a carga. Sem
         # botao de planilha neste intervalo: um clique reexecutaria a tela e interromperia
         # o calculo. A planilha vem com o resultado final, e e a escala que a tela mostra.
         provisoria = st.empty()
+        # barra pelo relogio (DECISOES.md, "2026-10-21 — Textos para o gestor, tema claro e barra
+        # pelo relogio"): o calculo roda numa thread de trabalho que NAO chama o Streamlit; esta
+        # thread (a do script) espera por ela em passos de ate 1 s, anda a barra (decorrido /
+        # tempo maximo, ate 99%) e desenha a escala provisoria. Nenhuma chamada do Streamlit sai
+        # da thread do script, entao nao e preciso add_script_run_ctx.
+        estado = {"frac": 0.0, "msg": "Preparando", "aviso": None, "parar": False}
+
+        def progresso(frac, msg):
+            if estado["parar"]:                    # a tela foi reexecutada: para aqui
+                raise RuntimeError("cálculo interrompido pela tela")
+            estado.update(frac=frac, msg=msg)
 
         def aviso(evento, **d):
-            if evento != "escala_etapa1":
-                return
-            with provisoria.container(border=True):
-                st.info(f"Escala pronta; equilibrando a carga entre colegas (até "
-                        f"{fe.fmt_tempo(d['limite'])}).")
-                st.caption("A planilha fica disponível quando o equilíbrio terminar.")
-                st.dataframe(fe.grade(d["inst"], d["escala"]).fillna(""), width="stretch")
+            if evento == "escala_etapa1":
+                estado["aviso"] = d
 
-        resultado = fe.verificar(entrada,
-                                 progresso=lambda f, msg: barra.progress(f, text=msg),
-                                 aviso=aviso,
-                                 orcamento=(None if orcamento_min == _orc_padrao
-                                            else orcamento_min * 60))
+        def calcular():
+            try:
+                estado["resultado"] = fe.verificar(entrada, progresso=progresso, aviso=aviso,
+                                                   orcamento=orcamento)
+            except BaseException as x:             # noqa: BLE001 — relancado abaixo
+                estado["erro"] = x
+
+        total = orcamento or fe.ORCAMENTO
+        trabalho = threading.Thread(target=calcular, daemon=True)
+        t0 = time.time()
+        trabalho.start()
+        desenhada, frac = None, 0.0
+        try:
+            while trabalho.is_alive():
+                trabalho.join(timeout=1.0)
+                frac = (min(0.99, (time.time() - t0) / total) if total
+                        else min(0.99, estado["frac"]))
+                barra.progress(frac, text=estado["msg"])
+                d = estado["aviso"]
+                if d is not None and d is not desenhada:
+                    desenhada = d
+                    with provisoria.container(border=True):
+                        st.info(f"Escala encontrada; equilibrando a carga entre colegas (até "
+                                f"{fe.fmt_tempo(d['limite'])}).")
+                        st.caption("A planilha fica disponível quando o equilíbrio terminar.")
+                        st.dataframe(fe.grade(d["inst"], d["escala"]).fillna(""),
+                                     width="stretch")
+        finally:
+            estado["parar"] = True
+        if "erro" in estado:
+            raise estado["erro"]
+        # terminou: completa a barra de onde estiver ate 100% em ~3 s, e so entao o resultado
+        for k in range(1, 16):
+            barra.progress(frac + (1.0 - frac) * k / 15, text="Concluído")
+            time.sleep(0.2)
         barra.empty()
         provisoria.empty()
-        st.session_state["resultado"] = (resultado, entrada)
+        st.session_state["resultado"] = (estado["resultado"], entrada)
 
 # --- e) resultado -------------------------------------------------------------------------
 if "resultado" in st.session_state:
@@ -398,6 +470,12 @@ if "resultado" in st.session_state:
             st.write(r.frase())
     for alerta in r.alertas:
         st.error(f"Alerta COFEN (não impede a escala): {alerta}")
+    if any("QP" in a or "IST" in a for a in r.alertas):
+        # o texto do alerta vem de `instancia_br.alertas_cofen`, fora do escopo de 21/10; a
+        # legenda explica as siglas
+        st.caption("QP: quadro de pessoal recomendado pelo Parecer do COFEN. IST: índice de "
+                   "segurança técnica, a margem de 15% para férias e ausências que a escala "
+                   "não cobre.")
     for alerta in r.alertas_descanso:
         st.warning(alerta)    # o texto vem inteiro da ferramenta (P15)
 
@@ -413,7 +491,9 @@ if "resultado" in st.session_state:
                     f"{ind['fracao_min']:.0%}–{ind['fracao_max']:.0%}",
                     help=f"Horas trabalhadas ÷ horas contratadas nos dias disponíveis. Em "
                          f"horas: {ind['horas_min']:g}–{ind['horas_max']:g} h no período.")
-        m[4].metric("Conferência de descanso", "cumpre" if c["ok"] else "NÃO CUMPRE")
+        m[4].metric("Conferência de descanso", "cumpre" if c["ok"] else "NÃO CUMPRE",
+                    help="A escala foi medida no relógio, turno a turno: descanso entre "
+                         "turnos, descanso semanal e dias seguidos, como manda a CLT.")
         st.caption(r.frase_vigente())
         st.caption(f"Descanso mínimo entre turnos {c['menor_geral']:.0f} h · descanso "
                    f"semanal {fe.fmt_semanal(c['menor_semanal_interno'])} · no máximo "
@@ -426,20 +506,21 @@ if "resultado" in st.session_state:
         if ind.get("diferenca_categorias") is not None:
             st.caption(f"Diferença entre categorias: técnicos cumprem em média "
                        f"{ind['diferenca_categorias'] * 100:+.0f} pontos percentuais do "
-                       f"contrato em relação aos enfermeiros. Ela não é otimizada: vem da "
-                       f"demanda de cada posto frente ao tamanho de cada categoria.")
+                       f"contrato em relação aos enfermeiros. A ferramenta não tenta igualar "
+                       f"isso: vem da demanda de cada posto frente ao tamanho de cada "
+                       f"categoria.")
         equilibrio = ind.get("etapa2")
         if equilibrio == "ok":
             # a etapa 2 nao mostra gap (decisao de 05/10): mostra a diferenca de carga
             # entre colegas da mesma categoria, que e o que o gestor le
             dif = " · ".join(f"{fe.NOME_CATEGORIA[g].lower()}: {fe.fmt_diferenca(cat)}"
                              for g, cat in ind.get("categorias", {}).items())
-            entre = ("de mesmo custo" if r.provado else "que não pioram o valor da etapa 1 "
-                     "(a etapa 1 não provou o ótimo)")
-            st.caption(f"Equilíbrio de carga dentro de cada categoria, entre as escalas "
-                       f"{entre}. Diferença máxima de carga entre colegas — {dif}.")
+            entre = ("sem piorar nenhum critério da classificação" if r.provado else
+                     "sem piorar a escala encontrada (que pode não ser a melhor possível)")
+            st.caption(f"Equilíbrio de carga dentro de cada categoria, {entre}. Diferença "
+                       f"máxima de carga entre colegas — {dif}.")
         elif equilibrio:
-            st.caption(f"Equilíbrio de carga: {equilibrio}.")
+            st.caption(f"Equilíbrio de carga: {_equilibrio(equilibrio)}.")
         if ind["pedidos_total"] and ind["pedidos_atendidos"] == ind["pedidos_total"]:
             st.caption(f"Todos os {ind['pedidos_total']} pedidos de folga foram atendidos."
                        if ind["pedidos_total"] > 1 else "O pedido de folga foi atendido.")
@@ -460,22 +541,25 @@ if "resultado" in st.session_state:
             st.dataframe(fe.tabela_criterios(r), hide_index=True)
     if r.qp:
         q1, q2 = st.columns(2)
-        st.caption(f"CHS usada no QP: {r.chs:.1f} h por semana, a média das cargas "
-                   f"contratuais da equipe.".replace(".", ",", 1))
-        q1.metric("QP núcleo assistencial", f"{r.qp[0]:.2f}".replace(".", ","),
-                  help=f"Horas por dia × 7 / CHS ({r.chs:g} h).")
-        q2.metric("QP completo (IST 15%)", f"{r.qp[1]:.2f}".replace(".", ","),
-                  help="Núcleo × 1,15. O IST cobre férias e ausências que a escala não "
-                       "modela.")
-    with st.expander("Como o veredito foi obtido"):
-        explica = {"piso": "inviável pela aritmética — horas ou alternância de plantões não "
+        st.caption(f"Horas semanais usadas na conta do COFEN (CHS, carga horária semanal): "
+                   f"{r.chs:.1f} h, a média dos contratos da equipe.".replace(".", ",", 1))
+        q1.metric("Quadro recomendado pelo COFEN, só assistência (QP)",
+                  f"{r.qp[0]:.2f}".replace(".", ","),
+                  help=f"Horas de cuidado por dia × 7 ÷ horas semanais ({r.chs:g} h).")
+        q2.metric("Quadro recomendado pelo COFEN, com 15% para ausências (QP com IST)",
+                  f"{r.qp[1]:.2f}".replace(".", ","),
+                  help="O quadro só assistência × 1,15. A margem (IST, índice de segurança "
+                       "técnica) cobre férias e ausências que a escala não modela.")
+    with st.expander("Como o resultado foi obtido"):
+        explica = {"piso": "não basta, pela conta: as horas ou a alternância de plantões não "
                            "cobrem a demanda",
-                   "inviavel": "inviável, provado pelo solver",
-                   "viavel": "viável — escala encontrada e conferida",
-                   "indeterminado": f"sem resposta em {fe.fmt_tempo(fe.TEMPO)} — nem provado "
-                                    f"inviável",
-                   "erro": "erro técnico ao resolver; detalhes no console",
-                   fe.ORCAMENTO_ESGOTADO: "não testado: o orçamento do clique acabou",
+                   "inviavel": "não há escala que cumpra a lei com este número (a busca "
+                               "completa mostrou)",
+                   "viavel": "escala encontrada e conferida",
+                   "indeterminado": f"sem resposta em {fe.fmt_tempo(fe.TEMPO)}: a ferramenta "
+                                    f"não encontrou escala nem mostrou que ela não existe",
+                   "erro": "erro técnico ao calcular; detalhes no console",
+                   fe.ORCAMENTO_ESGOTADO: "não testado: o tempo máximo acabou",
                    fe.REPROVADA: "escala encontrada, mas reprovada na conferência de "
                                  "descanso — não entregue"}
         for quadro, v, n_enf_t, n_tec_t in r.tentativas:

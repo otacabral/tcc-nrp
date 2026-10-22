@@ -8,6 +8,11 @@ fim de cada sessão (dele ou do chat).
 - **Versão citável: v1.4.2** (suíte TUDO OK em `resultados/v142_2026-10-21/suite/resumo.txt`,
   depois da parada em tela_opB-c e do RETOMAR; tag criada e enviada pelo Otávio). Máximo de dias
   seguidos e máximo de turnos também como preferência. A tag v1.4.2 não se mexe.
+- **v1.4.3, continuação (21/10, noite): textos da tela para o gestor, tema claro e barra pelo
+  relógio** — implementados e commitados, **à espera da revisão do Otávio na tela**. Antes ×
+  depois em `resultados/textos_tela_2026-10-21.md`; exemplos do "?" conferidos pela contagem
+  (15 de 15; dois exemplos corrigidos no texto). A suíte da v1.4.3 que tinha sido lançada foi
+  cancelada (Ctrl+C) e roda **uma vez só**, depois da revisão.
 - **v1.4.3 implementada, suíte por rodar** (21/10, noite): a trava do máximo de dias seguidos
   passa a ser **só a da CLT** (6; no 12×36, a regra das 36 h). O campo rígido do hospital saiu da
   tela e da `Entrada`; a regra do hospital vai pela preferência de dias seguidos (no Essencial,
@@ -24,11 +29,22 @@ fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-**1. Otávio: suíte reduzida da v1.4.3** (~1 h nesta máquina, i5-10210U, HiGHS 1.15.1; o opB-e
-sozinho leva ~35 min). Com o Claude Code e o Chrome fechados. No PowerShell, um comando por linha:
+**0. Otávio: revisar a tela.** Abrir a ferramenta (um por linha):
 
     cd D:\dev\tcc-nrp
     .\.venv\Scripts\Activate.ps1
+    streamlit run src\app.py
+
+Conferir os textos contra `resultados/textos_tela_2026-10-21.md`, o tema claro e a barra (gerar
+uma escala pequena). Aprovar ou pedir ajustes ao Claude Code. **Só depois** rodar a suíte.
+
+**1. Otávio: suíte reduzida da v1.4.3** (~1 h 30 nesta máquina, i5-10210U, HiGHS 1.15.1; o opB-e
+sozinho leva ~35 min). Com o Claude Code e o Chrome fechados. Antes, apagar a pasta da suíte
+cancelada (o RETOMAR a pegaria). No PowerShell, um comando por linha:
+
+    cd D:\dev\tcc-nrp
+    .\.venv\Scripts\Activate.ps1
+    Remove-Item -Recurse -Force resultados\v143_2026-10-21
     & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v143.sh
 
 Termina com "TUDO OK" ou "PARADO: ..." na última linha de
@@ -42,7 +58,9 @@ pula o que já passou e continua na mesma pasta —, um por linha:
     Remove-Item Env:RETOMAR
 
 Diferenças admitidas: só as do `resultados/trava_clt_2026-10-21/ESPERADO.md` (max-dias
-reescrito; pref-tela com a parte de 8 h). Qualquer outra diferença é falha.
+reescrito; pref-tela com a parte de 8 h; e, no acréscimo da noite, os textos de 8, 12, opB-tela,
+pref-tela e max-dias). Qualquer outra diferença é falha. O `Remove-Item` é só para a primeira
+vez: ao retomar, não apagar a pasta.
 
 **2. Só com TUDO OK: tag v1.4.3 e envio** (um por linha; a tag marca a versão, o push manda os
 commits e a tag ao GitHub):
@@ -77,6 +95,13 @@ raiz, um por linha:
     git worktree remove --force ..\tcc-nrp-v142
 
 (apaga só as pastas; as tags e o histórico ficam).
+
+## Decisões de 21/10 (noite, v1.4.3, continuação)
+
+- DECISOES "2026-10-21 — Textos para o gestor, tema claro e barra pelo relógio" (TELA e
+  REDAÇÃO): textos sem termos de Pesquisa Operacional; "?" dos critérios com exemplos conferidos;
+  campo "Tempo máximo para gerar a escala"; tema claro; barra pelo relógio com o cálculo numa
+  thread de trabalho (plano B não usado).
 
 ## Decisões de 21/10 (noite, v1.4.3)
 
@@ -187,6 +212,17 @@ raiz, um por linha:
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **21/10 (noite, textos da tela, se aprovados e a suíte fechar):** frases citáveis que mudam —
+  lista antes × depois no topo de `resultados/textos_tela_2026-10-21.md`. Em resumo: "pode haver
+  uma melhor (gap X: …)" → "pode haver uma melhor: esta escala pode ser até X pior que a melhor
+  possível, e com mais tempo a ferramenta poderia melhorá-la"; "o solver não achou escala nem
+  provou que ela não existe" → "a ferramenta não encontrou escala nem conseguiu mostrar que ela
+  não existe"; "Escala desta tela: a da etapa 2…" → "Esta escala tem a carga equilibrada entre
+  colegas."; "Orçamento do clique" → "Tempo máximo para gerar a escala"; "Como o veredito foi
+  obtido" → "Como o resultado foi obtido". As frases "Faltam N; o menor quadro viável é X", "O
+  quadro informado admite escala legal" e "Não há escala legal até N" **não mudaram**. A barra
+  agora anda pelo relógio (o `GUIA_DE_USO.md` dizia "a barra não tem relógio"; atualizado).
 
 - **21/10 (noite, v1.4.3, se a suíte fechar):** (1) a ferramenta não tem mais "máximo de dias
   seguidos do hospital" rígido: a trava é só a da lei (6); a regra do hospital é preferência. O

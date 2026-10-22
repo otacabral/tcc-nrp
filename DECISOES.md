@@ -2715,6 +2715,41 @@ quadro viável é 14".
 
 ---
 
+## 2026-10-21 — Textos para o gestor, tema claro e barra pelo relógio
+
+**Status: vigente — mudança de TELA e de REDAÇÃO, não de formulação** (v1.4.3, continuação). Pedido
+do Otávio, 21/10 (noite); esperado registrado antes (`resultados/trava_clt_2026-10-21/ESPERADO.md`,
+acréscimo da noite).
+
+- **Textos:** todos os textos da tela e as mensagens do resultado reescritos para um gestor de
+  enfermagem que usa a ferramenta pela primeira vez, sem termos de Pesquisa Operacional ("solver",
+  "gap", "etapa 1/2", "veredito", "piso", "conta prévia", "inviável") nem siglas sem explicação.
+  A linha pequena sob cada critério saiu; a explicação toda vai para o "?". Só a redação muda:
+  nenhuma conta, nenhum número; as frases que o TCC cita ("Faltam N; o menor quadro viável é X",
+  "O quadro informado admite escala legal", "Não há escala legal até N") ficam. Muda o
+  complemento da frase sem prova de ótimo (o "gap"). Antes × depois:
+  `resultados/textos_tela_2026-10-21.md`. Cada exemplo do "?" foi conferido pela contagem da
+  ferramenta (`avaliacao.py`); dois exemplos foram corrigidos (o texto, não a conta): o de dias
+  seguidos passa ao limite padrão (5 → 6 dias = 1 violação), e os de fim de semana dizem que
+  valem para sábado e domingo.
+- **Campo "Tempo máximo para gerar a escala (minutos)"**, o antigo "Orçamento do clique", com a
+  mesma chave (`orcamento`) e o mesmo padrão (60 min).
+- **Tema claro:** `.streamlit/config.toml` com `base = "light"`.
+- **Barra pelo relógio:** fração = tempo decorrido ÷ tempo máximo, até 99% enquanto calcula, com o
+  texto da parte em que está; ao terminar, completa até 100% em ~3 s e só então mostra o
+  resultado. *Implementação (Claude Code, não óbvia):* o cálculo (`fe.verificar`) roda numa
+  thread de trabalho que não chama o Streamlit; a thread do script espera por ela em passos de
+  até 1 s, anda a barra e desenha a escala provisória. Nenhuma chamada do Streamlit sai da
+  thread do script, por isso não foi preciso `add_script_run_ctx` (o plano B não foi usado). Se
+  a tela for reexecutada no meio, o cálculo para na próxima parte, como antes. A barra não muda
+  o resultado (medido: mesmo caso com e sem a barra, mesmo resultado; tempo no relatório).
+- **Fora do escopo, ficam:** os alertas do COFEN e as mensagens de erro de dado são escritos em
+  `instancia_br.py` (intocado); a tela ganhou uma legenda que explica QP e IST.
+- **Testes atualizados com registro** (precedente do 1-2): 8, 12, opB-tela, pref-tela, max-dias
+  (textos que mudaram). A suíte da v1.4.3 roda uma vez, depois da revisão do Otávio.
+
+---
+
 ## Modelo de entrada
 
 ```

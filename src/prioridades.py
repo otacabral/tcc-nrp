@@ -84,86 +84,79 @@ CRITERIOS = (
              "Folga pedida na tabela de pedidos. Ex.: Ana pediu folga em 20/11 e foi escalada "
              "nesse dia: 1 violação.", nivel=ESSENCIAL),
     Criterio("enf_posto_tec", 0, "Enfermeiro em posto de técnico", CUSTO,
-             "Turno em que um enfermeiro cobre vaga de técnico. Ex.: faltam técnicos no sábado "
-             "e um enfermeiro cobre: 1 violação.", nivel=IMPORTANTE),
+             "Conta quantas vezes um enfermeiro precisou cobrir a vaga de um técnico. Ex.: "
+             "faltou técnico no sábado e um enfermeiro cobriu: 1 violação. Classifique alto se "
+             "quiser poupar os enfermeiros.", nivel=IMPORTANTE),
     # 21/10: maximo de dias seguidos e maximo de turnos tambem como preferencia (DECISOES.md,
     # "2026-10-21 — ..."); o limite rigido (so a lei, v1.4.3) continua, e o usado e o menor dos dois
     Criterio("max_dias_seguidos", 1, "Máximo de dias seguidos (preferência)", PREF_DIAS,
-             "A lei trava em 6 (art. 67); a regra do seu hospital vai aqui, como preferência; "
-             "no Essencial ela pesa acima de tudo o que é Importante ou Desejável. Ex.: com "
-             "preferência 4, cinco dias seguidos contam 1 violação; mais de 6 nunca acontece.",
-             5, "dias"),
+             "Quantos dias seguidos de trabalho a sua unidade aceita no máximo. A lei já proíbe "
+             "mais de 6, e isso é sempre cumprido; aqui vai a regra do seu hospital, abaixo "
+             "disso. Ex.: com máximo 5, trabalhar 6 dias seguidos gera 1 violação. Se for uma "
+             "regra firme do hospital, marque Essencial. (Não aparece no 12×36, em que ninguém "
+             "trabalha dois dias seguidos.)", 5, "dias"),
     Criterio("min_dias_seguidos", 1, "Mínimo de dias seguidos de trabalho",
              "min_consecutive_working_days",
-             "Evita dia de trabalho isolado. Ex.: com mínimo 3, trabalhar só na terça, entre "
-             "folgas, conta 2 violações.", 3, "dias"),
+             "Evita dia de trabalho isolado entre folgas. Ex.: com mínimo 3, trabalhar só na "
+             "terça, com folga na segunda e na quarta, gera 2 violações (faltaram 2 dias para o "
+             "mínimo).", 3, "dias"),
     Criterio("max_folgas_seguidas", 1, "Máximo de folgas seguidas",
              "max_consecutive_free_days",
-             "Evita folgas longas demais. Ex.: com máximo 4, seis folgas seguidas contam 2 "
+             "Evita folgas longas demais. Ex.: com máximo 4, seis folgas seguidas geram 2 "
              "violações.", 4, "dias"),
     Criterio("min_folgas_seguidas", 1, "Mínimo de folgas seguidas",
              "min_consecutive_free_days",
-             "Evita folga isolada. Ex.: com mínimo 3, uma folga isolada conta 2 violações.",
+             "Evita folga de um dia só. Ex.: com mínimo 3, uma folga isolada gera 2 violações.",
              3, "dias"),
     Criterio("seq_indesejadas", 1, "Sequências indesejadas", None,
              "As sequências proibidas pelo descanso da CLT (11 h entre turnos, 36 h depois do "
              "plantão de 12 h, folga isolada de 24 h) já são regra rígida."),
     Criterio("max_fds_seguidos", 2, "Máximo de fins de semana seguidos trabalhados",
              "max_consecutive_working_weekends",
-             "Ex.: com máximo 3, quatro fins de semana seguidos trabalhados contam 1 violação.",
+             "Limita quantos fins de semana seguidos a mesma pessoa trabalha. Ex.: com máximo "
+             "3, trabalhar 4 fins de semana seguidos gera 1 violação.",
              3, "fins de semana"),
     Criterio("min_fds_seguidos", 2, "Mínimo de fins de semana seguidos trabalhados",
              "min_consecutive_working_weekends",
-             "Evita fim de semana trabalhado isolado. Ex.: com mínimo 2, um fim de semana "
-             "trabalhado entre dois livres conta 1 violação.", 2, "fins de semana"),
+             "Evita trabalhar um fim de semana isolado. Ex.: com mínimo 2, trabalhar um fim de "
+             "semana com folga no anterior e no seguinte gera 1 violação.", 2, "fins de semana"),
     Criterio("fds_4_semanas", 2, "Fins de semana trabalhados em 4 semanas",
              "max_working_weekends_in_four_weeks",
-             "Ex.: com máximo 2, três fins de semana trabalhados em quatro semanas contam 1 "
-             "violação. O 2 do campo é valor de exemplo, sem fonte (suposição declarada).",
+             "Limita quantos dos fins de semana do mês a mesma pessoa trabalha. Ex.: com máximo "
+             "2, trabalhar 3 gera 1 violação. O 2 é só um exemplo: ajuste à regra da sua "
+             "unidade.",
              2, "fins de semana", sem_conferencia=True),
     Criterio("fds_completo", 2, "Fim de semana completo", "complete_weekends",
-             "Trabalha os dias do fim de semana todos ou nenhum. Ex.: trabalhar só no sábado "
-             "conta 1 violação."),
+             "Quem trabalha no fim de semana trabalha o fim de semana inteiro. Ex. (fim de "
+             "semana de sábado e domingo): trabalhar só no sábado gera 1 violação. No 12×36 isso "
+             "não é possível (ninguém trabalha dois dias seguidos)."),
     Criterio("mesmo_turno_fds", 2, "Mesmo turno no fim de semana",
              "identical_shift_types_during_weekend",
-             "Quem trabalha no fim de semana faz o mesmo turno em todos os dias dele. Ex.: "
-             "diurno no sábado e noturno no domingo contam 2 violações."),
+             "Quem trabalha no fim de semana faz o mesmo turno em todos os dias dele. Ex. (fim "
+             "de semana de sábado e domingo): diurno no sábado e noturno no domingo geram 2 "
+             "violações."),
     Criterio("max_turnos", 3, "Máximo de turnos no período", PREF_TURNOS,
-             "Preferência do hospital, abaixo do teto obrigatório (a carga contratual nos dias "
-             "disponíveis continua valendo). Ex.: com máximo 18, quem fez 20 turnos conta 2 "
-             "violações. O campo não passa do teto legal de turnos.", 18, "turnos"),
+             "Quantos turnos no mês a sua unidade aceita no máximo por pessoa. As horas do "
+             "contrato já são sempre respeitadas; use isto se a unidade quiser um limite mais "
+             "baixo. Ex.: com máximo 12, quem fizer 14 turnos gera 2 violações.", 18, "turnos"),
     Criterio("min_turnos", 3, "Mínimo de turnos no período", "min_num_assignments",
-             "Ex.: com mínimo 10, quem fez 8 turnos conta 2 violações.", 10, "turnos"),
+             "Quantos turnos no mês cada pessoa deve fazer, no mínimo. Ex.: com mínimo 10, quem "
+             "fizer 8 gera 2 violações.", 10, "turnos"),
     Criterio("noturno_antes_fds", 3, "Noturno na véspera de fim de semana livre",
              "no_night_shift_before_free_weekend",
-             "Ex.: noturno na sexta e o fim de semana livre: 1 violação.",
+             "Evita plantão noturno na sexta quando a pessoa folga no fim de semana (ela "
+             "passaria o sábado dormindo). Ex.: noturno na sexta e fim de semana livre: 1 "
+             "violação.",
              sem_conferencia=True),
     Criterio("folgas_apos_noites", 3, "Duas folgas depois de noites",
              "two_free_days_after_night_shifts",
-             "Depois de uma sequência de noturnos, dois dias de folga. Ex.: noturno na segunda "
-             "e trabalho na quarta: 1 violação.", sem_conferencia=True),
+             "Depois de uma sequência de plantões noturnos, dois dias de folga antes de voltar. "
+             "Ex.: noturno na segunda e trabalho na quarta: 1 violação.", sem_conferencia=True),
 )
 POR_ID = {c.id: c for c in CRITERIOS}
 
-# descricao de uma linha, para a tela (o texto longo, com exemplo, e a `ajuda`, no "?")
-RESUMO = {
-    "pedido_folga": "Folga pedida num dia.",
-    "enf_posto_tec": "Enfermeiro cobrindo vaga de técnico.",
-    "max_dias_seguidos": "Regra do hospital, como preferência; a lei trava em 6.",
-    "min_dias_seguidos": "Evita dia de trabalho isolado.",
-    "max_folgas_seguidas": "Evita folgas longas demais.",
-    "min_folgas_seguidas": "Evita folga isolada.",
-    "seq_indesejadas": "Sequências proibidas pelo descanso da CLT.",
-    "max_fds_seguidos": "Limita fins de semana seguidos trabalhados.",
-    "min_fds_seguidos": "Evita fim de semana trabalhado isolado.",
-    "fds_4_semanas": "Limita fins de semana trabalhados em 4 semanas.",
-    "fds_completo": "Trabalha o fim de semana inteiro ou nenhum dia dele.",
-    "mesmo_turno_fds": "O mesmo turno em todos os dias do fim de semana.",
-    "max_turnos": "Preferência de teto de turnos de cada pessoa no período.",
-    "min_turnos": "Mínimo de turnos de cada pessoa no período.",
-    "noturno_antes_fds": "Evita noturno na véspera de fim de semana livre.",
-    "folgas_apos_noites": "Duas folgas depois de uma sequência de noturnos.",
-}
+# 21/10 (v1.4.3): a linha pequena embaixo de cada criterio (o antigo RESUMO) saiu da tela; toda
+# a explicacao fica na `ajuda`, no "?"
 CONTRATO = [c for c in CRITERIOS if c.familia not in (None, PEDIDO, CUSTO)]
 
 

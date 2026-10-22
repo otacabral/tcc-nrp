@@ -346,30 +346,33 @@ def casos_tempo() -> None:
         at = pela_tela(M12, 14, 26, demanda, fds)
         fe.verificar = original_verificar
         avisos = textos(at, "warning")
+        # 21/10 (v1.4.3, textos para o gestor; resultados/trava_clt_2026-10-21/ESPERADO.md,
+        # acrescimo da noite, item 3): texto novo, atualizado com registro
         confere(len(avisos) == 1 and avisos[0].startswith(
-            "O quadro informado admite escala legal. Escala gerada; pode haver uma melhor "
-            "(gap"), f"tela: {avisos}")
+            "O quadro informado admite escala legal. Escala gerada; pode haver uma melhor: "
+            "esta escala pode ser até"), f"tela: {avisos}")
         confere(textos(at, "success") == [], f"sem success: {textos(at, 'success')}")
         r, _ = at.session_state["resultado"]
         confere(bool(r.escala) and len(at.get("download_button")) == 1,
                 "escala e planilha na tela")
-        confere(not any(t.startswith("Equilíbrio de carga: não rodou")
+        confere(not any(t.startswith(("Equilíbrio de carga: não rodou",
+                                      "Equilíbrio de carga: não foi feito"))
                         for t in textos(at, "caption")),
                 f"P14: a etapa 2 rodou ({r.indicadores.get('etapa2')})")
-        vigente = [t for t in textos(at, "caption") if t.startswith("Escala desta tela:")]
+        vigente = [t for t in textos(at, "caption") if t.startswith(("Esta escala tem", "Esta é a escala encontrada"))]
         confere(r.indicadores.get("etapa2") == "ok",
                 f"P17: a etapa 2 entregou escala ({r.indicadores.get('etapa2')})")
         # 11/10 (P17, item c): a linha diz a verdade sobre a etapa 2 ter melhorado ou nao
         a1, a2 = r.indicadores.get("amplitude_etapa1"), r.indicadores.get("amplitude")
         melhorou = a1 is not None and a2 is not None and a2 < a1 - 1e-9
         if melhorou:
-            linha_esperada = ("Escala desta tela: a da etapa 2, com a carga equilibrada entre "
-                              "colegas, sobre uma escala sem prova de ótimo: o equilíbrio não "
-                              "deixou piorar o valor achado pela etapa 1.")
+            linha_esperada = ("Esta escala tem a carga equilibrada entre colegas, sem piorar "
+                              "o resultado da escala encontrada (que pode não ser a melhor "
+                              "possível).")
         else:
-            linha_esperada = ("Escala desta tela: a da etapa 1. O equilíbrio de carga não "
-                              "achou, no tempo disponível, escala mais equilibrada sem piorar o "
-                              "resultado da etapa 1.")
+            linha_esperada = ("Esta é a escala encontrada: no tempo disponível, não foi "
+                              "possível equilibrar mais a carga entre colegas sem piorar o "
+                              "resultado.")
             confere(a1 is not None and a2 is not None and abs(a2 - a1) <= 1e-9,
                     f"sem melhora, o criterio final e o da etapa 1 ({a1} -> {a2})")
         confere(vigente == [linha_esperada],
@@ -384,8 +387,11 @@ def casos_tempo() -> None:
         print("8c. tempo esgotado sem escala: 40 sem pedidos, limite 3 s")
         fe.TEMPO = 3
         at = pela_tela(M12, 14, 26, demanda, fds)
-        confere(textos(at, "error") == ["Sem resposta em 3 s com 40 profissionais: o solver "
-                                        "não achou escala nem provou que ela não existe."],
+        # 21/10 (v1.4.3, textos para o gestor; resultados/trava_clt_2026-10-21/ESPERADO.md,
+        # acrescimo da noite, item 3): texto novo, atualizado com registro
+        confere(textos(at, "error") == ["Sem resposta em 3 s com 40 profissionais: a "
+                                        "ferramenta não encontrou escala nem conseguiu mostrar "
+                                        "que ela não existe."],
                 f"tela: {textos(at, 'error')}")
         confere(not any("Falta" in t for t in _todos_textos(at)), "nenhum 'Falta'")
         r, _ = at.session_state["resultado"]
@@ -877,13 +883,14 @@ def casos_p12() -> None:
             "a escala da etapa 1 cumpre o descanso")
     at = pela_tela(*caso5)
     r, e = at.session_state["resultado"]
-    linha = [t for t in textos(at, "caption") if t.startswith("Escala desta tela:")]
+    # 21/10 (v1.4.3, textos para o gestor): frases novas da escala vigente, com registro
+    linha = [t for t in textos(at, "caption") if t.startswith(("Esta escala tem", "Esta é a escala encontrada"))]
     etapa2 = r.indicadores.get("etapa2")
     if etapa2 == "ok":
-        confere(linha == ["Escala desta tela: a da etapa 2, com a carga equilibrada entre "
-                          "colegas."], f"linha da escala vigente: {linha} (etapa 2 {etapa2})")
+        confere(linha == ["Esta escala tem a carga equilibrada entre colegas."],
+                f"linha da escala vigente: {linha} (etapa 2 {etapa2})")
     else:
-        confere(len(linha) == 1 and "a da etapa 1" in linha[0],
+        confere(len(linha) == 1 and linha[0].startswith("Esta é a escala encontrada"),
                 f"linha da escala vigente: {linha} (etapa 2 {etapa2})")
     confere_tela_e_planilha(at, r, e)
 
@@ -1282,7 +1289,9 @@ def caso_opb_tela() -> None:
         r, e = at.session_state["resultado"]
         confere("**Resultado por critério**" in textos(at, "markdown"),
                 "tabela de resultado na tela")
-        df = [d.value for d in at.dataframe if list(d.value.columns)[:2] == ["Nível", "Critério"]]
+        # 21/10 (v1.4.3): a coluna "Nível" passou a "Importância", como na tabela de cima
+        df = [d.value for d in at.dataframe
+              if list(d.value.columns)[:2] == ["Importância", "Critério"]]
         confere(len(df) == 1 and df[0].values.tolist() == [list(x) for x in r.criterios]
                 and len(r.criterios) == 2, f"resultado por criterio: {r.criterios}")
         aba = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))["Prioridades"]
@@ -1449,10 +1458,11 @@ def caso_max_dias() -> None:
     confere(r.diagnostico is not None and r.diagnostico[0] == fe.COMBINACAO,
             f"diagnostico: {r.diagnostico and r.diagnostico[0]}")
     if r.diagnostico:
-        confere("A conta prévia do menor quadro provou" in r.diagnostico[1]
-                and "O solver provou" not in r.diagnostico[1],
+        # 21/10 (v1.4.3, textos para o gestor): frases sem "conta previa" e sem "solver"
+        confere("Uma conta feita antes de procurar a escala já mostra que" in r.diagnostico[1]
+                and "A busca completa mostrou" not in r.diagnostico[1],
                 f"texto do diagnostico: {r.diagnostico[1]}")
-    confere("O solver provou que" in fe.diagnosticar(fe.montar(e))[1],
+    confere("A busca completa mostrou que" in fe.diagnosticar(fe.montar(e))[1],
             "sem o parametro, o texto de antes")
 
 
@@ -1606,8 +1616,9 @@ def caso_pref_tela() -> None:
     rotulo = next((x for x in at.markdown if x.value == "Máximo de dias seguidos (preferência)"),
                   None)
     ajuda = rotulo.proto.help if rotulo is not None else ""
-    confere("lei trava em 6" in ajuda and "regra do seu hospital vai aqui" in ajuda
-            and "no Essencial ela pesa acima de tudo" in ajuda, f"ajuda da linha: {ajuda!r}")
+    # 21/10 (v1.4.3, textos para o gestor): a ajuda da Parte 4, com registro
+    confere("A lei já proíbe mais de 6" in ajuda and "regra do seu hospital" in ajuda
+            and "marque Essencial" in ajuda, f"ajuda da linha: {ajuda!r}")
 
 
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,

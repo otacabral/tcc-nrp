@@ -168,8 +168,8 @@ class Resultado:
         if gap is None or math.isinf(gap):
             return "Escala gerada; pode haver uma melhor."
         gap_txt = f"{gap:.1%}".replace(".", ",")
-        return (f"Escala gerada; pode haver uma melhor (gap {gap_txt}: distância máxima "
-                f"até a melhor possível).")
+        return (f"Escala gerada; pode haver uma melhor: esta escala pode ser até {gap_txt} "
+                f"pior que a melhor possível, e com mais tempo a ferramenta poderia melhorá-la.")
 
     def frase(self) -> str:
         if self.veredito == ADMITE:
@@ -200,8 +200,8 @@ class Resultado:
         if insuficiente:
             return (f"{antes}Sem resposta em {fmt_tempo(segundos)} com {quadro} profissionais: "
                     f"o menor quadro viável não foi determinado.")
-        return (f"Sem resposta em {fmt_tempo(segundos)} com {quadro} profissionais: o solver "
-                f"não achou escala nem provou que ela não existe.")
+        return (f"Sem resposta em {fmt_tempo(segundos)} com {quadro} profissionais: a "
+                f"ferramenta não encontrou escala nem conseguiu mostrar que ela não existe.")
 
     def frase_vigente(self) -> str:
         """Qual escala a tela (e a planilha) mostra: a da etapa 2 ou a da etapa 1 (P12)."""
@@ -211,20 +211,19 @@ class Resultado:
             # (`resolver_com_objetivo` a devolve nesse caso) e a linha diz isso
             a1, a2 = self.indicadores.get("amplitude_etapa1"), self.indicadores.get("amplitude")
             if a1 is not None and a2 is not None and a2 >= a1 - 1e-9:
-                return ("Escala desta tela: a da etapa 1. O equilíbrio de carga não achou, no "
-                        "tempo disponível, escala mais equilibrada sem piorar o resultado da "
-                        "etapa 1.")
-            return ("Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas, "
-                    "sobre uma escala sem prova de ótimo: o equilíbrio não deixou piorar o "
-                    "valor achado pela etapa 1.")
+                return ("Esta é a escala encontrada: no tempo disponível, não foi possível "
+                        "equilibrar mais a carga entre colegas sem piorar o resultado.")
+            return ("Esta escala tem a carga equilibrada entre colegas, sem piorar o resultado "
+                    "da escala encontrada (que pode não ser a melhor possível).")
         if etapa2 == "ok":
-            return "Escala desta tela: a da etapa 2, com a carga equilibrada entre colegas."
+            return "Esta escala tem a carga equilibrada entre colegas."
         if etapa2.startswith("não melhorou"):
-            return ("Escala desta tela: a da etapa 1; o equilíbrio não achou escala mais "
-                    "equilibrada no tempo.")
+            return ("Esta é a escala encontrada: não foi possível equilibrar mais a carga entre "
+                    "colegas no tempo disponível.")
         if etapa2.startswith("não rodou") or etapa2.startswith("nao rodou"):
-            return "Escala desta tela: a da etapa 1; o equilíbrio de carga não rodou."
-        return "Escala desta tela: a da etapa 1; o equilíbrio de carga não terminou no tempo."
+            return "Esta é a escala encontrada: o equilíbrio de carga entre colegas não foi feito."
+        return ("Esta é a escala encontrada: o equilíbrio de carga entre colegas não terminou no "
+                "tempo.")
 
 
 ORCAMENTO_ESGOTADO = "orcamento"
@@ -878,8 +877,8 @@ def motivos_da_trava(inst) -> list[tuple[str, str]]:
             base = ", ".join(s for s in turnos
                              if br.HABILIDADE_ENF not in inst.turnos[s].habilidades)
             motivos.append((motivo, (
-                f"A conta prévia do menor quadro provou, sem o solver, que este quadro não tem "
-                f"escala legal. {rotulo_dia(d0)} e {rotulo_dia(d1)}: {seguinte} "
+                f"Uma conta feita antes de procurar a escala já mostra que este número de "
+                f"pessoas não permite escala legal. {rotulo_dia(d0)} e {rotulo_dia(d1)}: {seguinte} "
                 f"{'posto' if seguinte == 1 else 'postos'}{de_enf} {_no_dia(d1)} + {antes} "
                 f"{_no_dia(d0)} em turnos que impedem {_no_dia(d1)[1:]} "
                 f"({base}: depois deles, o descanso exigido não deixa trabalhar no dia "
@@ -916,8 +915,8 @@ def diagnosticar(inst, por_conta: bool = False) -> tuple[str, str, list[str]]:
     motivos = motivos_da_trava(inst)
     if motivos:
         return motivos[0][0], "\n\n".join(t for _, t in motivos), [m for m, _ in motivos]
-    quem = ("A conta prévia do menor quadro provou, sem o solver, que" if por_conta
-            else "O solver provou que")
+    quem = ("Uma conta feita antes de procurar a escala já mostra que" if por_conta
+            else "A busca completa mostrou que")
     return COMBINACAO, ("Nenhuma conta simples explica: horas, alternância, categoria e cada "
                         f"dia fecham separados. {quem} as regras juntas — "
                         "descanso entre turnos, dias seguidos, férias e licenças — não "
@@ -946,8 +945,8 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
     tempo = TEMPO if tempo is None else tempo  # lido na chamada: os testes o encurtam
     orcamento = ORCAMENTO if orcamento is None else orcamento
     prazo = time.time() + orcamento
-    sufixo = f" · orçamento do clique: {fmt_tempo(orcamento)}"
-    progresso(0.0, "Conta: piso aritmético e alertas do COFEN" + sufixo)
+    sufixo = f" · tempo máximo: {fmt_tempo(orcamento)}"
+    progresso(0.0, "Conferindo as contas de horas e os alertas do COFEN" + sufixo)
     base = montar(e)                          # valida a entrada antes de gastar solver
     horas_enf = _horas_enfermeiro(e)
     alertas = br.alertas_cofen(base, e.grau, e.pacientes)
@@ -963,8 +962,8 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
         frac = acrescimo / (margem + 1)
         rotulo = "Quadro informado" if acrescimo == 0 else "Busca do menor quadro"
         if quadro < minimo:
-            progresso(frac, f"{rotulo}, {quadro} profissionais: inviável pela conta, sem "
-                            f"solver" + sufixo)
+            progresso(frac, f"{rotulo}, {quadro} profissionais: pela conta, não basta (sem "
+                            f"precisar procurar escala)" + sufixo)
             r.tentativas.append((quadro, "piso", None, None))   # aritmetica, sem solver
             continue
         candidatas = [montar(e, acrescimo, horas_enf)]
@@ -981,15 +980,15 @@ def verificar(e: Entrada, progresso=lambda frac, msg: None, tempo: int | None = 
                 r.parada = (ORCAMENTO_ESGOTADO, quadro, 0)
                 break
             limite = resta if tempo is None else min(tempo, resta)
-            segunda = " — 2ª composição: acréscimos como enfermeiros" if k else ""
-            progresso(frac, f"{rotulo}, {quadro} profissionais: etapa 1 (procurando escala "
-                            f"legal), até {fmt_tempo(limite)}{segunda}" + sufixo)
+            segunda = " — 2ª tentativa: as pessoas a mais como enfermeiros" if k else ""
+            progresso(frac, f"{rotulo}, {quadro} profissionais: procurando uma escala que "
+                            f"cumpra a lei (até {fmt_tempo(limite)}){segunda}" + sufixo)
 
             def aviso_quadro(evento, quadro=quadro, frac=frac, **d):
                 if evento == "etapa2":
-                    progresso(frac, f"Escala pronta com {quadro} profissionais: etapa 2 "
-                                    f"(equilibrando a carga entre colegas), até "
-                                    f"{fmt_tempo(d['limite'])}" + sufixo)
+                    progresso(frac, f"Escala encontrada com {quadro} profissionais; "
+                                    f"equilibrando a carga entre colegas (até "
+                                    f"{fmt_tempo(d['limite'])})" + sufixo)
                 if aviso:
                     aviso(evento, quadro=quadro, **d)
 
@@ -1072,7 +1071,8 @@ def alertas_descanso(inst, escala) -> list[str]:
     return [f"Alerta de descanso semanal (não impede a escala): "
             f"{br.plural(k, 'profissional tem', 'profissionais têm')} descanso semanal abaixo "
             f"de {SEMANAL_ALERTA_H} h (o menor: {min(abaixo.values()):.0f} h). A Súmula 110 do "
-            f"TST (e a OJ 355 da SDI-1) manda pagar como extras as horas que invadem o intervalo "
+            f"TST, o Tribunal Superior do Trabalho (e a sua Orientação Jurisprudencial 355, OJ "
+            f"355 da SDI-1), manda pagar como extras as horas que invadem o intervalo "
             f"de 11 h depois do repouso semanal de 24 h: 24 + 11 = 35 h. Não conta o descanso "
             f"que encosta no início ou no fim do período, porque o que vem antes e depois não é "
             f"conhecido."]
@@ -1130,7 +1130,7 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
 
     c, ind = r.conformidade or {}, r.indicadores
     linhas = [
-        ("Veredito", r.frase()),
+        ("Resultado", r.frase()),
         ("Quadro informado", r.quadro_informado),
         ("Quadro desta escala", r.menor_viavel),
         ("Período", f"{inst.inicio:%d/%m/%Y} a {inst.fim:%d/%m/%Y}"),
@@ -1155,7 +1155,8 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
         ]
     if ind.get("diferenca_categorias") is not None:
         linhas.append(("Diferença entre categorias na fração média (técnicos − enfermeiros; "
-                       "não otimizada)", f"{ind['diferenca_categorias'] * 100:+.0f} pp"))
+                       "a ferramenta não tenta igualar)",
+                       f"{ind['diferenca_categorias'] * 100:+.0f} pontos percentuais"))
     linhas += [
         ("Descanso mínimo entre turnos (medido)", f"{c.get('menor_geral', 0):.0f} h"),
         ("Descanso semanal mínimo (medido, sem o início e o fim do período)",
@@ -1164,9 +1165,12 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
         ("Conferência de descanso", "cumpre" if c.get("ok") else "NÃO CUMPRE"),
     ]
     if r.qp:
-        linhas += [("CHS do QP (média das cargas contratuais)", f"{r.chs:g} h"),
-                   ("QP núcleo assistencial (sem IST)", round(r.qp[0], 2)),
-                   ("QP completo (com IST de 15%)", round(r.qp[1], 2))]
+        linhas += [("Horas semanais da conta do COFEN (CHS, carga horária semanal: média "
+                    "dos contratos da equipe)", f"{r.chs:g} h"),
+                   ("Quadro recomendado pelo COFEN, só assistência (QP sem IST)",
+                    round(r.qp[0], 2)),
+                   ("Quadro recomendado pelo COFEN, com 15% para férias e ausências (QP com "
+                    "IST, índice de segurança técnica)", round(r.qp[1], 2))]
     linhas += [("Alerta COFEN (não impede a escala)", a) for a in r.alertas]
     linhas += [("Alerta de descanso semanal", a) for a in r.alertas_descanso]
     resumo = pd.DataFrame(linhas, columns=["Item", "Valor"])
@@ -1201,7 +1205,7 @@ def descumpridos(inst, escala) -> list[tuple[str, str, int]]:
 def tabela_criterios(r: Resultado):
     """"Resultado por criterio" (opcao B): a tabela da tela e da aba Prioridades da planilha."""
     import pandas as pd
-    return pd.DataFrame(r.criterios, columns=["Nível", "Critério", "Violações",
+    return pd.DataFrame(r.criterios, columns=["Importância", "Critério", "Violações",
                                               "Profissionais afetados"])
 
 

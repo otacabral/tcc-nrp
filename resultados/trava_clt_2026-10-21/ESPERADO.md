@@ -163,3 +163,16 @@ legenda que explica QP e IST.
 6. **Testes da tela que passam pela barra:** todos os que clicam em "Gerar escala". Os que rodam
    na suíte reduzida: `8`, `12`, `opB-tela`, mais os que conferem textos (lista do item 3) e o `4`
    (alerta COFEN) e o `9c-tela` (nenhum "provad").
+
+**Complemento (Parte 9, antes da suíte): testes da tela no `fechar_v143.sh`**, na ordem:
+pref-tela, max-dias, opB-d, 16, 4b, 7.4, 9c-tela, 4, 5, 15, 8, 12, opB-tela, tela-limpa, opB-c,
+opB-e. Motivos: campo removido ou preferência de dias (pref-tela, max-dias, opB-d, opB-tela,
+opB-c, opB-e); textos que mudaram (8, 12, opB-tela, pref-tela, max-dias); textos que os novos não
+podem quebrar (4, 9c-tela, tela-limpa, 15, 16, 7.4, 4b); passam pela barra clicando em "Gerar
+escala" (os anteriores que usam a tela, mais o 5). Ficam de fora: a2, 1-2, 3, 7.1, 7.2, 7.3, 9,
+9b-sem-teto, ped-*, descanso-param, opB-padroes, opB-b (a identidade cobre o problema enviado ao
+solver; a barra é a mesma em todos os cliques e já passa por 12 testes). Tempo estimado (tempos
+da v1.4.2, i5-10210U, HiGHS 1.15.1, mais ~3 s por clique do fechamento da barra): ~1 h 30.
+Esperado: todos OK, com os resultados da v1.4.2. Já rodados nesta sessão com o código novo, antes
+da suíte: pref-tela, max-dias, 9c-tela, 16, 4b, 7.4, opB-d, 8, 12, opB-tela, 4, 15, tela-limpa —
+todos OK; identidade sem solver 243/243 (sem linhas e com linhas) e 24/24.

@@ -165,7 +165,9 @@ semana; noturno e carga). Para cada critério, escolha a **importância**:
 
 Não há troca entre níveis: nenhuma quantidade de violações de um critério Importante compensa
 uma violação de um Essencial. Dentro do mesmo nível, cada violação conta 1 — se todos os
-critérios ficarem no mesmo nível, a tela avisa que entre eles há compensação.
+critérios ficarem no mesmo nível, a tela avisa que entre eles uma violação de um vale o mesmo
+que uma de outro. As regras da CLT (descanso entre plantões, no máximo 6 dias seguidos) não
+estão na lista: são sempre cumpridas, qualquer que seja a classificação.
 
 **Limite.** Alguns critérios têm um número (por exemplo, "mínimo de folgas seguidas: 3"). A
 tabela já vem com um valor de exemplo, tirado de uma instância do benchmark INRC escolhida por
@@ -174,9 +176,12 @@ trabalhados em 4 semanas" é valor de exemplo, sem fonte (suposição declarada)
 limita, o campo não passa do limite legal (mínimo e máximo de dias seguidos até 6, o da lei;
 mínimo e máximo de turnos até o teto legal de turnos).
 
-Cada linha tem uma descrição curta; o texto completo, com exemplo, fica no **"?"**. O ⓘ no "?"
-marca os critérios sem conferência externa: nenhuma instância do benchmark os usa ou o avaliador
-oficial não os pontua.
+A explicação de cada critério, com um exemplo, fica no **"?"** ao lado do nome (desde 21/10
+não há mais a linha curta embaixo de cada critério). O ⓘ no "?" marca os critérios sem
+conferência externa: não puderam ser conferidos contra o banco de testes internacional usado
+para validar a ferramenta (INRC-2010), e a contagem é só da ferramenta. Os exemplos do "?" foram
+conferidos pela contagem da ferramenta; os de fim de semana valem para fim de semana de sábado e
+domingo.
 
 **O que a tela não mostra, porque a CLT já garante:** as sequências proibidas pelo descanso, o
 máximo de 6 dias seguidos (art. 67) e o teto de turnos no período são regras rígidas, no motor.
@@ -236,30 +241,33 @@ turno do mesmo dia da mesma pessoa, conta uma violação só, no nível mais alt
 forma de uso, não o cumprimento da lei, e o pedido só é garantido se estiver em Essencial e a
 escala legal o comportar.
 
-### Orçamento do clique
+### Tempo máximo para gerar a escala
 
-O campo **"Orçamento do clique (minutos)"**, padrão **60**, limita o tempo de um clique em
-"Gerar escala".
+O campo **"Tempo máximo para gerar a escala (minutos)"** (até 21/10, "Orçamento do clique"),
+padrão **60**, diz quanto tempo a ferramenta pode usar para procurar a melhor escala. Se achar a
+melhor antes, termina antes. Se o tempo acabar, entrega a melhor escala encontrada até ali e
+avisa se ainda poderia existir uma melhor. Equipes grandes podem precisar de mais tempo.
 
 Ao final, clique em **"Gerar escala"**.
 
-**O que a tela mostra durante o cálculo.** A barra diz em que fase o cálculo está e quanto
-tempo aquela fase pode levar:
-- "Conta: piso aritmético e alertas do COFEN" — contas rápidas, sem otimização;
-- "Quadro informado, 30 profissionais: etapa 1 (procurando escala legal), até 30 min";
-- "Busca do menor quadro, 29 profissionais: …" — quando a equipe informada não basta e a
+**O que a tela mostra durante o cálculo.** A barra anda pelo relógio: a parte preenchida é o
+tempo que já passou dividido pelo tempo máximo do campo (fica em 99% enquanto o cálculo não
+termina). Quando termina antes do limite, a barra se completa em cerca de 3 segundos e o resultado
+aparece. O texto da barra diz em que parte o cálculo está:
+- "Conferindo as contas de horas e os alertas do COFEN" — contas rápidas;
+- "Quadro informado, 30 profissionais: procurando uma escala que cumpra a lei (até 30 min)";
+- "Busca do menor quadro, 31 profissionais: …" — quando a equipe informada não basta e a
   ferramenta testa quadros maiores;
-- "Escala pronta com 30 profissionais: etapa 2 (equilibrando a carga entre colegas), até
-  30 min".
+- "Escala encontrada com 30 profissionais; equilibrando a carga entre colegas (até 30 min)".
 
-Cada mensagem termina com "orçamento do clique: 60 min" (ou o valor que você pôs no campo). **A barra não tem relógio**: ela muda
-de mensagem quando muda de fase. Não feche nem recarregue a página enquanto a barra estiver na
-tela; o cálculo se perde.
+Cada mensagem termina com "tempo máximo: 60 min" (ou o valor que você pôs no campo). Não feche
+nem recarregue a página enquanto a barra estiver na tela; o cálculo se perde.
 
-**A escala aparece antes do fim.** Assim que a etapa 1 acha a escala, ela aparece numa caixa
-com o aviso "Escala pronta; equilibrando a carga entre colegas (até 30 min)". Nesse intervalo
-não há botão de planilha (um clique interromperia o cálculo). Quando o equilíbrio termina, a
-caixa some e o resultado aparece, com a linha "Escala desta tela: …" dizendo qual escala vale.
+**A escala aparece antes do fim.** Assim que a ferramenta acha uma escala, ela aparece numa
+caixa com o aviso "Escala encontrada; equilibrando a carga entre colegas (até 30 min)". Nesse
+intervalo não há botão de planilha (um clique interromperia o cálculo). Quando o equilíbrio
+termina, a caixa some e o resultado aparece, com uma linha dizendo qual escala vale (por
+exemplo, "Esta escala tem a carga equilibrada entre colegas.").
 A planilha baixada é sempre a escala da tela.
 
 *Na demonstração (notebook com Intel Core i5-10210U e 12 GB, com os limites de antes de
@@ -271,27 +279,28 @@ os limites abaixo valem sempre.*
 - cada quadro testado: até 30 minutos para achar a escala — em cada nível de prioridade que
   precisar de resolução própria — e até 30 minutos para equilibrar a carga;
 - se a equipe não bastar, a ferramenta testa quadros maiores, até 12 pessoas a mais;
-- **o clique inteiro tem o limite do orçamento (padrão 60 minutos).** Esgotado, a ferramenta
-  para e mostra só o que conseguiu provar.
+- **o clique inteiro tem o tempo máximo do campo (padrão 60 minutos).** Esgotado, a
+  ferramenta para e mostra o que conseguiu até ali.
 
 ---
 
 ## 6. Como ler o resultado
 
-### O veredito: os desfechos
+### O resultado: os desfechos
 
 | O que aparece | O que quer dizer |
 |---|---|
 | **"O quadro informado admite escala legal. Escala gerada."** (verde) | A equipe dá conta. A escala está pronta. |
 | **"Falta 1; o menor quadro viável é 29. Escala gerada."** (amarelo) | A equipe informada não dá conta. A escala mostrada é a do menor quadro que dá. A ferramenta acrescenta as pessoas e diz quantas. |
-| **"Sem resposta em 30 min com 30 profissionais: o solver não achou escala nem provou que ela não existe."** (vermelho) | A ferramenta não achou escala no tempo. Isso **não** prova que falta gente; pode ser só tempo. Tente de novo ou simplifique a entrada. |
+| **"Sem resposta em 30 min com 30 profissionais: a ferramenta não encontrou escala nem conseguiu mostrar que ela não existe."** (vermelho) | A ferramenta não achou escala no tempo. Isso **não** prova que falta gente; pode ser só tempo. Tente de novo ou simplifique a entrada. |
 | **"O quadro informado é insuficiente. Sem resposta em 30 min com 31 profissionais: o menor quadro viável não foi determinado."** (vermelho) | Está provado que a equipe informada não basta (a caixa do diagnóstico diz por quê), mas a ferramenta não conseguiu achar, no tempo, a escala de um quadro maior. |
-| **"O quadro informado é insuficiente; o menor quadro viável não foi determinado em 60 min."** (vermelho) | O mesmo, quando acaba o orçamento do clique (60 minutos, ou o valor do campo). |
+| **"O quadro informado é insuficiente; o menor quadro viável não foi determinado em 60 min."** (vermelho) | O mesmo, quando acaba o tempo máximo (60 minutos, ou o valor do campo). |
 | **"Erro técnico ao resolver com 30 profissionais; detalhes no console."** (vermelho) | Uma falha do programa, não da equipe. A janela do PowerShell onde a ferramenta roda mostra o erro completo; copie esse texto se for pedir ajuda. |
 
-**"Pode haver uma melhor (gap ...)".** Às vezes aparece depois de "Escala gerada". A escala é
-legal, mas o tempo acabou antes de provar que é a melhor. O gap é a distância máxima até a
-melhor possível.
+**"Pode haver uma melhor: esta escala pode ser até X% pior que a melhor possível…".** Às
+vezes aparece depois de "Escala gerada". A escala é legal, mas o tempo acabou antes de a
+ferramenta confirmar que é a melhor; o X% é o quanto, no máximo, ela pode estar longe da melhor.
+Com mais tempo (o campo do tempo máximo), a ferramenta poderia melhorá-la.
 
 ### Alertas do COFEN (em vermelho)
 
@@ -376,7 +385,7 @@ cada um com os números. Cada motivo, sozinho, já prova que não há escala:
 | Diferença máxima de carga entre colegas | Por categoria. Por exemplo, "1 plantão (12 h)": entre dois colegas da mesma categoria, a diferença de carga é de no máximo um plantão, já descontadas férias e contratos diferentes. |
 | Horas de contrato não utilizadas | Por categoria: horas contratadas menos horas escaladas. |
 | Diferença entre categorias | Quanto, em média, técnicos e enfermeiros cumprem do contrato. A ferramenta não tenta igualar isso: depende de quantos postos de cada categoria a demanda pede. |
-| Resultado por critério | Para cada critério considerado nas prioridades: o nível, quantas violações a escala tem e quantos profissionais elas atingem. Contado na escala entregue. |
+| Resultado por critério | Para cada critério considerado nas prioridades: a importância, quantas violações a escala tem e quantos profissionais elas atingem. Contado na escala entregue. |
 
 ### A planilha
 
@@ -386,9 +395,10 @@ Clique em **"Baixar planilha (.xlsx)"**. Ela tem quatro abas:
   - O código é o turno.
   - Turno com **asterisco** (`D*`, `N*`) é posto de enfermeiro.
   - "indisp." é férias ou licença.
-- **Resumo:** o veredito e todos os números acima.
+- **Resumo:** a frase do resultado e todos os números acima.
 - **Legenda:** horário de cada código.
-- **Prioridades:** o resultado por critério (nível, critério, violações, profissionais afetados).
+- **Prioridades:** o resultado por critério (importância, critério, violações, profissionais
+  afetados).
 
 ---
 
