@@ -2439,6 +2439,10 @@ A entrada "2026-10-09 — Pedido por turno vira trabalho futuro" fica marcada co
 
 ## 2026-10-19 — Máximo de dias seguidos como regra do hospital (rígida)
 
+> **Revisada em 21/10 (v1.4.3)** por "2026-10-21 — Máximo de dias seguidos: a trava é só a da
+> CLT; a regra do hospital é preferência": o campo rígido do hospital sai da tela e da entrada. O
+> texto abaixo fica como registro.
+
 **Status: vigente — mudança de PARÂMETRO, não de formulação.** Registrada antes de implementar
 (20/10).
 
@@ -2607,6 +2611,7 @@ critérios expostos", item c: "preferência mais apertada = trabalho futuro"). P
 21/10, via chat de Orientação; registrada antes de implementar.
 
 **Decisão.** Os dois limites passam a existir em dois papéis, em famílias separadas do modelo:
+- *(21/10, v1.4.3: o rígido passa a ser só o legal, 6; ver a entrada seguinte)*
 - **rígido**, como hoje: máximo de dias seguidos = min(hospital, 6) (art. 67 e "2026-10-19 —
   Máximo de dias seguidos como regra do hospital"); teto de turnos e teto de horas do contrato.
   Nada disso muda, e o teto de turnos rígido **não** sai (tirá-lo quebraria a identidade com a
@@ -2652,6 +2657,61 @@ precedente do 1-2):** "todas as suaves no Desejável" passa de 11 para 13 crité
 bloco, de 5.010 para 6.120 (+ 690 dos dias seguidos, + 420 dos turnos); conferido contra a v1.4.1
 que não há outra diferença no plano (`resultados/preferencias_2026-10-21/ESPERADO.md`, segundo
 acréscimo).
+
+---
+
+## 2026-10-21 — Máximo de dias seguidos: a trava é só a da CLT; a regra do hospital é preferência
+
+**Status: vigente — mudança de ENTRADA e TELA, não de formulação** (revisa "2026-10-19 — Máximo de
+dias seguidos como regra do hospital (rígida)"). Pedido do Otávio, 21/10; registrada antes de
+implementar. Versão v1.4.3.
+
+**Decisão.** O máximo de dias seguidos rígido passa a ser **só o da lei**: 6 (art. 67; no 12×36, a
+regra das 36 h já impede dois dias seguidos). O campo rígido do hospital (v1.4.0) sai da tela e da
+`Entrada`. A vontade do hospital entra pela preferência de dias seguidos (v1.4.2), critério
+classificável, com o limite do campo preso ao legal.
+
+**Por quê (Otávio, 21/10).** Em toda a ferramenta a vontade do hospital é critério classificável:
+na tabela de pedidos, regra do hospital = Essencial, que não é rígido. O campo rígido do hospital
+era a única exceção. Regra da ferramenta: **duro = lei ou físico** (cobertura, CLT, horas do
+contrato, férias); **tudo o que o hospital quer é critério classificável**. Quem quiser que a regra
+do hospital pese quase como trava põe a preferência de dias seguidos no Essencial, acima de tudo o
+que é Importante ou Desejável.
+
+**O que muda e o que não muda.**
+- `src/modelo.py` e `src/instancia_br.py` **intocados**. A trava continua sendo a mesma restrição
+  do contrato (`max_consecutive_working_days`), agora sempre com o valor legal. `instancia_br`
+  continua aceitando `max_consecutivos` de 1 a 6 (o caminho dos experimentos e testes de entrada o
+  usam); só a ferramenta deixa de passar outro valor que não o 6.
+- `src/ferramenta.py`: `Entrada.max_dias_seguidos` sai; `montar` passa o legal
+  (`MAX_CONSECUTIVOS_GENERICO`). Com o padrão de antes (6), a entrada enviada ao solver é a mesma —
+  é o que a identidade confere.
+- `src/app.py`: a linha "Máximo de dias seguidos de trabalho — Obrigatória" sai; o limite máximo dos
+  campos de dias seguidos (preferência e mínimo) passa a ser o legal. Ajuda da linha da preferência:
+  "a lei trava em 6; a regra do seu hospital vai aqui, como preferência; no Essencial ela pesa acima
+  de tudo o que é Importante ou Desejável".
+- `src/prioridades.py`: **só texto** (ajuda e resumo da linha, que apontavam para "o campo acima", e
+  dois comentários). `limite_usado` = min(preferência, legal) fica como está: o "legal" lido do
+  contrato agora é sempre a lei.
+- **Consequência:** um hospital com regra de 4 dias deixa de receber "Falta N" por causa dela. A
+  escala sai com o quadro que a lei admite, e as sequências acima de 4 aparecem no "Resultado por
+  critério". É a mesma lógica dos pedidos: preferência nunca torna a escala impossível.
+
+**Suíte reduzida (v1.4.3), justificativa.** A mudança é só de entrada e tela; modelo e solver estão
+intocados. A identidade (243/243 na classificação padrão e 24/24 nas entradas da fase 2, byte a
+byte contra a v1.4.2) prova que o problema enviado ao solver não mudou nos casos em que o campo
+estava no padrão — e nenhum teste fora do `max-dias` usava outro valor. Por isso não rodam as
+rodadas a2 nem os testes da tela que não tocam no campo nem na preferência de dias: a identidade
+os cobre. Rodam: identidade, regressão dos 4 ótimos, testes de entrada, piso (segurança, controle,
+casos), o caso pequeno das preferências e os testes da tela que usam o campo removido ou a
+preferência de dias (lista e motivo em `resultados/trava_clt_2026-10-21/ESPERADO.md`).
+
+**Teste max-dias reescrito (registrado antes):** o caso "hospital = 4 → Falta 1; o menor quadro
+viável é 15" era trava e deixa de existir. Substituem-no: (i) a preferência 4 no Essencial com 14
+técnicos — escala sai com 14, violações contadas fora do modelo = resultado por critério; (ii) para
+não perder a cobertura do texto "A conta prévia do menor quadro provou" (só o max-dias o testava),
+o mesmo caso com 13 técnicos e a lei (6): piso pela janela de 7 dias = 14 → "Falta 1; o menor
+quadro viável é 14".
 
 ---
 
