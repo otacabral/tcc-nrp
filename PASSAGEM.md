@@ -33,6 +33,15 @@ fim de cada sessão (dele ou do chat).
   e B) ainda **proposta, não gravada**. Congelamento dos números: **25/10**.
 - Não enviado ao GitHub: os commits da v1.4.3 (vão no push depois da tag).
 
+- **HiGHS × SCIP, Fase 0 (22/10, pedido do orientador)** — relatório em
+  `resultados/solvers_2026-10-22/relatorio_fase0.md`; script `docs/diagnostico/comparar_solvers.py`.
+  Itens 1 a 4 passam: SCIP 10.0 por pip (PySCIPOpt 6.3.0, instalado no `.venv`, fora do
+  `requirements.txt`); partida aceita (log do SCIP, `completesol`, com controle); regra de 09/10
+  e fusão W = M + 1 valem (o gap do SCIP é mais exigente); o modelo recebido pelos dois é o mesmo
+  (com controle), depois de desfazer, no script, a reescrita do objetivo que a interface do
+  Pyomo faz para o SCIP. Fumaça interrompida por falta de memória (1,8 GB livres). **Nada da
+  ferramenta mudou.** Depois da fumaça, a Fase 1 (bateria) só com o ok do Otávio.
+
 ## Próxima tarefa
 
 **0. Otávio: revisar a tela.** Abrir a ferramenta (um por linha):
