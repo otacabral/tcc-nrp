@@ -374,7 +374,11 @@ orcamento_min = st.number_input("Tempo máximo para gerar a escala (minutos)", m
                                 help="Quanto tempo a ferramenta pode usar para procurar a melhor "
                                      "escala. Se achar a melhor antes, termina antes. Se o tempo "
                                      "acabar, entrega a melhor escala encontrada até ali e avisa "
-                                     "se ainda poderia existir uma melhor. Padrão: 60 minutos. "
+                                     "se ainda poderia existir uma melhor. Metade do tempo vai "
+                                     "para atender as suas prioridades, na ordem Essencial, "
+                                     "Importante, Desejável; a outra metade, para equilibrar a "
+                                     "carga entre colegas. Se uma parte terminar antes, o tempo "
+                                     "que sobrou passa para as próximas. Padrão: 60 minutos. "
                                      "Equipes grandes podem precisar de mais tempo.")
 gerar = st.button("Gerar escala", type="primary", key="gerar")
 
@@ -477,7 +481,9 @@ if "resultado" in st.session_state:
                    "segurança técnica, a margem de 15% para férias e ausências que a escala "
                    "não cobre.")
     for alerta in r.alertas_descanso:
-        st.warning(alerta)    # o texto vem inteiro da ferramenta (P15)
+        # 22/10: uma linha para o gestor; o fundamento (Sumula 110, 24 + 11 = 35 h) fica no "?"
+        st.warning(alerta)
+        st.caption("Por que 35 h?", help=fe.FUNDAMENTO_SEMANAL)
 
     if r.escala:
         ind, c = r.indicadores, r.conformidade
@@ -486,7 +492,8 @@ if "resultado" in st.session_state:
         m[1].metric("Enfermeiro em posto de técnico", ind["enf_em_posto_tec"],
                     help="Turnos em que um enfermeiro cobriu vaga de técnico.")
         m[2].metric("Pedidos de folga atendidos",
-                    f"{ind['pedidos_atendidos']} de {ind['pedidos_total']}")
+                    f"{ind['pedidos_atendidos']} de {ind['pedidos_total']}"
+                    if ind["pedidos_total"] else "sem pedidos")
         m[3].metric("Contrato cumprido (mín.–máx.)",
                     f"{ind['fracao_min']:.0%}–{ind['fracao_max']:.0%}",
                     help=f"Horas trabalhadas ÷ horas contratadas nos dias disponíveis. Em "
@@ -494,51 +501,73 @@ if "resultado" in st.session_state:
         m[4].metric("Conferência de descanso", "cumpre" if c["ok"] else "NÃO CUMPRE",
                     help="A escala foi medida no relógio, turno a turno: descanso entre "
                          "turnos, descanso semanal e dias seguidos, como manda a CLT.")
-        st.caption(r.frase_vigente())
-        st.caption(f"Descanso mínimo entre turnos {c['menor_geral']:.0f} h · descanso "
-                   f"semanal {fe.fmt_semanal(c['menor_semanal_interno'])} · no máximo "
-                   f"{br.plural(c['max_consec'], 'dia seguido', 'dias seguidos')}")
-        for g, cat in ind.get("categorias", {}).items():
-            st.caption(f"{fe.NOME_CATEGORIA[g]}: {cat['fracao_min']:.0%}–"
-                       f"{cat['fracao_max']:.0%} do contrato cumprido · "
-                       f"{cat['nao_utilizadas']:.0f} h de contrato não utilizadas "
-                       f"(de {cat['devidas']:.0f} h contratadas nos dias disponíveis).")
-        if ind.get("diferenca_categorias") is not None:
-            st.caption(f"Diferença entre categorias: técnicos cumprem em média "
-                       f"{ind['diferenca_categorias'] * 100:+.0f} pontos percentuais do "
-                       f"contrato em relação aos enfermeiros. A ferramenta não tenta igualar "
-                       f"isso: vem da demanda de cada posto frente ao tamanho de cada "
-                       f"categoria.")
-        equilibrio = ind.get("etapa2")
-        if equilibrio == "ok":
-            # a etapa 2 nao mostra gap (decisao de 05/10): mostra a diferenca de carga
-            # entre colegas da mesma categoria, que e o que o gestor le
-            dif = " · ".join(f"{fe.NOME_CATEGORIA[g].lower()}: {fe.fmt_diferenca(cat)}"
-                             for g, cat in ind.get("categorias", {}).items())
-            entre = ("sem piorar nenhum critério da classificação" if r.provado else
-                     "sem piorar a escala encontrada (que pode não ser a melhor possível)")
-            st.caption(f"Equilíbrio de carga dentro de cada categoria, {entre}. Diferença "
-                       f"máxima de carga entre colegas — {dif}.")
-        elif equilibrio:
-            st.caption(f"Equilíbrio de carga: {_equilibrio(equilibrio)}.")
-        if ind["pedidos_total"] and ind["pedidos_atendidos"] == ind["pedidos_total"]:
-            st.caption(f"Todos os {ind['pedidos_total']} pedidos de folga foram atendidos."
-                       if ind["pedidos_total"] > 1 else "O pedido de folga foi atendido.")
-        elif ind["pedidos_total"]:
-            st.caption(f"Pedidos de folga negados: {ind['pedidos_total'] - ind['pedidos_atendidos']}"
-                       f", em {br.plural(ind['com_pedido_negado'], 'profissional', 'profissionais')}; no máximo "
-                       f"{ind['negados_max']} por pessoa.")
-        if r.descumpridos:
-            por_nivel = {}
-            for nivel, nome, q in r.descumpridos:
-                por_nivel.setdefault(nivel, []).append(f"{nome} {q}")
-            st.caption("Pedidos e regras descumpridos — " + "; ".join(
-                f"{nivel}: {', '.join(v)}" for nivel, v in por_nivel.items()) + ".")
-        elif e.regras:
-            st.caption("Todos os pedidos e regras da tabela foram atendidos.")
+        # 22/10: uma frase por nivel (ou bloco fundido), acima das linhas daquele nivel na
+        # tabela; a etapa 2 por ultimo (DECISOES.md, "2026-10-22 — Divisao proporcional do
+        # tempo maximo")
         if r.criterios:
             st.markdown("**Resultado por critério**")
-            st.dataframe(fe.tabela_criterios(r), hide_index=True)
+            tabela = fe.tabela_criterios(r)
+            mostrados = set()
+            for niveis, frase in fe.frases_por_nivel(r):
+                st.markdown(frase)
+                linhas = tabela[tabela["Importância"].isin(niveis)]
+                if len(linhas):
+                    st.dataframe(linhas, hide_index=True)
+                mostrados.update(niveis)
+            resto = tabela[~tabela["Importância"].isin(mostrados)]
+            if len(resto):
+                st.dataframe(resto, hide_index=True)
+        if fe.frase_equilibrio(r):
+            st.markdown(fe.frase_equilibrio(r))
+        # 22/10: as legendas soltas vao para um painel fechado
+        with st.expander("Detalhes da escala", expanded=False):
+            st.caption(r.frase_vigente())
+            st.caption(f"Menor descanso entre turnos: {c['menor_geral']:.0f} h · menor descanso "
+                       f"semanal: {fe.fmt_semanal(c['menor_semanal_interno'])} · maior "
+                       f"sequência de trabalho na escala: "
+                       f"{br.plural(c['max_consec'], 'dia', 'dias')}")
+            for g, cat in ind.get("categorias", {}).items():
+                st.caption(f"{fe.NOME_CATEGORIA[g]}: {cat['fracao_min']:.0%}–"
+                           f"{cat['fracao_max']:.0%} do contrato cumprido · "
+                           f"{cat['nao_utilizadas']:.0f} h de contrato não utilizadas "
+                           f"(de {cat['devidas']:.0f} h contratadas nos dias disponíveis).")
+            if ind.get("diferenca_categorias") is not None:
+                d = ind["diferenca_categorias"]
+                pp = round(abs(d) * 100)
+                st.caption("Técnicos e enfermeiros usam, em média, a mesma parte do contrato."
+                           if pp == 0 else
+                           f"Os técnicos usam, em média, "
+                           f"{br.plural(pp, 'ponto percentual', 'pontos percentuais')} "
+                           f"{'a menos' if d < 0 else 'a mais'} do contrato que os "
+                           f"enfermeiros. Isso vem da demanda de cada turno, não da escala.")
+            equilibrio = ind.get("etapa2")
+            if equilibrio == "ok":
+                # a etapa 2 nao mostra gap (decisao de 05/10): mostra a diferenca de carga
+                # entre colegas da mesma categoria, que e o que o gestor le
+                dif = " · ".join(f"{fe.NOME_CATEGORIA[g].lower()}: {fe.fmt_diferenca(cat)}"
+                                 for g, cat in ind.get("categorias", {}).items())
+                entre = ("sem piorar nenhum critério da classificação" if r.provado else
+                         "sem piorar a escala encontrada (que pode não ser a melhor possível)")
+                st.caption(f"Equilíbrio de carga dentro de cada categoria, {entre}. Diferença "
+                           f"máxima de carga entre colegas — {dif}.")
+            elif equilibrio:
+                st.caption(f"Equilíbrio de carga: {_equilibrio(equilibrio)}.")
+            if ind["pedidos_total"] and ind["pedidos_atendidos"] == ind["pedidos_total"]:
+                st.caption(f"Todos os {ind['pedidos_total']} pedidos de folga foram atendidos."
+                           if ind["pedidos_total"] > 1 else "O pedido de folga foi atendido.")
+            elif ind["pedidos_total"]:
+                st.caption(f"Pedidos de folga negados: "
+                           f"{ind['pedidos_total'] - ind['pedidos_atendidos']}, em "
+                           f"{br.plural(ind['com_pedido_negado'], 'profissional', 'profissionais')}"
+                           f"; no máximo {ind['negados_max']} por pessoa.")
+            if r.descumpridos:
+                por_nivel = {}
+                for nivel, nome, q in r.descumpridos:
+                    por_nivel.setdefault(nivel, []).append(f"{nome} {q}")
+                st.caption("Pedidos e regras descumpridos — " + "; ".join(
+                    f"{nivel}: {', '.join(v)}" for nivel, v in por_nivel.items()) + ".")
+            elif e.regras:
+                st.caption("Todos os pedidos e regras da tabela foram atendidos.")
     if r.qp:
         q1, q2 = st.columns(2)
         st.caption(f"Horas semanais usadas na conta do COFEN (CHS, carga horária semanal): "
@@ -556,8 +585,8 @@ if "resultado" in st.session_state:
                    "inviavel": "não há escala que cumpra a lei com este número (a busca "
                                "completa mostrou)",
                    "viavel": "escala encontrada e conferida",
-                   "indeterminado": f"sem resposta em {fe.fmt_tempo(fe.TEMPO)}: a ferramenta "
-                                    f"não encontrou escala nem mostrou que ela não existe",
+                   "indeterminado": "sem resposta no tempo disponível: a ferramenta não "
+                                    "encontrou escala nem mostrou que ela não existe",
                    "erro": "erro técnico ao calcular; detalhes no console",
                    fe.ORCAMENTO_ESGOTADO: "não testado: o tempo máximo acabou",
                    fe.REPROVADA: "escala encontrada, mas reprovada na conferência de "

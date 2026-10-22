@@ -2284,6 +2284,8 @@ máximo do bloco fundido for **< 10.000** (condição de "2026-10-09 — Condiç
 milhão e o gap padrão deixa de provar os níveis de baixo. Com a classificação padrão (pedidos ≤
 6 × 286 + enfermeiro em posto de técnico ≤ 285 = 2.001), a fusão reproduz o caminho atual.
 
+*(22/10: o limite por resolução foi revisto — ver "2026-10-22 — Divisão proporcional do tempo
+máximo"; o texto abaixo fica como registro.)*
 **(b) Tempo.** Orçamento por clique **60 min** (campo na tela, em minutos). Limite por
 resolução: **1.800 s em cada nível da etapa 1 e 1.800 s na etapa 2**, sempre min(limite, o que
 resta). Motivo: P17, o K5 melhorou a etapa 2 aos ~29 min com 1.800 s (`NUMEROS_TCC.md`, seção
@@ -2748,6 +2750,71 @@ acréscimo da noite).
   `instancia_br.py` (intocado); a tela ganhou uma legenda que explica QP e IST.
 - **Testes atualizados com registro** (precedente do 1-2): 8, 12, opB-tela, pref-tela, max-dias
   (textos que mudaram). A suíte da v1.4.3 roda uma vez, depois da revisão do Otávio.
+
+---
+
+## 2026-10-22 — Divisão proporcional do tempo máximo; resultado por nível; seção 5 enxuta
+
+**Status: vigente — mudança de PARÂMETRO DE PROJETO (tempo) e de TELA, não de formulação**
+(v1.4.3, acréscimo; revisa o item b de "2026-10-19 — Opção B: mecanismo, tempo e critérios
+expostos"). Pedido do Otávio, 21–22/10; esperado registrado antes
+(`resultados/trava_clt_2026-10-21/ESPERADO.md`, acréscimo de 22/10).
+
+**Problema.** Cada resolução recebia min(1.800 s, o que resta). Com 20 min a etapa 2 podia não
+rodar; com 3 níveis separados, o nível 3 e a etapa 2 ficavam sem tempo; com 120 min cada parte
+seguia presa em 30 min. O campo da tela não se comportava como o gestor espera.
+
+**Regra (parâmetro de projeto, sem calibração; sensibilidade só se o orientador pedir).**
+Etapa 1 : etapa 2 = 50 : 50; dentro da etapa 1, Essencial : Importante : Desejável = 50 : 30 : 20.
+Níveis fundidos num bloco somam os pesos; nível vazio não entra. No início de cada parte k:
+
+    tempo_k = tempo que resta × peso_k ÷ (soma dos pesos das partes que ainda faltam, incluindo k)
+
+A sobra de quem termina antes passa adiante, redividida na mesma proporção. Vale sobre o tempo
+que resta em cada quadro tentado: quadros recusados pela conta prévia não gastam tempo;
+tentativas sem escala gastam. **Proteção da primeira escala:** a primeira resolução do quadro
+recebe a sua fatia; se ela acabar sem escala, segue com todo o tempo que resta. Os níveis
+seguintes e a etapa 2 partem da escala anterior. Sem teto fixo de 1.800 s.
+
+**Decisões de implementação (Claude Code, 22/10; não óbvias):**
+1. **Leitura dos pesos com nível vazio.** A leitura literal ("nível vazio não entra", os outros
+   pesos como estão) daria, no padrão fundido Essencial+Importante a 60 min, 0,40 : 0,50 → 26,7 +
+   33,3 min, e não os 30 + 30 que o pedido manda conferir. Adotado: **a etapa 1 fica sempre com
+   50%**, e os 50 : 30 : 20 se dividem entre os níveis presentes. Com os três níveis separados dá
+   0,25 / 0,15 / 0,10 / 0,50, como no pedido; o padrão dá 30 + 30. Levado ao Otávio.
+2. **Proteção = resolver de novo.** O HiGHS, pelo Pyomo, não aceita "pare no tempo t se já houver
+   escala; senão continue". A proteção roda a resolução de novo com o tempo que resta,
+   recomeçando do zero (sem escala não há de onde partir). Custo declarado: o tempo da fatia é
+   gasto duas vezes no pior caso.
+3. **`TEMPO` e `TEMPO_ETAPA2` viram teto opcional, só para os testes** (`None` no produto). Os
+   testes os põem em 600 / 180 s (ou 25 s e 3 s no teste 8) para encurtar as rodadas; com teto,
+   a cadeia da primeira resolução (com a proteção) também não passa dele. Chamada direta de
+   `resolver_com_objetivo` sem prazo usa o teto por resolução, como antes.
+4. **Resultado por nível, em vez de um gap só.** Provado: "<Nível>: N violações — a melhor
+   possível."; sem prova: "… Nenhuma escala tem menos de M." (M = limite inferior do solver,
+   arredondado para cima, nunca acima de N), ou "Não deu tempo de saber quanto dá para melhorar"
+   se o limite for 0; não rodou: "não deu tempo de otimizar; a escala mantém o resultado dos
+   níveis acima". **Bloco fundido:** o objetivo soma os níveis com coeficientes (o de cima =
+   máximo do resto do bloco + 1), e o limite inferior não é contagem de violações. O M é dado só
+   para o nível de cima, M = ⌈(limite − (coef − 1)) ÷ coef⌉, porque o resto do bloco vale no
+   máximo coef − 1. A frase principal perde o gap ("Escala gerada; pode haver uma melhor."). As
+   três frases citadas no TCC não mudam.
+5. **Defeito corrigido de passagem:** em `_niveis_em_sequencia`, o resultado "provado" de cada
+   bloco era guardado no nome `p`, o mesmo da classificação que `expressao_pedidos` lê no bloco
+   seguinte. Com pedido sem nível (caminho antigo), linhas na tabela de pedidos e dois blocos ou
+   mais, isso daria erro de tipo. Renomeado (`prova`). Nos casos que funcionavam, nada muda no que
+   vai ao solver.
+
+**Seção "5. Resultado" enxuta (só texto e arrumação):** alerta de descanso semanal em uma linha
+(o texto mora em `ferramenta.alertas_descanso`; o fundamento — Súmula 110, OJ 355, 24 + 11 = 35 h,
+bordas — vai para o "?"); diferença entre categorias sem número negativo ("a menos" / "a mais");
+"maior sequência de trabalho na escala", "menor descanso entre turnos", "menor descanso
+semanal" (medidas, não regras); legendas num painel "Detalhes da escala", fechado; "sem pedidos"
+no lugar de "0 de 0"; uma frase por nível acima das linhas daquele nível na tabela "Resultado
+por critério"; "Equilíbrio entre colegas: o melhor possível / pode haver uma escala mais
+equilibrada".
+
+**NUMEROS_TCC não muda:** os números foram medidos com os limites antigos, declarados no arquivo.
 
 ---
 

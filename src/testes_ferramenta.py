@@ -337,7 +337,11 @@ def casos_tempo() -> None:
         print("8a. otimo provado: caso 5, limite 600 s")
         at = pela_tela(M8, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)})
         confere(textos(at, "success") == [ADMITE_OK], f"tela: {textos(at, 'success')}")
-        confere(not any("pode haver" in t for t in _todos_textos(at)), "sem 'pode haver'")
+        # 22/10: a frase da etapa 2 ("Equilibrio entre colegas: pode haver uma escala mais
+        # equilibrada") tambem tem "pode haver"; o esperado registrado do 8a e "nenhum 'pode
+        # haver uma melhor'" (docstring do modulo), e e isso que se confere (com registro)
+        confere(not any("pode haver uma melhor" in t for t in _todos_textos(at)),
+                "sem 'pode haver uma melhor'")
 
         print("8b. escala sem prova: 40 com 20 pedidos, limite 25 s")
         fe.TEMPO = 25
@@ -348,9 +352,10 @@ def casos_tempo() -> None:
         avisos = textos(at, "warning")
         # 21/10 (v1.4.3, textos para o gestor; resultados/trava_clt_2026-10-21/ESPERADO.md,
         # acrescimo da noite, item 3): texto novo, atualizado com registro
-        confere(len(avisos) == 1 and avisos[0].startswith(
-            "O quadro informado admite escala legal. Escala gerada; pode haver uma melhor: "
-            "esta escala pode ser até"), f"tela: {avisos}")
+        # 22/10 (divisao proporcional do tempo e resultado por nivel; ESPERADO de
+        # trava_clt_2026-10-21, acrescimo de 22/10, item e): atualizado com registro
+        confere(avisos == ["O quadro informado admite escala legal. Escala gerada; pode haver "
+                           "uma melhor."], f"tela: {avisos}")
         confere(textos(at, "success") == [], f"sem success: {textos(at, 'success')}")
         r, _ = at.session_state["resultado"]
         confere(bool(r.escala) and len(at.get("download_button")) == 1,
@@ -958,8 +963,10 @@ def casos_p15() -> None:
     alertas = fe.alertas_descanso(inst, escala)
     confere(m["menor_semanal"] == 31, f"medir (trava, com bordas): {m['menor_semanal']} h (31)")
     confere(interno == {"0": 32, "1": 64, "2": None}, f"sem bordas por pessoa: {interno}")
-    confere(len(alertas) == 1 and "1 profissional" in alertas[0] and "32 h" in alertas[0]
-            and "Súmula 110" in alertas[0], f"alerta: {alertas}")
+    # 22/10: alerta em uma linha; o fundamento (Sumula 110) vai para o "?", com registro
+    confere(len(alertas) == 1 and "1 profissional tem menos de 35 h" in alertas[0]
+            and "32 h" in alertas[0] and "Súmula 110" in fe.FUNDAMENTO_SEMANAL,
+            f"alerta: {alertas}")
 
     print("15b. planilhas da demonstracao (12x36): sem alerta")
     for rodada, tec in cp.RODADAS.items():
@@ -1000,7 +1007,8 @@ def casos_p15() -> None:
         fe.verificar = original
     r, _ = at.session_state["resultado"]
     semanal = fe.fmt_semanal(r.conformidade["menor_semanal_interno"])
-    confere(any(f"descanso semanal {semanal}" in t for t in textos(at, "caption")),
+    # 22/10: "menor descanso semanal: ..." (medida da escala), com registro
+    confere(any(f"menor descanso semanal: {semanal}" in t for t in textos(at, "caption")),
             f"indicador sem bordas na tela ({semanal})")
     confere(alertas[0] in textos(at, "warning"), f"alerta em amarelo: {textos(at, 'warning')}")
 
@@ -1211,7 +1219,9 @@ def caso_opb_essencial() -> None:
 def caso_opb_padroes() -> None:
     """Os padroes novos: 1800 s, 1800 s, 60 min; o campo da tela abre em 60."""
     print("opB-padroes. limites e orcamento padrao")
-    confere(PADROES_NOVOS == (1800, 1800, 3600), f"padroes {PADROES_NOVOS}")
+    # 22/10: sem teto fixo por resolucao (TEMPO e TEMPO_ETAPA2 = None, so teto dos testes);
+    # o tempo maximo continua 60 min (ESPERADO de trava_clt_2026-10-21, acrescimo de 22/10)
+    confere(PADROES_NOVOS == (None, None, 3600), f"padroes {PADROES_NOVOS}")
     guardado = fe.ORCAMENTO
     fe.ORCAMENTO = PADROES_NOVOS[2]
     try:
@@ -1292,8 +1302,14 @@ def caso_opb_tela() -> None:
         # 21/10 (v1.4.3): a coluna "Nível" passou a "Importância", como na tabela de cima
         df = [d.value for d in at.dataframe
               if list(d.value.columns)[:2] == ["Importância", "Critério"]]
-        confere(len(df) == 1 and df[0].values.tolist() == [list(x) for x in r.criterios]
-                and len(r.criterios) == 2, f"resultado por criterio: {r.criterios}")
+        # 22/10: uma tabela por nivel (ou bloco), cada uma com a sua frase acima; juntas, a
+        # tabela de antes (ESPERADO de trava_clt_2026-10-21, acrescimo de 22/10)
+        juntas = [linha for d in df for linha in d.values.tolist()]
+        confere(juntas == [list(x) for x in r.criterios] and len(r.criterios) == 2,
+                f"resultado por criterio: {r.criterios}")
+        frases = [f for _, f in fe.frases_por_nivel(r)]
+        confere(frases and all(f in textos(at, "markdown") for f in frases),
+                f"frases por nivel na tela: {frases}")
         aba = openpyxl.load_workbook(io.BytesIO(fe.planilha(r, e)))["Prioridades"]
         linhas = [list(x) for x in aba.iter_rows(min_row=2, values_only=True)]
         confere(linhas == [list(x) for x in r.criterios], f"aba Prioridades: {linhas}")

@@ -275,10 +275,19 @@ A planilha baixada é sempre a escala da tela.
 resultado final entre 1,5 e 3,5 min. Noutra máquina ou noutra unidade, os tempos são outros;
 os limites abaixo valem sempre.*
 
-**Quanto tempo leva, no máximo:**
-- cada quadro testado: até 30 minutos para achar a escala — em cada nível de prioridade que
-  precisar de resolução própria — e até 30 minutos para equilibrar a carga;
-- se a equipe não bastar, a ferramenta testa quadros maiores, até 12 pessoas a mais;
+**Como o tempo máximo é dividido** (desde 22/10; parâmetro de projeto, sem calibração):
+- **metade** do tempo vai para atender as prioridades, na ordem Essencial, Importante,
+  Desejável (entre os níveis que você usou, na proporção 50 : 30 : 20); a **outra metade**, para
+  equilibrar a carga entre colegas;
+- **o tempo que sobra passa adiante**: se uma parte termina antes, o que sobrou é redividido
+  entre as seguintes, na mesma proporção;
+- **a primeira escala é protegida**: se a parte do Essencial acabar sem nenhuma escala, a busca
+  continua com todo o tempo que resta;
+- exemplos com 60 min: na classificação padrão, 30 min para as prioridades e 30 para o
+  equilíbrio; com os três níveis em uso, 15, 9 e 6 min para Essencial, Importante e Desejável,
+  e 30 para o equilíbrio (antes de qualquer sobra);
+- se a equipe não bastar, a ferramenta testa quadros maiores, até 12 pessoas a mais, sempre
+  dentro do mesmo tempo máximo;
 - **o clique inteiro tem o tempo máximo do campo (padrão 60 minutos).** Esgotado, a
   ferramenta para e mostra o que conseguiu até ali.
 
@@ -297,10 +306,16 @@ os limites abaixo valem sempre.*
 | **"O quadro informado é insuficiente; o menor quadro viável não foi determinado em 60 min."** (vermelho) | O mesmo, quando acaba o tempo máximo (60 minutos, ou o valor do campo). |
 | **"Erro técnico ao resolver com 30 profissionais; detalhes no console."** (vermelho) | Uma falha do programa, não da equipe. A janela do PowerShell onde a ferramenta roda mostra o erro completo; copie esse texto se for pedir ajuda. |
 
-**"Pode haver uma melhor: esta escala pode ser até X% pior que a melhor possível…".** Às
-vezes aparece depois de "Escala gerada". A escala é legal, mas o tempo acabou antes de a
-ferramenta confirmar que é a melhor; o X% é o quanto, no máximo, ela pode estar longe da melhor.
-Com mais tempo (o campo do tempo máximo), a ferramenta poderia melhorá-la.
+**"Escala gerada; pode haver uma melhor."** Às vezes aparece no lugar de "Escala gerada." A
+escala é legal, mas o tempo acabou antes de a ferramenta confirmar que é a melhor. Quanto ela
+pode melhorar aparece **por nível**, junto da tabela "Resultado por critério":
+- "Essencial: 0 violações — a melhor possível." — nesse nível, nenhuma escala faz melhor;
+- "Importante: 7 violações. Nenhuma escala tem menos de 4." — dá para melhorar, no máximo, até 4;
+- "… Não deu tempo de saber quanto dá para melhorar." — o tempo acabou sem essa informação;
+- "Desejável: não deu tempo de otimizar; a escala mantém o resultado dos níveis acima.";
+- níveis que a ferramenta resolve juntos ganham uma frase só ("Essencial e Importante: …");
+- "Equilíbrio entre colegas: o melhor possível." ou "… pode haver uma escala mais equilibrada."
+Com mais tempo (o campo do tempo máximo), a ferramenta poderia melhorar a escala.
 
 ### Alertas do COFEN (em vermelho)
 
@@ -346,8 +361,11 @@ A ferramenta trata as regras de dois jeitos:
 
 Aparece quando alguém tem, em alguma semana, um descanso semanal **abaixo de 35 h**. Exemplo:
 
-> Alerta de descanso semanal (não impede a escala): 1 profissional tem descanso semanal abaixo
-> de 35 h (o menor: 32 h). …
+> Atenção (não impede a escala): 1 profissional tem menos de 35 h de descanso em volta da folga
+> semanal (o menor: 32 h). Pela regra do TST, as horas que faltam para 35 h são pagas como hora
+> extra.
+
+O fundamento completo fica no "?" ao lado de "Por que 35 h?", logo abaixo do alerta.
 
 **Por que 35 h.** A lei pede 24 h de repouso semanal e 11 h entre jornadas. A Súmula 110 do
 TST (e a OJ 355 da SDI-1) diz que, quando o intervalo de 11 h depois do repouso de 24 h não é
@@ -379,13 +397,16 @@ cada um com os números. Cada motivo, sozinho, já prova que não há escala:
 |---|---|
 | Quadro da escala | Quantas pessoas a escala usa. |
 | Enfermeiro em posto de técnico | Quantos turnos um enfermeiro cobriu em vaga de técnico. |
-| Pedidos de folga atendidos | Quantos dos pedidos foram atendidos. Abaixo dos números, a tela diz "Todos os 6 pedidos de folga foram atendidos." ou, se algum foi negado, quantos e em quantas pessoas. |
+| Pedidos de folga atendidos | Quantos dos pedidos foram atendidos ("sem pedidos" se não houver nenhum). Em "Detalhes da escala", a tela diz "Todos os 6 pedidos de folga foram atendidos." ou, se algum foi negado, quantos e em quantas pessoas. |
 | Contrato cumprido (mín.–máx.) | Quanto do contrato cada pessoa cumpre: horas escaladas ÷ horas contratadas nos dias em que está disponível. |
-| Conferência de descanso | "cumpre" quer dizer que a escala foi medida no relógio e respeita os descansos da CLT. Abaixo, a linha mostra o menor descanso entre turnos, o menor descanso semanal (sem o início e o fim do período, como o alerta de 35 h) e o máximo de dias seguidos. |
+| Conferência de descanso | "cumpre" quer dizer que a escala foi medida no relógio e respeita os descansos da CLT. Em "Detalhes da escala", a linha mostra o menor descanso entre turnos, o menor descanso semanal (sem o início e o fim do período, como o alerta de 35 h) e a maior sequência de trabalho na escala — medidas da escala, não regras. |
 | Diferença máxima de carga entre colegas | Por categoria. Por exemplo, "1 plantão (12 h)": entre dois colegas da mesma categoria, a diferença de carga é de no máximo um plantão, já descontadas férias e contratos diferentes. |
 | Horas de contrato não utilizadas | Por categoria: horas contratadas menos horas escaladas. |
-| Diferença entre categorias | Quanto, em média, técnicos e enfermeiros cumprem do contrato. A ferramenta não tenta igualar isso: depende de quantos postos de cada categoria a demanda pede. |
-| Resultado por critério | Para cada critério considerado nas prioridades: a importância, quantas violações a escala tem e quantos profissionais elas atingem. Contado na escala entregue. |
+| Diferença entre categorias | Em "Detalhes da escala": quantos pontos percentuais do contrato os técnicos usam, em média, a menos (ou a mais) que os enfermeiros. Vem da demanda de cada turno, não da escala. |
+| Resultado por critério | Para cada critério considerado nas prioridades: a importância, quantas violações a escala tem e quantos profissionais elas atingem. Contado na escala entregue. Uma tabela por nível (ou por grupo de níveis resolvidos juntos), com a frase do nível acima. |
+
+As legendas de carga, descanso, categorias e equilíbrio ficam no painel **"Detalhes da
+escala"**, fechado; clique para abrir.
 
 ### A planilha
 

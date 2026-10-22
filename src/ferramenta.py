@@ -56,17 +56,23 @@ from conferencia_descanso_escala import (MIN_SEMANAL, cumpre, fmt_semanal,  # no
                                          medir, semanal_sem_bordas)
 
 MARGEM = 12          # quantos quadros acima do informado tentar antes de desistir
-# Limites por resolucao e orcamento do clique (DECISOES.md, "2026-10-19 — Opcao B: mecanismo,
-# tempo e criterios expostos", item b): 1.800 s em cada nivel da etapa 1 e na etapa 2, sempre
-# o menor entre o limite e o que resta do orcamento; orcamento padrao de 60 min, editavel na
-# tela. Ate a v1.2.3 eram 600 s (05/10), 180 s (05/10; PROPOSTAS.md, P1) e 20 min (P12, 08/10)
-# — os numeros do NUMEROS_TCC.md foram medidos com esses. A etapa 2 usa o menor entre o seu
-# limite e o da etapa 1 (os testes encurtam `TEMPO`). Orcamento: cada resolucao recebe o menor
-# entre o seu limite e o que resta dele; acabado, a busca para e a tela mostra so o que foi
-# provado. Lidos na chamada: os testes os mudam.
-TEMPO = 1800
-TEMPO_ETAPA2 = 1800
+# Tempo maximo do clique e a sua divisao (DECISOES.md, "2026-10-22 — Divisao proporcional do
+# tempo maximo", que revisa o item b de "2026-10-19 — Opcao B"). PARAMETRO DE PROJETO, sem
+# calibracao: etapa 1 : etapa 2 = 50 : 50; dentro da etapa 1, Essencial : Importante :
+# Desejavel = 50 : 30 : 20 entre os niveis presentes (nivel vazio nao entra, e a fatia dele fica
+# na etapa 1); bloco fundido soma os pesos dos seus niveis. No inicio de cada parte k:
+#     tempo_k = tempo que resta x peso_k / (soma dos pesos das partes que ainda faltam, com k)
+# (`fatia`), e a sobra de quem termina antes passa adiante. Ate 21/10 cada resolucao recebia
+# min(1.800 s, o que resta); ate a v1.2.3, 600 s, 180 s e 20 min — os numeros do NUMEROS_TCC.md
+# foram medidos com esses limites.
 ORCAMENTO = 60 * 60
+PESO_ETAPA2 = 0.5
+PESO_NIVEL = {pr.ESSENCIAL: 50, pr.IMPORTANTE: 30, pr.DESEJAVEL: 20}
+# Teto opcional por resolucao (None = sem teto, o produto). So os testes o usam, para encurtar
+# as rodadas (600 / 180 s, ou 25 s e 3 s no teste 8); com teto, a cadeia da primeira resolucao
+# (com a protecao da primeira escala) tambem nao passa dele. Lidos na chamada.
+TEMPO = None
+TEMPO_ETAPA2 = None
 # P15 (DECISOES.md, "2026-10-09 — P15"): ALERTA, nao trava, quando o descanso semanal medido
 # sem as bordas do horizonte fica abaixo disto. Sumula 110 do TST: 24 h + 11 h.
 SEMANAL_ALERTA_H = 35
@@ -162,14 +168,11 @@ class Resultado:
     def frase_escala(self) -> str:
         """(a) otimo provado -> "escala gerada"; (b) escala sem prova -> "pode haver uma
         melhor", com o gap da etapa 1 (DECISOES.md, "Redesenho", 02/10)."""
+        # 22/10: o quanto pode melhorar sai daqui e vai para as frases por nivel
+        # (`frases_por_nivel`), uma por nivel ou bloco, sem indice agregado de gaps
         if self.provado:
             return "Escala gerada."
-        gap = self.indicadores.get("gap")
-        if gap is None or math.isinf(gap):
-            return "Escala gerada; pode haver uma melhor."
-        gap_txt = f"{gap:.1%}".replace(".", ",")
-        return (f"Escala gerada; pode haver uma melhor: esta escala pode ser até {gap_txt} "
-                f"pior que a melhor possível, e com mais tempo a ferramenta poderia melhorá-la.")
+        return "Escala gerada; pode haver uma melhor."
 
     def frase(self) -> str:
         if self.veredito == ADMITE:
@@ -224,6 +227,76 @@ class Resultado:
             return "Esta é a escala encontrada: o equilíbrio de carga entre colegas não foi feito."
         return ("Esta é a escala encontrada: o equilíbrio de carga entre colegas não terminou no "
                 "tempo.")
+
+
+def _nomes_niveis(niveis) -> str:
+    return " e ".join(niveis) if len(niveis) <= 2 else ", ".join(niveis[:-1]) + " e " + niveis[-1]
+
+
+def _violacoes(n: int) -> str:
+    return br.plural(n, "violação", "violações")
+
+
+def frases_por_nivel(r) -> list[tuple[list[str], str]]:
+    """22/10 (DECISOES.md, "2026-10-22 — Divisao proporcional do tempo maximo"): uma frase por
+    bloco resolvido (um nivel, ou niveis fundidos), de cima para baixo: (niveis, frase). N = soma
+    das violacoes do nivel no "Resultado por criterio"; M = limite inferior do solver,
+    arredondado para cima, nunca acima de N. Num bloco fundido o objetivo soma os niveis com
+    coeficientes (o de cima = maximo do resto do bloco + 1): o limite so vale para o nivel de
+    cima, M = teto((limite - (coef - 1)) / coef)."""
+    ind = r.indicadores or {}
+    por_nivel: dict[str, int] = {}
+    for nivel, _, v, _ in r.criterios or []:
+        por_nivel[nivel] = por_nivel.get(nivel, 0) + v
+    coef_de = {tuple(niveis): coef for niveis, coef, _ in ind.get("blocos", [])}
+    saida = []
+    for parte in ind.get("partes", []):
+        niveis = parte.get("niveis") or []
+        if not niveis:
+            continue
+        nome = _nomes_niveis(niveis)
+        if "valor" not in parte:
+            saida.append((niveis, f"{nome}: não deu tempo de otimizar; a escala mantém o "
+                                  f"resultado dos níveis acima."))
+            continue
+        ns = [por_nivel.get(n, 0) for n in niveis]
+        quantas = (_violacoes(ns[0]) if len(ns) == 1
+                   else " e ".join(str(n) for n in ns[:-1]) + f" e {_violacoes(ns[-1])}")
+        if parte.get("provado"):
+            saida.append((niveis, f"{nome}: {quantas} — a melhor possível."))
+            continue
+        z, gap = parte["valor"], parte.get("gap")
+        limite = None if gap is None or math.isinf(gap) else z - gap * abs(z)
+        # o nivel de cima de um bloco fundido tem o maior coeficiente (maximo do resto + 1)
+        coefs = coef_de.get(tuple(niveis), {}) if len(niveis) > 1 else {}
+        coef = max(coefs.values()) if coefs else 1
+        m = None if limite is None else math.ceil((limite - (coef - 1)) / coef - 1e-6)
+        if m is not None:
+            m = min(m, ns[0])
+        if m is None or m <= 0:
+            saida.append((niveis, f"{nome}: {quantas}. Não deu tempo de saber quanto dá para "
+                                  f"melhorar."))
+        elif len(niveis) == 1:
+            saida.append((niveis, f"{nome}: {quantas} — a melhor possível." if m >= ns[0]
+                          else f"{nome}: {quantas}. Nenhuma escala tem menos de {m}."))
+        elif m >= ns[0]:
+            saida.append((niveis, f"{nome}: {quantas}. No nível {niveis[0]}, é a melhor "
+                                  f"possível; nos outros, pode haver melhor."))
+        else:
+            saida.append((niveis, f"{nome}: {quantas}. Nenhuma escala tem menos de {m} no "
+                                  f"nível {niveis[0]}."))
+    return saida
+
+
+def frase_equilibrio(r) -> str | None:
+    """22/10: a etapa 2 no mesmo estilo das frases por nivel; None se ela nao entregou escala
+    (a linha da escala vigente, `frase_vigente`, diz o que houve)."""
+    ind = r.indicadores or {}
+    if ind.get("etapa2") != "ok":
+        return None
+    if ind.get("provado_etapa2"):
+        return "Equilíbrio entre colegas: o melhor possível."
+    return "Equilíbrio entre colegas: pode haver uma escala mais equilibrada."
 
 
 ORCAMENTO_ESGOTADO = "orcamento"
@@ -633,6 +706,50 @@ def diferenca_entre_categorias(inst, escala) -> float | None:
     return c[TEC]["fracao_media"] - c[ENF]["fracao_media"] if ENF in c and TEC in c else None
 
 
+def pesos_das_partes(blocos) -> list[float]:
+    """Os pesos das partes de um quadro: um por bloco da etapa 1, de cima para baixo, e o da
+    etapa 2 por ultimo (ver `PESO_NIVEL`). Sem bloco nenhum, a etapa 1 e uma resolucao so."""
+    if not blocos:
+        return [1 - PESO_ETAPA2, PESO_ETAPA2]
+    total = sum(PESO_NIVEL[n] for b in blocos for n in b.niveis)
+    return ([(1 - PESO_ETAPA2) * sum(PESO_NIVEL[n] for n in b.niveis) / total for b in blocos]
+            + [PESO_ETAPA2])
+
+
+def fatia(resta: float, pesos: list[float], k: int) -> float:
+    """tempo_k = tempo que resta x peso_k / (soma dos pesos das partes que ainda faltam,
+    incluindo k). Quem termina antes deixa mais `resta` para as seguintes."""
+    return resta * pesos[k] / sum(pesos[k:])
+
+
+def _limite_da_parte(prazo, pesos, k, teto):
+    """Limite (s) da parte k: a `fatia` do que resta ate o `prazo`, no maximo o `teto` (so nos
+    testes). Sem prazo (chamada direta, fora de `verificar`), o teto, como antes de 22/10."""
+    if prazo is None:
+        return teto
+    t = int(fatia(prazo - time.time(), pesos, k))
+    return t if teto is None else min(teto, t)
+
+
+def _primeira(m, limite, prazo, teto, partes):
+    """A primeira resolucao do quadro, com a PROTECAO DA PRIMEIRA ESCALA: se a sua fatia acabar
+    sem escala, roda de novo com todo o tempo que resta (no maximo o que sobra do teto). Recomeca
+    do zero: sem escala nao ha de onde partir — custo declarado (DECISOES.md, 22/10)."""
+    t0 = time.time()
+    v, e, p, g = resolver(m, limite)
+    partes.append({"limite": limite, "tempo": time.time() - t0})
+    if v == ea.INDETERMINADO and prazo is not None:
+        resto = int(prazo - time.time())
+        if teto is not None:
+            resto = min(resto, teto - int(time.time() - t0))
+        if resto >= 1:
+            t1 = time.time()
+            v, e, p, g = resolver(m, resto)
+            partes[-1].update(protecao=resto, tempo=time.time() - t0,
+                              tempo_protecao=time.time() - t1)
+    return v, e, p, g
+
+
 def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | None = None,
                           prioridades=None) -> tuple[str, object, object, dict]:
     """Etapa 1 (pesos) e, havendo escala provada otima, etapa 2 (equilibrio de horas).
@@ -654,17 +771,27 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | No
     presentes = [b for b in blocos if any(f in m.parcela for f in b.familias)]
     caminho = pr.descrever(presentes)
     print(f"      [prioridades] caminho: {caminho}", flush=True)
+    # 22/10: cada parte recebe a sua fatia do que resta (`fatia`); `tempo` e so o teto dos testes
+    pesos = pesos_das_partes(presentes)
+    partes: list[dict] = []
     t0 = time.time()
     if len(presentes) <= 1:
-        veredito, escala, provado, gap = resolver(m, tempo)
+        limite = _limite_da_parte(prazo, pesos, 0, tempo)
+        veredito, escala, provado, gap = _primeira(m, limite, prazo, tempo, partes)
         niveis = []
+        partes[-1]["niveis"] = list(presentes[0].niveis) if presentes else []
+        if veredito == ea.VIAVEL:
+            partes[-1].update(valor=modelo.valor_objetivo(m), provado=provado, gap=gap)
+        else:
+            partes[-1]["veredito"] = veredito
     else:
         veredito, escala, provado, gap, niveis = _niveis_em_sequencia(
-            m, presentes, tempo, prazo, inst, pr.normalizar(prioridades))
+            m, presentes, tempo, prazo, inst, pr.normalizar(prioridades), pesos, partes)
     W = pr.coeficientes(blocos).get("pedido_folga")
     info = {"peso_pedido": W, "tempo_etapa1": time.time() - t0, "tempo_etapa2": 0.0,
             "provado": provado, "gap": gap, "etapa2": "nao rodou", "caminho": caminho,
-            "blocos": [(b.niveis, dict(b.coef), b.maximo) for b in blocos], "niveis": niveis}
+            "blocos": [(b.niveis, dict(b.coef), b.maximo) for b in blocos], "niveis": niveis,
+            "partes": partes}
     if veredito != ea.VIAVEL:
         return veredito, inst, None, info
     z = modelo.valor_objetivo(m)
@@ -675,12 +802,12 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | No
     ind1 = indicadores(inst, escala)
     info["etapa1"] = {k: ind1[k] for k in ("enf_em_posto_tec", "pedidos_atendidos",
                                            "fracao_min", "fracao_max", "categorias")}
-    tempo2 = TEMPO_ETAPA2 if tempo is None else min(TEMPO_ETAPA2, tempo)
-    if prazo is not None:
-        tempo2 = min(tempo2, int(prazo - time.time()))
-        if tempo2 < 1:
-            info["etapa2"] = "não rodou: o orçamento do clique acabou"
-            return veredito, inst, escala, info
+    tetos2 = [t for t in (TEMPO_ETAPA2, tempo) if t is not None]
+    tempo2 = _limite_da_parte(prazo, pesos, len(pesos) - 1, min(tetos2) if tetos2 else None)
+    info["limite_etapa2"] = tempo2
+    if prazo is not None and tempo2 < 1:
+        info["etapa2"] = "não rodou: o orçamento do clique acabou"
+        return veredito, inst, escala, info
     if aviso:
         aviso("escala_etapa1", inst=inst, escala=escala, limite=tempo2)
         aviso("etapa2", limite=tempo2)
@@ -706,7 +833,7 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | No
     return veredito, inst, escala, info
 
 
-def _niveis_em_sequencia(m, blocos, tempo, prazo, inst=None, p=None):
+def _niveis_em_sequencia(m, blocos, tempo, prazo, inst=None, p=None, pesos=None, partes=None):
     """Etapa 1 da opcao B com mais de um bloco: resolve cada bloco com o objetivo so das suas
     familias e prende o valor achado (`<=`, como a P14) antes do proximo, que parte da escala
     anterior (como a P17). Devolve (veredito, escala, provado, gap, niveis): provado so se todos
@@ -719,6 +846,8 @@ def _niveis_em_sequencia(m, blocos, tempo, prazo, inst=None, p=None):
     import pyomo.environ as pyo
     m.niveis_presos = pyo.ConstraintList()
     niveis, escala, provado, gap, veredito = [], None, True, None, None
+    pesos = pesos if pesos is not None else pesos_das_partes(blocos)
+    partes = partes if partes is not None else []
     por_nivel = inst is not None and pr.tem_regras(inst)
     for i, b in enumerate(blocos):
         if por_nivel:
@@ -729,25 +858,34 @@ def _niveis_em_sequencia(m, blocos, tempo, prazo, inst=None, p=None):
             expr = sum(m.parcela[f] for f in b.familias if f in m.parcela)
         m.del_component(m.objetivo)
         m.objetivo = pyo.Objective(expr=expr, sense=pyo.minimize)
-        limite = tempo
-        if prazo is not None:
-            resta = int(prazo - time.time())
-            limite = resta if limite is None else min(limite, resta)
+        # 22/10: a fatia do que resta (`fatia`), no maximo o teto dos testes. `prova` (e nao `p`, que e a
+        # classificacao lida por `expressao_pedidos` no bloco seguinte; defeito corrigido em 22/10)
+        limite = _limite_da_parte(prazo, pesos, i, tempo)
         if i and limite is not None and limite < 1:
             niveis.append({"niveis": b.niveis, "veredito": "não rodou: orçamento"})
+            partes.append({"niveis": list(b.niveis), "limite": limite, "tempo": 0.0,
+                           "veredito": "não rodou: orçamento"})
             provado = False
             break
-        v, e, p, g = resolver(m, limite, partida=bool(i))
+        if i == 0:
+            v, e, prova, g = _primeira(m, limite, prazo, tempo, partes)
+        else:
+            t0 = time.time()
+            v, e, prova, g = resolver(m, limite, partida=True)
+            partes.append({"limite": limite, "tempo": time.time() - t0})
+        partes[-1]["niveis"] = list(b.niveis)
         if v != ea.VIAVEL:
             niveis.append({"niveis": b.niveis, "veredito": v})
+            partes[-1]["veredito"] = v
             if i == 0:
                 return v, None, False, None, niveis
             provado = False
             break
         veredito, escala = v, e
         z = modelo.valor_objetivo(m)
-        niveis.append({"niveis": b.niveis, "valor": z, "provado": p, "gap": g})
-        if not p:
+        niveis.append({"niveis": b.niveis, "valor": z, "provado": prova, "gap": g})
+        partes[-1].update(valor=z, provado=prova, gap=g)
+        if not prova:
             provado = False
             gap = g if gap is None else gap
         if i < len(blocos) - 1:
@@ -1068,14 +1206,20 @@ def alertas_descanso(inst, escala) -> list[str]:
     if not abaixo:
         return []
     k = len(abaixo)
-    return [f"Alerta de descanso semanal (não impede a escala): "
-            f"{br.plural(k, 'profissional tem', 'profissionais têm')} descanso semanal abaixo "
-            f"de {SEMANAL_ALERTA_H} h (o menor: {min(abaixo.values()):.0f} h). A Súmula 110 do "
-            f"TST, o Tribunal Superior do Trabalho (e a sua Orientação Jurisprudencial 355, OJ "
-            f"355 da SDI-1), manda pagar como extras as horas que invadem o intervalo "
-            f"de 11 h depois do repouso semanal de 24 h: 24 + 11 = 35 h. Não conta o descanso "
-            f"que encosta no início ou no fim do período, porque o que vem antes e depois não é "
-            f"conhecido."]
+    # 22/10: uma linha para o gestor; o fundamento vai para o "?" (`FUNDAMENTO_SEMANAL`)
+    return [f"Atenção (não impede a escala): "
+            f"{br.plural(k, 'profissional tem', 'profissionais têm')} menos de "
+            f"{SEMANAL_ALERTA_H} h de descanso em volta da folga semanal (o menor: "
+            f"{min(abaixo.values()):.0f} h). Pela regra do TST, as horas que faltam para "
+            f"{SEMANAL_ALERTA_H} h são pagas como hora extra."]
+
+
+FUNDAMENTO_SEMANAL = (
+    f"A Súmula 110 do TST, o Tribunal Superior do Trabalho (e a sua Orientação Jurisprudencial "
+    f"355, OJ 355 da SDI-1), manda pagar como extras as horas que invadem o intervalo de 11 h "
+    f"depois do repouso semanal de 24 h: 24 + 11 = {SEMANAL_ALERTA_H} h. Não impede a escala: "
+    f"tem custo, não é proibido. Não conta o descanso que encosta no início ou no fim do "
+    f"período, porque o que vem antes e depois não é conhecido.")
 
 
 def _n_enf(inst) -> int:
@@ -1137,7 +1281,8 @@ def planilha(r: Resultado, e: Entrada) -> bytes:
         ("Grau de dependência predominante", br.NOME_GRAU.get(e.grau, e.grau)),
         ("Turnos de enfermeiro em posto de técnico", ind.get("enf_em_posto_tec")),
         ("Pedidos de folga atendidos",
-         f"{ind.get('pedidos_atendidos')} de {ind.get('pedidos_total')}"),
+         f"{ind.get('pedidos_atendidos')} de {ind.get('pedidos_total')}"
+         if ind.get("pedidos_total") else "sem pedidos"),
         ("Carga horária no período (mín.–máx.)",
          f"{ind.get('horas_min', 0):g}–{ind.get('horas_max', 0):g} h"),
         ("Fração do contrato cumprida (mín.–máx.)",

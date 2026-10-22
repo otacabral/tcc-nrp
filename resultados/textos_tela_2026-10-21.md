@@ -134,3 +134,32 @@ tempos são quase iguais e o número vale só como limite operacional desta máq
 Resultado igual nas 6 rodadas: frase, menor quadro, tentativas, resultado por critério e escala
 ("O quadro informado admite escala legal. Escala gerada."). Script:
 `medir_barra.py` (rascunho da sessão, fora do repositório).
+
+---
+
+## Acréscimo de 22/10: tempo dividido, resultado por nível, seção 5 enxuta
+
+Decisão: `DECISOES.md`, "2026-10-22 — Divisão proporcional do tempo máximo; resultado por nível;
+seção 5 enxuta". Só redação e arrumação; nenhuma conta muda.
+
+### Para a Redação: frase citável que muda
+
+| Antes | Depois |
+|---|---|
+| "Escala gerada; pode haver uma melhor: esta escala pode ser até X pior que a melhor possível, e com mais tempo a ferramenta poderia melhorá-la." (texto de 21/10; até 21/10 de manhã, "…(gap X: distância máxima até a melhor possível).") | "Escala gerada; pode haver uma melhor." — o quanto pode melhorar vai para as frases por nível |
+| "Faltam N; o menor quadro viável é X." / "O quadro informado admite escala legal." / "Não há escala legal até N…" | **sem mudança** |
+
+### Tela e mensagens
+
+| Antes | Depois | Onde aparece |
+|---|---|---|
+| (não havia) | "<Nível>: N violações — a melhor possível." / "<Nível>: N violações. Nenhuma escala tem menos de M." / "<Nível>: N violações. Não deu tempo de saber quanto dá para melhorar." / "<Nível>: não deu tempo de otimizar; a escala mantém o resultado dos níveis acima." / bloco fundido: "Essencial e Importante: A e B violações. Nenhuma escala tem menos de M no nível Essencial." (ou "No nível Essencial, é a melhor possível; nos outros, pode haver melhor.") | 5. Resultado, acima das linhas de cada nível na tabela "Resultado por critério" |
+| (não havia) | "Equilíbrio entre colegas: o melhor possível." / "Equilíbrio entre colegas: pode haver uma escala mais equilibrada." | 5. Resultado, abaixo das tabelas |
+| uma tabela "Resultado por critério" | uma tabela por nível (ou bloco), cada uma com a sua frase acima | 5. Resultado |
+| "?" do tempo máximo: "…avisa se ainda poderia existir uma melhor. Padrão: 60 minutos. Equipes grandes podem precisar de mais tempo." | "…avisa se ainda poderia existir uma melhor. Metade do tempo vai para atender as suas prioridades, na ordem Essencial, Importante, Desejável; a outra metade, para equilibrar a carga entre colegas. Se uma parte terminar antes, o tempo que sobrou passa para as próximas. Padrão: 60 minutos. Equipes grandes podem precisar de mais tempo." | campo "Tempo máximo para gerar a escala" |
+| "Alerta de descanso semanal (não impede a escala): N profissionais têm descanso semanal abaixo de 35 h (o menor: X h). A Súmula 110 do TST, o Tribunal Superior do Trabalho (e a sua Orientação Jurisprudencial 355, OJ 355 da SDI-1), manda pagar como extras… Não conta o descanso que encosta no início ou no fim do período…" | "Atenção (não impede a escala): N profissionais têm menos de 35 h de descanso em volta da folga semanal (o menor: X h). Pela regra do TST, as horas que faltam para 35 h são pagas como hora extra." + legenda "Por que 35 h?" com o fundamento completo no "?" (o texto mora em `ferramenta.alertas_descanso`, dentro do escopo; feito lá) | 5. Resultado (amarelo) e planilha |
+| "Diferença entre categorias: técnicos cumprem em média −38 pontos percentuais do contrato em relação aos enfermeiros. A ferramenta não tenta igualar isso: vem da demanda…" | "Os técnicos usam, em média, 38 pontos percentuais a menos do contrato que os enfermeiros. Isso vem da demanda de cada turno, não da escala." (ou "a mais"; com 0: "Técnicos e enfermeiros usam, em média, a mesma parte do contrato.") | Detalhes da escala |
+| "Descanso mínimo entre turnos 16 h · descanso semanal 32 h · no máximo 4 dias seguidos" | "Menor descanso entre turnos: 16 h · menor descanso semanal: 32 h · maior sequência de trabalho na escala: 4 dias" | Detalhes da escala |
+| legendas soltas entre os números e a tabela (escala vigente, descanso, enfermeiros/técnicos, diferença entre categorias, equilíbrio, pedidos, descumpridos) | dentro do painel "Detalhes da escala", fechado por padrão | 5. Resultado |
+| "Pedidos de folga atendidos: 0 de 0" | "sem pedidos" (quando não há pedidos) | métrica e planilha |
+| "sem resposta em 30 min: a ferramenta não encontrou escala…" (o 30 min era o limite fixo por resolução) | "sem resposta no tempo disponível: a ferramenta não encontrou escala nem mostrou que ela não existe" | painel "Como o resultado foi obtido" |

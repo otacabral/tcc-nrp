@@ -66,19 +66,25 @@ export PISO_PARES_SAIDA=$RAIZ_SAIDA/piso_pares
 roda piso_seguranca "$PY" docs/diagnostico/piso_pares.py --seguranca
 roda piso_controle "$PY" docs/diagnostico/piso_pares.py --controle
 roda piso_casos "$PY" docs/diagnostico/piso_pares.py --casos
+# 22/10: divisao proporcional do tempo maximo, sem solver: tabela, conta e frases por nivel
+roda tempo_conta "$PY" docs/diagnostico/tempo_proporcional.py --conta
 [ "${PULAR_SOLVER:-0}" = 1 ] && { echo "TESTE DO SCRIPT OK (sem solver)" | tee -a "$RESUMO"; exit 0; }
 
 # com solver: o caso pequeno das preferencias (usa a de dias seguidos), (c) o portao, as entradas
 roda pref_caso_pequeno "$PY" docs/diagnostico/preferencias.py --caso-pequeno
+# 22/10: o caso com solver da divisao do tempo (protecao da primeira escala, sobra adiante)
+roda tempo_caso "$PY" docs/diagnostico/tempo_proporcional.py --caso
 roda regressao "$PY" src/regressao.py --todos
 roda testes_entrada "$PY" src/testes_entrada.py
 # testes da tela (motivo de cada um no ESPERADO): os que usam o campo removido ou a preferencia
 # de dias (pref-tela, max-dias, opB-d, opB-tela, opB-c, opB-e); os que conferem textos que
 # mudaram em 21/10 (8, 12, opB-tela, pref-tela, max-dias) ou que os textos novos nao podem
 # quebrar (4, 9c-tela, tela-limpa, 15, 16, 7.4, 4b); e os que passam pela barra nova clicando em
-# "Gerar escala" (todos os anteriores que usam a tela, mais o 5). Os longos por ultimo.
-for caso in pref-tela max-dias opB-d 16 4b 7.4 9c-tela 4 5 15 8 12 opB-tela tela-limpa \
-            opB-c opB-e; do
+# "Gerar escala" (todos os anteriores que usam a tela, mais o 5); 22/10: os que dependem da
+# divisao do tempo ou do texto do resultado (opB-padroes, opB-b, 8, 12, 15, opB-tela, 9c-tela,
+# opB-c, opB-e). Os longos por ultimo.
+for caso in pref-tela max-dias opB-d opB-padroes opB-b 16 4b 7.4 9c-tela 4 5 15 8 12 opB-tela \
+            tela-limpa opB-c opB-e; do
     roda "tela_$caso" "$PY" src/testes_ferramenta.py "$caso"
 done
 echo "TUDO OK" | tee -a "$RESUMO"

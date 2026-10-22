@@ -272,3 +272,37 @@ escala mais equilibrada." As três frases do TCC não mudam.
 categorias sem número negativo; "maior sequência de trabalho na escala: N dias", "menor descanso
 entre turnos", "menor descanso semanal"; legendas num expander "Detalhes da escala", fechado;
 "sem pedidos" no lugar de "0 de 0"; frases por nível junto da tabela.
+
+**Rodado em 22/10 com o código novo, antes da suíte** (i5-10210U, HiGHS 1.15.1):
+- Sem solver: identidade 243/243 (sem e com linhas) e 24/24; `tempo_proporcional.py --conta` OK
+  (tabela, 15/9/6/30, 11,6 / 7,7 / 38,7 / 45,4, frases por nível).
+- Testes da tela: opB-padroes, pref-tela, max-dias, 16, 4b, 7.4, opB-d, opB-b, 12, opB-tela, 15
+  OK; 8 OK depois do ajuste abaixo; 9c-tela, ver abaixo.
+- **Ajuste a posteriori no 8a (não previsto acima):** a conferência procurava "pode haver" em
+  qualquer texto; a frase nova da etapa 2 ("Equilíbrio entre colegas: pode haver uma escala mais
+  equilibrada.") também tem essas palavras. O esperado registrado do 8a (docstring do teste) é
+  "nenhum 'pode haver uma melhor'"; a conferência passou a procurar isso. Mesmo precedente do 1-2.
+- **9c-tela:** falhou uma vez com a máquina carregada (Chrome aberto; a etapa 2 não achou escala
+  nos 20 s do teste) e passou na v1.4.2 com a mesma carga. Investigado (pedido do Otávio): o
+  limite da etapa 2 nesse teste é **20 s nas duas regras** (medido no mesmo caso por
+  `fe.verificar`, com os ajustes do teste: v1.4.2 — etapa 1 limite 600 s, gastou 2,0 s; etapa 2
+  limite 20 s, gastou 20,5 s; nova — etapa 1 limite 599 s, gastou 1,4 s; etapa 2 limite 20 s,
+  gastou 20,4 s). A regra nova dá 0,5 do que resta (~600 s) e o teto do teste corta em 20 s.
+  Sem carga (Chrome fechado), duas rodadas em cada versão: v1.4.2 25 s e 26 s, nova 29 s e 29 s
+  (os ~3 s a mais são o fechamento da barra), todas OK. Leitura: o teste é sensível à carga da
+  máquina (20 s para a etapa 2 achar uma escala do zero, porque a etapa 1 prova o ótimo); a falha
+  sob carga não vem da mudança de tempo. O teste fica como está.
+- **(d) caso com solver:** sem carga, (d1) caso pequeno: as três partes provam em menos de 1 s,
+  a sobra passa adiante (Importante 11 s > 9 s, Desejável 9 s > 6 s); (d2) 40 com 20 pedidos,
+  60 s: o Essencial provou em 8,6 s (a proteção não disparou), o Importante saiu com "112
+  violações. Nenhuma escala tem menos de 96."; (d3) mesmo caso, 600 s: tudo provado, Importante
+  96 — o mesmo 96 que o limite de (d2) dava, o que confere a frase. Com a máquina carregada
+  (Chrome aberto), a mesma (d2) mostrou a **proteção**: o Essencial esgotou os seus 14 s sem
+  escala, rodou de novo com os 42 s que restavam e provou em 34,7 s; depois, Importante e etapa 2
+  receberam 1 s e o HiGHS passou do limite em alguns segundos (6,1 s com limite de 1 s; total
+  ~62 s). Por isso a conferência do tempo gasto tem folga de 15 s. Quando a proteção dispara, os
+  níveis de baixo podem ficar com quase nada — é a regra pedida (a primeira escala vem primeiro).
+- **Conferências do script corrigidas antes de registrar o resultado:** a primeira versão
+  conferia "soma dos limites ≤ tempo máximo", o que está errado (cada limite é calculado no início
+  da parte, sobre o que resta; quem termina antes deixa a soma passar do máximo) — passou a
+  conferir o tempo **gasto**; e a conferência da sobra passou a valer só sem proteção.

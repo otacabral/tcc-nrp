@@ -1,6 +1,6 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 21/10/2026 (noite). Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 22/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
@@ -8,6 +8,12 @@ fim de cada sessão (dele ou do chat).
 - **Versão citável: v1.4.2** (suíte TUDO OK em `resultados/v142_2026-10-21/suite/resumo.txt`,
   depois da parada em tela_opB-c e do RETOMAR; tag criada e enviada pelo Otávio). Máximo de dias
   seguidos e máximo de turnos também como preferência. A tag v1.4.2 não se mexe.
+- **v1.4.3, acréscimo de 22/10: divisão proporcional do tempo máximo, resultado por nível e
+  seção 5 enxuta** — implementados e commitados, **à espera da revisão do Otávio na tela**. Metade
+  do tempo para as prioridades (50 : 30 : 20 entre os níveis presentes), metade para o equilíbrio;
+  a sobra passa adiante; proteção da primeira escala. Frases por nível acima da tabela; a frase
+  principal perde o gap. Leitura dos pesos com nível vazio a confirmar (DECISOES de 22/10, decisão
+  de implementação 1). A suíte da v1.4.3 continua sem rodar: roda uma só, depois da revisão.
 - **v1.4.3, continuação (21/10, noite): textos da tela para o gestor, tema claro e barra pelo
   relógio** — implementados e commitados, **à espera da revisão do Otávio na tela**. Antes ×
   depois em `resultados/textos_tela_2026-10-21.md`; exemplos do "?" conferidos pela contagem
@@ -38,8 +44,8 @@ fim de cada sessão (dele ou do chat).
 Conferir os textos contra `resultados/textos_tela_2026-10-21.md`, o tema escuro e a barra (gerar
 uma escala pequena). Aprovar ou pedir ajustes ao Claude Code. **Só depois** rodar a suíte.
 
-**1. Otávio: suíte reduzida da v1.4.3** (~1 h 30 nesta máquina, i5-10210U, HiGHS 1.15.1; o opB-e
-sozinho leva ~35 min). Com o Claude Code e o Chrome fechados. Antes, apagar a pasta da suíte
+**1. Otávio: suíte reduzida da v1.4.3** (~1 h 45 nesta máquina, i5-10210U, HiGHS 1.15.1; o opB-e
+sozinho leva ~35 min, e o caso com solver da divisão do tempo, ~12 min). Com o Claude Code e o Chrome fechados. Antes, apagar a pasta da suíte
 cancelada (o RETOMAR a pegaria). No PowerShell, um comando por linha:
 
     cd D:\dev\tcc-nrp
@@ -95,6 +101,15 @@ raiz, um por linha:
     git worktree remove --force ..\tcc-nrp-v142
 
 (apaga só as pastas; as tags e o histórico ficam).
+
+## Decisões de 22/10 (v1.4.3, acréscimo)
+
+- DECISOES "2026-10-22 — Divisão proporcional do tempo máximo; resultado por nível; seção 5
+  enxuta" (PARÂMETRO DE PROJETO e TELA; revisa o item b de "2026-10-19 — Opção B"). Decisões de
+  implementação: etapa 1 sempre com 50% (os 50 : 30 : 20 entre os níveis presentes — é o que faz
+  o padrão dar 30 + 30); proteção = resolver de novo com o resto; `TEMPO`/`TEMPO_ETAPA2` só como
+  teto dos testes; M do bloco fundido só para o nível de cima; defeito do nome `p` corrigido em
+  `_niveis_em_sequencia`.
 
 ## Decisões de 21/10 (noite, v1.4.3, continuação)
 
@@ -213,6 +228,13 @@ raiz, um por linha:
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **22/10 (se aprovado e a suíte fechar):** (1) a frase sem prova passa a "Escala gerada; pode
+  haver uma melhor." — o quanto pode melhorar sai por nível ("Importante: 7 violações. Nenhuma
+  escala tem menos de 4."); não usar mais o "gap" no texto como saída da ferramenta. (2) A
+  divisão do tempo é **parâmetro de projeto, sem calibração** (50 : 50; 50 : 30 : 20); declarar
+  assim. Os números do NUMEROS_TCC foram medidos com os limites antigos, declarados. (3) O alerta
+  de descanso semanal virou uma linha; o fundamento (Súmula 110, OJ 355) fica no "?".
 
 - **21/10 (noite, textos da tela, se aprovados e a suíte fechar):** frases citáveis que mudam —
   lista antes × depois no topo de `resultados/textos_tela_2026-10-21.md`. Em resumo: "pode haver
