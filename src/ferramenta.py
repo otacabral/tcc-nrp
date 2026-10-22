@@ -112,9 +112,6 @@ class Entrada:
     # — Pedidos e regras por profissional"): cada linha com a sua importancia. `pedidos` acima e
     # o caminho antigo (folga no dia, no nivel do criterio "pedido_folga")
     regras: list = field(default_factory=list)
-    # maximo de dias seguidos, regra do hospital, rigida (DECISOES.md, "2026-10-19 — Maximo de
-    # dias seguidos como regra do hospital"): min(hospital, CLT); 6 = o art. 67, o de sempre
-    max_dias_seguidos: int = br.MAX_CONSECUTIVOS_GENERICO
     pacientes: dict[str, float] | None = None           # painel "Conferir com o COFEN"
     # carga contratual semanal, por nome (ou id); quem nao aparece fica com 44 h, e quem a
     # varredura acrescenta tambem (DECISOES.md, "2026-10-02 — Carga por contrato")
@@ -295,7 +292,10 @@ def montar(e: Entrada, acrescimo: int = 0, horas_enf: float | None = None,
         demanda_data=e.demanda_data, fim_de_semana=e.fim_de_semana, inicio=e.inicio,
         n_enfermeiros=n_enf, n_tecnicos=n_tec, nomes_enfermeiros=nomes_enf,
         nomes_tecnicos=nomes_tec, indisponibilidades=e.indisponibilidades,
-        pedidos=e.pedidos, cargas=e.cargas, max_consecutivos=e.max_dias_seguidos)
+        pedidos=e.pedidos, cargas=e.cargas,
+        # so a lei trava os dias seguidos; a regra do hospital e preferencia (DECISOES.md,
+        # "2026-10-21 — Maximo de dias seguidos: a trava e so a da CLT")
+        max_consecutivos=br.MAX_CONSECUTIVOS_GENERICO)
     return com_regras(inst, e.regras)
 
 

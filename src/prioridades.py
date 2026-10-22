@@ -87,11 +87,12 @@ CRITERIOS = (
              "Turno em que um enfermeiro cobre vaga de técnico. Ex.: faltam técnicos no sábado "
              "e um enfermeiro cobre: 1 violação.", nivel=IMPORTANTE),
     # 21/10: maximo de dias seguidos e maximo de turnos tambem como preferencia (DECISOES.md,
-    # "2026-10-21 — ..."); o limite rigido (lei e hospital) continua, e o usado e o menor dos dois
+    # "2026-10-21 — ..."); o limite rigido (so a lei, v1.4.3) continua, e o usado e o menor dos dois
     Criterio("max_dias_seguidos", 1, "Máximo de dias seguidos (preferência)", PREF_DIAS,
-             "Preferência do hospital, abaixo do limite obrigatório (o campo acima; a lei permite "
-             "no máximo 6, art. 67). Ex.: com preferência 4, cinco dias seguidos contam 1 "
-             "violação; mais de 6 nunca acontece.", 5, "dias"),
+             "A lei trava em 6 (art. 67); a regra do seu hospital vai aqui, como preferência; "
+             "no Essencial ela pesa acima de tudo o que é Importante ou Desejável. Ex.: com "
+             "preferência 4, cinco dias seguidos contam 1 violação; mais de 6 nunca acontece.",
+             5, "dias"),
     Criterio("min_dias_seguidos", 1, "Mínimo de dias seguidos de trabalho",
              "min_consecutive_working_days",
              "Evita dia de trabalho isolado. Ex.: com mínimo 3, trabalhar só na terça, entre "
@@ -148,7 +149,7 @@ POR_ID = {c.id: c for c in CRITERIOS}
 RESUMO = {
     "pedido_folga": "Folga pedida num dia.",
     "enf_posto_tec": "Enfermeiro cobrindo vaga de técnico.",
-    "max_dias_seguidos": "Preferência, abaixo do máximo obrigatório.",
+    "max_dias_seguidos": "Regra do hospital, como preferência; a lei trava em 6.",
     "min_dias_seguidos": "Evita dia de trabalho isolado.",
     "max_folgas_seguidas": "Evita folgas longas demais.",
     "min_folgas_seguidas": "Evita folga isolada.",
@@ -292,14 +293,14 @@ def maximo(inst, crit: Criterio, habilidade_enf: str) -> int:
 
 def limite_legal(contrato, familia: str) -> int | None:
     """O limite rigido que uma preferencia nao pode passar (o da familia INRC de mesma expressao,
-    que na ferramenta guarda a lei e o hospital); None se a familia nao e preferencia."""
+    que na ferramenta guarda a lei); None se a familia nao e preferencia."""
     legal = LEGAL_DA_PREFERENCIA.get(familia)
     return getattr(contrato, legal).valor if legal is not None else None
 
 
 def limite_usado(contrato, familia: str, limite):
-    """min(preferencia, legal) — a regra do campo rigido do hospital (DECISOES.md, 21/10,
-    decisao de implementacao 3). As outras familias, o limite como veio."""
+    """min(preferencia, legal) (DECISOES.md, 21/10, decisao de implementacao 3; desde a v1.4.3
+    o legal e so a lei). As outras familias, o limite como veio."""
     legal = limite_legal(contrato, familia)
     return limite if legal is None or limite is None else min(limite, legal)
 

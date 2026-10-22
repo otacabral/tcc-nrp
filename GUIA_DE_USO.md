@@ -171,23 +171,35 @@ critérios ficarem no mesmo nível, a tela avisa que entre eles há compensaçã
 tabela já vem com um valor de exemplo, tirado de uma instância do benchmark INRC escolhida por
 exercitar todas as restrições (`medium_late05`); edite-o. Exceção: o **2 de "fins de semana
 trabalhados em 4 semanas" é valor de exemplo, sem fonte (suposição declarada)**. Onde a lei
-limita, o campo não passa do limite legal (mínimo de dias seguidos até o máximo de dias
-seguidos; mínimo de turnos até o teto legal de turnos).
+limita, o campo não passa do limite legal (mínimo e máximo de dias seguidos até 6, o da lei;
+mínimo e máximo de turnos até o teto legal de turnos).
 
 Cada linha tem uma descrição curta; o texto completo, com exemplo, fica no **"?"**. O ⓘ no "?"
 marca os critérios sem conferência externa: nenhuma instância do benchmark os usa ou o avaliador
 oficial não os pontua.
 
-**O que a tela não mostra, porque a CLT já garante:** as sequências proibidas pelo descanso e o
-teto de turnos no período são regras rígidas, no motor. No 12×36 também saem da tabela "fim de
-semana completo", "mesmo turno no fim de semana" e "mínimo de dias seguidos": ninguém trabalha
-dois dias seguidos, então quem trabalha no fim de semana trabalha um dia só, e o mínimo de dias
-seguidos nunca seria atendido.
+**O que a tela não mostra, porque a CLT já garante:** as sequências proibidas pelo descanso, o
+máximo de 6 dias seguidos (art. 67) e o teto de turnos no período são regras rígidas, no motor.
+No 12×36 também saem da tabela "fim de semana completo", "mesmo turno no fim de semana", "mínimo
+de dias seguidos" e "máximo de dias seguidos (preferência)": ninguém trabalha dois dias seguidos,
+então quem trabalha no fim de semana trabalha um dia só, o mínimo de dias seguidos nunca seria
+atendido e nenhum máximo de dias seguidos seria violado.
 
-**Máximo de dias seguidos de trabalho (grupo 2), regra do hospital, obrigatória.** Padrão 6, o
-máximo da lei (art. 67); aceita de 1 a 6. A ferramenta usa o menor entre o valor informado e o
-da lei. Um valor menor pode exigir mais gente, e a tela diz quantos faltam. Não aparece no
-12×36.
+**Regra do hospital é preferência, não trava** (desde a v1.4.3). A ferramenta só trava o que é
+lei ou físico: cobertura, CLT, horas do contrato, férias e licenças. Tudo o que o hospital quer
+entra como critério classificável — como na tabela de pedidos, em que a regra do hospital é
+Essencial.
+
+**Máximo de dias seguidos (preferência)** (grupo 2). A lei trava em 6; a regra do seu hospital
+vai aqui, como preferência. O limite vai até 6 (padrão 5, quando ligado). Cada dia além do limite,
+numa sequência, conta 1 violação: com limite 4, cinco dias seguidos contam 1. No Essencial ela
+pesa acima de tudo o que é Importante ou Desejável. Mesmo assim, uma regra de 4 dias nunca leva a
+"Falta N": se a cobertura exigir sequências maiores (até 6), a escala sai e o "Resultado por
+critério" diz quantas violações houve.
+
+**Máximo de turnos no período** (grupo 4, preferência). Abaixo do teto obrigatório, que vem das
+horas do contrato; o campo não passa dele (padrão 18, rebaixado ao teto quando o teto é menor).
+Cada turno acima do limite conta 1 violação.
 
 **Uma preferência nunca torna a escala impossível.** As regras da CLT continuam rígidas; os
 critérios desta tabela só escolhem entre escalas legais.

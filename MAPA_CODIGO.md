@@ -91,6 +91,19 @@ Não entram no produto, mas sustentam o capítulo que diz que ele está correto.
 | `docs/diagnostico/preferencias.py` | Testes (b) controle, (c) caso pequeno com solver e (e) identidade nas cinco entradas da fase 2 (`--raiz` grava com o código de outra árvore). |
 | `docs/diagnostico/fechar_v142.sh` | Suíte da v1.4.2: a da v1.4.1 com a identidade contra `../tcc-nrp-v141` e os testes das preferências; `RETOMAR=1`, `PULAR_SOLVER=1`. |
 
+## Acréscimos de 21/10, v1.4.3 (a trava de dias seguidos é só a da CLT)
+
+`src/modelo.py` e `src/instancia_br.py` intocados (`DECISOES.md`, "2026-10-21 — Máximo de dias
+seguidos: a trava é só a da CLT; a regra do hospital é preferência").
+
+| Arquivo | O que mudou |
+|---|---|
+| `src/ferramenta.py` | `Entrada.max_dias_seguidos` sai; `montar` passa sempre `max_consecutivos=br.MAX_CONSECUTIVOS_GENERICO` (6). |
+| `src/app.py` | Sai a linha rígida do hospital (chave `max_dias`) e o parâmetro `max_dias` de `_entrada`; `TETO_LIMITE` dos dias seguidos = o legal (6). |
+| `src/prioridades.py` | Só texto: ajuda e resumo da preferência de dias seguidos ("a lei trava em 6; a regra do seu hospital vai aqui…"), dois comentários. |
+| `src/testes_ferramenta.py` | `max-dias` reescrito para a preferência (4 no Essencial: 96 = 96; 13 técnicos: "Falta 1; …14", texto da conta prévia); `pref-tela` com a parte de 8 h (sem o campo; teto 6; ajuda). |
+| `docs/diagnostico/fechar_v143.sh` | Suíte reduzida da v1.4.3: identidade contra `../tcc-nrp-v142`, regressão, entradas, piso e os testes da tela do campo e da preferência de dias; `RETOMAR=1`, `PULAR_SOLVER=1`. |
+
 ## Escopo anterior — referência, não produto
 
 Ficam em `docs/`. Produziram achados que vão ao texto como metodologia.

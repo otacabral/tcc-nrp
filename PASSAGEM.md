@@ -1,64 +1,55 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 21/10/2026 (manhã). Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 21/10/2026 (noite). Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- **Versão citável: v1.4.1** (suíte TUDO OK em `resultados/v141_2026-10-20/suite/resumo.txt`; tag
-  criada pelo Otávio). A tag v1.4.1 não se mexe.
-- **Sessão de 21/10 (manhã), Partes 0 a 6** (`resultados/relatorio_2026-10-21.md`):
-  - Parte 0, **fase 2 rodada na v1.4.1** (`resultados/fase2_2026-10-21/`, TUDO OK): A36 livre e
-    fixo → "Faltam 6; o menor quadro viável é 30" (24–29 pela conta; 30 = 10 enf. + 20 téc.; 13
-    turnos de enfermeiro em posto de técnico no livre, 14 no fixo); B36 → "Não há escala legal até
-    101" pela conta, sem solver; A11 (hipótese) admite 24, provado; B11 (hipótese) admite 89 sem
-    prova. Avaliador oficial sem violação de dura nas quatro escalas.
-  - **Achado:** no B11 o avaliador tinha parado sem memória e o "sem violação" foi lido de um
-    stack trace (o 43 era número de linha). Reconferido com `-Xmx6g`: 714, sem violação de dura.
-    Correção de defeito no `src/validar.py` (falha alto; `-Xmx6g`).
-  - Proposta da seção 15 do `NUMEROS_TCC.md` (casos A e B) no relatório, **não gravada**.
-  - Partes 1–5: máximo de dias seguidos e máximo de turnos **também como preferência** (famílias
-    próprias no modelo; rígidas iguais); tela com nível e limite; padrão "Não considerar".
-    Testado: controle OK; identidade nas 5 entradas da fase 2, 24/24; caso pequeno 96 = 96 (o
-    esperado de 56 estava errado — ver o ESPERADO, acréscimo a posteriori); pref-tela e opB-d OK.
-  - Worktree de leitura `D:\dev\tcc-nrp-v141` criado; `fechar_v142.sh` pronto e testado sem solver.
-- **Suíte da v1.4.2 parada em tela_opB-c** (21/10): o teste esperava 11 critérios no Desejável;
-  com as duas preferências são 13 (máximo 5.010 + 690 + 420 = 6.120; nenhuma outra diferença no
-  plano, conferido contra a v1.4.1). Teste atualizado com autorização do Otávio; registrado no
-  ESPERADO (segundo acréscimo a posteriori) e no DECISOES. Retomar com `RETOMAR=1`.
-- **A v1.4.2 ainda não existe**: depende da suíte, que é do Otávio.
-- `NUMEROS_TCC.md`: sem mudança. Congelamento dos números: **25/10**.
-- Nada enviado ao GitHub nesta sessão.
+- **Versão citável: v1.4.2** (suíte TUDO OK em `resultados/v142_2026-10-21/suite/resumo.txt`,
+  depois da parada em tela_opB-c e do RETOMAR; tag criada e enviada pelo Otávio). Máximo de dias
+  seguidos e máximo de turnos também como preferência. A tag v1.4.2 não se mexe.
+- **v1.4.3 implementada, suíte por rodar** (21/10, noite): a trava do máximo de dias seguidos
+  passa a ser **só a da CLT** (6; no 12×36, a regra das 36 h). O campo rígido do hospital saiu da
+  tela e da `Entrada`; a regra do hospital vai pela preferência de dias seguidos (no Essencial,
+  pesa acima de tudo o que é Importante ou Desejável). `modelo.py` e `instancia_br.py` intocados.
+  - Já conferido nesta sessão: identidade 243/243 (sem linhas e com linhas) e 24/24 da fase 2
+    contra a v1.4.2 (teste do script sem solver); regressão 56, 58, 197, 219; testes de entrada;
+    piso (segurança, controle, casos); max-dias reescrito (preferência 4 no Essencial com 14:
+    escala sai, 96 = 96; 13 técnicos: "Falta 1; o menor quadro viável é 14", texto da conta
+    prévia); pref-tela e opB-d OK.
+  - Esperado: `resultados/trava_clt_2026-10-21/ESPERADO.md`. Worktree `D:\dev\tcc-nrp-v142` criado.
+- `NUMEROS_TCC.md`: sem mudança (nenhum número usou o campo do hospital ≠ 6). Seção 15 (casos A
+  e B) ainda **proposta, não gravada**. Congelamento dos números: **25/10**.
+- Não enviado ao GitHub: os commits da v1.4.3 (vão no push depois da tag).
 
 ## Próxima tarefa
 
-**1. Otávio: suíte de fechamento da v1.4.2.** Com o Claude Code e o Chrome fechados. No
-PowerShell, da raiz, um comando por linha:
+**1. Otávio: suíte reduzida da v1.4.3** (~1 h nesta máquina, i5-10210U, HiGHS 1.15.1; o opB-e
+sozinho leva ~35 min). Com o Claude Code e o Chrome fechados. No PowerShell, um comando por linha:
 
     cd D:\dev\tcc-nrp
     .\.venv\Scripts\Activate.ps1
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v142.sh
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v143.sh
 
 Termina com "TUDO OK" ou "PARADO: ..." na última linha de
-`resultados/v142_<data>/suite/resumo.txt` (a data do dia em que começou). Se for interrompida
-(memória, queda), **retomar** — pula o que já passou e continua na mesma pasta —, um por linha:
+`resultados/v143_<data>/suite/resumo.txt`. Se for interrompida (memória, queda), **retomar** —
+pula o que já passou e continua na mesma pasta —, um por linha:
 
     cd D:\dev\tcc-nrp
     .\.venv\Scripts\Activate.ps1
     $env:RETOMAR = "1"
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v142.sh
+    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v143.sh
     Remove-Item Env:RETOMAR
 
-Diferenças esperadas e já admitidas: as da v1.4.1 (P05, 14 pela conta) e as do
-`resultados/preferencias_2026-10-21/ESPERADO.md` (opB-d, opB-tela e opB-e atualizados; pref-tela
-novo; caso pequeno com 96). Qualquer outra diferença é falha.
+Diferenças admitidas: só as do `resultados/trava_clt_2026-10-21/ESPERADO.md` (max-dias
+reescrito; pref-tela com a parte de 8 h). Qualquer outra diferença é falha.
 
-**2. Se TUDO OK: tag v1.4.2 e envio** (um por linha; a tag marca a versão, o push manda os
+**2. Só com TUDO OK: tag v1.4.3 e envio** (um por linha; a tag marca a versão, o push manda os
 commits e a tag ao GitHub):
 
-    git tag -a v1.4.2 -m "v1.4.2: maximo de dias seguidos e maximo de turnos tambem como preferencia"
+    git tag -a v1.4.3 -m "v1.4.3: trava de dias seguidos so a da CLT; regra do hospital e preferencia"
     git push origin main
-    git push origin v1.4.2
+    git push origin v1.4.3
 
 Se "PARADO": não criar a tag; abrir o log indicado e trazer ao Claude Code.
 
@@ -70,8 +61,9 @@ Congelamento dos números: **25/10**.
 
 ## Worktrees de leitura (D:\dev)
 
-`D:\dev\tcc-nrp-v123`, `D:\dev\tcc-nrp-v130`, `D:\dev\tcc-nrp-v140` e `D:\dev\tcc-nrp-v141` são
-**worktrees de leitura** (cópias da v1.2.3, v1.3.0, v1.4.0 e v1.4.1 para as conferências de
+`D:\dev\tcc-nrp-v123`, `D:\dev\tcc-nrp-v130`, `D:\dev\tcc-nrp-v140`, `D:\dev\tcc-nrp-v141` e
+`D:\dev\tcc-nrp-v142` são **worktrees de leitura** (cópias da v1.2.3, v1.3.0, v1.4.0, v1.4.1 e
+v1.4.2 para as conferências de
 identidade). Ninguém trabalha nelas;
 o Claude Code só abre `D:\dev\tcc-nrp`. As da v1.2.3 e v1.3.0 têm cópias de scripts de identidade
 deixadas pelas suítes antigas, por isso o `--force`. Para removê-las **depois da entrega**, da
@@ -82,8 +74,20 @@ raiz, um por linha:
     git worktree remove --force ..\tcc-nrp-v130
     git worktree remove --force ..\tcc-nrp-v140
     git worktree remove --force ..\tcc-nrp-v141
+    git worktree remove --force ..\tcc-nrp-v142
 
 (apaga só as pastas; as tags e o histórico ficam).
+
+## Decisões de 21/10 (noite, v1.4.3)
+
+- DECISOES "2026-10-21 — Máximo de dias seguidos: a trava é só a da CLT; a regra do hospital é
+  preferência" (mudança de ENTRADA e TELA; revisa "2026-10-19 — Máximo de dias seguidos como regra
+  do hospital (rígida)", que ganhou marca de revisão). Regra da ferramenta: duro = lei ou físico;
+  tudo o que o hospital quer é critério classificável.
+- Suíte reduzida justificada no mesmo registro (a identidade prova que o problema enviado ao
+  solver não mudou); não rodam as a2 nem os testes de tela que não tocam no campo.
+- Teste max-dias reescrito com registro antes: o caso "hospital = 4 → Falta 1; o menor quadro
+  viável é 15" deixa de existir.
 
 ## Decisões de 21/10 (manhã)
 
@@ -183,6 +187,13 @@ raiz, um por linha:
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **21/10 (noite, v1.4.3, se a suíte fechar):** (1) a ferramenta não tem mais "máximo de dias
+  seguidos do hospital" rígido: a trava é só a da lei (6); a regra do hospital é preferência. O
+  texto não pode citar o caso "hospital = 4 → Falta 1; 15" como comportamento da ferramenta. (2)
+  Frase de princípio admitida: "duro = lei ou físico (cobertura, CLT, horas do contrato, férias);
+  tudo o que o hospital quer é critério classificável". (3) O `GUIA_DE_USO.md` foi atualizado: tirou
+  o campo do hospital e explica as duas preferências (resolve o item (3) de 21/10, manhã).
 
 - **21/10:** (1) números da fase 2 só depois de o Otávio aprovar a seção 15 proposta
   (`resultados/relatorio_2026-10-21.md`); A11 e B11 só como "HIPÓTESE DE SENSIBILIDADE — NÃO REGRA

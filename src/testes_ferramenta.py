@@ -1245,6 +1245,8 @@ def caso_opb_tela() -> None:
             "importancia padrao")
     # 3o bloco, Parte 4 (20/10): o maximo de dias seguidos virou campo do hospital, oculto no
     # 12x36 (o modelo padrao da tela); ficam duas linhas cinza
+    # v1.4.3 (21/10): o campo do hospital saiu; a conferencia abaixo continua valendo (nao existe
+    # em modelo nenhum)
     confere(sum(1 for x in textos(at, "markdown") if pr.GARANTIDO in x) == 0,
             "nenhuma linha 'ja garantido pela CLT' (Parte 5: regras da CLT no back end)")
     confere(not any(x.key == "max_dias" for x in at.number_input),
@@ -1399,51 +1401,59 @@ def caso_ped_nunca_trava() -> None:
 
 
 def caso_max_dias() -> None:
-    """Parte 4: maximo de dias seguidos do hospital (esperado em
-    resultados/max_dias_2026-10-20/ESPERADO.md)."""
+    """v1.4.3 (21/10): a trava de dias seguidos e so a da lei; a regra do hospital e preferencia
+    (esperado em resultados/trava_clt_2026-10-21/ESPERADO.md, (d); o caso "hospital = 4 -> Falta
+    1; o menor quadro viavel e 15", de resultados/max_dias_2026-10-20/, deixou de existir)."""
     import dataclasses
-    import experimento_a as ea
-    from datetime import timedelta
     base = fe.Entrada(turnos=[("M", 7, 13), ("T", 13, 19)], grau="intermediario",
                       n_enfermeiros=0, n_tecnicos=14,
                       demanda_turno={"M": (0, 6), "T": (0, 6)}, inicio=br.primeira_segunda())
-    print("max-dias. 7 (acima da lei) e erro de entrada")
+    print("max-dias. a Entrada nao tem mais o campo do hospital")
     try:
-        fe.montar(dataclasses.replace(base, max_dias_seguidos=7))
-        confere(False, "7 deveria ser recusado")
-    except ValueError as x:
-        confere("art. 67" in str(x), f"erro: {x}")
-    for L, piso, frase in ((6, 14, ADMITE_OK),
-                           (4, 15, "Falta 1; o menor quadro viável é 15. Escala gerada.")):
-        print(f"max-dias. maximo {L}")
-        e = dataclasses.replace(base, max_dias_seguidos=L)
-        inst = fe.montar(e)
-        confere(fe.limite_efetivo(inst) == L and fe.piso(inst) == piso,
-                f"limite efetivo {fe.limite_efetivo(inst)}, piso {fe.piso(inst)}")
-        r = fe.verificar(e)
-        confere(r.frase() == frase, f"veredito: {r.frase()}")
-        if not r.escala:
-            continue
+        dataclasses.replace(base, max_dias_seguidos=4)
+        confere(False, "max_dias_seguidos deveria nao existir")
+    except TypeError:
+        confere(True, "max_dias_seguidos recusado (campo removido)")
+    inst = fe.montar(base)
+    confere(fe.limite_efetivo(inst) == 6 and fe.piso(inst) == 14,
+            f"limite efetivo {fe.limite_efetivo(inst)}, piso {fe.piso(inst)}")
+    print("max-dias. preferencia 4 no Essencial, 14 tecnicos")
+    p = dict(fe.prioridades_padrao(), max_dias_seguidos=(fe.ESSENCIAL, 4))
+    r = fe.verificar(dataclasses.replace(base, prioridades=p))
+    confere(r.frase() == ADMITE_OK and r.menor_viavel == 14 and r.provado,
+            f"veredito: {r.frase()}, menor viavel {r.menor_viavel}, provado {r.provado}")
+    if r.escala:
         dias = list(r.inst.dias)
         trab = {(n, d) for d, n, _ in r.escala}
-        maior = 0
+        maior = excesso = 0
         for n in r.inst.profissionais:
             seq = 0
-            for d in dias:
-                seq = seq + 1 if (n, d) in trab else 0
-                maior = max(maior, seq)
-        confere(maior <= L and r.conformidade["max_consec"] <= L and r.conformidade["ok"],
+            for d in dias + [None]:
+                if d is not None and (n, d) in trab:
+                    seq += 1
+                    continue
+                maior, excesso, seq = max(maior, seq), excesso + max(0, seq - 4), 0
+        confere(maior <= 6 and r.conformidade["max_consec"] <= 6 and r.conformidade["ok"],
                 f"maior sequencia na escala {maior}, no relogio {r.conformidade['max_consec']}")
-        if L == 4:
-            confere(r.tentativas[0][:2] == (14, "piso"), f"14 pela conta: {r.tentativas}")
-            confere(r.diagnostico is not None and r.diagnostico[0] == fe.COMBINACAO,
-                    f"diagnostico: {r.diagnostico and r.diagnostico[0]}")
-            # 20/10, ajuste de texto: quem recusou o 14 foi a conta previa, nao o solver
-            confere("A conta prévia do menor quadro provou" in r.diagnostico[1]
-                    and "O solver provou" not in r.diagnostico[1],
-                    f"texto do diagnostico: {r.diagnostico[1]}")
-            confere("O solver provou que" in fe.diagnosticar(fe.montar(e))[1],
-                    "sem o parametro, o texto de antes")
+        por = _por_criterio(r)
+        no_resultado = por.get("Máximo de dias seguidos (preferência)", (None,))[0]
+        confere(excesso == no_resultado == 96,
+                f"dias acima de 4: script {excesso}, resultado por criterio {no_resultado}, "
+                "esperado 96")
+    print("max-dias. 13 tecnicos, a lei: o piso recusa pela conta")
+    e = dataclasses.replace(base, n_tecnicos=13)
+    r = fe.verificar(e)
+    confere(r.frase() == "Falta 1; o menor quadro viável é 14. Escala gerada.",
+            f"veredito: {r.frase()}")
+    confere(r.tentativas[0][:2] == (13, "piso"), f"13 pela conta: {r.tentativas}")
+    confere(r.diagnostico is not None and r.diagnostico[0] == fe.COMBINACAO,
+            f"diagnostico: {r.diagnostico and r.diagnostico[0]}")
+    if r.diagnostico:
+        confere("A conta prévia do menor quadro provou" in r.diagnostico[1]
+                and "O solver provou" not in r.diagnostico[1],
+                f"texto do diagnostico: {r.diagnostico[1]}")
+    confere("O solver provou que" in fe.diagnosticar(fe.montar(e))[1],
+            "sem o parametro, o texto de antes")
 
 
 def caso_tela_limpa() -> None:
@@ -1583,6 +1593,21 @@ def caso_pref_tela() -> None:
             "dias seguidos (preferencia) oculto no 12x36")
     confere(any(x.label == "Noturno e carga — 0 de 4 considerados" for x in at.expander),
             "grupo 4 com 4 criterios")
+    # v1.4.3 (21/10; resultados/trava_clt_2026-10-21/ESPERADO.md, (d) item 6): no 8 h, sem o
+    # campo rigido do hospital; a preferencia de dias seguidos com o teto legal 6 e a ajuda nova
+    print("pref-tela. 8 h: sem o campo do hospital; dias seguidos (preferencia) ate 6")
+    at.selectbox(key="modelo").set_value(M8)
+    at.run()
+    confere(not any(x.key == "max_dias" for x in at.number_input),
+            "campo rigido do hospital nao existe")
+    campo = next((x for x in at.number_input if x.key == "lim_max_dias_seguidos"), None)
+    confere(campo is not None and campo.max == br.MAX_CONSECUTIVOS_GENERICO == 6,
+            f"maximo do campo de dias seguidos: {campo and campo.max}")
+    rotulo = next((x for x in at.markdown if x.value == "Máximo de dias seguidos (preferência)"),
+                  None)
+    ajuda = rotulo.proto.help if rotulo is not None else ""
+    confere("lei trava em 6" in ajuda and "regra do seu hospital vai aqui" in ajuda
+            and "no Essencial ela pesa acima de tudo" in ajuda, f"ajuda da linha: {ajuda!r}")
 
 
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,

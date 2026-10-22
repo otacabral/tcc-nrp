@@ -215,7 +215,7 @@ def _regras() -> list:
     return linhas
 
 
-def _entrada(prioridades, regras=True, max_dias=True) -> fe.Entrada:
+def _entrada(prioridades, regras=True) -> fe.Entrada:
     return fe.Entrada(
         turnos=turnos, grau=grau, n_enfermeiros=int(n_enf), n_tecnicos=int(n_tec),
         demanda_turno=demanda_turno, demanda_fds=demanda_fds, demanda_data=demanda_data,
@@ -224,8 +224,6 @@ def _entrada(prioridades, regras=True, max_dias=True) -> fe.Entrada:
         indisponibilidades=[(str(l["Profissional"]), _data(l["De"]), _data(l["Até"]))
                             for _, l in tabela_indisp.dropna().iterrows()],
         regras=_regras() if regras else [],
-        max_dias_seguidos=(int(st.session_state.get("max_dias", br.MAX_CONSECUTIVOS_GENERICO))
-                           if max_dias else br.MAX_CONSECUTIVOS_GENERICO),
         pacientes=pacientes or None, cargas=cargas, prioridades=prioridades)
 
 
@@ -260,8 +258,8 @@ _pares = set(br.pares_proibidos_por_horario(
 _so_doze = bool(turnos) and all((s, 1, t) in _pares for s, _, _ in turnos for t, _, _ in turnos)
 # fora da tela: o pedido de folga no dia (a importancia e da linha da tabela de pedidos), as
 # linhas que a CLT ja garante e, no 12x36, as que nunca podem ser atendidas ou que a lei impede
-# 21/10: o maximo de dias seguidos e preferencia (com o campo rigido do hospital na mesma linha
-# do grupo); no 12x36 os dois ficam ocultos
+# 21/10: o maximo de dias seguidos e preferencia, oculta no 12x36; a trava e so a da lei
+# (DECISOES.md, "2026-10-21 — Maximo de dias seguidos: a trava e so a da CLT")
 OCULTOS_12X36 = ("fds_completo", "mesmo_turno_fds", "min_dias_seguidos", "max_dias_seguidos")
 NA_TELA = [c for c in pr.CRITERIOS
            if c.id != "pedido_folga" and not c.clt
@@ -271,14 +269,13 @@ _visiveis = {c.id for c in NA_TELA}
 escolha = {k: (st.session_state[f"prio_{k}"], st.session_state.get(f"lim_{k}"))
            if k in _visiveis or k == "pedido_folga" else PADRAO[k] for k in PADRAO}
 try:
-    _teto = fe.montar(_entrada(escolha, regras=False, max_dias=False)) \
+    _teto = fe.montar(_entrada(escolha, regras=False)) \
         .contratos["0"].max_num_assignments.valor
 except (ValueError, TypeError, KeyError, ZeroDivisionError):
     _teto = None                                          # entrada ainda incompleta
 # limites presos pela lei
-_max_dias = int(st.session_state.get("max_dias", br.MAX_CONSECUTIVOS_GENERICO))
-TETO_LIMITE = {"min_dias_seguidos": _max_dias, "min_turnos": _teto,
-               "max_dias_seguidos": _max_dias, "max_turnos": _teto}
+TETO_LIMITE = {"min_dias_seguidos": br.MAX_CONSECUTIVOS_GENERICO, "min_turnos": _teto,
+               "max_dias_seguidos": br.MAX_CONSECUTIVOS_GENERICO, "max_turnos": _teto}
 for g, nome_grupo in enumerate(pr.GRUPOS):
     crits = [c for c in NA_TELA if c.grupo == g]
     campos = [c for c in crits if not c.clt]
@@ -315,19 +312,6 @@ for g, nome_grupo in enumerate(pr.GRUPOS):
         for coluna, rotulo in zip(cab, ("Critério", "Importância", "Limite")):
             coluna.caption(rotulo)
         for c in crits:
-            if c.id == "max_dias_seguidos":
-                # regra do hospital, rigida (DECISOES.md, 2026-10-19), e logo abaixo a
-                # preferencia (21/10); no 12x36 nenhuma das duas aparece (OCULTOS_12X36)
-                col = st.columns([3, 2, 1])
-                col[0].markdown("Máximo de dias seguidos de trabalho",
-                                help="Regra do hospital, rígida. A ferramenta usa o menor entre "
-                                     "o valor informado e o da lei (6, art. 67). Um valor menor "
-                                     "pode exigir mais gente: a tela diz quantos faltam.")
-                col[1].write("Obrigatória")
-                col[2].number_input("dias", min_value=1, max_value=br.MAX_CONSECUTIVOS_GENERICO,
-                                    value=br.MAX_CONSECUTIVOS_GENERICO, step=1, key="max_dias",
-                                    label_visibility="collapsed")
-                st.caption("Regra do hospital; a lei permite no máximo 6.")
             col = st.columns([3, 2, 1])
             ajuda = c.ajuda
             if c.sem_conferencia:
