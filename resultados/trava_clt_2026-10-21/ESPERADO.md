@@ -100,3 +100,66 @@ na preferência de dias (ped-*, tela-limpa, descanso-param, opB-padroes, opB-b, 
 
 Esperado de todos os passos não reescritos: o mesmo resultado da suíte da v1.4.2
 (`resultados/v142_2026-10-21/suite/resumo.txt`).
+
+---
+
+## Acréscimo de 21/10 (noite), registrado ANTES de implementar: textos para o gestor, tema claro, barra pelo relógio
+
+Pedido do Otávio (v1.4.3, continuação). A suíte da v1.4.3 foi cancelada antes do fim; roda uma
+só, depois destas mudanças e da revisão dele.
+
+**Escopo:** `src/app.py`; só os TEXTOS de `src/prioridades.py` e de `src/ferramenta.py`; novo
+`.streamlit/config.toml`; os testes que conferem esses textos. `modelo.py`, `instancia_br.py` e
+as contas de `ferramenta.py` e `prioridades.py` não mudam. Os alertas do COFEN são escritos em
+`instancia_br.alertas_cofen` (fora do escopo): o texto deles fica; a tela ganha, logo abaixo, uma
+legenda que explica QP e IST.
+
+**Esperado:**
+1. **Identidade inalterada:** 243/243 (sem linhas e com linhas) e 24/24 (fase 2) contra a v1.4.2.
+   Texto não entra no LP nem no XML.
+2. **Exemplos do "?" conferidos contra a contagem da ferramenta** (`prioridades.resultado`, que
+   usa o `avaliacao.py`), em escalas montadas à mão, ANTES de registrar: todos os 14 conferem
+   (máximo de dias 5 → 6 seguidos = 1, e 4 → 5 = 1; mínimo de dias 3, só a terça = 2; máximo de
+   folgas 4, seis = 2; mínimo de folgas 3, isolada = 2; máximo de fins de semana 3, quatro = 1;
+   mínimo 2, isolado = 1; 4 semanas, máximo 2, três = 1; fim de semana completo, só o sábado = 1;
+   mesmo turno, diurno no sábado e noturno no domingo = 2; máximo de turnos 12, 14 = 2; mínimo
+   10, 8 = 2; noturno na sexta com fim de semana livre = 1; noturno na segunda e trabalho na
+   quarta = 1; enfermeiro em posto de técnico, um turno = 1). Achado: os dois exemplos de fim de
+   semana valem para "sábado e domingo"; com "sexta a domingo" dão 2 e 4. O texto ganha
+   "(fim de semana de sábado e domingo)" — corrige o exemplo, não a conta.
+   Ajuste de número pedido ("se o limite padrão for outro"): máximo de dias seguidos, padrão 5 →
+   exemplo "com máximo 5, trabalhar 6 dias seguidos gera 1 violação". Máximo de turnos: o padrão
+   é 18, mas no 12×36 o campo cai para o teto legal 14; o exemplo 12 → 14 vale nos dois e fica.
+3. **Testes da tela que conferem textos que mudam** (atualizados com registro, como no precedente
+   do 1-2):
+   - `8` (8b: aviso "pode haver uma melhor (gap" → frase nova do gap; linha da escala vigente;
+     ausência de "Equilíbrio de carga: não rodou" → da frase nova; 8c: "o solver não achou
+     escala nem provou que ela não existe" → frase nova);
+   - `12` (linha da escala vigente: "Escala desta tela: a da etapa 2…" → frase nova);
+   - `opB-tela` (coluna "Nível" da tabela "Resultado por critério" → "Importância");
+   - `pref-tela` (a ajuda da preferência de dias passa ao texto da Parte 4);
+   - `max-dias` (diagnóstico: "A conta prévia do menor quadro provou" e "O solver provou que" →
+     frases novas).
+   Continuam valendo sem mudança, e os textos novos são escritos para isso: `4` (alerta começa
+   com "Alerta COFEN (não impede a escala)"), `9c-tela` (nenhum texto com "provad"), `tela-limpa`
+   (cabeçalhos, rótulos do COFEN e dos graus; nenhum "Situação", "já garantido", "(fds)"), `9`
+   ("Diferença máxima de carga entre colegas"), `15` ("Súmula 110"), `16` ("não cumpre a
+   conferência de descanso (art. 67)"), `7.3` e `7.4` (trechos dos diagnósticos), opB-tela
+   ("Todos os critérios considerados estão no nível Importante").
+4. **Frases que o TCC cita** ("Faltam N; o menor quadro viável é X", "O quadro informado admite
+   escala legal", "Não há escala legal até N"): não mudam. Muda o complemento de "Escala gerada;
+   pode haver uma melhor (gap X: …)", porque "gap" é proibido; a lista antiga → nova vai para a
+   Redação no `resultados/textos_tela_2026-10-21.md`.
+5. **Barra pelo relógio** (Parte 7). Plano: o cálculo (`fe.verificar`) roda numa thread de
+   trabalho, sem chamar o Streamlit; a thread do script (a de sempre) espera por ela em passos de
+   até 1 s e atualiza a barra (fração = decorrido ÷ tempo máximo, no máximo 99%) e o texto da
+   parte em que está; a escala provisória é desenhada pela thread do script. Assim nenhuma
+   chamada do Streamlit sai da thread do script e não é preciso `add_script_run_ctx`. Ao terminar
+   antes do limite, a barra completa até 100% em ~3 s. Se a thread de trabalho não funcionar nos
+   testes da tela ou no navegador, plano B (a barra anda pelas partes, pula para 100% no fim).
+   **A barra não muda veredito nem número:** o mesmo caso rodado direto e pela thread dá o mesmo
+   resultado; o tempo do cálculo com e sem a barra é medido e relatado (o ~3 s de fechamento da
+   barra é depois do cálculo).
+6. **Testes da tela que passam pela barra:** todos os que clicam em "Gerar escala". Os que rodam
+   na suíte reduzida: `8`, `12`, `opB-tela`, mais os que conferem textos (lista do item 3) e o `4`
+   (alerta COFEN) e o `9c-tela` (nenhum "provad").
