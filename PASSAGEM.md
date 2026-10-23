@@ -39,8 +39,9 @@ fim de cada sessão (dele ou do chat).
   `requirements.txt`); partida aceita (log do SCIP, `completesol`, com controle); regra de 09/10
   e fusão W = M + 1 valem (o gap do SCIP é mais exigente); o modelo recebido pelos dois é o mesmo
   (com controle), depois de desfazer, no script, a reescrita do objetivo que a interface do
-  Pyomo faz para o SCIP. Fumaça interrompida por falta de memória (1,8 GB livres). **Nada da
-  ferramenta mudou.** Depois da fumaça, a Fase 1 (bateria) só com o ok do Otávio.
+  Pyomo faz para o SCIP. Fumaça OK (sprint01: os dois provam 56; avaliador oficial 56), depois
+  de corrigir no script um travamento da captura do log do SCIP pelo Pyomo (pipe + GIL). **Nada
+  da ferramenta mudou.** A Fase 1 (bateria) só com o ok do Otávio.
 
 ## Próxima tarefa
 

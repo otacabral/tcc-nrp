@@ -69,6 +69,38 @@ def _highs_partida(h, m):
     return h.solve(m)
 
 
+import contextlib  # noqa: E402
+import os  # noqa: E402
+import tempfile  # noqa: E402
+
+import pyomo.contrib.solver.solvers.scip.scip_direct as _scip_direct  # noqa: E402
+
+_ultimo_log = {"texto": ""}
+
+
+@contextlib.contextmanager
+def _log_em_arquivo(*_a, **_k):
+    """Troca o `capture_output(capture_fd=True)` do `ScipDirect`. Achado de 22/10: o Pyomo le o
+    log do SCIP por um pipe, numa thread do Python, enquanto o `optimize()` do PySCIPOpt segura o
+    GIL. Com log grande (o sprint01 sem partida), o pipe enche, o SCIP espera a thread, a thread
+    espera o GIL: o processo para com CPU zero (duas rodadas travadas). Aqui o descritor 1 vai
+    para um arquivo temporario, que nao enche; o log e lido depois."""
+    sys.stdout.flush()
+    with tempfile.TemporaryFile() as f:
+        salvo = os.dup(1)
+        os.dup2(f.fileno(), 1)
+        try:
+            yield
+        finally:
+            os.dup2(salvo, 1)
+            os.close(salvo)
+            f.seek(0)
+            _ultimo_log["texto"] = f.read().decode("utf-8", errors="replace")
+
+
+_scip_direct.capture_output = _log_em_arquivo
+
+
 class ScipObjetivoDireto(ScipDirect):
     """O `ScipDirect` do Pyomo 6.10.1 reescreve o objetivo como epigrafo: cria uma variavel z,
     a restricao z >= objetivo e minimiza z. E equivalente, mas NAO e o modelo que o HiGHS recebe
@@ -98,7 +130,7 @@ def scip(m, tempo, partida=False):
     provou = r.termination_condition.name == "convergenceCriteriaSatisfied"
     d = _medidas("SCIP", f"{r.termination_condition.name} ({s._solver_model.getStatus()})",
                  ub, lb, seg, provou)
-    d["log"] = r.solver_log
+    d["log"] = _ultimo_log["texto"]
     return d, s
 
 

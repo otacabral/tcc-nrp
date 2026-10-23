@@ -12,7 +12,7 @@ Máquina: i5-10210U, 11,8 GB, Windows 11, Python 3.11.9, Pyomo 6.10.1, HiGHS 1.1
 | 3. Tolerâncias | **passa**, com duas ressalvas de interface |
 | 4. Identidade do modelo | **passa** (com controle), depois de corrigir a reescrita do objetivo |
 | 5. Inventário | feito (abaixo) |
-| 6. Fumaça | **incompleta**: a rodada foi interrompida pelo Claude Code por falta de memória na máquina (1,8 GB livres de 11,8, com kernels do Jupyter abertos); não repetida |
+| 6. Fumaça | **passa** (sprint01: os dois provam 56; avaliador oficial 56 nas duas escalas), depois de corrigir um travamento da captura do log do SCIP (abaixo) |
 
 ## 1. Instalação
 `pip install pyscipopt==6.3.0` no `.venv`. O wheel para Windows traz o SCIP 10.0 dentro; nenhum
@@ -106,14 +106,27 @@ propriedades ~3 a 4 h; curvas da P1 ~3 a 4 h; P17 e `medium_late05` ~2 a 3 h; de
 as figuras.
 
 ## 6. Fumaça e estimativa da bateria
-- **Feito:** no teste de warmstart, o HiGHS provou 56 no sprint01, e o SCIP, partindo dessa
-  escala, provou 56 em ~2 s.
-- **Não feito:** a rodada `--fumaca` (sprint01 nos dois, sem partida, até 600 s cada, e a
-  escala do SCIP no avaliador oficial) foi interrompida pelo Claude Code por falta de memória
-  na máquina (1,8 GB livres de 11,8, com dois kernels do Jupyter abertos no VS Code). Não foi
-  repetida. Não se sabe ainda quanto o SCIP leva no sprint01 **sem** partida, nem quanta
-  memória ele usa. Rodar de novo com a memória livre:
-  `python docs\diagnostico\comparar_solvers.py --fumaca`
+**Achado (travamento, não lentidão):** as duas primeiras tentativas pararam com o processo em CPU
+zero — a primeira foi depois encerrada pelo Claude Code por falta de memória na máquina, a
+segunda ficou 37 min parada numa resolução de limite 120 s. Causa: o `ScipDirect` do Pyomo lê o
+log do SCIP por um pipe, numa thread do Python, enquanto o `optimize()` do PySCIPOpt segura o
+GIL. Com log maior que o buffer do pipe (o sprint01 sem partida dá 5,8 KB), o SCIP espera a
+thread esvaziar o pipe e a thread espera o GIL. No script, a captura passou a um arquivo
+temporário, que não enche (`_log_em_arquivo`); a ferramenta não usa o SCIP e não é afetada.
+**Numa troca, a ferramenta precisaria da mesma correção** (ou de log desligado), senão trava em
+qualquer caso de log grande.
+
+Depois da correção (i5-10210U, 1 thread, gap 0,01%, limite 600 s; tempo medido numa
+configuração só, não é resultado):
+
+| Solver | Variáveis | Restrições | Tempo (s) | Melhor escala | Melhor limite | Gap | Ótimo provado | Avaliador oficial |
+|---|---:|---:|---:|---:|---:|---:|---|---:|
+| HiGHS 1.15.1 | 2.978 | 2.450 | 3,2 | 56 | 56 | 0,00% | sim | 56 |
+| SCIP 10.0 | 2.978 | 2.450 | 2,2 | 56 | 56 | 0,00% | sim | 56 |
+
+Sem partida, o SCIP provou 56 em ~2 s (19 soluções no caminho). Warmstart refeito com o
+controle: tudo OK. Memória do processo no sprint01: ~200 MB (observada durante a rodada; o pico
+nos casos maiores não foi medido).
 - **Estimativa da bateria (pior caso, pelo limite):** casos × 2 solvers × 600 s. Com os casos a
   propor depois do ok (os 4 ótimos de Santos, `medium_late05`, A36 com quadro 30 e B — ~7
   casos): **até ~2,5 h**, mais o avaliador oficial. A memória por caso do SCIP não foi medida:
