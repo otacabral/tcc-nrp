@@ -8,7 +8,9 @@ fim de cada sessão (dele ou do chat).
 - **Versão citável: v1.4.4** (v1.4.3 + P20). Tag `v1.4.4` em `e91aa05`, criada pelo Otávio; `main` e a
   tag enviadas ao GitHub. Suíte de fechamento de 23/10: **TUDO OK, 37 de 37 passos com código 0**,
   inclusive `tela_p20` (`resultados/v143_2026-10-23/suite/resumo.txt`). Nenhuma mudança em `src/`
-  desde `ed621a2`. Não existe tag v1.4.3: a v1.4.4 contém tudo. A tag v1.4.4 não se mexe.
+  desde `ed621a2`. A tag v1.4.3 existe, em `704cb6a` (a versão de 22/10, antes da P20); a v1.4.4
+  a sucede. *(Corrigido em 23/10: a versão anterior desta linha dizia, errado, que não existia tag
+  v1.4.3.)* A tag v1.4.4 não se mexe.
   - O que a v1.4.4 traz em relação à v1.4.2:
     - trava do máximo de dias seguidos só a da CLT; a regra do hospital é preferência (21/10);
     - textos da tela para o gestor, tema escuro, barra pelo relógio (21/10);
@@ -35,6 +37,14 @@ fim de cada sessão (dele ou do chat).
   - Congelamento dos números: **25/10**.
 
 ## Próxima tarefa
+
+**0. Orientação: caso A pela prática — PARADO na recontagem (23/10).** A recontagem independente
+da escala real (`docs/diagnostico/caso_a_pratica.py --recontar`;
+`resultados/caso_a_pratica_2026-10-23/recontagem.md`) põe o **máx. fins de semana seguidos (3)** do
+outro lado da ficha, por causa da leitura da borda do mês. Três leituras no arquivo; só uma (C,
+construída depois de ver a diferença) reproduz a ficha. Também: "mesmo turno no fim de semana" é
+violado pela semântica do avaliador (classificação igual). Nada registrado no DECISOES, nenhum
+esperado nem rodada até a Orientação decidir.
 
 **1. Otávio: aprovar (ou corrigir) a seção 15 proposta para o `NUMEROS_TCC.md`** (casos A e B), no
 `resultados/relatorio_2026-10-21.md`. Só depois os números vão ao texto.
