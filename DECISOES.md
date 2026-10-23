@@ -2961,6 +2961,52 @@ testes rápidos da opção B.
 
 ---
 
+## 2026-10-23 — Sensibilidade ao tempo, HiGHS × SCIP, 3.600 s por caso
+
+**Status: vigente — ANÁLISE DE SENSIBILIDADE, registrada ANTES de rodar.** Pedido do Otávio, 23/10.
+**Não reabre a regra de troca de 22/10** ("2026-10-22 — Bateria HiGHS × SCIP"): qualquer resultado
+entra no texto; se o SCIP passar à frente, isso vai ao Otávio e ao orientador, sem troca
+automática. Nada da ferramenta muda.
+
+**Código da ferramenta:** commit `ed621a2` (já com a P20); cada caso registra o commit e se havia
+mudança em `src/` (não deve haver).
+
+**Casos (3):** `medium_late05` (INRC), `A36_livre_30` (10 + 20) e `B11_livre_89` (15 + 74,
+HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA) — os três em que a bateria de 22/10 não
+empatou. **4º caso: não cabe.** Os três usam o tempo inteiro nos dois solvers (na ferramenta, a
+etapa 2 nunca provou e vai até o limite), então são 3 × 2 × 3.600 s = 6 h; um 4º somaria 2 h, e
+com montagem, aperto e avaliador passaria das 8 h pedidas.
+
+**Regras (as de 22/10):** o mesmo modelo; **3.600 s por caso** (o orçamento padrão da ferramenta;
+nos casos da ferramenta, divididos pela regra da v1.4.3: com a classificação padrão, um bloco e a
+etapa 2, 30 + 30 min no início, com a proteção da primeira escala); gap 0,01%; 1 thread; a mesma
+máquina e a mesma sessão; caso a caso, os dois solvers um depois do outro; o HiGHS roda de novo;
+toda escala passa pelo avaliador oficial. Limite duro por processo: 7.200 s (passou, o processo é
+encerrado e registrado). Memória: ≥ 3 GB livres antes de cada caso (espera até 15 min; senão para
+e registra); a memória livre é registrada. A máquina não suspende (o driver pede ao Windows).
+Saída: `resultados/solvers_2026-10-23_3600/`. Comando: `python docs\diagnostico\
+bateria_solvers.py --todos --limite 3600 --saida resultados\solvers_2026-10-23_3600 --casos
+medium_late05 A36_livre_30 B11_livre_89`.
+
+**Ajuste ao registro (Otávio, 23/10):** em todo caso **sem prova**, o "valor" de cada solver é o da
+**escala** — recalculado fora do modelo e conferido no avaliador oficial —, não o do modelo (ver
+"2026-10-22 — Anomalia do medium_late05"). A tabela registra os dois; **a vitória conta pela
+escala**. No INRC, o da escala é o `avaliacao.py` (que bate com o avaliador oficial); na
+ferramenta, cada bloco da etapa 1 recontado na escala entregue (`prioridades.resultado`,
+coeficiente × violações).
+
+**Critérios com folga (para a P20 não interferir):** os dois casos da ferramenta usam a
+classificação padrão — só pedido de folga (Essencial; o A36_livre e o B11 não têm pedidos) e
+enfermeiro em posto de técnico (Importante), que caem direto na atribuição, sem folgas; cada caso
+registra `familias_com_folga_consideradas` (esperado: vazio). O aperto da P20 roda (é o
+comportamento da ferramenta em nível sem prova), mas sem folgas não muda o valor; fica registrado.
+O `medium_late05` é INRC: tem restrições com folga, mas é resolvido direto (`modelo.construir`), fora
+do mecanismo de níveis — a P20 não age nele, e o valor da escala vem do `avaliacao.py`.
+
+**Afirmação fraca:** uma máquina, uma configuração, uma rodada por caso.
+
+---
+
 ## Modelo de entrada
 
 ```

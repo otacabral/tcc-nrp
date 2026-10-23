@@ -39,6 +39,7 @@ INRC = {"sprint01": ("instancias/sprint/sprint/sprint01.xml", 56),
 FERRAMENTA = {"A36_livre_30": ("A36_livre", 6), "A36_fixo_30": ("A36_fixo", 6),
               "B11_livre_89": ("B11_livre", 0)}
 CASOS = list(INRC) + list(FERRAMENTA)
+ESCOLHIDOS = list(CASOS)     # --casos (23/10: a rodada de sensibilidade usa 3 casos)
 HIPOTESE = "HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA"
 
 
@@ -117,8 +118,12 @@ def resolvedor(solver: str, registro: list):
 # --- um caso x um solver (num processo proprio) ----------------------------------------------------
 
 def rodar(caso: str, solver: str) -> dict:
+    commit = subprocess.run(["git", "-C", str(RAIZ), "rev-parse", "--short", "HEAD"],
+                            capture_output=True, text=True).stdout.strip()
+    sujo = bool(subprocess.run(["git", "-C", str(RAIZ), "status", "--porcelain", "src"],
+                               capture_output=True, text=True).stdout.strip())
     out = {"caso": caso, "solver": solver, "memoria_livre_mb_antes": memoria_livre_mb(),
-           "limite_caso_s": LIMITE}
+           "limite_caso_s": LIMITE, "commit_ferramenta": commit, "src_com_mudancas": sujo}
     registro: list = []
     t0 = time.time()
     if caso in INRC:
@@ -135,6 +140,11 @@ def rodar(caso: str, solver: str) -> dict:
         out.update(referencia=ref, provado_etapa1=provado,
                    valores_etapa1=[registro[0].get("ub")] if registro else [])
         if escala:
+            # 23/10 (sensibilidade): o valor da ESCALA, fora do modelo (avaliacao.py), alem do
+            # do modelo; sem prova, a vitoria conta por ele
+            from avaliacao import penalidade
+            out["valores_modelo_etapa1"] = out["valores_etapa1"]
+            out["valores_escala_etapa1"] = [penalidade(inst, escala)]
             sol = SAIDA / f"{caso}_{solver}_escala.xml"
             escrever_xml(inst, escala, sol)
             valor, _, _ = validar.avaliar(RAIZ / arq, sol)
@@ -161,20 +171,46 @@ def rodar(caso: str, solver: str) -> dict:
         finally:
             br.DESCANSO_POR_TURNO.clear()
         # as chamadas na ordem: cada parte da etapa 1 (1, ou 2 com a protecao) e a etapa 2
+        # chamadas por parte: 1, +1 com a protecao da primeira escala, +1 com o aperto da P20
+        # (nivel sem prova; 23/10); "nao rodou" = nenhuma
         i = 0
         for parte in info.get("partes", []):
-            for _ in range(2 if "protecao" in parte else (0 if "veredito" in parte
-                                                           and parte["veredito"].startswith("não rodou") else 1)):
+            if str(parte.get("veredito", "")).startswith("não rodou"):
+                continue
+            rotulo = "etapa 1: " + " + ".join(parte.get("niveis") or ["(sem nível)"])
+            n = 1 + ("protecao" in parte)
+            for k in range(n + ("aperto" in parte)):
                 if i < len(registro):
-                    registro[i]["nivel"] = "etapa 1: " + " + ".join(parte.get("niveis") or ["(sem nível)"])
+                    registro[i]["nivel"] = rotulo + (" — aperto P20 (x fixo)" if k == n else "")
                     i += 1
         for r in registro[i:]:
             r["nivel"] = "etapa 2 (equilíbrio)"
         out.update(caminho=info.get("caminho"), provado_etapa1=bool(info.get("provado")),
                    valores_etapa1=[p.get("valor") for p in info.get("partes", [])],
+                   valores_modelo_etapa1=[p.get("valor_modelo", p.get("valor"))
+                                          for p in info.get("partes", [])],
                    partes=info.get("partes"), etapa2=info.get("etapa2"),
                    provado_etapa2=info.get("provado_etapa2"))
         if escala:
+            # 23/10 (sensibilidade): o valor de cada bloco da etapa 1 na ESCALA FINAL, fora do
+            # modelo (prioridades.resultado, coeficiente x violacoes)
+            import prioridades as pr
+            pn = pr.normalizar(e.prioridades)
+            coefs = {tuple(n): c for n, c, _ in info.get("blocos", [])}
+            nome_id = {c.nome: c.id for c in pr.CRITERIOS}
+            linhas = pr.resultado(inst_p, escala, pn, br.HABILIDADE_ENF)
+            valores = []
+            for parte in info.get("partes", []):
+                niveis = parte.get("niveis") or []
+                coef = coefs.get(tuple(niveis), {})
+                valores.append(sum(coef.get(pr.REGRAS + nv if nome == pr.NOME_REGRAS
+                                            else nome_id[nome], 0) * v
+                                   for nv, nome, v, _ in linhas if nv in niveis))
+            out["valores_escala_etapa1"] = valores
+            out["criterios"] = linhas
+            out["familias_com_folga_consideradas"] = sorted(
+                c.id for c in pr.considerados(pn)
+                if c.familia not in (pr.PEDIDO, pr.CUSTO) and not c.clt)
             out["avaliador"] = fase2.avaliador(inst_p, escala, SAIDA, f"{caso}_{solver}")
     out.update(veredito=v, tempo_total_s=round(time.time() - t0, 1), chamadas=registro,
                pico_memoria_mb=pico_mb())
@@ -200,8 +236,10 @@ def vencedor(h: dict, s: dict) -> str:
         return "HiGHS" if ph else "SCIP"
     if ph and ps:
         return "empate"
-    vh = [math.inf if x is None else x for x in h.get("valores_etapa1") or [None]]
-    vs = [math.inf if x is None else x for x in s.get("valores_etapa1") or [None]]
+    # 23/10: sem prova, conta o valor da ESCALA (fora do modelo) quando registrado
+    chave = "valores_escala_etapa1"
+    vh = [math.inf if x is None else x for x in h.get(chave, h.get("valores_etapa1")) or [None]]
+    vs = [math.inf if x is None else x for x in s.get(chave, s.get("valores_etapa1")) or [None]]
     vh = [round(x, 6) for x in vh]
     vs = [round(x, 6) for x in vs]
     if vh == vs:
@@ -213,13 +251,13 @@ def relatorio() -> str:
     linhas = ["# Bateria HiGHS × SCIP — resultado", "",
               "Regras: `DECISOES.md`, \"2026-10-22 — Bateria HiGHS × SCIP\" (registrada antes de "
               "rodar). i5-10210U, 11,8 GB, Windows 11; HiGHS 1.15.1 (appsi) e SCIP 10.0 "
-              "(PySCIPOpt 6.3.0); 600 s por caso, gap 0,01%, 1 thread. **Tempos: uma máquina e "
+              f"(PySCIPOpt 6.3.0); {LIMITE} s por caso, gap 0,01%, 1 thread. **Tempos: uma máquina e "
               "uma configuração só — comportamento observado, não resultado geral.**", "",
               "| Caso | Solver | Nível | Variáveis | Restrições | Limite (s) | Tempo (s) | "
               "Melhor escala | Melhor limite | Gap | Ótimo provado | Avaliador oficial |",
               "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---:|"]
     res = {}
-    for caso in CASOS:
+    for caso in ESCOLHIDOS:
         for solver in SOLVERS:
             arq = SAIDA / f"{caso}_{solver}.json"
             if not arq.exists():
@@ -246,11 +284,14 @@ def relatorio() -> str:
                     f"{'sim' if c['provado'] else 'não'} | "
                     f"{_num(av) if k == len(d['chamadas']) - 1 else ''} |")
     linhas += ["", "## Vitórias por caso (regra registrada)", "",
-               "| Caso | HiGHS: provou / valor(es) da etapa 1 | SCIP: provou / valor(es) | Vence |",
+               "Valores da etapa 1 por bloco: **modelo** (o objetivo no ponto do solver) e "
+               "**escala** (recalculado fora do modelo, na escala entregue; sem prova, a vitória "
+               "conta por ele).", "",
+               "| Caso | HiGHS: provou / modelo / escala | SCIP: provou / modelo / escala | Vence |",
                "|---|---|---|---|"]
     placar = {"HiGHS": 0, "SCIP": 0, "empate": 0}
     perde_prova = []
-    for caso in CASOS:
+    for caso in ESCOLHIDOS:
         h, s = res.get((caso, "HiGHS")), res.get((caso, "SCIP"))
         if not h or not s:
             linhas.append(f"| {caso} | | | (incompleto) |")
@@ -259,11 +300,14 @@ def relatorio() -> str:
         placar[v] += 1
         if h.get("provado_etapa1") and not s.get("provado_etapa1"):
             perde_prova.append(caso)
-        linhas.append(f"| {caso} | {'sim' if h.get('provado_etapa1') else 'não'} / "
-                      f"{[_num(x, 2) for x in h.get('valores_etapa1') or []]} | "
-                      f"{'sim' if s.get('provado_etapa1') else 'não'} / "
-                      f"{[_num(x, 2) for x in s.get('valores_etapa1') or []]} | {v} |")
-    completo = all((c, sv) in res for c in CASOS for sv in SOLVERS)
+        def _lado(d):
+            modelo_ = d.get("valores_modelo_etapa1", d.get("valores_etapa1")) or []
+            escala_ = d.get("valores_escala_etapa1")
+            return (f"{'sim' if d.get('provado_etapa1') else 'não'} / "
+                    f"{[_num(x, 2) for x in modelo_]} / "
+                    f"{[_num(x, 2) for x in escala_] if escala_ is not None else 'sem escala'}")
+        linhas.append(f"| {caso} | {_lado(h)} | {_lado(s)} | {v} |")
+    completo = all((c, sv) in res for c in ESCOLHIDOS for sv in SOLVERS)
     i = placar["SCIP"] > placar["HiGHS"]
     ii = not perde_prova
     linhas += ["", f"Placar: SCIP {placar['SCIP']} × HiGHS {placar['HiGHS']}, "
@@ -286,26 +330,47 @@ def relatorio() -> str:
     return texto
 
 
+def _sem_suspensao() -> None:
+    """23/10: a maquina nao suspende enquanto o driver roda (ES_CONTINUOUS | ES_SYSTEM_REQUIRED)."""
+    ctypes.windll.kernel32.SetThreadExecutionState(0x80000000 | 0x00000001)
+
+
+def _espera_memoria(minutos: int = 15) -> int:
+    """Espera ate ter MEMORIA_MIN_MB livres (no maximo `minutos`); devolve a memoria livre."""
+    fim = time.time() + 60 * minutos
+    livre = memoria_livre_mb()
+    while livre < MEMORIA_MIN_MB and time.time() < fim:
+        time.sleep(30)
+        livre = memoria_livre_mb()
+    return livre
+
+
 def todos() -> int:
     SAIDA.mkdir(parents=True, exist_ok=True)
+    _sem_suspensao()
     livre = memoria_livre_mb()
     print(f"memoria livre {livre} MB", flush=True)
     if livre < MEMORIA_MIN_MB:
         print(f"PARADO: menos de {MEMORIA_MIN_MB} MB livres; feche programas e rode de novo")
         return 1
-    for caso in CASOS:
+    for caso in ESCOLHIDOS:
         for solver in SOLVERS:
             arq = SAIDA / f"{caso}_{solver}.json"
             if arq.exists():
                 print(f"{caso} {solver}: ja feito", flush=True)
                 continue
-            livre = memoria_livre_mb()
+            livre = _espera_memoria()
+            if livre < MEMORIA_MIN_MB:
+                print(f"PARADO: {caso} {solver}: so {livre} MB livres depois de 15 min",
+                      flush=True)
+                return 1
             print(f"{caso} {solver}: comecando (memoria livre {livre} MB)", flush=True)
             t0 = time.time()
             log = SAIDA / f"{caso}_{solver}.log"
             with open(log, "w", encoding="utf-8") as f:
                 try:
-                    p = subprocess.run([sys.executable, __file__, "--caso", caso, "--solver", solver],
+                    p = subprocess.run([sys.executable, __file__, "--caso", caso, "--solver", solver,
+                                        "--limite", str(LIMITE), "--saida", str(SAIDA)],
                                        stdout=f, stderr=subprocess.STDOUT, timeout=DURO)
                     cod = p.returncode
                 except subprocess.TimeoutExpired:
@@ -352,7 +417,14 @@ if __name__ == "__main__":
     ap.add_argument("--montar", action="store_true")
     ap.add_argument("--caso", choices=CASOS)
     ap.add_argument("--solver", choices=SOLVERS)
+    ap.add_argument("--limite", type=int, default=LIMITE, help="s por caso (padrao 600)")
+    ap.add_argument("--saida", type=Path, default=SAIDA)
+    ap.add_argument("--casos", nargs="+", choices=CASOS)
     a = ap.parse_args()
+    LIMITE, SAIDA = a.limite, a.saida
+    DURO = max(DURO, 2 * LIMITE)          # processo encerrado se passar disto (registrado)
+    if a.casos:
+        ESCOLHIDOS[:] = a.casos
     if a.caso and a.solver:
         SAIDA.mkdir(parents=True, exist_ok=True)
         d = rodar(a.caso, a.solver)
