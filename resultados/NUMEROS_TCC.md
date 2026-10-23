@@ -303,3 +303,97 @@ esse problema — identidade da Fase 0, `resultados/solvers_2026-10-22/relatorio
 - A tabela compara **tamanho**, não eficiência: as janelas de Santos servem para fortalecer o
   limite dual por planos de corte; este trabalho não persegue desempenho algorítmico
   (`DECISOES.md`, "2026-09-08 — Formulação: atribuição, não janelas").
+
+## PENDENTE DE APROVAÇÃO — Comportamento computacional: HiGHS × SCIP (22 e 23/10/2026)
+
+**Não aprovada: não citar até o Otávio aprovar.** Pedido do orientador (reunião de 22/10): tabela
+de comportamento computacional por caso, com o SCIP (gratuito) ao lado do HiGHS. Regras registradas
+antes de rodar: `DECISOES.md`, "2026-10-22 — Bateria HiGHS × SCIP" e "2026-10-23 — Sensibilidade
+ao tempo, HiGHS × SCIP, 3.600 s por caso". Relatórios: `resultados/solvers_2026-10-22/
+relatorio_fase1.md` e `resultados/solvers_2026-10-23_3600/relatorio_parcial.md`; dados por caso
+(JSON, log, escala e saída do avaliador oficial) nas mesmas pastas.
+
+**Condições, iguais para os dois:** o mesmo modelo (identidade do problema recebido pelos dois
+provada na Fase 0, com controle; no SCIP o objetivo vai como custo, sem o epígrafo da interface do
+Pyomo); gap de parada 0,01%; 1 thread; caso a caso, os dois na mesma sessão; o HiGHS rodou de novo;
+toda escala no avaliador oficial. Nos casos da ferramenta, o tempo do caso é dividido pela regra da
+v1.4.3 (classificação padrão: um bloco da etapa 1 e a etapa 2, metade e metade, com a proteção da
+primeira escala). **Afirmação fraca:** i5-10210U, 11,8 GB, Windows 11; HiGHS 1.15.1 (appsi) e SCIP
+10.0 (PySCIPOpt 6.3.0); uma rodada por caso. **Tempo é comportamento observado nesta máquina e nesta
+configuração, nunca resultado geral sobre os solvers.**
+
+**Colunas:** "Escala" = o valor da etapa 1 na escala entregue, recalculado fora do modelo (INRC:
+avaliador oficial e `avaliacao.py`; ferramenta: coeficiente × violações pelo `prioridades.resultado`)
+— sem prova, a vitória conta por ele. "Limite" = melhor limite inferior do solver. "Gap" = (escala −
+limite) ÷ escala. "Tempo" = tempo da etapa 1 (no INRC, a resolução única). "Avaliador" = penalidade
+INRC da escala final no avaliador oficial (na ferramenta, não é o objetivo da ferramenta).
+
+### Rodada de 22/10 — 600 s por caso (completa)
+
+| Caso | Solver | Variáveis | Restrições | Escala | Limite | Gap | Tempo (s) | Ótimo provado | Avaliador |
+|---|---|---:|---:|---:|---:|---:|---:|---|---:|
+| sprint01 | HiGHS | 2.978 | 2.450 | 56 | 56 | 0% | 2,6 | sim | 56 |
+| sprint01 | SCIP | 2.978 | 2.450 | 56 | 56 | 0% | 2,8 | sim | 56 |
+| sprint02 | HiGHS | 2.992 | 2.464 | 58 | 58 | 0% | 2,8 | sim | 58 |
+| sprint02 | SCIP | 2.992 | 2.464 | 58 | 58 | 0% | 6,5 | sim | 58 |
+| long01 | HiGHS | 15.029 | 10.857 | 197 | 197 | 0% | 18,2 | sim | 197 |
+| long01 | SCIP | 15.029 | 10.857 | 197 | 197 | 0% | 33,5 | sim | 197 |
+| long02 | HiGHS | 15.120 | 10.948 | 219 | 219 | 0% | 48,4 | sim | 219 |
+| long02 | SCIP | 15.120 | 10.948 | 219 | 219 | 0% | 24,5 | sim | 219 |
+| medium_late05 | HiGHS | 15.320 | 13.060 | **2.199** (modelo: 7.435) | 59 | 97,3% | 602,5 | não | 2.199 |
+| medium_late05 | SCIP | 15.320 | 13.060 | 318 | 53,7 | 83,1% | 600,4 | não | 318 |
+| A36_livre, 30 (10 + 20) | HiGHS | 5.320 | 20.264 | 13 | 13 | 0% | 13,4 | sim | 306 |
+| A36_livre, 30 | SCIP | 5.320 | 20.264 | 15 | 13 | 13,3% | 299,5 | não | 312 |
+| A36_fixo, 30 — Essencial | HiGHS | 5.320 | 20.264 | 0 | 0 | 0% | 5,5 | sim | |
+| A36_fixo, 30 — Importante | HiGHS | 5.320 | 20.265 | 14 | 14 | 0% | 1,7 | sim | 222 |
+| A36_fixo, 30 — Essencial | SCIP | 5.320 | 20.264 | 0 | 0 | 0% | 32,7 | sim | |
+| A36_fixo, 30 — Importante | SCIP | 5.320 | 20.265 | 14 | 14 | 0% | 5,8 | sim | 234 |
+| B11_livre, 89 (15 + 74)* | HiGHS | 14.140 | 32.268 | 57 | 0 | 100% | 301,2 | não | 1.002 |
+| B11_livre, 89* | SCIP | 14.140 | 32.268 | sem escala | 0 | — | 300,6 + 299,1 | não | — |
+
+\* HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA (`DESCANSO_POR_TURNO = {"D12": 11}`). No
+SCIP, a fatia da etapa 1 (300 s) acabou sem escala, a proteção da primeira escala rodou de novo com
+o resto (299 s) e também não achou.
+
+Etapa 2 (equilíbrio, registrada, não decide): não provou em nenhum caso da ferramenta, nos dois
+solvers. Vitórias (regra de 22/10: vence quem prova onde o outro não prova; se nenhum prova, a
+escala de menor valor; sem escala perde para quem tem; gap menor sozinho não conta): **SCIP 1
+(medium_late05) × HiGHS 2 (A36_livre, B11), 5 empates. Regra de troca: fica o HiGHS** (o SCIP não
+vence mais do que perde e perde a prova do A36_livre).
+
+**Anomalia do medium_late05 com HiGHS (esclarecida):** o HiGHS parou no limite marcando **7.435** no
+modelo, mas a escala vale **2.199** no avaliador oficial e no `avaliacao.py`. Nenhum dos dois está
+errado: 7.435 é o objetivo do modelo no ponto entregue (o appsi, o HiGHS e o recálculo nas variáveis
+carregadas dão o mesmo), e 2.199 é a penalidade da escala. Integralidade perfeita (desvio 0,0).
+Causa: folgas e auxiliares soltas num ponto sem prova (cada folga só tem limite inferior, α ≥
+excesso). Por família, modelo × escala: mínimo de turnos 666 × 0; máximo de folgas seguidas 777 × 7;
+mesmo turno no fim de semana 2.480 × 440. Diagnóstico: `DECISOES.md`, "2026-10-22 — Anomalia do
+medium_late05 (HiGHS)"; `resultados/solvers_2026-10-22/anomalia/`. Consequência na ferramenta:
+P20 (`DECISOES.md`, "2026-10-23 — P20 aprovada").
+
+### Rodada de 23/10 — 3.600 s por caso (sensibilidade ao tempo; PARCIAL)
+
+Código da ferramenta: `ed621a2` (com a P20; `src/` idêntico no commit usado, `e8a87f2`). **Análise
+de sensibilidade: não reabre a regra de troca de 22/10.** Os casos da ferramenta não usam critérios
+com folga (registrado por caso), então a P20 não alterou valor nenhum; no INRC ela não age.
+
+| Caso | Solver | Variáveis | Restrições | Escala | Limite | Gap | Tempo (s) | Ótimo provado | Avaliador |
+|---|---|---:|---:|---:|---:|---:|---:|---|---:|
+| medium_late05 | HiGHS | 15.320 | 13.060 | 224 | 64 | 71,4% | 3.602,7 | não | 224 |
+| medium_late05 | SCIP | 15.320 | 13.060 | 186 | 58,5 | 68,6% | 3.600,4 | não | 186 |
+| A36_livre, 30 | HiGHS | 5.320 | 20.264 | 13 | 13 | 0% | 14,4 | sim | 324 |
+| A36_livre, 30 | SCIP | 5.320 | 20.264 | 13 | 13 | 0% | 620,0 | sim | 330 |
+| B11_livre, 89* | HiGHS | 14.140 | 32.268 | **não concluído** | | | | | |
+| B11_livre, 89* | SCIP | 14.140 | 32.268 | **não rodou** | | | | | |
+
+**B11 não concluído — motivo:** o Claude Code encerrou a rodada por falta de memória na máquina. O
+B11 com HiGHS terminou os 3.600 s do solver (a escala foi gravada) e foi encerrado na conferência
+pelo avaliador oficial (Java, até 6 GB, `-Xmx6g`), sem gravar o resultado; a escala desse ponto fica
+fora da tabela. O B11 com SCIP não começou. Faltam ~2 h, a rodar fora do Claude Code.
+
+Valor do modelo = valor da escala nas quatro rodadas concluídas. Etapa 2: não provou; no A36_livre
+com SCIP, não achou escala em 2.979 s (fica a escala da etapa 1). Por caso: **medium_late05, SCIP**
+(186 < 224, nenhum prova); **A36_livre, empate** (com 3.600 s o SCIP também prova a etapa 1, que em
+600 s não provava). Com 3.600 s, o medium_late05 com HiGHS chega aos 224 da seção 1 (06/10).
+Leitura provisória, sem o B11: o SCIP não perde nada para o HiGHS nos dois casos concluídos e ganha
+um — vai ao Otávio e ao orientador; não há troca automática.
