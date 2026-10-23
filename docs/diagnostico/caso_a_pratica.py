@@ -275,8 +275,245 @@ def recontar() -> int:
     return 1 if mudou else 0
 
 
+# --- as rodadas (DECISOES.md, "2026-10-23 — Caso A"; esperado em ESPERADO.md) ---------------------
+
+HIPOTESE = "HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA"
+RODADAS = {"A11_fixo_24_ordem1": ("A11_fixo", 0, 1),
+           "A36_fixo_30_ordem1": ("A36_fixo", 6, 1),
+           "A36_fixo_30_ordem2": ("A36_fixo", 6, 2)}
+ENF_UNIDADE = ("Enf 6118", "Enf 4798", "Enf 4969", "Enf 5993")
+MEMORIA_MIN_MB = 3 * 1024
+
+
+def ordem(k: int) -> dict:
+    """Ordem 1 (a pratica) e ordem 2. As linhas "So este turno" ficam na tabela de pedidos (a
+    importancia e da linha): Essencial na ordem 1, Desejavel na ordem 2 (`entrada`)."""
+    import ferramenta as fe
+    p = fe.prioridades_padrao()           # pedido Essencial, enf. em posto de tecnico Importante
+    p.update(max_folgas_seguidas=(fe.IMPORTANTE, 4), min_fds_seguidos=(fe.IMPORTANTE, 2),
+             min_turnos=(fe.IMPORTANTE, 10), enf_posto_tec=(fe.IMPORTANTE, None))
+    if k == 2:
+        p["max_fds_seguidos"] = (fe.ESSENCIAL, 3)
+    return p
+
+
+def entrada(nome: str):
+    """A Entrada da rodada: o A36_fixo informado com 30 (a composicao da regra `equipe`, a mesma
+    que a busca montou em 21/10), as linhas "So este turno" com a importancia da ordem."""
+    import dataclasses
+    import fase2
+    import ferramenta as fe
+    import prioridades as pr
+    base, acrescimo, k = RODADAS[nome]
+    e = fase2.entrada(base)
+    if acrescimo:
+        n_enf, n_tec, ne, nt = fe.equipe(e, acrescimo, fe._horas_enfermeiro(e))
+        e = dataclasses.replace(e, n_enfermeiros=n_enf, n_tecnicos=n_tec, nomes_enfermeiros=ne,
+                                nomes_tecnicos=nt)
+    nivel = pr.ESSENCIAL if k == 1 else pr.DESEJAVEL
+    regras = [dataclasses.replace(l, importancia=nivel) for l in e.regras]
+    return dataclasses.replace(e, regras=regras, prioridades=ordem(k))
+
+
+def _familias(arq: Path) -> dict:
+    """Soma por familia do que o avaliador oficial cobrou (`validacao_restricoes.ler_avaliador`)."""
+    from validacao_restricoes import ler_avaliador
+    _, custos, total, erros = ler_avaliador(arq)
+    soma = Counter()
+    for (_, fam), c in custos.items():
+        soma[fam] += c
+    return {"por_familia": dict(soma), "total": total, "erros": erros}
+
+
+def rodada(nome: str) -> dict:
+    import time as relogio
+    import fase2
+    import ferramenta as fe
+    import instancia_br as br
+    import prioridades as pr
+    from bateria_solvers import memoria_livre_mb, pico_mb
+    base, _, k = RODADAS[nome]
+    param = fase2.RODADAS[base][2]
+    e = entrada(nome)
+    out = {"rodada": nome, "ordem": k, "aviso": HIPOTESE if param else None,
+           "descanso_por_turno": param, "memoria_livre_mb_antes": memoria_livre_mb(),
+           "quadro_informado": e.quadro, "enfermeiros": e.n_enfermeiros, "tecnicos": e.n_tecnicos,
+           "commit": __import__("subprocess").run(["git", "-C", str(RAIZ), "rev-parse", "--short",
+                                                   "HEAD"], capture_output=True,
+                                                  text=True).stdout.strip()}
+    if param:
+        print(HIPOTESE, flush=True)
+    fe.TEMPO = fe.TEMPO_ETAPA2 = None                 # o produto: so o orcamento de 60 min
+    t0 = relogio.time()
+    br.DESCANSO_POR_TURNO.clear()
+    br.DESCANSO_POR_TURNO.update(param)
+    try:
+        r = fe.verificar(e, progresso=lambda f, m: print(f"[{relogio.time() - t0:7.1f} s] {m}",
+                                                         flush=True))
+        base_conf = fe.montar(e)                       # para a conferencia, na mesma regra
+    finally:
+        br.DESCANSO_POR_TURNO.clear()
+    ind = r.indicadores or {}
+    out.update(frase=r.frase(), veredito=r.veredito, menor_viavel=r.menor_viavel,
+               tentativas=r.tentativas, provado_etapa1=bool(ind.get("provado")),
+               partes=ind.get("partes"), blocos=ind.get("blocos"), etapa2=ind.get("etapa2"),
+               provado_etapa2=ind.get("provado_etapa2"), caminho=ind.get("caminho"),
+               frases_por_nivel=[f for _, f in fe.frases_por_nivel(r)] if r.escala else [],
+               criterios=r.criterios, descumpridos=r.descumpridos,
+               descanso_ok=(r.conformidade or {}).get("ok"),
+               tempo_total_s=round(relogio.time() - t0, 1))
+    if r.escala:
+        SAIDA.mkdir(parents=True, exist_ok=True)
+        # (1) restricao dura: a instancia da rodada (pesos da ordem) no avaliador oficial
+        out["avaliador"] = fase2.avaliador(r.inst, r.escala, SAIDA, nome)
+        # (2) por criterio: os criterios da ordem ligados, peso 1 (no A36, os da ordem 2, que
+        # incluem o max. fins de semana seguidos — assim as duas escalas sao avaliadas nele)
+        pn = pr.normalizar(ordem(2 if base == "A36_fixo" else k))
+        coef = {**{c.id: 1 for c in pr.CRITERIOS}, **{pr.REGRAS + x: 1 for x in pr.CONSIDERADOS}}
+        unidade, _ = pr.aplicar(base_conf, pn, coef, br.HABILIDADE_ENF)
+        conf = fase2.avaliador(unidade, r.escala, SAIDA, nome + "_conferencia")
+        out["conferencia"] = {**conf, **_familias(SAIDA / f"{nome}_conferencia_escala_avaliador.txt")}
+        out["contagem_peso1"] = [list(x) for x in pr.resultado(unidade, r.escala, pn,
+                                                                br.HABILIDADE_ENF)]
+    out["pico_memoria_mb"] = pico_mb()
+    return out
+
+
+def rodar() -> int:
+    import json
+    import subprocess
+    from bateria_solvers import _espera_memoria, _sem_suspensao
+    SAIDA.mkdir(parents=True, exist_ok=True)
+    _sem_suspensao()
+    for nome in RODADAS:
+        arq = SAIDA / f"{nome}.json"
+        if arq.exists():
+            print(f"{nome}: ja feito", flush=True)
+            continue
+        livre = _espera_memoria()
+        if livre < MEMORIA_MIN_MB:
+            print(f"PARADO: {nome}: so {livre} MB livres depois de 15 min", flush=True)
+            return 1
+        print(f"{nome}: comecando (memoria livre {livre} MB)", flush=True)
+        with open(SAIDA / f"{nome}.log", "w", encoding="utf-8") as f:
+            cod = subprocess.run([sys.executable, __file__, "--rodada", nome], stdout=f,
+                                 stderr=subprocess.STDOUT).returncode
+        print(f"{nome}: codigo {cod}", flush=True)
+        if cod != 0 or not arq.exists():
+            print(f"PARADO: {nome} falhou (ver {nome}.log)", flush=True)
+            return 1
+    relatorio()
+    print("TUDO OK", flush=True)
+    return 0
+
+
+def relatorio() -> int:
+    import json
+    import prioridades as pr
+    from validacao_restricoes import NOME_PT  # noqa: F401  (rotulos do avaliador, se precisar)
+    fam_de = {c.nome: c.familia for c in pr.CRITERIOS}
+    fam_de[pr.NOME_REGRAS] = "shift_off_requests"
+    res = {n: json.loads((SAIDA / f"{n}.json").read_text(encoding="utf-8"))
+           for n in RODADAS if (SAIDA / f"{n}.json").exists()}
+    L = ["# Caso A pela prática e sensibilidade (2 ordens) — resultado", "",
+         "Decisão: `DECISOES.md`, \"2026-10-23 — Caso A\"; esperado: `ESPERADO.md` (registrado "
+         "antes). v1.4.4; orçamento padrão de 60 min por rodada. **Tempo: limite operacional desta "
+         "máquina (i5-10210U, 11,8 GB) com o HiGHS 1.15.1 via appsi; uma rodada por ordem.** "
+         "Números só vão ao `NUMEROS_TCC.md` depois da aprovação do Otávio.", ""]
+    for n, d in res.items():
+        L += [f"## {n}" + (f" — {d['aviso']}" if d.get("aviso") else ""), "",
+              f"- Quadro informado: {d['quadro_informado']} ({d['enfermeiros']} enf. + "
+              f"{d['tecnicos']} téc.); memória livre antes: {d['memoria_livre_mb_antes']} MB; "
+              f"pico: {d.get('pico_memoria_mb')} MB; commit `{d.get('commit')}`.",
+              f"- **Frase da tela:** \"{d['frase']}\"",
+              f"- Tempo total: {d['tempo_total_s']} s (limite operacional).",
+              f"- Avaliador oficial (restrição dura): "
+              f"{(d.get('avaliador') or {}).get('hard_constraints_violation', '—')}; descanso no "
+              f"relógio: {'ok' if d.get('descanso_ok') else d.get('descanso_ok')}.", "",
+              "Valor de cada bloco: **no fim do bloco** (escala da etapa 1; modelo e escala, com a "
+              "P20) e **na escala final** (depois da etapa 2, recontado fora do modelo com os "
+              "coeficientes do bloco). A etapa 2 não pode passar do valor do fim do bloco; pode "
+              "ficar abaixo.", "",
+              "| Nível (bloco) | Limite (s) | Tempo (s) | Prova | Fim do bloco: modelo | Fim do "
+              "bloco: escala | Escala final |", "|---|---:|---:|---|---:|---:|---:|"]
+        nome_id = {c.nome: c.id for c in pr.CRITERIOS}
+        coefs = {tuple(b[0]): b[1] for b in d.get("blocos") or []}
+        for p in d.get("partes") or []:
+            niveis = p.get("niveis") or []
+            coef = coefs.get(tuple(niveis), {})
+            final = sum(coef.get(pr.REGRAS + nv if nc == pr.NOME_REGRAS else nome_id.get(nc), 0) * v
+                        for nv, nc, v, _ in d.get("criterios") or [] if nv in niveis)
+            L.append(f"| {' + '.join(niveis)} | {p.get('limite')} | "
+                     f"{round(p.get('tempo', 0), 1)} | {'sim' if p.get('provado') else 'não'} | "
+                     f"{p.get('valor_modelo', p.get('valor'))} | {p.get('valor')} | "
+                     f"{final if coef else '—'} |")
+        L.append(f"| etapa 2 (equilíbrio) | | | {'sim' if d.get('provado_etapa2') else 'não'} "
+                 f"({d.get('etapa2')}) | | | |")
+        L += ["", *[f"- {f}" for f in d.get("frases_por_nivel") or []], "",
+              "| Critério | Importância | Violações (ferramenta) | Avaliador oficial (peso 1) |",
+              "|---|---|---:|---:|"]
+        conf = (d.get("conferencia") or {}).get("por_familia") or {}
+        for nivel, nome_c, v, _ in d.get("criterios") or []:
+            fam = fam_de.get(nome_c)
+            externo = ("sem conferência externa" if fam in (pr.CUSTO, None) or
+                       fam not in conf and v else str(conf.get(fam, 0)))
+            L.append(f"| {nome_c} | {nivel} | {v} | {externo} |")
+        if "max_consecutive_working_weekends" in conf or n.startswith("A36"):
+            L.append(f"| Máx. fins de semana seguidos (3), avaliado com o critério ligado | — | "
+                     f"{next((x[2] for x in d.get('contagem_peso1') or [] if x[1].startswith('Máximo de fins de semana')), '—')} | "
+                     f"{conf.get('max_consecutive_working_weekends', 0)} |")
+        desc = d.get("descumpridos") or []
+        L += ["", "Descumprimentos de \"Só este turno\" por profissional (nível, quantos): "
+              + ("; ".join(f"{p} ({nv}, {q})" for nv, p, q in desc) if desc else "nenhum") + "."]
+        enf = [(nv, p, q) for nv, p, q in desc if p.startswith("Enf ")]
+        L.append("Enfermeiros: da unidade (" + ", ".join(ENF_UNIDADE) + ") — "
+                 + (", ".join(f"{p} {q}" for _, p, q in enf if p in ENF_UNIDADE) or "nenhum")
+                 + "; acrescidos — "
+                 + (", ".join(f"{p} {q}" for _, p, q in enf if p not in ENF_UNIDADE) or "nenhum")
+                 + ".")
+        L.append("")
+    (SAIDA / "resultado.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    print("\n".join(L))
+    return 0
+
+
+def montar_sem_solver() -> int:
+    """Teste do script: monta as tres entradas e a instancia de conferencia, sem solver."""
+    import fase2
+    import ferramenta as fe
+    import instancia_br as br
+    import prioridades as pr
+    for nome, (base, _, k) in RODADAS.items():
+        e = entrada(nome)
+        br.DESCANSO_POR_TURNO.clear()
+        br.DESCANSO_POR_TURNO.update(fase2.RODADAS[base][2])
+        try:                                   # o piso le o descanso: dentro do parametro
+            inst = fe.montar(e)
+            blocos = pr.planejar(inst, pr.normalizar(e.prioridades), br.HABILIDADE_ENF)
+            piso = fe.piso(inst)
+        finally:
+            br.DESCANSO_POR_TURNO.clear()
+        print(f"{nome}: quadro {e.quadro} ({e.n_enfermeiros} + {e.n_tecnicos}); linhas "
+              f"{len(e.regras)} ({sorted({l.importancia for l in e.regras})}); blocos "
+              f"{[(b.niveis, b.maximo) for b in blocos]}; piso {piso}", flush=True)
+    return 0
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--recontar", action="store_true")
+    ap.add_argument("--rodar", action="store_true")
+    ap.add_argument("--rodada", choices=list(RODADAS))
+    ap.add_argument("--relatorio", action="store_true")
+    ap.add_argument("--montar", action="store_true")
     a = ap.parse_args()
-    sys.exit(recontar() if a.recontar else 2)
+    if a.rodada:
+        import json
+        d = rodada(a.rodada)
+        SAIDA.mkdir(parents=True, exist_ok=True)
+        (SAIDA / f"{a.rodada}.json").write_text(json.dumps(d, ensure_ascii=False, indent=1,
+                                                           default=str), encoding="utf-8")
+        print(f"{a.rodada}: {d['frase']} | {d['tempo_total_s']} s")
+        sys.exit(0)
+    sys.exit(recontar() if a.recontar else rodar() if a.rodar else relatorio() if a.relatorio
+             else montar_sem_solver() if a.montar else 2)

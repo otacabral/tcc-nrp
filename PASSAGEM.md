@@ -38,13 +38,24 @@ fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-**0. Orientação: caso A pela prática — PARADO na recontagem (23/10).** A recontagem independente
-da escala real (`docs/diagnostico/caso_a_pratica.py --recontar`;
-`resultados/caso_a_pratica_2026-10-23/recontagem.md`) põe o **máx. fins de semana seguidos (3)** do
-outro lado da ficha, por causa da leitura da borda do mês. Três leituras no arquivo; só uma (C,
-construída depois de ver a diferença) reproduz a ficha. Também: "mesmo turno no fim de semana" é
-violado pela semântica do avaliador (classificação igual). Nada registrado no DECISOES, nenhum
-esperado nem rodada até a Orientação decidir.
+**0. Otávio: rodada do caso A pela prática (noite de 23/10).** DECISOES "2026-10-23 — Caso A:
+classificação dos critérios pela escala real e sensibilidade (2 ordens)" e `ESPERADO.md` em
+`resultados/caso_a_pratica_2026-10-23/`, registrados antes. Leitura C da borda decidida pela
+Orientação (a posteriori; A e B registradas); recontagem: os 13 critérios contáveis do mesmo lado da
+ficha. Três rodadas, uma por processo, nesta ordem: A11_fixo(24) ordem 1 (HIPÓTESE DE SENSIBILIDADE)
+→ A36_fixo(30) ordem 1 → A36_fixo(30) ordem 2; 60 min cada, no máximo (~3 h). Com o Claude Code, o
+Chrome e o VS Code fechados (≥ 3 GB livres; o script espera até 15 min e para se não houver). No
+PowerShell, um comando por linha:
+
+    cd D:\dev\tcc-nrp
+    .\.venv\Scripts\Activate.ps1
+    python docs\diagnostico\caso_a_pratica.py --rodar
+
+Termina com "TUDO OK" (e o `resultado.md` na mesma pasta) ou "PARADO: ...". **Retomar** (pula o que
+já tem resultado): o mesmo comando, de novo. Se a noite der problema, a ordem 2 é a primeira a sair:
+Ctrl+C depois de "A36_fixo_30_ordem1: codigo 0" e, para o relatório só com o que rodou:
+
+    python docs\diagnostico\caso_a_pratica.py --relatorio
 
 **1. Otávio: aprovar (ou corrigir) a seção 15 proposta para o `NUMEROS_TCC.md`** (casos A e B), no
 `resultados/relatorio_2026-10-21.md`. Só depois os números vão ao texto.
