@@ -1,0 +1,42 @@
+{
+ "caso": "medium_late05",
+ "solver": "SCIP",
+ "memoria_livre_mb_antes": 5052,
+ "limite_caso_s": 3600,
+ "commit_ferramenta": "e8a87f2",
+ "src_com_mudancas": false,
+ "referencia": 107,
+ "provado_etapa1": false,
+ "valores_etapa1": [
+  186.0
+ ],
+ "valores_modelo_etapa1": [
+  186.0
+ ],
+ "valores_escala_etapa1": [
+  186
+ ],
+ "avaliador": {
+  "penalidade_avaliador": 186
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 3603.6,
+ "chamadas": [
+  {
+   "variaveis": 15320,
+   "inteiras": 5160,
+   "restricoes": 13060,
+   "limite": 3600,
+   "partida": false,
+   "tempo": 3600.41,
+   "ub": 186.0,
+   "lb": 58.48673289737644,
+   "gap": 0.6855551994764707,
+   "provado": false,
+   "estado": "maxTimeLimit (timelimit)",
+   "veredito": "viavel",
+   "nivel": "objetivo único (INRC)"
+  }
+ ],
+ "pico_memoria_mb": 411
+}

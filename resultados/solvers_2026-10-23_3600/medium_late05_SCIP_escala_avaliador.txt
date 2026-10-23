@@ -1,0 +1,188 @@
+Schedule:
+=========
+
+Employee  0 |     |     |     | L   |    N|   DH |   DH |   DH |     |     |   DH |   DH |   DH |    N|   DH |     |     |   DH |   DH |   DH |E    |     |     |     |   DH |   DH | L   |   DH |
+Employee  1 |E    |E    |E    |E    |    N|     |     |     |    N|    N|    N|    N|    N|     |     |     |     |  D  |E    | L   |    N|     |     |     |  D  |E    |E    |E    |
+Employee  2 |     |     |     |  D  |  D  |  D  |  D  |E    |     |     |E    |E    |E    |E    |E    |     |     |E    | L   |    N| L   |     |     |     |E    |    N|    N|    N|
+Employee  3 |E    |  D  |  D  | L   |     |     |E    |  D  |E    |E    |  D  |     |     |  D  |  D  |     |     | L   |    N|    N|     |     |     |     |E    |E    |E    |E    |
+Employee  4 |E    |E    |E    |  D  |     |     |     |  D  |  D  |  D  | L   |     |     | L   |    N| L   | L   |    N|     |     | L   |    N| L   | L   |    N|     |     |     |
+Employee  5 | L   |    N|    N| L   |     |     |     |E    |E    |E    | L   |     |E    |    N| L   |     |     | L   |    N| L   |     |     |     |     |E    |  D  |E    |E    |
+Employee  6 |  D  | L   | L   | L   |     |     |     |    N| L   | L   |    N|     |    N| L   |    N|     |     |  D  |E    | L   | L   |     |     |     | L   | L   | L   | L   |
+Employee  7 |E    |E    |E    |E    |     |     |     |E    |E    |E    |  D  |     |     |E    |E    |     |     |    N|    N|    N|    N|     |     |     | L   | L   |    N| L   |
+Employee  8 |     |     |     |E    | L   | L   | L   | L   |     |     |E    |E    | L   |E    |E    |     |     |E    |E    |E    |E    |     |     |     |  D  |E    |E    |  D  |
+Employee  9 |     |     |     |  D  |E    |E    |  D  |E    |     |     |E    |  D  |  D  |  D  | L   |     |     |  D  |  D  |E    |E    |     |     |     |    N|    N| L   |    N|
+Employee 10 | L   | L   | L   | L   |     |     |     |     | L   | L   |    N| L   |    N|     |     |     |     |E    |E    |E    | L   |    N|     |     |E    |E    |E    |  D  |
+Employee 11 |     |     |     | L   |    N|    N|    N|    N|     |     |  D  | L   | L   |    N|     |E    |E    |    N|     |     | L   | L   | L   | L   | L   |     |     |     |
+Employee 12 |    N|    N|    N|    N|     |     |     | L   | L   | L   | L   |     |  D  |E    |    N|     |     |E    | L   | L   |     |     |     |     | L   |    N|    N|    N|
+Employee 13 |     |     |     |E    |E    |  D  |E    |E    |     |     |E    |E    |E    |     |     | L   | L   | L   |     |     |  D  |  D  |  D  |  D  | L   |     |     |     |
+Employee 14 |     |     |     |  D  |E    | L   | L   |     |     |     |E    |E    |E    | L   | L   |     |     |E    | L   | L   |    N|    N|     |     | L   | L   | L   | L   |
+Employee 15 |  D  |E    |E    |   DH |     |     |     |     |   DH |   DH |   DH |     |     |     |     |   DH |   DH |   DH | L   |     |     |     |     |     |   DH | L   |   DH | L   |
+Employee 16 |     |     |     |E    | L   |E    |     |     |    N|    N| L   |    N|     |     |     | L   | L   | L   |     |     |     |E    |E    |E    |E    |     |     |     |
+Employee 17 | L   |     |     |E    | L   |    N|    N|     |     |     |E    |     |     |     | L   |    N|    N| L   |     |     |     |E    |E    |E    |  D  |     |     |     |
+Employee 18 |    N|     |     | L   | L   | L   | L   |     |     |     | L   | L   |     |     |     |  D  |  D  | L   |     |     |     |E    |E    |E    | L   |     |     |     |
+Employee 19 | L   |     |     |E    |E    |E    | L   |     |     |     |E    |E    |     |     |     |    N|    N| L   |     |     |     |  D  | L   | L   |    N|     |     |     |
+Employee 20 |   DH |   DH |   DH |   DH |   DH |     |     |     |     |     | L   |     |     |   DH | L   |     |     |     |     |     |   DH |   DH |   DH |   DH |     |     |     |     |
+Employee 21 |E    |     |     |     |     |E    |     |     |     |     | L   | L   |     |     |     | L   | L   | L   |     |     |     |E    |E    |E    |E    |     |     |     |
+Employee 22 |     |     |     |    N| L   |E    |E    |     |     |     |     |     | L   | L   |     |     |     |E    |E    |E    |E    |     |     |     |E    |  D  |  D  |E    |
+Employee 23 | L   | L   | L   | L   |     |     |     |     |E    |E    |E    |    N|     |     |     |     |     |E    | L   |     |     |     |     |     |E    |E    |  D  |E    |
+Employee 24 |    N| L   | L   |    N|E    |     |     |     |     |     |  D  |  D  |     |     |     |E    |E    |  D  |     |     |     | L   | L   | L   | L   |     |     |     |
+Employee 25 |     |     |     |     |     |     |E    |    N|     |     |     |     | L   | L   |     |     |     |E    |  D  |E    |     |     |     |     |  D  | L   | L   | L   |
+Employee 26 |     |     |     |     |     |    N| L   | L   |     |     |     |     |     |     |  D  |E    |E    |     |     |     |     | L   |    N|    N|     |     |     |     |
+Employee 27 |     |     |     |E    |  D  | L   |     |     |     |     | L   | L   | L   |     |     |     |     |     |     |  D  |E    | L   |     |     |     |     |     |     |
+Employee 28 |     |     |     |     |     | L   |    N| L   |     |     |     |     |E    |E    |E    |     |     |     |     |  D  |  D  | L   |     |     |     |     |     |     |
+Employee 29 |     |     |     |     |     |     |E    | L   | L   | L   |     |     |     |     |E    |E    |E    |     |     |     |     |E    |    N|    N|     |     |     |     |
+
+Violations:
+===========
+
+    Employee: 22
+    ================
+         Unwanted pattern: L-E: excess = 1 , pos = 25, cost = 1
+    Employee: 23
+    ================
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 40, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 24
+    ================
+         Maximum number of consecutive working days: excess = 1 , pos = 20, cost = 4
+         Minimum consecutive working weekends: excess = 1 , pos = 11, cost = 5
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 75, cost = 1
+         Unwanted pattern: N-E: excess = 1 , pos = 20, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 25
+    ================
+         Minimum number of consecutive working days: excess = 1 , pos = 39, cost = 4
+         Minimum number of consecutive working days: excess = 1 , pos = 66, cost = 4
+         Minimum number of consecutive free days: excess = 1 , pos = 66, cost = 3
+         Maximum number of assignments: excess = 3 , pos = 139, cost = 9
+    Employee: 26
+    ================
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 3
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 27
+    ================
+         Minimum number of consecutive free days: excess = 1 , pos = 0, cost = 3
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 3
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 28
+    ================
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 3
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 29
+    ================
+         Maximum number of assignments: excess = 2 , pos = 139, cost = 6
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 10
+    ================
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 41, cost = 1
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 11
+    ================
+         Minimum number of consecutive free days: excess = 1 , pos = 69, cost = 3
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 75, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 12
+    ================
+         Minimum number of consecutive free days: excess = 1 , pos = 51, cost = 3
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 13
+    ================
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 76, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 14
+    ================
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 15
+    ================
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 43, cost = 1
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 78, cost = 1
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 3
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 16
+    ================
+         Minimum number of consecutive free days: excess = 1 , pos = 25, cost = 3
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 44, cost = 1
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 76, cost = 1
+         Unwanted pattern: L-E: excess = 1 , pos = 25, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 17
+    ================
+         Minimum number of consecutive working days: excess = 1 , pos = 1, cost = 4
+         Minimum number of consecutive working days: excess = 1 , pos = 50, cost = 4
+         Minimum number of consecutive free days: excess = 1 , pos = 1, cost = 3
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 18
+    ================
+         Minimum number of consecutive working days: excess = 1 , pos = 4, cost = 4
+         Minimum number of consecutive free days: excess = 1 , pos = 4, cost = 3
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 77, cost = 1
+    Employee: 19
+    ================
+         Minimum number of consecutive working days: excess = 1 , pos = 1, cost = 4
+         Minimum number of consecutive free days: excess = 1 , pos = 1, cost = 3
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 79, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 0
+    ===============
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 1
+    ===============
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 44, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 2
+    ===============
+    Employee: 3
+    ===============
+         Minimum number of consecutive working days: excess = 1 , pos = 72, cost = 4
+         Requested day off: excess = 1 , pos = 0, cost = 1
+    Employee: 4
+    ===============
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested shift off: excess = 1 , pos = 2, cost = 1
+         Maximum consecutive working weekends: excess = 1 , pos = 139, cost = 5
+    Employee: 5
+    ===============
+         Minimum number of consecutive free days: excess = 1 , pos = 51, cost = 3
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 6
+    ===============
+         Minimum number of consecutive free days: excess = 1 , pos = 54, cost = 3
+         Maximum number of assignments: excess = 1 , pos = 139, cost = 3
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 7
+    ===============
+         Minimum number of consecutive working days: excess = 1 , pos = 70, cost = 4
+         Requested day off: excess = 1 , pos = 2, cost = 1
+    Employee: 8
+    ===============
+         Unwanted pattern: L-E: excess = 1 , pos = 65, cost = 1
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 9
+    ===============
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+    Employee: 20
+    ================
+         Maximum number of consecutive working days: excess = 1 , pos = 23, cost = 4
+         Minimum number of consecutive working days: excess = 1 , pos = 51, cost = 4
+         Minimum number of consecutive free days: excess = 1 , pos = 51, cost = 3
+         Minimum consecutive working weekends: excess = 1 , pos = 13, cost = 5
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Minimum consecutive working weekends: excess = 1 , pos = 139, cost = 5
+    Employee: 21
+    ================
+         Minimum number of consecutive working days: excess = 1 , pos = 0, cost = 4
+         Minimum number of consecutive working days: excess = 1 , pos = 25, cost = 4
+         Unwanted pattern: None(Friday)-Any(Saturday)-Any(Sunday): excess = 1 , pos = 76, cost = 1
+
+Penalty:
+========
+    186
+

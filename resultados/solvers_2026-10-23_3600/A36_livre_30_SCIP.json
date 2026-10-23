@@ -1,0 +1,93 @@
+{
+ "caso": "A36_livre_30",
+ "solver": "SCIP",
+ "memoria_livre_mb_antes": 5184,
+ "limite_caso_s": 3600,
+ "commit_ferramenta": "e8a87f2",
+ "src_com_mudancas": false,
+ "quadro": 30,
+ "enfermeiros": 10,
+ "caminho": "fundido",
+ "provado_etapa1": true,
+ "valores_etapa1": [
+  13
+ ],
+ "valores_modelo_etapa1": [
+  13
+ ],
+ "partes": [
+  {
+   "limite": 1799,
+   "tempo": 620.0729966163635,
+   "niveis": [
+    "Essencial",
+    "Importante"
+   ],
+   "valor": 13,
+   "provado": true,
+   "gap": 0.0
+  }
+ ],
+ "etapa2": "sem resposta (indeterminado); fica a escala da etapa 1",
+ "provado_etapa2": null,
+ "valores_escala_etapa1": [
+  13
+ ],
+ "criterios": [
+  [
+   "Essencial",
+   "Pedido de folga no dia",
+   0,
+   0
+  ],
+  [
+   "Importante",
+   "Enfermeiro em posto de técnico",
+   13,
+   8
+  ]
+ ],
+ "familias_com_folga_consideradas": [],
+ "avaliador": {
+  "xsd_instancia": [],
+  "xsd_escala": [],
+  "penalidade_avaliador": 330,
+  "hard_constraints_violation": "não",
+  "erros_avaliador": []
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 3604.9,
+ "chamadas": [
+  {
+   "variaveis": 5320,
+   "inteiras": 5320,
+   "restricoes": 20264,
+   "limite": 1799,
+   "partida": false,
+   "tempo": 620.03,
+   "ub": 13.0,
+   "lb": 13.0,
+   "gap": 0.0,
+   "provado": true,
+   "estado": "convergenceCriteriaSatisfied (optimal)",
+   "veredito": "viavel",
+   "nivel": "etapa 1: Essencial + Importante"
+  },
+  {
+   "variaveis": 5324,
+   "inteiras": 5320,
+   "restricoes": 20325,
+   "limite": 2979,
+   "partida": false,
+   "tempo": 2978.95,
+   "ub": null,
+   "lb": 4.996003610813204e-16,
+   "gap": null,
+   "provado": false,
+   "estado": "maxTimeLimit (timelimit)",
+   "veredito": "indeterminado",
+   "nivel": "etapa 2 (equilíbrio)"
+  }
+ ],
+ "pico_memoria_mb": 460
+}

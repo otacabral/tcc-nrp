@@ -1,0 +1,42 @@
+{
+ "caso": "medium_late05",
+ "solver": "HiGHS",
+ "memoria_livre_mb_antes": 5096,
+ "limite_caso_s": 3600,
+ "commit_ferramenta": "e8a87f2",
+ "src_com_mudancas": false,
+ "referencia": 107,
+ "provado_etapa1": false,
+ "valores_etapa1": [
+  224.0
+ ],
+ "valores_modelo_etapa1": [
+  224.0
+ ],
+ "valores_escala_etapa1": [
+  224
+ ],
+ "avaliador": {
+  "penalidade_avaliador": 224
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 3605.5,
+ "chamadas": [
+  {
+   "variaveis": 15320,
+   "inteiras": 5160,
+   "restricoes": 13060,
+   "limite": 3600,
+   "partida": false,
+   "tempo": 3602.66,
+   "ub": 224.0,
+   "lb": 64.0,
+   "gap": 0.7142857142857143,
+   "provado": false,
+   "estado": "maxTimeLimit",
+   "veredito": "viavel",
+   "nivel": "objetivo único (INRC)"
+  }
+ ],
+ "pico_memoria_mb": 527
+}
