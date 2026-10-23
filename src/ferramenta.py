@@ -266,7 +266,9 @@ def frases_por_nivel(r) -> list[tuple[list[str], str]]:
             saida.append((niveis, f"{nome}: {quantas} — a melhor possível."))
             continue
         z, gap = parte["valor"], parte.get("gap")
-        limite = None if gap is None or math.isinf(gap) else z - gap * abs(z)
+        # P20: sem prova, `valor` e o apertado; o limite inferior foi guardado sobre o do modelo
+        limite = (parte["limite_inferior"] if "limite_inferior" in parte
+                  else None if gap is None or math.isinf(gap) else z - gap * abs(z))
         # o nivel de cima de um bloco fundido tem o maior coeficiente (maximo do resto + 1)
         coefs = coef_de.get(tuple(niveis), {}) if len(niveis) > 1 else {}
         coef = max(coefs.values()) if coefs else 1
@@ -750,6 +752,45 @@ def _primeira(m, limite, prazo, teto, partes):
     return v, e, p, g
 
 
+def _apertar(m, prazo: float | None) -> float | None:
+    """P20 (DECISOES.md, "2026-10-23 — P20 aprovada"): o valor VERDADEIRO do nivel na escala
+    carregada. Num ponto sem prova o solver pode entregar folgas maiores que o excesso (so ha
+    limite inferior, alfa >= excesso), e o objetivo do modelo passa da penalidade da escala.
+    Fixa as atribuicoes `x` (0/1), resolve de novo com o mesmo objetivo — so folgas e auxiliares
+    livres; `y` sai de `x` por igualdade — e solta o `x`. Deixa as variaveis apertadas (a partida
+    do nivel seguinte). Devolve o valor, ou None se o aperto nao respondeu (fica o do modelo)."""
+    limite = 60 if prazo is None else max(1, min(60, int(prazo - time.time())))
+    fixadas = []
+    for v in m.x.values():
+        if not v.fixed and v.value is not None:
+            v.fix(round(v.value))
+            fixadas.append(v)
+    try:
+        veredito, _, _, _ = resolver(m, limite)
+    finally:
+        for v in fixadas:
+            v.unfix()
+    return modelo.valor_objetivo(m) if veredito == ea.VIAVEL else None
+
+
+def _valor_preso(m, provado: bool, prazo, parte: dict) -> float:
+    """O valor que o nivel prende para os seguintes (e para a etapa 2): com prova, o do modelo
+    (como sempre); sem prova, o apertado (`_apertar`, P20). Registra os dois em `parte`."""
+    z = modelo.valor_objetivo(m)
+    if provado:
+        return z
+    # o limite inferior e do solver, sobre o valor do modelo; guardado antes de o valor mudar
+    gap = parte.get("gap")
+    if gap is not None and not math.isinf(gap):
+        parte["limite_inferior"] = z - gap * abs(z)
+    apertado = _apertar(m, prazo)
+    parte.update(valor_modelo=z, aperto="ok" if apertado is not None else "sem resposta")
+    if apertado is None:
+        return z
+    parte["valor"] = apertado
+    return apertado
+
+
 def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | None = None,
                           prioridades=None) -> tuple[str, object, object, dict]:
     """Etapa 1 (pesos) e, havendo escala provada otima, etapa 2 (equilibrio de horas).
@@ -782,6 +823,7 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | No
         partes[-1]["niveis"] = list(presentes[0].niveis) if presentes else []
         if veredito == ea.VIAVEL:
             partes[-1].update(valor=modelo.valor_objetivo(m), provado=provado, gap=gap)
+            _valor_preso(m, provado, prazo, partes[-1])     # P20: sem prova, aperta as folgas
         else:
             partes[-1]["veredito"] = veredito
     else:
@@ -885,6 +927,8 @@ def _niveis_em_sequencia(m, blocos, tempo, prazo, inst=None, p=None, pesos=None,
         z = modelo.valor_objetivo(m)
         niveis.append({"niveis": b.niveis, "valor": z, "provado": prova, "gap": g})
         partes[-1].update(valor=z, provado=prova, gap=g)
+        # P20: sem prova, a trava (e a partida do bloco seguinte) vai com as folgas apertadas
+        z = _valor_preso(m, prova, prazo, partes[-1])
         if not prova:
             provado = False
             gap = g if gap is None else gap

@@ -49,7 +49,12 @@ fim de cada sessão (dele ou do chat).
   comparação entra no TCC como avaliação a posteriori. Anomalia do medium_late05 esclarecida
   (22/10): folgas soltas na solução sem prova (7.435 = modelo; 2.199 = escala; integralidade
   perfeita). A tela não é afetada; a trava que a ferramenta carrega depois de um nível sem prova
-  pode ficar frouxa com critérios de folga — proposta P20, não implementada, para decisão. Tabela de tamanho (nosso × Santos) levada ao `NUMEROS_TCC.md` como seção
+  pode ficar frouxa com critérios de folga.
+- **P20 implementada (23/10)** — DECISOES "2026-10-23 — P20 aprovada"; esperado e resultado em
+  `resultados/p20_2026-10-23/ESPERADO.md`. Depois de um nível sem prova, a trava usa o valor
+  verdadeiro da escala (folgas apertadas). Teste `p20`: o modelo marcava 763, a escala vale 224;
+  o Essencial não piorou (224) na escala final. Testes rápidos da opção B OK; identidade 243/243 e
+  24/24. **Suíte completa: sexta à noite** (`fechar_v143.sh`, já com o `p20`). Tabela de tamanho (nosso × Santos) levada ao `NUMEROS_TCC.md` como seção
   **PENDENTE DE APROVAÇÃO**; corrigidos lá dois caracteres de controle da seção 14 (defeito de
   19/10 em texto de comando; nenhum número mudou).
 

@@ -83,7 +83,8 @@ roda testes_entrada "$PY" src/testes_entrada.py
 # "Gerar escala" (todos os anteriores que usam a tela, mais o 5); 22/10: os que dependem da
 # divisao do tempo ou do texto do resultado (opB-padroes, opB-b, 8, 12, 15, opB-tela, 9c-tela,
 # opB-c, opB-e). Os longos por ultimo.
-for caso in pref-tela max-dias opB-d opB-padroes opB-b 16 4b 7.4 9c-tela 4 5 15 8 12 opB-tela \
+# 23/10: p20 (trava pelo valor verdadeiro depois de nivel sem prova)
+for caso in pref-tela max-dias opB-d opB-padroes opB-b p20 16 4b 7.4 9c-tela 4 5 15 8 12 opB-tela \
             tela-limpa opB-c opB-e; do
     roda "tela_$caso" "$PY" src/testes_ferramenta.py "$caso"
 done

@@ -1637,6 +1637,68 @@ def caso_pref_tela() -> None:
             and "marque Essencial" in ajuda, f"ajuda da linha: {ajuda!r}")
 
 
+def _contagem_do_nivel(inst_p, escala, pn, coef: dict, niveis) -> int:
+    """Valor verdadeiro de um bloco na escala, FORA do modelo: soma de coeficiente x violacoes dos
+    criterios dos `niveis` (`prioridades.resultado`, a contagem do "Resultado por criterio")."""
+    nome_id = {c.nome: c.id for c in pr.CRITERIOS}
+    total = 0
+    for nivel, nome, v, _ in pr.resultado(inst_p, escala, pn, br.HABILIDADE_ENF):
+        if nivel in niveis:
+            chave = pr.REGRAS + nivel if nome == pr.NOME_REGRAS else nome_id[nome]
+            total += coef.get(chave, 0) * v
+    return total
+
+
+def caso_p20() -> None:
+    """P20 (23/10): depois de um nivel sem prova, a trava usa o valor verdadeiro da escala
+    (esperado em resultados/p20_2026-10-23/ESPERADO.md, registrado antes)."""
+    import time
+    print("p20. caso 5, todas as suaves no Essencial, blocos separados, 30 s, sem teto")
+    p = _todas_suaves(fe.ESSENCIAL)
+    e = _entrada(M8_TURNOS, 8, 5, {"M": (1, 2), "T": (1, 2), "N": (1, 1)}, prioridades=p)
+    chamadas = []
+    original = fe.resolver
+
+    def espiao(m, tempo, partida=False):
+        out = original(m, tempo, partida)
+        chamadas.append(out)
+        return out
+
+    guardado = (pr.LIMITE_FUSAO, fe.TEMPO, fe.TEMPO_ETAPA2, fe.resolver)
+    pr.LIMITE_FUSAO, fe.TEMPO, fe.TEMPO_ETAPA2, fe.resolver = 0, None, None, espiao
+    try:
+        v, inst_p, escala, info = fe.resolver_com_objetivo(
+            fe.montar(e), None, prazo=time.time() + 30, prioridades=p)
+    finally:
+        pr.LIMITE_FUSAO, fe.TEMPO, fe.TEMPO_ETAPA2, fe.resolver = guardado
+    partes = info.get("partes", [])
+    for k, parte in enumerate(partes):
+        print(f"   parte {k} {'+'.join(parte.get('niveis', []))}: limite {parte.get('limite')} s, "
+              f"provado {parte.get('provado')}, valor do modelo {parte.get('valor_modelo')}, "
+              f"valor preso {parte.get('valor')}, aperto {parte.get('aperto')}")
+    print(f"   etapa 2: {info.get('etapa2')}")
+    topo = partes[0] if partes else {}
+    confere(v == fe.ea.VIAVEL if hasattr(fe, "ea") else bool(escala), f"veredito {v}")
+    confere(topo.get("niveis") == [fe.ESSENCIAL] and topo.get("provado") is False
+            and "valor" in topo, f"(a) o Essencial termina sem prova e com escala: {topo}")
+    if not (topo.get("provado") is False and escala):
+        return
+    coef = {tuple(n): c for n, c, _ in info["blocos"]}[(fe.ESSENCIAL,)]
+    pn = pr.normalizar(p)
+    escala_topo = next(c[1] for c in chamadas if c[1])          # a escala do fim do bloco 1
+    verdadeiro = _contagem_do_nivel(inst_p, escala_topo, pn, coef, [fe.ESSENCIAL])
+    confere(topo.get("aperto") == "ok" and abs(topo["valor"] - verdadeiro) < 1e-6,
+            f"(b) valor preso {topo.get('valor')} = contagem fora do modelo {verdadeiro}")
+    confere(topo["valor_modelo"] >= topo["valor"] - 1e-6,
+            f"(c) modelo {topo['valor_modelo']} >= preso {topo['valor']}")
+    if topo["valor_modelo"] - topo["valor"] < 1e-6:
+        print("   (c) as folgas ja estavam justas nesta rodada: o aperto nao mudou o valor")
+    final = _contagem_do_nivel(inst_p, escala, pn, coef, [fe.ESSENCIAL])
+    confere(final <= topo["valor"] + 1e-6,
+            f"(d) o Essencial nao piora: escala final {final} <= preso {topo['valor']}")
+    confere(fe.cumpre(inst_p, fe.medir(inst_p, escala)), "(e) a escala final cumpre o descanso")
+
+
 CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeiros,
          "5": caso_enfermeiro_em_posto_de_tecnico, "7.1": caso_objetivo, "7.2": caso_tempo_40,
          "7.3": casos_diagnostico, "8": casos_tempo, "9": casos_carga,
@@ -1648,7 +1710,8 @@ CASOS = {"1-2": caso_experimento_a, "3": caso_6h_12h, "4": caso_poucos_enfermeir
          "opB-tela": caso_opb_tela,
          "ped-2": caso_ped_contas, "ped-3": caso_ped_niveis, "ped-6": caso_ped_nunca_trava,
          "max-dias": caso_max_dias, "tela-limpa": caso_tela_limpa,
-         "descanso-param": caso_descanso_parametro, "pref-tela": caso_pref_tela}
+         "descanso-param": caso_descanso_parametro, "pref-tela": caso_pref_tela,
+         "p20": caso_p20}
 
 
 def main() -> int:

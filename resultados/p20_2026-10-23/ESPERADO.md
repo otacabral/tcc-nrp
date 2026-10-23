@@ -39,3 +39,19 @@ P20 aprovada: trava pelo valor verdadeiro depois de nível sem prova".
    - (e) a escala final cumpre o descanso (conferência no relógio).
 3. **Testes rápidos da opção B, sem mudança:** opB-b (os três níveis provam: nada muda), opB-d,
    opB-padroes, max-dias, pref-tela, e a conta do tempo (`tempo_proporcional.py --conta`).
+
+## Resultado (23/10, depois do commit do esperado)
+
+i5-10210U, HiGHS 1.15.1. Teste `p20`, 34 s:
+- (a) o Essencial terminou **sem prova** (limite 9 s), com escala;
+- (b) valor preso **224** = contagem fora do modelo **224**;
+- (c) valor do modelo no ponto do solver **763** — as folgas estavam soltas, e o mecanismo foi
+  exercitado (sem a P20, a trava seria 763);
+- (d) na escala final (depois do Importante, também sem prova, e da etapa 2), o Essencial vale
+  **224** ≤ 224: não piorou;
+- (e) a escala final cumpre o descanso.
+
+Testes rápidos da opção B: opB-b, opB-d, opB-padroes, max-dias, pref-tela, ped-2, ped-3, ped-6,
+descanso-param e `tempo_proporcional.py --conta` — todos OK. Identidade (sem solver): **243/243**
+(sem e com linhas) e **24/24** contra a v1.4.2; controle OK. Suíte completa: sexta à noite (o
+`fechar_v143.sh` já inclui o `p20`).

@@ -108,6 +108,9 @@ seguidos: a trava é só a da CLT; a regra do hospital é preferência").
 | `src/ferramenta.py` (tempo, 22/10) | `pesos_das_partes`, `fatia`, `_limite_da_parte`, `_primeira` (proteção da primeira escala): divisão proporcional do tempo máximo (etapa 1 : etapa 2 = 50 : 50; 50 : 30 : 20 entre os níveis presentes); `TEMPO`/`TEMPO_ETAPA2` = `None` (teto só dos testes); `info["partes"]` (limite e tempo gasto de cada parte); `frases_por_nivel`, `frase_equilibrio`; `alertas_descanso` em uma linha e `FUNDAMENTO_SEMANAL`; frase principal sem gap. |
 | `src/app.py` (seção 5, 22/10) | Uma tabela por nível com a frase acima; frase do equilíbrio; painel "Detalhes da escala" (fechado) com as legendas; "sem pedidos"; "Por que 35 h?". |
 | `docs/diagnostico/tempo_proporcional.py` | `--conta` (sem solver: tabela 20/60/120 min, conta 15/9/6/30 e sobra, frases por nível) e `--caso` (com solver: proteção da primeira escala e sobra adiante). |
+| `src/ferramenta.py` (P20, 23/10) | `_apertar` e `_valor_preso`: depois de um nível sem prova, fixa as atribuições, aperta folgas e auxiliares e prende o valor verdadeiro (`expr ≤ z` e a etapa 2); `info["partes"]` guarda `valor_modelo`, `valor` (apertado), `limite_inferior`, `aperto`. Com prova, nada muda. |
+| `src/testes_ferramenta.py` (P20) | `p20`: caso 5, todas as suaves no Essencial, blocos separados, 30 s; o Essencial não piora na escala final. |
+| `docs/diagnostico/bateria_solvers.py`, `comparar_solvers.py`, `anomalia_medium_late05.py` | HiGHS × SCIP (22/10): bateria, Fase 0 e o diagnóstico das folgas soltas. Fora da ferramenta. |
 | `.streamlit/config.toml` | Tema escuro (`base = "dark"`; o claro foi trocado no mesmo dia, a pedido do Otávio). |
 
 ## Escopo anterior — referência, não produto
