@@ -60,10 +60,10 @@ fim de cada sessão (dele ou do chat).
   pelo Claude Code por falta de memória no B11 com HiGHS. medium_late05: SCIP 186 × HiGHS 224 (os
   dois sem prova; escala = modelo); A36_livre: os dois provam 13 (empate). Falta o B11 (~2 h);
   comando de retomada no relatório. Análise de sensibilidade: não reabre a regra de 22/10.
-- **NUMEROS_TCC (23/10):** seção nova PENDENTE DE APROVAÇÃO "Comportamento computacional: HiGHS ×
-  SCIP", com as duas rodadas (600 s completa; 3.600 s parcial, B11 não concluído e o motivo), por
-  caso e solver, e a nota da anomalia do medium_late05 (modelo 7.435, escala 2.199). Aguarda a
-  aprovação do Otávio. Tabela de tamanho (nosso × Santos) levada ao `NUMEROS_TCC.md` como seção
+- **NUMEROS_TCC (23/10):** seção "Comportamento computacional: HiGHS × SCIP" — **aprovada pelo
+  Otávio em 23/10**, com a escolha do valor da escala para a rodada de 22/10. Duas rodadas (600 s
+  completa; 3.600 s parcial, B11 não concluído e o motivo), por caso e solver, e a nota da anomalia
+  do medium_late05 (modelo 7.435, escala 2.199). Pode ir ao texto, com a afirmação fraca dos tempos. Tabela de tamanho (nosso × Santos) levada ao `NUMEROS_TCC.md` como seção
   **PENDENTE DE APROVAÇÃO**; corrigidos lá dois caracteres de controle da seção 14 (defeito de
   19/10 em texto de comando; nenhum número mudou).
 

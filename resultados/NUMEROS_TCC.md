@@ -304,9 +304,13 @@ esse problema — identidade da Fase 0, `resultados/solvers_2026-10-22/relatorio
   limite dual por planos de corte; este trabalho não persegue desempenho algorítmico
   (`DECISOES.md`, "2026-09-08 — Formulação: atribuição, não janelas").
 
-## PENDENTE DE APROVAÇÃO — Comportamento computacional: HiGHS × SCIP (22 e 23/10/2026)
+## Comportamento computacional: HiGHS × SCIP (22 e 23/10/2026)
 
-**Não aprovada: não citar até o Otávio aprovar.** Pedido do orientador (reunião de 22/10): tabela
+**Aprovada pelo Otávio em 23/10/2026**, com a escolha do valor da escala para a rodada de 22/10
+(INRC: avaliador oficial; medium_late05 com HiGHS: os 2.199 do diagnóstico; ferramenta: o recálculo
+na escala do diagnóstico de 22/10, igual ao valor do modelo nesses casos). A rodada de 3.600 s
+continua parcial (B11 não concluído); os números dela valem como estão, com essa ressalva. Pedido do
+orientador (reunião de 22/10): tabela
 de comportamento computacional por caso, com o SCIP (gratuito) ao lado do HiGHS. Regras registradas
 antes de rodar: `DECISOES.md`, "2026-10-22 — Bateria HiGHS × SCIP" e "2026-10-23 — Sensibilidade
 ao tempo, HiGHS × SCIP, 3.600 s por caso". Relatórios: `resultados/solvers_2026-10-22/
