@@ -2933,6 +2933,34 @@ na atribuição (pedido de folga e enfermeiro em posto de técnico), sem folgas.
 
 ---
 
+## 2026-10-23 — P20 aprovada: trava pelo valor verdadeiro depois de nível sem prova
+
+**Status: vigente — mudança de IMPLEMENTAÇÃO do mecanismo de níveis (o modelo não muda).**
+Aprovada pelo Otávio em 23/10, depois do diagnóstico "2026-10-22 — Anomalia do medium_late05
+(HiGHS): folgas soltas na solução sem prova"; `PROPOSTAS.md`, P20. Registrada antes de
+implementar; esperado em `resultados/p20_2026-10-23/ESPERADO.md`.
+
+**Decisão.** Ao fechar um nível **sem prova**, a trava f_k ≤ valor usa o valor **recalculado na
+escala** — as folgas e auxiliares apertadas ao mínimo que a escala exige —, e não o valor do
+modelo no ponto entregue pelo solver. A escala de partida do nível seguinte vai com as folgas
+recalculadas, para não violar a nova trava. Vale também para a trava da etapa 2 (penalidade ≤ z,
+P14). Nível com prova: nada muda.
+
+**Como (decisão de implementação, Claude Code):** fixar as atribuições `x` da escala, resolver de
+novo só as folgas e auxiliares (o objetivo do nível continua o mesmo; `y` sai de `x` por
+igualdade), soltar o `x`. É o próprio modelo que dá o mínimo — a mesma semântica, sem uma segunda
+contagem que pudesse divergir. Limite do aperto: min(60 s, o que resta), no mínimo 1 s; se falhar,
+fica o valor do modelo (como antes) e isso é registrado. O LP enviado na primeira resolução de cada
+nível não muda — a identidade 243/243 e 24/24 tem de continuar valendo.
+
+**Por quê.** Com folgas soltas, a trava fica frouxa e o que vem depois pode piorar a contagem
+verdadeira de um nível acima — o contrário do que a opção B e a P14 prometem ("sem piorar").
+
+**Suíte:** não roda agora (fica para sexta à noite, decisão do Otávio); rodam o teste novo e os
+testes rápidos da opção B.
+
+---
+
 ## Modelo de entrada
 
 ```

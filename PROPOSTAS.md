@@ -784,7 +784,7 @@ d) **Modo "busca longa", opcional** (acrescentado em 11/10, decisão do Otávio)
 
 ## 2026-10-22 — P20: prender o valor verdadeiro, e não o do modelo, depois de um nível sem prova
 
-**Status: PROPOSTA, não implementada.** Origem: `DECISOES.md`, "2026-10-22 — Anomalia do
+**Status: APROVADA em 23/10** (`DECISOES.md`, "2026-10-23 — P20 aprovada"). *Status original: PROPOSTA, não implementada.* Origem: `DECISOES.md`, "2026-10-22 — Anomalia do
 medium_late05 (HiGHS): folgas soltas na solução sem prova".
 
 **Problema.** Depois de um nível sem prova, a ferramenta prende o valor do modelo, `z =
