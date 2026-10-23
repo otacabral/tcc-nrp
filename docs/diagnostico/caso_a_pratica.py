@@ -57,15 +57,43 @@ FICHA = [("Máx. dias seguidos, preferência (5)", "max_consecutive_working_days
          ("Mín. fins de semana seguidos (2)", "min_consecutive_working_weekends", "nunca"),
          ("Fins de semana em 4 semanas (2)", "max_working_weekends_in_four_weeks", "violado"),
          ("Fim de semana completo", "complete_weekends", "violado"),
-         ("Mesmo turno no fim de semana", "identical_shift_types_during_weekend", "sem ocorrência"),
+         # ficha corrigida pela Orientacao (23/10): pela semantica do avaliador, um dia so do fim de
+         # semana viola (era "sem ocorrencia")
+         ("Mesmo turno no fim de semana", "identical_shift_types_during_weekend", "violado"),
          ("Máx. turnos, preferência (18)", "max_num_assignments", "violado"),
          ("Mín. turnos (10)", "min_num_assignments", "nunca"),
          ("Noturno na véspera de fim de semana livre", "noturno_antes_fds", "violado"),
          ("Duas folgas depois de noites", "two_free_days_after_night_shifts", "violado")]
-SEQ_DIAS = ("max_consecutive_working_days", "min_consecutive_working_days",
-            "max_consecutive_free_days", "min_consecutive_free_days")
-SEQ_FDS = ("max_consecutive_working_weekends", "min_consecutive_working_weekends")
+# Leitura C da borda (Orientacao, 23/10, a posteriori; DECISOES.md, "2026-10-23 — Caso A"): o bloco
+# que toca a borda do mes CONTA nos criterios de maximo (se ja passa do limite dentro do mes, a
+# violacao e certa) e SAI nos de minimo (pode continuar fora da imagem); o bloco que toca as
+# FERIAS sai sempre (o fim das ferias nao se le na imagem)
+SEQ_DIAS = {"max": ("max_consecutive_working_days", "max_consecutive_free_days"),
+            "min": ("min_consecutive_working_days", "min_consecutive_free_days")}
+SEQ_FDS = {"max": ("max_consecutive_working_weekends",),
+           "min": ("min_consecutive_working_weekends",)}
 TOTAIS = ("max_num_assignments", "min_num_assignments")
+
+
+HISTORICO = """## Histórico: as três leituras da borda (23/10)
+
+A primeira recontagem usou a regra então escrita na ficha (leitura A: tirar todo bloco que toca a
+borda do mês ou as férias) e pôs o máx. fins de semana seguidos do outro lado da ficha, porque os
+diurnos trabalham os 5 fins de semana do mês (um bloco que toca as duas bordas). A Orientação
+decidiu pela leitura C (DECISOES.md, "2026-10-23 — Caso A", a posteriori), com motivo independente
+do resultado: na borda do mês, nos critérios de máximo, o bloco conta (se já passa do limite dentro
+do mês, a violação é certa) e, nos de mínimo, sai (pode continuar fora da imagem); o bloco que toca
+as férias sai sempre (o fim das férias não se lê na imagem — o que descarta a B).
+
+| Leitura | Máx. fins de semana seguidos | Máx. folgas seguidas | Reproduz a ficha? |
+|---|---|---|---|
+| A — tirar todo bloco que toca a borda ou as férias | nunca | nunca | não (máx. fins de semana) |
+| B — nos de máximo, contar os blocos de borda e também os que tocam as férias; nos de mínimo, tirar | violado (26, em 14 pessoas) | violado (1: o 5976, 5 dias sem trabalho de 21 a 25/11, logo depois das férias de 15 a 20/11) | não (máx. folgas) |
+| C — nos de máximo, contar o bloco de borda do mês; nos de mínimo, tirar; o que toca as férias, sempre tirar | violado | nunca | sim |
+
+"Mesmo turno no fim de semana": pela semântica do `avaliacao.py`/avaliador oficial, quem trabalha um
+só dia do fim de semana viola; a ficha (que dizia "sem ocorrência") foi corrigida pela Orientação;
+a classificação continua Não considerar, agora por evidência."""
 
 
 def _turnos():
@@ -150,6 +178,14 @@ def _blocos(marcas):
     return blocos
 
 
+def _janela(blocos, modo: str, ini_ferias: bool, fim_ferias: bool):
+    """Indices (primeiro, ultimo) dos blocos contados na leitura C: o da ponta sai se a ponta e
+    ferias (sempre) ou se o criterio e de minimo (borda do mes tambem); None se nao sobra bloco."""
+    i = 1 if (ini_ferias or modo == "min") else 0
+    j = len(blocos) - (2 if (fim_ferias or modo == "min") else 1)
+    return (i, j) if i <= j else None
+
+
 def _conta(inst, escala_seg, familias):
     """Violacoes do avaliacao.py (e do contador da ferramenta, no noturno) so das `familias`."""
     esc = [(d, n, s) for (n, d), s in escala_seg.items()]
@@ -174,24 +210,30 @@ def recontar() -> int:
         fora = {d for (m, d) in ferias if m == n}
         for seg in _segmentos(dias, fora):
             esc_seg = {(n, d): s for (m, d), s in escala.items() if m == n and d in seg}
-            # sequencias de dias/folgas: so os blocos inteiros
+            # as pontas do trecho: borda do mes ou ferias
+            ini_ferias, fim_ferias = seg[0] != dias[0], seg[-1] != dias[-1]
+            # sequencias de dias/folgas, pela leitura C
             marcas = [(n, d) in esc_seg for d in seg]
             b = _blocos(marcas)
-            if len(b) > 2:
-                ini, fim = seg[b[1][0]], seg[b[-2][1]]
-                janela = {k: v for k, v in esc_seg.items() if ini <= k[1] <= fim}
-                total.update(_conta(_inst([n], ini, fim), janela, SEQ_DIAS))
-            # fins de semana seguidos: so os blocos inteiros de fins de semana
+            for modo, familias in SEQ_DIAS.items():
+                ij = _janela(b, modo, ini_ferias, fim_ferias)
+                if ij:
+                    ini, fim = seg[b[ij[0]][0]], seg[b[ij[1]][1]]
+                    janela = {k: v for k, v in esc_seg.items() if ini <= k[1] <= fim}
+                    total.update(_conta(_inst([n], ini, fim), janela, familias))
+            # fins de semana seguidos, pela leitura C (blocos de fins de semana inteiros)
             inst_seg = _inst([n], seg[0], seg[-1])
             fdss = [f for f in inst_seg.fins_de_semana("0") if f.completo]
             trab = [any((n, d) in esc_seg for d in f.datas) for f in fdss]
             if any(trab):
                 ocorrencias["fds_trabalhado"] += 1
             bf = _blocos(trab) if trab else []
-            if len(bf) > 2:
-                ini, fim = fdss[bf[1][0]].datas[0], fdss[bf[-2][1]].datas[-1]
-                janela = {k: v for k, v in esc_seg.items() if ini <= k[1] <= fim}
-                total.update(_conta(_inst([n], ini, fim), janela, SEQ_FDS))
+            for modo, familias in SEQ_FDS.items():
+                ij = _janela(bf, modo, ini_ferias, fim_ferias) if bf else None
+                if ij:
+                    ini, fim = fdss[bf[ij[0]][0]].datas[0], fdss[bf[ij[1]][1]].datas[-1]
+                    janela = {k: v for k, v in esc_seg.items() if ini <= k[1] <= fim}
+                    total.update(_conta(_inst([n], ini, fim), janela, familias))
             # o resto, no trecho fora das ferias (fins de semana inteiros, noites, 4 semanas)
             resto = ("max_working_weekends_in_four_weeks", "complete_weekends",
                      "identical_shift_types_during_weekend", "two_free_days_after_night_shifts",
@@ -208,10 +250,7 @@ def recontar() -> int:
     mudou = []
     for rotulo, fam, ficha in FICHA:
         por = {n: v for (f, n), v in total.items() if f == fam and v > 0}
-        if fam == "identical_shift_types_during_weekend" and not ocorrencias["fds_dois_dias"]:
-            lado = "sem ocorrência"
-        else:
-            lado = "violado" if por else "nunca"
+        lado = "violado" if por else "nunca"
         igual = lado == ficha
         if not igual:
             mudou.append(rotulo)
@@ -220,13 +259,16 @@ def recontar() -> int:
                       f"({', '.join(f'{g} {k}' for g, k in sorted(grupos.items())) or '—'}) | "
                       f"{ficha} | {'sim' if igual else '**NÃO**'} |")
     texto = ["# Caso A — recontagem independente da escala real (23/10/2026)", "",
-             f"Fonte: `{CSV}` (24 linhas, 26/10 a 25/11/{ANO}); leituras da ficha; contagem pelo "
-             "`avaliacao.py` (noturno na véspera: contador da ferramenta, que o avaliacao.py não "
-             "pontua). Sequências só em blocos inteiros (bordas e férias fora); totais de turnos "
+             f"Fonte: `{CSV}` (24 linhas, 26/10 a 25/11/{ANO}); leituras da ficha (corrigida pela "
+             "Orientação em 23/10); contagem pelo `avaliacao.py` (noturno na véspera: contador da "
+             "ferramenta, que o avaliacao.py não pontua). Borda e férias pela **leitura C** "
+             "(Orientação, 23/10, a posteriori): bloco que toca a borda do mês conta nos critérios "
+             "de máximo e sai nos de mínimo; bloco que toca as férias sai sempre. Totais de turnos "
              "só sem férias. Calendário conferido: todo P das linhas diurnas cai em sábado ou "
-             "domingo.", "", *linhas, "",
-             ("**Nenhum critério mudou de lado.**" if not mudou else
-              "**PARAR: mudaram de lado: " + "; ".join(mudou) + "** (levar à Orientação).")]
+             "domingo (27/10/2018 é sábado).", "", *linhas, "",
+             (f"**Os {len(FICHA)} critérios contáveis ficam do mesmo lado da ficha.**" if not mudou
+              else "**PARAR: mudaram de lado: " + "; ".join(mudou) + "** (levar à Orientação)."),
+             "", HISTORICO]
     SAIDA.mkdir(parents=True, exist_ok=True)
     (SAIDA / "recontagem.md").write_text("\n".join(texto) + "\n", encoding="utf-8")
     print("\n".join(texto))

@@ -3007,6 +3007,83 @@ do mecanismo de níveis — a P20 não age nele, e o valor da escala vem do `ava
 
 ---
 
+## 2026-10-23 — Caso A: classificação dos critérios pela escala real e sensibilidade (2 ordens)
+
+**Status: vigente — DESENHO EXPERIMENTAL registrado ANTES de rodar** (Orientação, 23/10). Código
+congelado na v1.4.4: nada em `src/` muda. Esperado: `resultados/caso_a_pratica_2026-10-23/
+ESPERADO.md`. Script: `docs/diagnostico/caso_a_pratica.py`.
+
+**Base.** `D:\TCC\escrita\fontes\FICHA_CASO_REALISTA.md`, seção "Contagem na escala real
+(23/10/2026)" (corrigida pela Orientação em 23/10), e a transcrição célula a célula da p. 70 de
+Massens (2019), `D:\TCC\escrita\fontes\transcricao_anexoB_massens.csv` (24 linhas, 26/10 a
+25/11). **Regra de classificação:** violado em alguma ocorrência → Não considerar; nunca violado,
+com ocorrência → Importante; sem evidência → padrão da ferramenta; Essencial só para regra
+declarada na fonte (turno fixo). **Limites = os padrões da ferramenta, não calibrados ao
+hospital.** A contagem é sobre a escala do hospital no formato do INRC; não afirma descumprimento
+de lei.
+
+**Recontagem independente** (`caso_a_pratica.py --recontar`; `recontagem.md`): lê o CSV com as
+leituras da ficha e conta cada critério com o `avaliacao.py` (o noturno na véspera, com o contador
+da ferramenta, que o `avaliacao.py` não pontua), sem reaproveitar o script do chat. Calendário: a
+transcrição não marca o fim de semana; os P das linhas diurnas só fecham com 27/10 num sábado
+(2018; 02/11 sexta e 15/11 quinta são as duas colunas sombreadas fora do fim de semana) — o script
+confere. **Resultado, com a leitura C abaixo: os 13 critérios contáveis ficam do mesmo lado da
+ficha.**
+
+**Leitura da borda — a posteriori, 23/10 (leitura C).** Ressalva: formulada **depois** de a
+recontagem expor a divergência entre a regra escrita na ficha (tirar todo bloco de borda) e a
+contagem da ficha (que, nos fins de semana, contou os blocos de borda). Motivo, independente do
+resultado:
+- **borda do mês:** nos critérios de **máximo**, o bloco conta (se já passa do limite dentro do mês,
+  a violação é certa, qualquer que seja o resto); nos de **mínimo**, sai (pode continuar fora da
+  imagem);
+- **férias:** o bloco que toca as férias **sai sempre** (o fim das férias não se lê na imagem; o
+  branco de 21 a 25/11 do 5976 pode ser continuação). Isso descarta a leitura B.
+
+As três leituras e o que cada uma dava (com o `avaliacao.py`):
+
+| Leitura | Máx. fins de semana seguidos | Máx. folgas seguidas | Reproduz a ficha? |
+|---|---|---|---|
+| A — tirar todo bloco que toca a borda do mês ou as férias (a regra antes escrita na ficha) | nunca violado | nunca violado | não |
+| B — nos de máximo, contar os blocos de borda e os que tocam as férias; nos de mínimo, tirar | violado (26, em 14 pessoas) | violado (1: o 5976, 21 a 25/11, logo depois das férias) | não |
+| **C** — nos de máximo, contar o bloco de borda do mês; nos de mínimo, tirar; o que toca as férias, sempre tirar | violado | nunca violado | sim |
+
+**"Mesmo turno no fim de semana":** vale a semântica do `avaliacao.py`/avaliador oficial (trabalhar
+um só dia do fim de semana já viola: 93 violações, 21 pessoas). A ficha foi corrigida pela
+Orientação (dizia "sem ocorrência"). Classificação: Não considerar, agora por evidência.
+
+**As duas ordens:**
+- **Ordem 1 (a prática):** Essencial = as linhas "Só este turno" da A36_fixo (29 linhas); Importante =
+  máx. folgas seguidas (4), mín. fins de semana seguidos (2), mín. turnos (10) e enfermeiro em posto
+  de técnico; todo o resto, Não considerar (pedido de folga: não há pedidos).
+- **Ordem 2:** máx. fins de semana seguidos (3) no Essencial; as linhas "Só este turno" no
+  Desejável; o resto igual à ordem 1.
+
+**Rodadas (3):**
+1. A11_fixo com 24 (4 enfermeiros + 20 técnicos), **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA
+   FERRAMENTA** (`DESCANSO_POR_TURNO = {"D12": 11}`), ordem 1;
+2. A36_fixo com 30 — 10 enfermeiros (os 4 da unidade: 6118, 4798, 4969 e 5993, mais 6 acrescidos
+   pela regra `equipe`, Enf 5 a Enf 10) + 20 técnicos, a composição que a busca achou em 21/10
+   (informada direto; conferido sem solver que a instância é a mesma que a busca montou) —, ordem 1;
+3. A36_fixo com 30, ordem 2.
+
+**Regras:** orçamento padrão de 60 min por rodada (regra de tempo da v1.4.3, com a P20); uma rodada
+por processo; ≥ 3 GB livres antes de cada uma (registrado); suspensão do Windows desativada; na
+ordem acima, a A11 primeiro e até o fim (regra de 03/10); retomada pula o que já tem resultado. Se
+a noite der problema, a ordem 2 é a primeira a sair. Os resultados separam os 4 enfermeiros da
+unidade dos 6 acrescidos.
+
+**Conferência:** avaliador oficial nas três escalas (restrição dura). Por critério, a contagem da
+ferramenta comparada com o avaliador oficial numa instância com os critérios da ordem ligados e
+peso 1, onde o avaliador pontua; onde não pontua (enfermeiro em posto de técnico), "sem conferência
+externa". Máx. fins de semana seguidos nas **duas** escalas do A36, avaliado com o avaliador numa
+instância com o critério ligado (a ordem 1 não o tem ligado).
+
+**Números** só vão ao `NUMEROS_TCC.md` depois da aprovação do Otávio. **Afirmação fraca:** um setor,
+um mês, uma rodada por ordem; tempo como limite operacional (máquina e solver nomeados).
+
+---
+
 ## Modelo de entrada
 
 ```
