@@ -1,121 +1,57 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 22/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 23/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- **Versão citável: v1.4.2** (suíte TUDO OK em `resultados/v142_2026-10-21/suite/resumo.txt`,
-  depois da parada em tela_opB-c e do RETOMAR; tag criada e enviada pelo Otávio). Máximo de dias
-  seguidos e máximo de turnos também como preferência. A tag v1.4.2 não se mexe.
-- **v1.4.3, acréscimo de 22/10: divisão proporcional do tempo máximo, resultado por nível e
-  seção 5 enxuta** — implementados e commitados, **à espera da revisão do Otávio na tela**. Metade
-  do tempo para as prioridades (50 : 30 : 20 entre os níveis presentes), metade para o equilíbrio;
-  a sobra passa adiante; proteção da primeira escala. Frases por nível acima da tabela; a frase
-  principal perde o gap. Leitura dos pesos com nível vazio a confirmar (DECISOES de 22/10, decisão
-  de implementação 1). A suíte da v1.4.3 continua sem rodar: roda uma só, depois da revisão.
-- **v1.4.3, continuação (21/10, noite): textos da tela para o gestor, tema claro e barra pelo
-  relógio** — implementados e commitados, **à espera da revisão do Otávio na tela**. Antes ×
-  depois em `resultados/textos_tela_2026-10-21.md`; exemplos do "?" conferidos pela contagem
-  (15 de 15; dois exemplos corrigidos no texto). A suíte da v1.4.3 que tinha sido lançada foi
-  cancelada (Ctrl+C) e roda **uma vez só**, depois da revisão.
-- **v1.4.3 implementada, suíte por rodar** (21/10, noite): a trava do máximo de dias seguidos
-  passa a ser **só a da CLT** (6; no 12×36, a regra das 36 h). O campo rígido do hospital saiu da
-  tela e da `Entrada`; a regra do hospital vai pela preferência de dias seguidos (no Essencial,
-  pesa acima de tudo o que é Importante ou Desejável). `modelo.py` e `instancia_br.py` intocados.
-  - Já conferido nesta sessão: identidade 243/243 (sem linhas e com linhas) e 24/24 da fase 2
-    contra a v1.4.2 (teste do script sem solver); regressão 56, 58, 197, 219; testes de entrada;
-    piso (segurança, controle, casos); max-dias reescrito (preferência 4 no Essencial com 14:
-    escala sai, 96 = 96; 13 técnicos: "Falta 1; o menor quadro viável é 14", texto da conta
-    prévia); pref-tela e opB-d OK.
-  - Esperado: `resultados/trava_clt_2026-10-21/ESPERADO.md`. Worktree `D:\dev\tcc-nrp-v142` criado.
-- `NUMEROS_TCC.md`: sem mudança (nenhum número usou o campo do hospital ≠ 6). Seção 15 (casos A
-  e B) ainda **proposta, não gravada**. Congelamento dos números: **25/10**.
-- Não enviado ao GitHub: os commits da v1.4.3 (vão no push depois da tag).
-
-- **HiGHS × SCIP, Fase 0 (22/10, pedido do orientador)** — relatório em
-  `resultados/solvers_2026-10-22/relatorio_fase0.md`; script `docs/diagnostico/comparar_solvers.py`.
-  Itens 1 a 4 passam: SCIP 10.0 por pip (PySCIPOpt 6.3.0, instalado no `.venv`, fora do
-  `requirements.txt`); partida aceita (log do SCIP, `completesol`, com controle); regra de 09/10
-  e fusão W = M + 1 valem (o gap do SCIP é mais exigente); o modelo recebido pelos dois é o mesmo
-  (com controle), depois de desfazer, no script, a reescrita do objetivo que a interface do
-  Pyomo faz para o SCIP. Fumaça OK (sprint01: os dois provam 56; avaliador oficial 56), depois
-  de corrigir no script um travamento da captura do log do SCIP pelo Pyomo (pipe + GIL). **Nada
-  da ferramenta mudou.**
-- **HiGHS × SCIP, Fase 1 (bateria, 22/10 à noite)** — regras registradas antes (`DECISOES.md`,
-  "2026-10-22 — Bateria HiGHS × SCIP"); resultado em `resultados/solvers_2026-10-22/
-  relatorio_fase1.md` e `bateria/resultado.md`. Placar SCIP 1 × HiGHS 2, 5 empates; o SCIP perde a
-  prova do A36_livre e não acha escala no B11 em 600 s. **Regra de troca: fica o HiGHS**; a
-  comparação entra no TCC como avaliação a posteriori. Anomalia do medium_late05 esclarecida
-  (22/10): folgas soltas na solução sem prova (7.435 = modelo; 2.199 = escala; integralidade
-  perfeita). A tela não é afetada; a trava que a ferramenta carrega depois de um nível sem prova
-  pode ficar frouxa com critérios de folga.
-- **P20 implementada (23/10)** — DECISOES "2026-10-23 — P20 aprovada"; esperado e resultado em
-  `resultados/p20_2026-10-23/ESPERADO.md`. Depois de um nível sem prova, a trava usa o valor
-  verdadeiro da escala (folgas apertadas). Teste `p20`: o modelo marcava 763, a escala vale 224;
-  o Essencial não piorou (224) na escala final. Testes rápidos da opção B OK; identidade 243/243 e
-  24/24. **Suíte completa: sexta à noite** (`fechar_v143.sh`, já com o `p20`).
-- **Sensibilidade ao tempo HiGHS × SCIP, 3.600 s (23/10) — PARCIAL, 4 de 6** (DECISOES "2026-10-23 —
-  Sensibilidade ao tempo"; `resultados/solvers_2026-10-23_3600/relatorio_parcial.md`). Interrompida
-  pelo Claude Code por falta de memória no B11 com HiGHS. medium_late05: SCIP 186 × HiGHS 224 (os
-  dois sem prova; escala = modelo); A36_livre: os dois provam 13 (empate). Falta o B11 (~2 h);
-  comando de retomada no relatório. Análise de sensibilidade: não reabre a regra de 22/10.
-- **NUMEROS_TCC (23/10):** seção "Comportamento computacional: HiGHS × SCIP" — **aprovada pelo
-  Otávio em 23/10**, com a escolha do valor da escala para a rodada de 22/10. Duas rodadas (600 s
-  completa; 3.600 s parcial, B11 não concluído e o motivo), por caso e solver, e a nota da anomalia
-  do medium_late05 (modelo 7.435, escala 2.199). Pode ir ao texto, com a afirmação fraca dos tempos. Tabela de tamanho (nosso × Santos) levada ao `NUMEROS_TCC.md` como seção
-  **PENDENTE DE APROVAÇÃO**; corrigidos lá dois caracteres de controle da seção 14 (defeito de
-  19/10 em texto de comando; nenhum número mudou).
+- **Versão citável: v1.4.4** (v1.4.3 + P20). Tag `v1.4.4` em `e91aa05`, criada pelo Otávio; `main` e a
+  tag enviadas ao GitHub. Suíte de fechamento de 23/10: **TUDO OK, 37 de 37 passos com código 0**,
+  inclusive `tela_p20` (`resultados/v143_2026-10-23/suite/resumo.txt`). Nenhuma mudança em `src/`
+  desde `ed621a2`. Não existe tag v1.4.3: a v1.4.4 contém tudo. A tag v1.4.4 não se mexe.
+  - O que a v1.4.4 traz em relação à v1.4.2:
+    - trava do máximo de dias seguidos só a da CLT; a regra do hospital é preferência (21/10);
+    - textos da tela para o gestor, tema escuro, barra pelo relógio (21/10);
+    - divisão proporcional do tempo máximo, resultado por nível, seção 5 enxuta (22/10);
+    - P20: depois de um nível sem prova, a trava usa o valor verdadeiro da escala (23/10).
+- **Código congelado a partir de 23/10:** só correção de defeito, com registro no `DECISOES.md`
+  antes (esperado, quando houver teste) e o portão da regressão.
+- **HiGHS × SCIP** (pedido do orientador, 22/10; **nada da ferramenta mudou**):
+  - Fase 0 (`resultados/solvers_2026-10-22/relatorio_fase0.md`): SCIP 10.0 por pip (PySCIPOpt 6.3.0,
+    no `.venv`, fora do `requirements.txt`); partida aceita; regra de 09/10 e fusão valem; o mesmo
+    modelo nos dois (com controle).
+  - Bateria de 600 s, 22/10 (`relatorio_fase1.md`): SCIP 1 × HiGHS 2, 5 empates. **Regra de troca:
+    fica o HiGHS.** Anomalia do medium_late05 esclarecida (folgas soltas: modelo 7.435, escala 2.199)
+    e levou à P20.
+  - Sensibilidade ao tempo, 3.600 s, 23/10 — **parcial, 4 de 6**
+    (`resultados/solvers_2026-10-23_3600/relatorio_parcial.md`). O Claude Code a interrompeu por
+    memória no B11/HiGHS. medium_late05: SCIP 186 × HiGHS 224; A36_livre: empate (13 provado nos
+    dois). Falta o B11. Não reabre a regra de 22/10.
+- **`NUMEROS_TCC.md`:**
+  - seção "Comportamento computacional: HiGHS × SCIP" **aprovada em 23/10**;
+  - tabela de tamanho (nosso × Santos) **pendente de aprovação**;
+  - seção 15 (casos A e B) ainda **proposta, não gravada**;
+  - corrigidos dois caracteres de controle da seção 14 (texto de comando, nenhum número mudou).
+  - Congelamento dos números: **25/10**.
 
 ## Próxima tarefa
 
-**0. Otávio: revisar a tela.** Abrir a ferramenta (um por linha):
-
-    cd D:\dev\tcc-nrp
-    .\.venv\Scripts\Activate.ps1
-    streamlit run src\app.py
-
-Conferir os textos contra `resultados/textos_tela_2026-10-21.md`, o tema escuro e a barra (gerar
-uma escala pequena). Aprovar ou pedir ajustes ao Claude Code. **Só depois** rodar a suíte.
-
-**1. Otávio: suíte reduzida da v1.4.3** (~1 h 45 nesta máquina, i5-10210U, HiGHS 1.15.1; o opB-e
-sozinho leva ~35 min, e o caso com solver da divisão do tempo, ~12 min). Com o Claude Code e o Chrome fechados. Antes, apagar a pasta da suíte
-cancelada (o RETOMAR a pegaria). No PowerShell, um comando por linha:
-
-    cd D:\dev\tcc-nrp
-    .\.venv\Scripts\Activate.ps1
-    Remove-Item -Recurse -Force resultados\v143_2026-10-21
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v143.sh
-
-Termina com "TUDO OK" ou "PARADO: ..." na última linha de
-`resultados/v143_<data>/suite/resumo.txt`. Se for interrompida (memória, queda), **retomar** —
-pula o que já passou e continua na mesma pasta —, um por linha:
-
-    cd D:\dev\tcc-nrp
-    .\.venv\Scripts\Activate.ps1
-    $env:RETOMAR = "1"
-    & "C:\Program Files\Git\bin\bash.exe" docs/diagnostico/fechar_v143.sh
-    Remove-Item Env:RETOMAR
-
-Diferenças admitidas: só as do `resultados/trava_clt_2026-10-21/ESPERADO.md` (max-dias
-reescrito; pref-tela com a parte de 8 h; e, no acréscimo da noite, os textos de 8, 12, opB-tela,
-pref-tela e max-dias). Qualquer outra diferença é falha. O `Remove-Item` é só para a primeira
-vez: ao retomar, não apagar a pasta.
-
-**2. Só com TUDO OK: tag v1.4.3 e envio** (um por linha; a tag marca a versão, o push manda os
-commits e a tag ao GitHub):
-
-    git tag -a v1.4.3 -m "v1.4.3: trava de dias seguidos so a da CLT; regra do hospital e preferencia"
-    git push origin main
-    git push origin v1.4.3
-
-Se "PARADO": não criar a tag; abrir o log indicado e trazer ao Claude Code.
-
-**3. Otávio: aprovar (ou corrigir) a seção 15 proposta para o `NUMEROS_TCC.md`** (casos A e B), no
+**1. Otávio: aprovar (ou corrigir) a seção 15 proposta para o `NUMEROS_TCC.md`** (casos A e B), no
 `resultados/relatorio_2026-10-21.md`. Só depois os números vão ao texto.
 
+**2. Otávio: aprovar (ou não) a tabela de tamanho (nosso × Santos)**, pendente no `NUMEROS_TCC.md`.
+Antes de citar, conferir a formulação de Santos no artigo (a coluna de Santos é um piso).
+
+**3. Opcional — terminar o B11 da sensibilidade de 3.600 s** (~2 h; só se o Otávio quiser o caso
+no texto). Com o Claude Code e outros programas fechados (o avaliador Java pode usar até 6 GB). No
+PowerShell, um comando por linha:
+
+    cd D:\dev\tcc-nrp
+    .\.venv\Scripts\Activate.ps1
+    python docs\diagnostico\bateria_solvers.py --todos --limite 3600 --saida resultados\solvers_2026-10-23_3600 --casos medium_late05 A36_livre_30 B11_livre_89
+
 Sensibilidade com 2 ou 3 ordens de critérios: **sem proposta até a decisão do Otávio**.
-Congelamento dos números: **25/10**.
+Congelamento dos números: **25/10**; a partir de 26/10, só escrita.
 
 ## Worktrees de leitura (D:\dev)
 
@@ -135,6 +71,17 @@ raiz, um por linha:
     git worktree remove --force ..\tcc-nrp-v142
 
 (apaga só as pastas; as tags e o histórico ficam).
+
+## Decisões de 23/10 (v1.4.4)
+
+- DECISOES "2026-10-23 — P20 aprovada: trava pelo valor verdadeiro depois de nível sem prova"
+  (implementação; o modelo não muda). Teste `p20`: modelo 763, escala 224, o Essencial não piora.
+- DECISOES "2026-10-23 — Sensibilidade ao tempo, HiGHS × SCIP, 3.600 s por caso" (análise de
+  sensibilidade; vitória pela escala; não reabre a regra de 22/10).
+- DECISOES de 22/10: "Bateria HiGHS × SCIP" (casos, regras, vitória e regra de troca) e "Anomalia do
+  medium_late05 (HiGHS): folgas soltas na solução sem prova".
+- Suíte da v1.4.3 + P20: TUDO OK (37 de 37); tag v1.4.4. **Código congelado**: só correção de
+  defeito, com registro.
 
 ## Decisões de 22/10 (v1.4.3, acréscimo)
 
@@ -263,39 +210,47 @@ raiz, um por linha:
 
 ## Pendências com a Redação
 
-- **22/10 (se aprovado e a suíte fechar):** (1) a frase sem prova passa a "Escala gerada; pode
-  haver uma melhor." — o quanto pode melhorar sai por nível ("Importante: 7 violações. Nenhuma
-  escala tem menos de 4."); não usar mais o "gap" no texto como saída da ferramenta. (2) A
-  divisão do tempo é **parâmetro de projeto, sem calibração** (50 : 50; 50 : 30 : 20); declarar
-  assim. Os números do NUMEROS_TCC foram medidos com os limites antigos, declarados. (3) O alerta
-  de descanso semanal virou uma linha; o fundamento (Súmula 110, OJ 355) fica no "?".
-
-- **21/10 (noite, textos da tela, se aprovados e a suíte fechar):** frases citáveis que mudam —
-  lista antes × depois no topo de `resultados/textos_tela_2026-10-21.md`. Em resumo: "pode haver
-  uma melhor (gap X: …)" → "pode haver uma melhor: esta escala pode ser até X pior que a melhor
-  possível, e com mais tempo a ferramenta poderia melhorá-la"; "o solver não achou escala nem
-  provou que ela não existe" → "a ferramenta não encontrou escala nem conseguiu mostrar que ela
-  não existe"; "Escala desta tela: a da etapa 2…" → "Esta escala tem a carga equilibrada entre
-  colegas."; "Orçamento do clique" → "Tempo máximo para gerar a escala"; "Como o veredito foi
-  obtido" → "Como o resultado foi obtido". As frases "Faltam N; o menor quadro viável é X", "O
-  quadro informado admite escala legal" e "Não há escala legal até N" **não mudaram**. A barra
-  agora anda pelo relógio (o `GUIA_DE_USO.md` dizia "a barra não tem relógio"; atualizado).
-
-- **21/10 (noite, v1.4.3, se a suíte fechar):** (1) a ferramenta não tem mais "máximo de dias
-  seguidos do hospital" rígido: a trava é só a da lei (6); a regra do hospital é preferência. O
-  texto não pode citar o caso "hospital = 4 → Falta 1; 15" como comportamento da ferramenta. (2)
-  Frase de princípio admitida: "duro = lei ou físico (cobertura, CLT, horas do contrato, férias);
-  tudo o que o hospital quer é critério classificável". (3) O `GUIA_DE_USO.md` foi atualizado: tirou
-  o campo do hospital e explica as duas preferências (resolve o item (3) de 21/10, manhã).
-
-- **21/10:** (1) números da fase 2 só depois de o Otávio aprovar a seção 15 proposta
-  (`resultados/relatorio_2026-10-21.md`); A11 e B11 só como "HIPÓTESE DE SENSIBILIDADE — NÃO REGRA
-  DA FERRAMENTA". (2) A penalidade do avaliador (288, 216, 96, 714) não vai ao texto como
-  resultado: só "sem violação de dura". (3) O `GUIA_DE_USO.md` ainda não cita as duas
-  preferências novas da tela. (4) A preferência não tem conferência no avaliador oficial (o XML só
-  tem a versão rígida); a contagem é do `avaliacao.py`. (5) O texto não pode mais dizer que
-  máximo de dias seguidos e máximo de turnos são só "garantidos pela CLT": viraram também
-  preferência classificável (na v1.4.2, se a suíte fechar).
+- **v1.4.4 — suíte fechada em 23/10 (TUDO OK, 37 de 37): passam a valer as entradas de 21 e 22/10
+  que diziam "se a suíte fechar"** (consolidadas aqui):
+  - (a) **Dias seguidos:** a ferramenta não tem mais o "máximo de dias seguidos do hospital"
+    rígido. A trava é só a da lei (6; no 12×36, a regra das 36 h), e a regra do hospital é
+    preferência. Não citar o caso "hospital = 4 → Falta 1; 15" como comportamento da ferramenta.
+    Frase de princípio admitida: "duro = lei ou físico (cobertura, CLT, horas do contrato, férias);
+    tudo o que o hospital quer é critério classificável".
+  - (b) **Máximo de dias seguidos e máximo de turnos** são também preferência classificável
+    (desde a v1.4.2): o texto não pode dizer que são só "garantidos pela CLT". A preferência não
+    tem conferência no avaliador oficial (o XML só tem a versão rígida); a contagem é do
+    `avaliacao.py`.
+  - (c) **Frases da tela que o texto pode citar, na forma final** (antes × depois em
+    `resultados/textos_tela_2026-10-21.md`):
+    - sem prova: "Escala gerada; pode haver uma melhor." O quanto pode melhorar sai por nível
+      ("Importante: 7 violações. Nenhuma escala tem menos de 4."). A versão intermediária de 21/10
+      ("…pode ser até X pior…") foi substituída em 22/10. Não usar mais "gap" como saída da
+      ferramenta;
+    - sem resposta: "a ferramenta não encontrou escala nem conseguiu mostrar que ela não existe";
+    - "Esta escala tem a carga equilibrada entre colegas.";
+    - "Tempo máximo para gerar a escala" (era "Orçamento do clique");
+    - "Como o resultado foi obtido" (era "Como o veredito foi obtido").
+    - **Não mudaram:** "Faltam N; o menor quadro viável é X", "O quadro informado admite escala
+      legal" e "Não há escala legal até N".
+  - (d) **Divisão do tempo:** é parâmetro de projeto, sem calibração (etapa 1 : etapa 2 = 50 : 50;
+    50 : 30 : 20 entre os níveis presentes); declarar assim. Os números do NUMEROS_TCC foram
+    medidos com os limites antigos, declarados lá.
+  - (e) **Tela:** o alerta de descanso semanal virou uma linha, com o fundamento (Súmula 110, OJ
+    355) no "?". A barra anda pelo relógio. O tema é escuro.
+  - (f) **P20:** depois de um nível sem prova, a trava usa o valor verdadeiro da escala (folgas
+    apertadas). Um nível sem prova não piora na escala final. A nota de 20/10 ("com nível sem
+    prova, a prioridade entre níveis só é garantida nos provados") continua valendo quanto ao
+    ótimo.
+  - (g) O `GUIA_DE_USO.md` está atualizado com tudo isso (resolve o item (3) de 21/10).
+- **HiGHS × SCIP (23/10):** a seção do `NUMEROS_TCC.md` foi aprovada e pode ir ao texto (tempos
+  com a afirmação fraca; a rodada de 3.600 s é parcial). Para a seção 2.4.3 ("por que o HiGHS"):
+  não há motivo registrado para a escolha original; a comparação entra como avaliação a
+  posteriori.
+- **21/10, ainda pendente:** (1) os números da fase 2 só vão ao texto depois de o Otávio aprovar a
+  seção 15 proposta (`resultados/relatorio_2026-10-21.md`); A11 e B11 só como "HIPÓTESE DE
+  SENSIBILIDADE — NÃO REGRA DA FERRAMENTA". (2) A penalidade do avaliador (288, 216, 96, 714) não
+  vai ao texto como resultado; só "sem violação de dura".
 
 - **20/10 (tarde):** (1) fundamento das 36 h: a frase admitida é "a regra, como modelada, segue o
   art. 59-A" — nunca "o hospital descumpre"; a convenção coletiva do caso não foi lida. (2) Na
