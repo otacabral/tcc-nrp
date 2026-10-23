@@ -2818,6 +2818,72 @@ equilibrada".
 
 ---
 
+## 2026-10-22 — Bateria HiGHS × SCIP: casos, regras, critério e regra de troca
+
+**Status: vigente — DESENHO EXPERIMENTAL registrado ANTES de rodar** (ok do Otávio, 22/10, depois
+da Fase 0 em `resultados/solvers_2026-10-22/relatorio_fase0.md`). Origem: reunião de 22/10 — o
+orientador pediu uma tabela de comportamento computacional por caso e sugeriu o SCIP (gratuito);
+o CBC fica fora (na experiência dele, resultado ruim). Não há motivo registrado para a escolha
+original do HiGHS. **Nada da ferramenta muda nesta bateria.**
+
+**Casos (8), a partir do `NUMEROS_TCC.md`:**
+1–4. `sprint01`, `sprint02`, `long01`, `long02` — os 4 ótimos de Santos et al. (2016), Tabela 6
+   (56, 58, 197, 219); modelo INRC (`modelo.construir`), objetivo único.
+5. `medium_late05` — o alvo de validação do INRC que o HiGHS não provou (224 contra 107
+   publicado; seção 1).
+6. A36_livre com quadro 30 (10 enfermeiros + 20 técnicos, a composição da regra `equipe`, a do
+   menor quadro viável da fase 2) — ferramenta, classificação padrão.
+7. A36_fixo com quadro 30 (10 + 20; 29 linhas "Só este turno", Essencial) — ferramenta.
+8. B11_livre com quadro 89 (15 + 74) — **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA**
+   (`DESCANSO_POR_TURNO = {"D12": 11}`). É o único caso B que usa solver: o B36 é recusado pela
+   conta prévia até 101, sem solver, e não compara solvers. *Leitura adotada de "B" (Claude
+   Code); levar ao Otávio.*
+
+**Regras, iguais para os dois:**
+- o mesmo modelo (identidade provada na Fase 0, com controle); no SCIP, o objetivo vai direto como
+  custo (`ScipObjetivoDireto`), e não no epígrafo que a interface do Pyomo 6.10.1 cria;
+- **600 s por caso**: nos casos INRC, uma resolução de 600 s; nos da ferramenta, os 600 s
+  divididos pela regra da v1.4.3 ("2026-10-22 — Divisão proporcional do tempo máximo"), com a
+  proteção da primeira escala e a etapa 2 (com a classificação padrão: um bloco e a etapa 2,
+  300 + 300 s no início);
+- gap relativo de parada **0,01%** e **1 thread** nos dois (HiGHS: `mip_rel_gap`, `threads`; SCIP:
+  `limits/gap`, `lp/threads`);
+- a mesma máquina (i5-10210U, 11,8 GB) e a mesma sessão; os dois solvers um depois do outro, caso
+  a caso; o **HiGHS roda de novo** (nenhum log antigo é reaproveitado);
+- toda escala passa pelo **avaliador oficial** (INRC: `validar.avaliar`; ferramenta: o mesmo
+  caminho da fase 2, `fase2.avaliador`, com o XML da instância e os pedidos);
+- memória: a bateria só começa com ≥ 3 GB livres, e a memória livre é registrada antes de cada
+  caso.
+- Implementação: `docs/diagnostico/bateria_solvers.py`. Nos casos da ferramenta, a bateria chama
+  `ferramenta.resolver_com_objetivo` (a ferramenta como está) e troca, só no processo da
+  bateria, a função que chama o solver (`ferramenta.resolver`) por uma que usa o HiGHS ou o SCIP
+  com as regras acima. O HiGHS vai pelo appsi, como na ferramenta, com 1 thread e o gap
+  explícitos.
+
+**O que se registra, por caso × solver × nível** (nível = cada bloco da etapa 1, e a etapa 2):
+variáveis, restrições, tempo da etapa, melhor escala (limite superior), melhor limite inferior,
+gap (a mesma fórmula nos dois: (escala − limite) ÷ |escala|), ótimo provado (sim/não), e o
+avaliador oficial na escala final do caso.
+
+**Vitória por caso** (Otávio, 22/10): o SCIP vence o caso se **provar o ótimo onde o HiGHS não
+prova**, ou, quando **nenhum dos dois prova**, se achar uma escala de **valor menor**. Vale o
+simétrico para o HiGHS. **Gap menor, sozinho, não conta.** O resto é empate (inclusive os dois
+provarem). Nos casos da ferramenta, conta a etapa 1 (o valor da classificação do gestor); a etapa
+2 é registrada, não decide.
+
+**Regra de troca:** a ferramenta passa para o SCIP se, e somente se, (i) o SCIP vencer mais casos
+do que perder, (ii) não perder nenhuma prova de ótimo que o HiGHS consegue e (iii) passar na suíte
+completa depois da troca. Senão fica o HiGHS, e a comparação entra no TCC como avaliação a
+posteriori.
+
+**Por que a exigência:** a troca custa ~15 a 20 h de máquina e refazer as seções 1 e 5–14 do
+`NUMEROS_TCC.md`, perto da entrega; só se justifica com ganho real para o gestor.
+
+**Afirmação fraca:** tempos de uma máquina e de uma configuração só; vão ao texto como
+comportamento observado nessas condições, nunca como resultado geral sobre os solvers.
+
+---
+
 ## Modelo de entrada
 
 ```
