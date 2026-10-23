@@ -12,6 +12,15 @@ A rodada foi **interrompida pelo Claude Code por falta de memória na máquina**
 depois da interrupção, 5,0 GB livres e nenhum processo da bateria vivo). Não foi relançada (só com
 o ok do Otávio). Faltam: B11 com HiGHS e B11 com SCIP (~2 h).
 
+**Onde parou:** o B11 com HiGHS começou às 06:45; a escala e o XML da instância foram gravados às
+07:45 — o solver terminou os 3.600 s — e o processo foi encerrado logo depois, **na conferência pelo
+avaliador oficial**, sem gravar o JSON. Esse avaliador (Java) roda com até 6 GB de memória
+(`-Xmx6g`, `src/validar.py`, desde a correção de 21/10, porque o B11 estourava com o padrão). É o
+suspeito mais provável do aperto: 5 GB livres + o processo Python da bateria. A escala gravada desse
+B11 é de uma rodada incompleta (sem JSON) e **não entra na tabela**; ao retomar, o B11 com HiGHS roda
+de novo do começo. Para a retomada: fechar o Claude Code e outros programas (o Java pode precisar
+de até 6 GB).
+
 ## Resultado das 4 rodadas (i5-10210U, 11,8 GB; HiGHS 1.15.1 e SCIP 10.0; gap 0,01%; 1 thread)
 
 | Caso | Solver | Etapa 1 | Valor do modelo | Valor da escala | Avaliador oficial | Etapa 2 | Memória livre antes | Pico |
