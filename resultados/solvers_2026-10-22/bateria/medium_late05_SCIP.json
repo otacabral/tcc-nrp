@@ -1,0 +1,34 @@
+{
+ "caso": "medium_late05",
+ "solver": "SCIP",
+ "memoria_livre_mb_antes": 5142,
+ "limite_caso_s": 600,
+ "referencia": 107,
+ "provado_etapa1": false,
+ "valores_etapa1": [
+  318.0
+ ],
+ "avaliador": {
+  "penalidade_avaliador": 318
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 603.3,
+ "chamadas": [
+  {
+   "variaveis": 15320,
+   "inteiras": 5160,
+   "restricoes": 13060,
+   "limite": 600,
+   "partida": false,
+   "tempo": 600.39,
+   "ub": 318.0,
+   "lb": 53.71205161333462,
+   "gap": 0.8310941773165579,
+   "provado": false,
+   "estado": "maxTimeLimit (timelimit)",
+   "veredito": "viavel",
+   "nivel": "objetivo único (INRC)"
+  }
+ ],
+ "pico_memoria_mb": 334
+}

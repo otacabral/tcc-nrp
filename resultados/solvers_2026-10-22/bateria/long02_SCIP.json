@@ -1,0 +1,34 @@
+{
+ "caso": "long02",
+ "solver": "SCIP",
+ "memoria_livre_mb_antes": 5085,
+ "limite_caso_s": 600,
+ "referencia": 219,
+ "provado_etapa1": true,
+ "valores_etapa1": [
+  219.0
+ ],
+ "avaliador": {
+  "penalidade_avaliador": 219
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 27.7,
+ "chamadas": [
+  {
+   "variaveis": 15120,
+   "inteiras": 8232,
+   "restricoes": 10948,
+   "limite": 600,
+   "partida": false,
+   "tempo": 24.47,
+   "ub": 219.0,
+   "lb": 219.0,
+   "gap": 0.0,
+   "provado": true,
+   "estado": "convergenceCriteriaSatisfied (optimal)",
+   "veredito": "viavel",
+   "nivel": "objetivo único (INRC)"
+  }
+ ],
+ "pico_memoria_mb": 304
+}

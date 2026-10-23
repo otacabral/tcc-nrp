@@ -1,0 +1,34 @@
+{
+ "caso": "medium_late05",
+ "solver": "HiGHS",
+ "memoria_livre_mb_antes": 5094,
+ "limite_caso_s": 600,
+ "referencia": 107,
+ "provado_etapa1": false,
+ "valores_etapa1": [
+  7435.0
+ ],
+ "avaliador": {
+  "penalidade_avaliador": 2199
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 605.5,
+ "chamadas": [
+  {
+   "variaveis": 15320,
+   "inteiras": 5160,
+   "restricoes": 13060,
+   "limite": 600,
+   "partida": false,
+   "tempo": 602.53,
+   "ub": 7435.0,
+   "lb": 59.0,
+   "gap": 0.9920645595158036,
+   "provado": false,
+   "estado": "maxTimeLimit",
+   "veredito": "viavel",
+   "nivel": "objetivo único (INRC)"
+  }
+ ],
+ "pico_memoria_mb": 229
+}

@@ -41,7 +41,16 @@ fim de cada sessão (dele ou do chat).
   (com controle), depois de desfazer, no script, a reescrita do objetivo que a interface do
   Pyomo faz para o SCIP. Fumaça OK (sprint01: os dois provam 56; avaliador oficial 56), depois
   de corrigir no script um travamento da captura do log do SCIP pelo Pyomo (pipe + GIL). **Nada
-  da ferramenta mudou.** A Fase 1 (bateria) só com o ok do Otávio.
+  da ferramenta mudou.**
+- **HiGHS × SCIP, Fase 1 (bateria, 22/10 à noite)** — regras registradas antes (`DECISOES.md`,
+  "2026-10-22 — Bateria HiGHS × SCIP"); resultado em `resultados/solvers_2026-10-22/
+  relatorio_fase1.md` e `bateria/resultado.md`. Placar SCIP 1 × HiGHS 2, 5 empates; o SCIP perde a
+  prova do A36_livre e não acha escala no B11 em 600 s. **Regra de troca: fica o HiGHS**; a
+  comparação entra no TCC como avaliação a posteriori. Anomalia a esclarecer: no medium_late05 o
+  valor que o HiGHS relatou (7.435) não bate com a escala carregada (2.199 no avaliador); não muda
+  a vitória (SCIP 318). Tabela de tamanho (nosso × Santos) levada ao `NUMEROS_TCC.md` como seção
+  **PENDENTE DE APROVAÇÃO**; corrigidos lá dois caracteres de controle da seção 14 (defeito de
+  19/10 em texto de comando; nenhum número mudou).
 
 ## Próxima tarefa
 

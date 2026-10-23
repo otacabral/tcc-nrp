@@ -1,0 +1,95 @@
+{
+ "caso": "A36_fixo_30",
+ "solver": "SCIP",
+ "memoria_livre_mb_antes": 4619,
+ "limite_caso_s": 600,
+ "quadro": 30,
+ "enfermeiros": 10,
+ "caminho": "em sequência, 2 blocos",
+ "provado_etapa1": true,
+ "valores_etapa1": [
+  0,
+  14
+ ],
+ "partes": [
+  {
+   "limite": 187,
+   "tempo": 32.70634937286377,
+   "niveis": [
+    "Essencial"
+   ],
+   "valor": 0,
+   "provado": true,
+   "gap": 0.0
+  },
+  {
+   "limite": 154,
+   "tempo": 5.86732029914856,
+   "niveis": [
+    "Importante"
+   ],
+   "valor": 14,
+   "provado": true,
+   "gap": 0.0
+  }
+ ],
+ "etapa2": "ok",
+ "provado_etapa2": false,
+ "avaliador": {
+  "xsd_instancia": [],
+  "xsd_escala": [],
+  "penalidade_avaliador": 234,
+  "hard_constraints_violation": "não",
+  "erros_avaliador": []
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 604.8,
+ "chamadas": [
+  {
+   "variaveis": 5320,
+   "inteiras": 5320,
+   "restricoes": 20264,
+   "limite": 187,
+   "partida": false,
+   "tempo": 32.68,
+   "ub": 0.0,
+   "lb": 0.0,
+   "gap": 0.0,
+   "provado": true,
+   "estado": "convergenceCriteriaSatisfied (optimal)",
+   "veredito": "viavel",
+   "nivel": "etapa 1: Essencial"
+  },
+  {
+   "variaveis": 5320,
+   "inteiras": 5320,
+   "restricoes": 20265,
+   "limite": 154,
+   "partida": true,
+   "tempo": 5.82,
+   "ub": 14.0,
+   "lb": 14.0,
+   "gap": 0.0,
+   "provado": true,
+   "estado": "convergenceCriteriaSatisfied (optimal)",
+   "veredito": "viavel",
+   "nivel": "etapa 1: Importante"
+  },
+  {
+   "variaveis": 5324,
+   "inteiras": 5320,
+   "restricoes": 20326,
+   "limite": 560,
+   "partida": false,
+   "tempo": 559.9,
+   "ub": 0.06818181818181734,
+   "lb": 1.1657341758564144e-15,
+   "gap": 0.9999999999999829,
+   "provado": false,
+   "estado": "maxTimeLimit (timelimit)",
+   "veredito": "viavel",
+   "nivel": "etapa 2 (equilíbrio)"
+  }
+ ],
+ "pico_memoria_mb": 519
+}

@@ -1,0 +1,34 @@
+{
+ "caso": "sprint01",
+ "solver": "SCIP",
+ "memoria_livre_mb_antes": 5017,
+ "limite_caso_s": 600,
+ "referencia": 56,
+ "provado_etapa1": true,
+ "valores_etapa1": [
+  56.0
+ ],
+ "avaliador": {
+  "penalidade_avaliador": 56
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 5.0,
+ "chamadas": [
+  {
+   "variaveis": 2978,
+   "inteiras": 1400,
+   "restricoes": 2450,
+   "limite": 600,
+   "partida": false,
+   "tempo": 2.76,
+   "ub": 56.0,
+   "lb": 56.0,
+   "gap": 0.0,
+   "provado": true,
+   "estado": "convergenceCriteriaSatisfied (optimal)",
+   "veredito": "viavel",
+   "nivel": "objetivo único (INRC)"
+  }
+ ],
+ "pico_memoria_mb": 156
+}

@@ -270,9 +270,36 @@ Aprovada pelo Otávio em 19/10 (2º bloco). Esperado commitado antes (`8d20313`;
 
 | Número | O que é | Arquivo | Comando | Conferência | Ressalva |
 |---|---|---|---|---|---|
-| duras = **0** nas 4 escalas ótimas (56, 58, 197, 219) | cobertura pelo avaliador oficial; um turno por dia contado no XML; `conferir_rigidas`; restrições do modelo com x fixado | `resultados/validacao_restricoes_2026-10-19/tabela.md` | `python docs\diagnosticoalidacao_restricoes.py` | avaliador oficial (saídas de `resultados/<inst>_completo_avaliador.txt`) | o avaliador só checa cobertura; um-turno-por-dia vem da contagem no XML |
+| duras = **0** nas 4 escalas ótimas (56, 58, 197, 219) | cobertura pelo avaliador oficial; um turno por dia contado no XML; `conferir_rigidas`; restrições do modelo com x fixado | `resultados/validacao_restricoes_2026-10-19/tabela.md` | `python docs\diagnostico\validacao_restricoes.py` | avaliador oficial (saídas de `resultados/<inst>_completo_avaliador.txt`) | o avaliador só checa cobertura; um-turno-por-dia vem da contagem no XML |
 | penalidade por tipo, avaliador × modelo: diferença **0** em todos os tipos; somas **56, 58, 197, 219** | 6 tipos com custo nas 4 escalas (máximo de turnos, dias seguidos, mínimos de dias e de folgas seguidos, pedido de folga, padrão indesejado) | idem, `por_tipo.csv` | idem | avaliador oficial | a coluna "modelo" é o próprio código da função objetivo, com x fixado; a independência está no avaliador |
 | diferença **0** por profissional (10, 10, 49, 49) e por profissional × tipo | | `por_profissional.csv` | idem | avaliador oficial | idem |
-| controle: 20 escalas perturbadas (penalidade 69–250), avaliador = modelo em todos os tipos e células; a conferência acusa as 20 contra a saída da original | | `controle/controle.md` | `python docs\diagnosticoalidacao_restricoes_controle.py` | avaliador oficial, rodado em 19/10 | perturbações aleatórias, semente 20261019; 11 tipos de violação exercitados |
+| controle: 20 escalas perturbadas (penalidade 69–250), avaliador = modelo em todos os tipos e células; a conferência acusa as 20 contra a saída da original | | `controle/controle.md` | `python docs\diagnostico\validacao_restricoes_controle.py` | avaliador oficial, rodado em 19/10 | perturbações aleatórias, semente 20261019; 11 tipos de violação exercitados |
 
 Substitui, como evidência de restrições, as 207 + 36 escalas de 18/09 (perdidas; seção 1).
+
+## PENDENTE DE APROVAÇÃO — Tamanho do modelo: nosso × Santos et al. (2016)
+
+**Não aprovada: não citar até o Otávio aprovar.** Levada em 22/10 (pedido do orientador na reunião
+de 22/10, junto da bateria HiGHS × SCIP). Origem: `docs/diferencas_inrc_ferramenta.md`, parte (a);
+contagem do nosso modelo por `docs/diagnostico/tamanho_modelos.py` (sem solver; os mesmos números
+saíram de novo em 22/10 pela `bateria_solvers.py --montar`, e o HiGHS e o SCIP recebem exatamente
+esse problema — identidade da Fase 0, `resultados/solvers_2026-10-22/relatorio_fase0.md`).
+
+| Instância | Nosso: variáveis | Nosso: restrições | Santos: x + y + w + r + z | dos quais w + r |
+|---|---:|---:|---:|---:|
+| sprint01 (10 enf., 4 turnos, 28 dias) | 2.978 | 2.450 | ≥ 9.380 | 8.120 |
+| sprint02 | 2.992 | 2.464 | ≥ 9.380 | 8.120 |
+| long01 (49 enf., 5 turnos) | 15.029 | 10.857 | ≥ 47.334 | 39.788 |
+| long02 | 15.120 | 10.948 | ≥ 47.334 | 39.788 |
+| medium_late05 (30 enf., 5 turnos) | 15.320 | 13.060 | ≥ 28.980 | 24.360 |
+
+**Ressalvas (obrigatórias junto da tabela):**
+- **A coluna de Santos é um piso**: só as variáveis x, y, w, r, z, pela definição do artigo; as
+  folgas α (dependem das suaves ativas) e as restrições de Santos não foram contadas. "≥" é parte
+  do número.
+- As janelas w e r de Santos são uma por par de dias d1 ≤ d2: 28 × 29 ÷ 2 = 406 por enfermeiro em
+  28 dias. Conferir a formulação **no artigo** antes de citar (a leitura veio do fichamento da
+  Redação, `docs/diferencas_inrc_ferramenta.md`).
+- A tabela compara **tamanho**, não eficiência: as janelas de Santos servem para fortalecer o
+  limite dual por planos de corte; este trabalho não persegue desempenho algorítmico
+  (`DECISOES.md`, "2026-09-08 — Formulação: atribuição, não janelas").

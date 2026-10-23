@@ -1,0 +1,75 @@
+Schedule:
+=========
+
+Employee  0 |    |    |    |    |    |    | L  | L  |   N|   N|E   |    |   N| L  |    |    |    | L  |E   | L  |   N| L  | L  | L  |    |   N| L  |E   |
+Employee  1 |   N| L  | L  |E   |  D |    |    |    |    |    |    |E   | L  | L  |    |    |    |E   | L  |    | L  | L  |    |    | L  |E   |E   | L  |
+Employee  2 |E   |E   |E   |    |E   |E   |E   |    |    |    |   N|   N| L  |    |    |    |    |E   |E   |    |    |  D |E   |E   |   N|E   |E   |E   |
+Employee  3 |  D |   N|   N|   N|   N|  D |  D |   N|    |    | L  | L  |    |E   | L  |    |    | L  |   N|E   |    |E   |  D |  D |    | L  | L  |   N|
+Employee  4 |    |    |    | L  | L  |    |E   |E   |  D |  D |E   |    |E   |  D | L  | L  | L  |    | L  |E   |  D |   N|    |    | L  | L  |   N|    |
+Employee  5 |E   |  D |  D | L  |    | L  |   N| L  | L  | L  |    |E   |  D |    |E   |E   |E   |   N|  D |    |    |    |    |    |E   |  D |    |    |
+Employee  6 |    |    |    |E   | L  | L  |    |    |    |    |  D | L  |    |   N|   N|   N|   N|    |    |    |    |E   |   N|   N|E   |    |    |    |
+Employee  7 |    |    |    |  D |E   |E   |    |  D |E   |E   | L  |    |    |    |E   |  D |  D |  D |    |   N| L  |    |    |    |    |    |    | L  |
+Employee  8 | L  |    |    |    |    |   N|    |    |    |    |    |  D |E   |    |    |    |    |    |    | L  |E   |    |    |    |    |    |  D |  D |
+Employee  9 | L  |    |    |    |    |    | L  |E   |    |    |    |    |    |E   |  D |    |    |    |    |  D |E   |    |    |    |  D |    |    |    |
+
+Violations:
+===========
+
+    Employee: 0
+    ===============
+         Maximum number of assignments: excess = 1 , pos = 111, cost = 1
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 2, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+    Employee: 1
+    ===============
+         Requested day off: excess = 1 , pos = 2, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+    Employee: 2
+    ===============
+         Maximum number of assignments: excess = 2 , pos = 111, cost = 2
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+    Employee: 3
+    ===============
+         Maximum number of assignments: excess = 5 , pos = 111, cost = 5
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 3, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+    Employee: 4
+    ===============
+         Maximum number of assignments: excess = 7 , pos = 111, cost = 7
+         Requested day off: excess = 1 , pos = 1, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+         Requested day off: excess = 1 , pos = 9, cost = 1
+    Employee: 5
+    ===============
+         Maximum number of assignments: excess = 6 , pos = 111, cost = 6
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 3, cost = 1
+         Requested day off: excess = 1 , pos = 5, cost = 1
+         Requested day off: excess = 1 , pos = 6, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 6
+    ===============
+         Maximum number of assignments: excess = 4 , pos = 111, cost = 4
+         Requested day off: excess = 1 , pos = 0, cost = 1
+         Requested day off: excess = 1 , pos = 4, cost = 1
+    Employee: 7
+    ===============
+         Minimum number of consecutive working days: excess = 1 , pos = 111, cost = 1
+         Maximum number of assignments: excess = 5 , pos = 111, cost = 5
+         Requested day off: excess = 1 , pos = 5, cost = 1
+         Requested day off: excess = 1 , pos = 8, cost = 1
+    Employee: 8
+    ===============
+    Employee: 9
+    ===============
+         Requested day off: excess = 1 , pos = 3, cost = 1
+
+Penalty:
+========
+    56
+

@@ -1,0 +1,87 @@
+memoria livre 5046 MB
+sprint01 HiGHS: comecando (memoria livre 5046 MB)
+sprint01 HiGHS: codigo 0, 5 s
+sprint01 SCIP: comecando (memoria livre 5015 MB)
+sprint01 SCIP: codigo 0, 5 s
+sprint02 HiGHS: comecando (memoria livre 5022 MB)
+sprint02 HiGHS: codigo 0, 5 s
+sprint02 SCIP: comecando (memoria livre 5013 MB)
+sprint02 SCIP: codigo 0, 9 s
+long01 HiGHS: comecando (memoria livre 5001 MB)
+long01 HiGHS: codigo 0, 22 s
+long01 SCIP: comecando (memoria livre 5008 MB)
+long01 SCIP: codigo 0, 38 s
+long02 HiGHS: comecando (memoria livre 5115 MB)
+long02 HiGHS: codigo 0, 52 s
+long02 SCIP: comecando (memoria livre 5087 MB)
+long02 SCIP: codigo 0, 28 s
+medium_late05 HiGHS: comecando (memoria livre 5095 MB)
+medium_late05 HiGHS: codigo 0, 606 s
+medium_late05 SCIP: comecando (memoria livre 5143 MB)
+medium_late05 SCIP: codigo 0, 604 s
+A36_livre_30 HiGHS: comecando (memoria livre 5050 MB)
+A36_livre_30 HiGHS: codigo 0, 607 s
+A36_livre_30 SCIP: comecando (memoria livre 5193 MB)
+A36_livre_30 SCIP: codigo 0, 606 s
+A36_fixo_30 HiGHS: comecando (memoria livre 4681 MB)
+A36_fixo_30 HiGHS: codigo 0, 608 s
+A36_fixo_30 SCIP: comecando (memoria livre 4609 MB)
+A36_fixo_30 SCIP: codigo 0, 606 s
+B11_livre_89 HiGHS: comecando (memoria livre 4899 MB)
+B11_livre_89 HiGHS: codigo 0, 614 s
+B11_livre_89 SCIP: comecando (memoria livre 6084 MB)
+B11_livre_89 SCIP: codigo 0, 603 s
+# Bateria HiGHS × SCIP — resultado
+
+Regras: `DECISOES.md`, "2026-10-22 — Bateria HiGHS × SCIP" (registrada antes de rodar). i5-10210U, 11,8 GB, Windows 11; HiGHS 1.15.1 (appsi) e SCIP 10.0 (PySCIPOpt 6.3.0); 600 s por caso, gap 0,01%, 1 thread. **Tempos: uma máquina e uma configuração só — comportamento observado, não resultado geral.**
+
+| Caso | Solver | Nível | Variáveis | Restrições | Limite (s) | Tempo (s) | Melhor escala | Melhor limite | Gap | Ótimo provado | Avaliador oficial |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---:|
+| sprint01 | HiGHS | objetivo único (INRC) | 2.978 | 2.450 | 600 | 2,6 | 56,00 | 56,00 | 0,00% | sim | 56 |
+| sprint01 | SCIP | objetivo único (INRC) | 2.978 | 2.450 | 600 | 2,8 | 56,00 | 56,00 | 0,00% | sim | 56 |
+| sprint02 | HiGHS | objetivo único (INRC) | 2.992 | 2.464 | 600 | 2,8 | 58,00 | 58,00 | 0,00% | sim | 58 |
+| sprint02 | SCIP | objetivo único (INRC) | 2.992 | 2.464 | 600 | 6,5 | 58,00 | 58,00 | 0,00% | sim | 58 |
+| long01 | HiGHS | objetivo único (INRC) | 15.029 | 10.857 | 600 | 18,2 | 197,00 | 197,00 | 0,00% | sim | 197 |
+| long01 | SCIP | objetivo único (INRC) | 15.029 | 10.857 | 600 | 33,5 | 197,00 | 197,00 | 0,00% | sim | 197 |
+| long02 | HiGHS | objetivo único (INRC) | 15.120 | 10.948 | 600 | 48,4 | 219,00 | 219,00 | 0,00% | sim | 219 |
+| long02 | SCIP | objetivo único (INRC) | 15.120 | 10.948 | 600 | 24,5 | 219,00 | 219,00 | 0,00% | sim | 219 |
+| medium_late05 | HiGHS | objetivo único (INRC) | 15.320 | 13.060 | 600 | 602,5 | 7.435,00 | 59,00 | 99,21% | não | 2.199 |
+| medium_late05 | SCIP | objetivo único (INRC) | 15.320 | 13.060 | 600 | 600,4 | 318,00 | 53,71 | 83,11% | não | 318 |
+| A36_livre_30 | HiGHS | etapa 1: Essencial + Importante | 5.320 | 20.264 | 299 | 13,4 | 13,00 | 13,00 | 0,00% | sim |  |
+| A36_livre_30 | HiGHS | etapa 2 (equilíbrio) | 5.324 | 20.325 | 586 | 587,0 | 0,03 | 0,00 | 98,37% | não | 306 |
+| A36_livre_30 | SCIP | etapa 1: Essencial + Importante | 5.320 | 20.264 | 299 | 299,5 | 15,00 | 13,00 | 13,33% | não |  |
+| A36_livre_30 | SCIP | etapa 2 (equilíbrio) (partida) | 5.324 | 20.325 | 300 | 299,9 | 0,89 | 0,00 | 100,00% | não | 312 |
+| A36_fixo_30 | HiGHS | etapa 1: Essencial | 5.320 | 20.264 | 187 | 5,5 | 0,00 | 0,00 | 0,00% | sim |  |
+| A36_fixo_30 | HiGHS | etapa 1: Importante (partida) | 5.320 | 20.265 | 161 | 1,7 | 14,00 | 14,00 | 0,00% | sim |  |
+| A36_fixo_30 | HiGHS | etapa 2 (equilíbrio) | 5.324 | 20.326 | 592 | 593,1 | 0,03 | 0,01 | 72,51% | não | 222 |
+| A36_fixo_30 | SCIP | etapa 1: Essencial | 5.320 | 20.264 | 187 | 32,7 | 0,00 | 0,00 | 0,00% | sim |  |
+| A36_fixo_30 | SCIP | etapa 1: Importante (partida) | 5.320 | 20.265 | 154 | 5,8 | 14,00 | 14,00 | 0,00% | sim |  |
+| A36_fixo_30 | SCIP | etapa 2 (equilíbrio) | 5.324 | 20.326 | 560 | 559,9 | 0,07 | 0,00 | 100,00% | não | 234 |
+| B11_livre_89 | HiGHS | etapa 1: Essencial + Importante | 14.140 | 32.268 | 299 | 301,2 | 57,00 | 0,00 | 100,00% | não |  |
+| B11_livre_89 | HiGHS | etapa 2 (equilíbrio) (partida) | 14.144 | 32.447 | 297 | 299,1 | 0,51 | 0,00 | 100,00% | não | 1.002 |
+| B11_livre_89 | SCIP | etapa 1: Essencial + Importante | 14.140 | 32.268 | 299 | 300,6 | — | 0,00 | — | não |  |
+| B11_livre_89 | SCIP | etapa 1: Essencial + Importante | 14.140 | 32.268 | 298 | 299,1 | — | 0,00 | — | não | — |
+
+## Vitórias por caso (regra registrada)
+
+| Caso | HiGHS: provou / valor(es) da etapa 1 | SCIP: provou / valor(es) | Vence |
+|---|---|---|---|
+| sprint01 | sim / ['56,00'] | sim / ['56,00'] | empate |
+| sprint02 | sim / ['58,00'] | sim / ['58,00'] | empate |
+| long01 | sim / ['197,00'] | sim / ['197,00'] | empate |
+| long02 | sim / ['219,00'] | sim / ['219,00'] | empate |
+| medium_late05 | não / ['7.435,00'] | não / ['318,00'] | SCIP |
+| A36_livre_30 | sim / ['13,00'] | não / ['15,00'] | HiGHS |
+| A36_fixo_30 | sim / ['0,00', '14,00'] | sim / ['0,00', '14,00'] | empate |
+| B11_livre_89 | não / ['57,00'] | não / ['—'] | HiGHS |
+
+Placar: SCIP 1 × HiGHS 2, 5 empate(s).
+
+## Regra de troca
+
+- (i) o SCIP vence mais casos do que perde: **não** (1 × 2);
+- (ii) o SCIP não perde nenhuma prova que o HiGHS consegue: **não** (perde em: A36_livre_30);
+- (iii) suíte completa depois da troca: não se aplica.
+
+**Conclusão:** fica o HiGHS; a comparação entra no TCC como avaliação a posteriori.
+

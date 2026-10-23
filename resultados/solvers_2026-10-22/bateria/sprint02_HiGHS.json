@@ -1,0 +1,34 @@
+{
+ "caso": "sprint02",
+ "solver": "HiGHS",
+ "memoria_livre_mb_antes": 5018,
+ "limite_caso_s": 600,
+ "referencia": 58,
+ "provado_etapa1": true,
+ "valores_etapa1": [
+  57.99999999999998
+ ],
+ "avaliador": {
+  "penalidade_avaliador": 58
+ },
+ "veredito": "viavel",
+ "tempo_total_s": 4.9,
+ "chamadas": [
+  {
+   "variaveis": 2992,
+   "inteiras": 1400,
+   "restricoes": 2464,
+   "limite": 600,
+   "partida": false,
+   "tempo": 2.79,
+   "ub": 57.99999999999998,
+   "lb": 57.99999999999998,
+   "gap": 0.0,
+   "provado": true,
+   "estado": "optimal",
+   "veredito": "viavel",
+   "nivel": "objetivo único (INRC)"
+  }
+ ],
+ "pico_memoria_mb": 131
+}

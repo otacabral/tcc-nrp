@@ -1,0 +1,64 @@
+{
+ "caso": "B11_livre_89",
+ "solver": "SCIP",
+ "memoria_livre_mb_antes": 6088,
+ "limite_caso_s": 600,
+ "aviso": "HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA",
+ "quadro": 89,
+ "enfermeiros": 15,
+ "caminho": "fundido",
+ "provado_etapa1": false,
+ "valores_etapa1": [
+  null
+ ],
+ "partes": [
+  {
+   "limite": 299,
+   "tempo": 599.7590343952179,
+   "protecao": 298,
+   "tempo_protecao": 299.09777665138245,
+   "niveis": [
+    "Essencial",
+    "Importante"
+   ],
+   "veredito": "indeterminado"
+  }
+ ],
+ "etapa2": "nao rodou",
+ "provado_etapa2": null,
+ "veredito": "indeterminado",
+ "tempo_total_s": 602.1,
+ "chamadas": [
+  {
+   "variaveis": 14140,
+   "inteiras": 14140,
+   "restricoes": 32268,
+   "limite": 299,
+   "partida": false,
+   "tempo": 300.63,
+   "ub": null,
+   "lb": 0.0,
+   "gap": null,
+   "provado": false,
+   "estado": "maxTimeLimit (timelimit)",
+   "veredito": "indeterminado",
+   "nivel": "etapa 1: Essencial + Importante"
+  },
+  {
+   "variaveis": 14140,
+   "inteiras": 14140,
+   "restricoes": 32268,
+   "limite": 298,
+   "partida": false,
+   "tempo": 299.07,
+   "ub": null,
+   "lb": 0.0,
+   "gap": null,
+   "provado": false,
+   "estado": "maxTimeLimit (timelimit)",
+   "veredito": "indeterminado",
+   "nivel": "etapa 1: Essencial + Importante"
+  }
+ ],
+ "pico_memoria_mb": 508
+}
