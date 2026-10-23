@@ -46,9 +46,10 @@ fim de cada sessão (dele ou do chat).
   "2026-10-22 — Bateria HiGHS × SCIP"); resultado em `resultados/solvers_2026-10-22/
   relatorio_fase1.md` e `bateria/resultado.md`. Placar SCIP 1 × HiGHS 2, 5 empates; o SCIP perde a
   prova do A36_livre e não acha escala no B11 em 600 s. **Regra de troca: fica o HiGHS**; a
-  comparação entra no TCC como avaliação a posteriori. Anomalia a esclarecer: no medium_late05 o
-  valor que o HiGHS relatou (7.435) não bate com a escala carregada (2.199 no avaliador); não muda
-  a vitória (SCIP 318). Tabela de tamanho (nosso × Santos) levada ao `NUMEROS_TCC.md` como seção
+  comparação entra no TCC como avaliação a posteriori. Anomalia do medium_late05 esclarecida
+  (22/10): folgas soltas na solução sem prova (7.435 = modelo; 2.199 = escala; integralidade
+  perfeita). A tela não é afetada; a trava que a ferramenta carrega depois de um nível sem prova
+  pode ficar frouxa com critérios de folga — proposta P20, não implementada, para decisão. Tabela de tamanho (nosso × Santos) levada ao `NUMEROS_TCC.md` como seção
   **PENDENTE DE APROVAÇÃO**; corrigidos lá dois caracteres de controle da seção 14 (defeito de
   19/10 em texto de comando; nenhum número mudou).
 

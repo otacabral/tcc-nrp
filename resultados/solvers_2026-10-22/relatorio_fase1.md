@@ -19,7 +19,7 @@ livre antes de cada caso entre 4,6 e 6,1 GB; pico por processo de 229 a 522 MB. 
 | sprint02 | 58, provado, 2,8 s | 58, provado, 6,5 s | empate |
 | long01 | 197, provado, 18,2 s | 197, provado, 33,5 s | empate |
 | long02 | 219, provado, 48,4 s | 219, provado, 24,5 s | empate |
-| medium_late05 | sem prova; valor relatado 7.435 (ver anomalia), escala gravada 2.199 no avaliador | sem prova; 318 (avaliador 318); limite 53,7 | **SCIP** |
+| medium_late05 | sem prova; **escala 2.199** (avaliador oficial); o modelo marcava 7.435 por folgas soltas (ver diagnóstico); limite 59 | sem prova; 318 (avaliador 318); limite 53,7 | **SCIP** |
 | A36_livre, 30 | etapa 1 **provada** (13) em 13,4 s | etapa 1 **sem prova** em 299 s (15; limite 13) | **HiGHS** |
 | A36_fixo, 30 | etapa 1 provada nos dois blocos (0 e 14) | provada nos dois blocos (0 e 14) | empate |
 | B11_livre, 89 (HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA) | escala (57, sem prova, limite 0) | **nenhuma escala** em 600 s (a proteção da primeira escala rodou de novo com o resto, sem escala) | **HiGHS** |
@@ -44,7 +44,18 @@ computacional por caso, pedida pelo orientador).
 tem escala vence quem não tem nenhuma (sem escala = pior que qualquer escala). Sem essa leitura o
 B11 seria empate, e o placar 1 × 1 — ainda sem troca, por (ii).
 
-## Anomalia a esclarecer: medium_late05 com HiGHS
+## Anomalia do medium_late05 com HiGHS — esclarecida em 22/10
+
+**Diagnóstico** (`DECISOES.md`, "2026-10-22 — Anomalia do medium_late05 (HiGHS): folgas soltas na
+solução sem prova"; `anomalia/diagnostico.json`): reproduzida nas mesmas condições. 7.435 é o
+objetivo do modelo no ponto entregue pelo HiGHS (appsi, HiGHS e recálculo nas variáveis carregadas
+dão o mesmo); 2.199 é a penalidade verdadeira da escala (avaliador oficial e `avaliacao.py`; sem
+violação dura). Integralidade perfeita (desvio 0,0). Causa: folgas e auxiliares soltas no ponto
+sem prova. A linha certa da tabela é a escala, 2.199 (gap 97,3% pela escala). A vitória do SCIP
+não muda.
+
+*Texto original desta seção, antes do diagnóstico:*
+
 
 O HiGHS relatou 7.435 como melhor solução (`best_feasible_objective` do appsi) ao parar no
 limite, mas a escala carregada das variáveis e gravada vale **2.199** no avaliador oficial e no

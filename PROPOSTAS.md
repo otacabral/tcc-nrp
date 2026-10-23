@@ -782,3 +782,23 @@ d) **Modo "busca longa", opcional** (acrescentado em 11/10, decisão do Otávio)
   ótimo em 93% das resoluções da bateria; e invalida a bateria, que foi conferida com a
   prioridade atual.
 
+## 2026-10-22 — P20: prender o valor verdadeiro, e não o do modelo, depois de um nível sem prova
+
+**Status: PROPOSTA, não implementada.** Origem: `DECISOES.md`, "2026-10-22 — Anomalia do
+medium_late05 (HiGHS): folgas soltas na solução sem prova".
+
+**Problema.** Depois de um nível sem prova, a ferramenta prende o valor do modelo, `z =
+valor_objetivo(m)`, para os níveis seguintes (`expr ≤ z`) e para a etapa 2 (penalidade ≤ z). Com
+folgas soltas, z é maior que o valor verdadeiro da escala, e a trava fica frouxa: o que vem depois
+pode piorar a contagem verdadeira do nível acima, até z.
+
+**Proposta.** Antes de prender, apertar: z = o valor do nível **recalculado na escala** (as mesmas
+contagens fora do modelo do "Resultado por critério", com os coeficientes do bloco), e não o
+objetivo do modelo. Equivalente: fixar as atribuições, minimizar só as folgas (LP, segundos) e
+prender esse valor. Com prova de ótimo, nada muda (as folgas já estão justas). O modelo não muda;
+muda o número que a ferramenta prende.
+
+**Custo e risco.** Pouco código em `ferramenta.py` (`resolver_com_objetivo` e
+`_niveis_em_sequencia`); identidade 243/243 intacta (o LP enviado não muda); precisaria de teste
+com um nível de folgas sem prova (provocado com tempo curto) mostrando que a contagem verdadeira
+do nível acima não piora. Perto da entrega; decisão do Otávio com a Orientação.

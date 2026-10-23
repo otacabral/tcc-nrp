@@ -2884,6 +2884,55 @@ comportamento observado nessas condições, nunca como resultado geral sobre os 
 
 ---
 
+## 2026-10-22 — Anomalia do medium_late05 (HiGHS): folgas soltas na solução sem prova
+
+**Status: vigente — ACHADO DE DIAGNÓSTICO; correção na ferramenta PROPOSTA, não implementada**
+(`PROPOSTAS.md`, P20). Diagnóstico pedido pelo Otávio depois da bateria HiGHS × SCIP; só o HiGHS,
+nas condições da bateria (600 s, gap 0,01%, 1 thread). Script `docs/diagnostico/
+anomalia_medium_late05.py`; saída `resultados/solvers_2026-10-22/anomalia/diagnostico.json`.
+
+**O que se viu (reproduzido):** o HiGHS parou no limite sem prova e informou 7.435; a escala
+carregada vale 2.199 no avaliador oficial e no `avaliacao.py` (sem violação de restrição dura).
+
+**Nenhum dos dois números está errado — medem coisas diferentes:**
+- 7.435 é o objetivo do **modelo** no ponto que o HiGHS entregou: o valor informado pelo appsi
+  (`best_feasible_objective`), o do próprio HiGHS, o objetivo recalculado nas variáveis
+  carregadas e custo × valor das colunas dão todos 7.435;
+- 2.199 é a **penalidade verdadeira da escala** (as variáveis de atribuição desse mesmo ponto);
+- **não é tolerância de integralidade**: o maior desvio de 0/1 nas 5.160 variáveis inteiras é
+  0,0;
+- **causa: folgas e auxiliares soltas.** No modelo, cada folga só tem limite inferior (α ≥
+  excesso), e a minimização é que a aperta; num ponto sem prova, o solver pode entregar α maior
+  que o necessário. Por família, modelo × escala: mínimo de turnos 666 × 0; máximo de folgas
+  seguidas 777 × 7; mesmo turno no fim de semana 2.480 × 440; mínimo de dias seguidos 1.440 ×
+  516; máximo de turnos 516 × 78; fim de semana completo 480 × 240 (este por auxiliares de
+  início de bloco); iguais onde o custo cai direto na atribuição (habilidade 310, pedidos 47 e
+  30, máximo de dias seguidos 96).
+- Nos pontos **provados ótimos** isso não acontece (folga solta aumentaria o objetivo): os 4
+  ótimos de Santos batem com o avaliador, como sempre bateram.
+
+**Na bateria:** só o medium_late05 com HiGHS teve a diferença (SCIP: 318 e 318). A linha certa é
+**escala 2.199** (o valor do modelo, 7.435, fica registrado ao lado); o gap pela escala é
+(2.199 − 59) ÷ 2.199 = 97,3%. A vitória do SCIP não muda (318 < 2.199). Nos casos da ferramenta
+sem prova (A36_livre com SCIP, 15; B11 com HiGHS, 57), o valor do modelo bate com o recalculado
+na escala gravada pelo próprio `prioridades.resultado`: a classificação padrão só tem custo direto
+na atribuição (pedido de folga e enfermeiro em posto de técnico), sem folgas.
+
+**Pode afetar a ferramenta?**
+- **O que a tela mostra, não:** os números por critério ("Resultado por critério", pedidos, "N
+  violações") são contados na escala pelo `avaliacao.py`, fora do modelo; o M ("nenhuma escala
+  tem menos de M") vem do limite inferior, que continua valendo.
+- **O que a ferramenta carrega adiante, sim, em tese:** o valor de um nível sem prova é preso para
+  os níveis seguintes (`expr ≤ z`, opção B em sequência) e para a etapa 2 (penalidade ≤ z, P14).
+  Com folgas soltas, esse z é maior que o valor verdadeiro da escala, e o nível seguinte ou a etapa
+  2 poderiam piorar a contagem verdadeira de um nível acima até z — o contrário do que a P14 e a
+  opção B prometem ("sem piorar"). Só acontece com critérios de folga considerados pelo gestor
+  (mínimos e máximos de dias, folgas, fins de semana, turnos, preferências) **e** um nível que
+  termine sem prova. Na classificação padrão não acontece (sem folgas). Não observado em
+  nenhuma rodada registrada; correção proposta (P20), não implementada.
+
+---
+
 ## Modelo de entrada
 
 ```
