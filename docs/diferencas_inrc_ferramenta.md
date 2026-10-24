@@ -19,7 +19,12 @@ mais rápido. O ganho defensável é **adaptabilidade**: regra nova = uma desigu
 (`resultados/tamanho_modelos_2026-10-19/tamanho.csv`) quando há número; senão, o efeito
 qualitativo. A formulação de Santos foi lida pelo fichamento da Redação (`D:\TCC\escrita\fontes\
 fichamentos\Camada 4 ...\santos.md`, SA16-019 a SA16-033, conferido na versão publicada em
-13/10) — **conferir no artigo** antes de citar números de Santos. "Com a opção B": se a
+13/10). *Conferido no artigo em 24/10 (chat de Orientação; antes aqui: "conferir no artigo antes
+de citar números de Santos"):* Santos et al. (2016), Ann Oper Res 239:225–251, seções 3.1–3.2,
+p. 228–230 — Π = todos os pares (d1, d2) com d1 ≤ d2; w e r indexadas por enfermeiro e janela
+('O(n × d²) variables w and r'); y por fim de semana; z por par de fins de semana (i1 ≤ i2). A conta
+x + y + w + r + z refeita só pela definição do artigo bate nas cinco linhas da tabela de tamanho
+(`NUMEROS_TCC.md`, seção 15b, aprovada em 24/10). "Com a opção B": se a
 diferença some, fica ou muda quando a função objetivo por níveis for implementada
 (`DECISOES.md`, "2026-10-14 — Função objetivo por níveis escolhidos pelo gestor (opção B)").
 

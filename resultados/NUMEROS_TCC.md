@@ -277,9 +277,10 @@ Aprovada pelo Otávio em 19/10 (2º bloco). Esperado commitado antes (`8d20313`;
 
 Substitui, como evidência de restrições, as 207 + 36 escalas de 18/09 (perdidas; seção 1).
 
-## PENDENTE DE APROVAÇÃO — Tamanho do modelo: nosso × Santos et al. (2016)
+## 15b. Tamanho do modelo: nosso × Santos et al. (2016)
 
-**Não aprovada: não citar até o Otávio aprovar.** Levada em 22/10 (pedido do orientador na reunião
+**Aprovada pelo Otávio em 24/10/2026.** (O número 15 fica para a seção dos casos A e B, ainda
+proposta.) Levada em 22/10 (pedido do orientador na reunião
 de 22/10, junto da bateria HiGHS × SCIP). Origem: `docs/diferencas_inrc_ferramenta.md`, parte (a);
 contagem do nosso modelo por `docs/diagnostico/tamanho_modelos.py` (sem solver; os mesmos números
 saíram de novo em 22/10 pela `bateria_solvers.py --montar`, e o HiGHS e o SCIP recebem exatamente
@@ -298,8 +299,11 @@ esse problema — identidade da Fase 0, `resultados/solvers_2026-10-22/relatorio
   folgas α (dependem das suaves ativas) e as restrições de Santos não foram contadas. "≥" é parte
   do número.
 - As janelas w e r de Santos são uma por par de dias d1 ≤ d2: 28 × 29 ÷ 2 = 406 por enfermeiro em
-  28 dias. Conferir a formulação **no artigo** antes de citar (a leitura veio do fichamento da
-  Redação, `docs/diferencas_inrc_ferramenta.md`).
+  28 dias. Conferido no artigo em 24/10 (chat de Orientação): Santos et al. (2016), Ann Oper Res
+  239:225–251, seções 3.1–3.2, p. 228–230 — Π = todos os pares (d1, d2) com d1 ≤ d2; w e r
+  indexadas por enfermeiro e janela ('O(n × d²) variables w and r'); y por fim de semana; z por par
+  de fins de semana (i1 ≤ i2). A conta x + y + w + r + z refeita só pela definição do artigo bate
+  nas cinco linhas.
 - A tabela compara **tamanho**, não eficiência: as janelas de Santos servem para fortalecer o
   limite dual por planos de corte; este trabalho não persegue desempenho algorítmico
   (`DECISOES.md`, "2026-09-08 — Formulação: atribuição, não janelas").
