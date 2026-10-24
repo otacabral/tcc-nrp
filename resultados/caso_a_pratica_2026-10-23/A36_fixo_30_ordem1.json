@@ -1,0 +1,185 @@
+{
+ "rodada": "A36_fixo_30_ordem1",
+ "ordem": 1,
+ "aviso": null,
+ "descanso_por_turno": {},
+ "memoria_livre_mb_antes": 6797,
+ "quadro_informado": 30,
+ "enfermeiros": 10,
+ "tecnicos": 20,
+ "commit": "ce0f6d9",
+ "frase": "O quadro informado admite escala legal. Escala gerada.",
+ "veredito": "admite",
+ "menor_viavel": 30,
+ "tentativas": [
+  [
+   30,
+   "viavel",
+   10,
+   20
+  ]
+ ],
+ "provado_etapa1": true,
+ "partes": [
+  {
+   "limite": 1124,
+   "tempo": 3.3063080310821533,
+   "niveis": [
+    "Essencial"
+   ],
+   "valor": 0,
+   "provado": true,
+   "gap": 0.0
+  },
+  {
+   "limite": 980,
+   "tempo": 5.184783935546875,
+   "niveis": [
+    "Importante"
+   ],
+   "valor": 51,
+   "provado": true,
+   "gap": 0.0
+  }
+ ],
+ "blocos": [
+  [
+   [
+    "Essencial"
+   ],
+   {
+    "pedido_folga": 1,
+    "regras@Essencial": 1
+   },
+   532
+  ],
+  [
+   [
+    "Importante"
+   ],
+   {
+    "enf_posto_tec": 1,
+    "max_folgas_seguidas": 1,
+    "min_fds_seguidos": 1,
+    "min_turnos": 1
+   },
+   1432
+  ]
+ ],
+ "etapa2": "ok",
+ "provado_etapa2": false,
+ "caminho": "em sequência, 2 blocos",
+ "frases_por_nivel": [
+  "Essencial: 0 violações — a melhor possível.",
+  "Importante: 51 violações — a melhor possível."
+ ],
+ "criterios": [
+  [
+   "Essencial",
+   "Pedido de folga no dia",
+   0,
+   0
+  ],
+  [
+   "Essencial",
+   "Pedidos e regras dos profissionais",
+   0,
+   0
+  ],
+  [
+   "Importante",
+   "Enfermeiro em posto de técnico",
+   18,
+   10
+  ],
+  [
+   "Importante",
+   "Máximo de folgas seguidas",
+   22,
+   2
+  ],
+  [
+   "Importante",
+   "Mínimo de fins de semana seguidos trabalhados",
+   1,
+   1
+  ],
+  [
+   "Importante",
+   "Mínimo de turnos no período",
+   10,
+   6
+  ]
+ ],
+ "descumpridos": [],
+ "descanso_ok": true,
+ "tempo_total_s": 3601.0,
+ "avaliador": {
+  "xsd_instancia": [],
+  "xsd_escala": [],
+  "penalidade_avaliador": 267,
+  "hard_constraints_violation": "não",
+  "erros_avaliador": []
+ },
+ "conferencia": {
+  "xsd_instancia": [],
+  "xsd_escala": [],
+  "penalidade_avaliador": 284,
+  "hard_constraints_violation": "não",
+  "erros_avaliador": [],
+  "por_familia": {
+   "max_consecutive_working_weekends": 17,
+   "unwanted_patterns": 234,
+   "max_consecutive_free_days": 22,
+   "min_num_assignments": 10,
+   "min_consecutive_working_weekends": 1
+  },
+  "total": 284,
+  "erros": []
+ },
+ "contagem_peso1": [
+  [
+   "Essencial",
+   "Pedido de folga no dia",
+   0,
+   0
+  ],
+  [
+   "Essencial",
+   "Máximo de fins de semana seguidos trabalhados",
+   17,
+   17
+  ],
+  [
+   "Essencial",
+   "Pedidos e regras dos profissionais",
+   0,
+   0
+  ],
+  [
+   "Importante",
+   "Enfermeiro em posto de técnico",
+   18,
+   10
+  ],
+  [
+   "Importante",
+   "Máximo de folgas seguidas",
+   22,
+   2
+  ],
+  [
+   "Importante",
+   "Mínimo de fins de semana seguidos trabalhados",
+   1,
+   1
+  ],
+  [
+   "Importante",
+   "Mínimo de turnos no período",
+   10,
+   6
+  ]
+ ],
+ "pico_memoria_mb": 1338
+}

@@ -1,0 +1,8 @@
+[    0.0 s] Conferindo as contas de horas e os alertas do COFEN · tempo máximo: 60 min
+[    0.0 s] Quadro informado, 30 profissionais: procurando uma escala que cumpra a lei (até 3599 s) · tempo máximo: 60 min
+      [prioridades] caminho: em sequência, 2 blocos
+[    8.8 s] Escala encontrada com 30 profissionais; equilibrando a carga entre colegas (até 3591 s) · tempo máximo: 60 min
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+[ 3601.0 s] concluido
+A36_fixo_30_ordem1: O quadro informado admite escala legal. Escala gerada. | 3601.0 s

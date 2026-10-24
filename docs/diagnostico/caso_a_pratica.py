@@ -477,6 +477,90 @@ def relatorio() -> int:
     return 0
 
 
+MARCA_COMPLEMENTO = "## Complemento (24/10, só leitura das escalas gravadas)"
+
+
+def complemento() -> int:
+    """24/10 (pedido da Orientacao): so leitura das escalas gravadas, sem solver. (a) enfermeiro
+    em posto de tecnico e turnos por enfermeiro, os 4 da unidade x os 6 acrescidos; (b) violacoes
+    por profissional em max. folgas seguidas e min. turnos (avaliador oficial, peso 1), marcando
+    quem tem ferias; (c) a nota das linhas "Unwanted pattern". Acrescenta (ou troca) a secao no
+    resultado.md."""
+    import xml.etree.ElementTree as ET
+    import fase2
+    import ferramenta as fe
+    import instancia_br as br
+    from validacao_restricoes import ler_avaliador
+    L = [MARCA_COMPLEMENTO, "",
+         "Sem solver: as escalas e as saídas do avaliador gravadas na rodada; a instância de cada "
+         "rodada remontada pela mesma entrada (`caso_a_pratica.py --complemento`).", ""]
+    for nome, (base, _, _) in RODADAS.items():
+        e = entrada(nome)
+        br.DESCANSO_POR_TURNO.clear()
+        br.DESCANSO_POR_TURNO.update(fase2.RODADAS[base][2])
+        try:
+            inst = fe.montar(e)
+        finally:
+            br.DESCANSO_POR_TURNO.clear()
+        nomes = {i: p.nome for i, p in inst.profissionais.items()}
+        enf = [i for i, p in inst.profissionais.items() if br.HABILIDADE_ENF in p.habilidades]
+        enf.sort(key=lambda i: (nomes[i] not in ENF_UNIDADE, nomes[i]))
+        esc = [(a.findtext("Employee"), a.findtext("ShiftType"))
+               for a in ET.parse(SAIDA / f"{nome}_escala.xml").getroot().iter("Assignment")]
+        turnos, tec = Counter(), Counter()
+        for n, s in esc:
+            if n in enf:
+                turnos[n] += 1
+                tec[n] += br.HABILIDADE_ENF not in inst.turnos[s].habilidades
+        L += [f"### {nome}" + (f" — {HIPOTESE}" if fase2.RODADAS[base][2] else ""), "",
+              "| Enfermeiro | Origem | Turnos | Em posto de técnico |", "|---|---|---:|---:|"]
+        for grupo in (True, False):
+            sel = [n for n in enf if (nomes[n] in ENF_UNIDADE) == grupo]
+            for n in sel:
+                L.append(f"| {nomes[n]} | {'unidade' if grupo else 'acrescido'} | {turnos[n]} | "
+                         f"{tec[n]} |")
+            if sel:
+                L.append(f"| **{'4 da unidade' if grupo else str(len(sel)) + ' acrescidos'}** | | "
+                         f"**{sum(turnos[n] for n in sel)}** | **{sum(tec[n] for n in sel)}** |")
+        _, custos, _, _ = ler_avaliador(SAIDA / f"{nome}_conferencia_escala_avaliador.txt")
+        ferias = Counter(n for n, _ in inst.indisponiveis)
+        L.append("")
+        for fam, rot in (("max_consecutive_free_days", "Máximo de folgas seguidas (4)"),
+                         ("min_num_assignments", "Mínimo de turnos (10)")):
+            por = sorted(((nomes.get(n, n), v, n in ferias) for (n, f), v in custos.items()
+                          if f == fam and v), key=lambda x: (not x[2], x[0]))
+            tot = sum(v for _, v, _ in por)
+            de_ferias = sum(v for _, v, f in por if f)
+            L.append(f"- {rot}, avaliador oficial (peso 1): **{tot}** — "
+                     + (", ".join(f"{p} {v}{' (férias)' if f else ''}" for p, v, f in por) or "nenhuma")
+                     + f". Das quais de quem tem férias: {de_ferias}.")
+        L.append(f"- Férias na rodada: {', '.join(f'{nomes[n]} ({k} dias)' for n, k in ferias.items())}.")
+        L.append("")
+    L += ["### Notas", "",
+          "- **Férias (semântica do INRC, não escolha da ferramenta):** no formato do INRC, dia de "
+          "férias conta como dia sem trabalho — o `avaliacao.py` e o avaliador oficial concordam. "
+          "Com 15 dias de férias seguidos, o máximo de folgas seguidas (4) é violado em pelo menos "
+          "15 − 4 = 11 por pessoa: os 22 das três rodadas são a Tarde 1 e a Noite A 1, 11 cada, e "
+          "com o nível provado são inevitáveis. No mínimo de turnos, os 4 da Noite A 1 (A11 e A36 "
+          "ordem 1) vêm da mesma semântica somada ao turno fixo no Essencial (só noites, em metade "
+          "do mês) e, com prova, são inevitáveis nessas ordens; na ordem 2, com o \"Só este turno\" "
+          "no Desejável, a Noite A 1 chega aos 10 turnos à custa de 7 quebras do turno fixo. Os "
+          "outros 6 do mínimo de turnos no A36 ordem 1 (Enf 4798, 6, 7, 8, 9) e o 1 da ordem 2 (Enf "
+          "6) não têm relação com férias.",
+          "- **\"Unwanted pattern\"** (ex.: N-null-D12) na saída do avaliador: é o artefato conhecido "
+          "dos padrões das 36 h (`DECISOES.md`, \"2026-10-06 — Padrão das 36 h fica no XML (opção (a) "
+          "da P13)\": o avaliador lê o padrão como noturno, folga, folga e cobra violações que não "
+          "existem). Não entra na conferência; a regra das 36 h é conferida pela medição do descanso "
+          "no relógio (aprovada nas três rodadas).", ""]
+    arq = SAIDA / "resultado.md"
+    texto = arq.read_text(encoding="utf-8")
+    if MARCA_COMPLEMENTO in texto:
+        texto = texto[:texto.index(MARCA_COMPLEMENTO)].rstrip("\n") + "\n"
+    arq.write_text(texto.rstrip("\n") + "\n\n" + "\n".join(L) + "\n", encoding="utf-8")
+    print("\n".join(L))
+    return 0
+
+
 def montar_sem_solver() -> int:
     """Teste do script: monta as tres entradas e a instancia de conferencia, sem solver."""
     import fase2
@@ -506,6 +590,7 @@ if __name__ == "__main__":
     ap.add_argument("--rodada", choices=list(RODADAS))
     ap.add_argument("--relatorio", action="store_true")
     ap.add_argument("--montar", action="store_true")
+    ap.add_argument("--complemento", action="store_true")
     a = ap.parse_args()
     if a.rodada:
         import json
@@ -515,5 +600,6 @@ if __name__ == "__main__":
                                                            default=str), encoding="utf-8")
         print(f"{a.rodada}: {d['frase']} | {d['tempo_total_s']} s")
         sys.exit(0)
-    sys.exit(recontar() if a.recontar else rodar() if a.rodar else relatorio() if a.relatorio
+    sys.exit(recontar() if a.recontar else rodar() if a.rodar else complemento() if a.complemento
+             else relatorio() if a.relatorio
              else montar_sem_solver() if a.montar else 2)
