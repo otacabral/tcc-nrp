@@ -1,6 +1,6 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 23/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 24/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
@@ -29,39 +29,32 @@ fim de cada sessão (dele ou do chat).
     (`resultados/solvers_2026-10-23_3600/relatorio_parcial.md`). O Claude Code a interrompeu por
     memória no B11/HiGHS. medium_late05: SCIP 186 × HiGHS 224; A36_livre: empate (13 provado nos
     dois). Falta o B11. Não reabre a regra de 22/10.
+- **Caso A pela prática (24/10): TUDO OK**, esperado cumprido nas três rodadas (frase, sem
+  violação de dura, descanso, direção da ordem 2 com prova). Resultado e complemento só leitura (por
+  enfermeiro: unidade × acrescidos; violações por profissional com as férias; nota do "Unwanted
+  pattern") em `resultados/caso_a_pratica_2026-10-23/resultado.md`. Sem solver daqui em diante.
+- **Cadeia de validação até a v1.4.4** (24/10, só leitura): `resultados/cadeia_validacao_2026-10-24.md`
+  — em que versão cada evidência rodou, o que mudou depois e o que a liga à v1.4.4. Para a bateria,
+  nenhuma restrição dura mudou (art. 67 sem par novo); K1–K6, propriedades e nível 3 não foram
+  refeitos.
 - **`NUMEROS_TCC.md`:**
   - seção "Comportamento computacional: HiGHS × SCIP" **aprovada em 23/10**;
-  - tabela de tamanho (nosso × Santos) **pendente de aprovação**;
-  - seção 15 (casos A e B) ainda **proposta, não gravada**;
+  - seção **15b** (tamanho do modelo, nosso × Santos) **aprovada em 24/10**, com a formulação de
+    Santos conferida no artigo;
+  - seção **15** (casos A e B: 15.1 fase 2 de 21/10; 15.2 caso A pela prática de 24/10) **PENDENTE
+    DE APROVAÇÃO**, para o Otávio aprovar em 25/10;
   - corrigidos dois caracteres de controle da seção 14 (texto de comando, nenhum número mudou).
   - Congelamento dos números: **25/10**.
 
 ## Próxima tarefa
 
-**0. Otávio: rodada do caso A pela prática (noite de 23/10).** DECISOES "2026-10-23 — Caso A:
-classificação dos critérios pela escala real e sensibilidade (2 ordens)" e `ESPERADO.md` em
-`resultados/caso_a_pratica_2026-10-23/`, registrados antes. Leitura C da borda decidida pela
-Orientação (a posteriori; A e B registradas); recontagem: os 13 critérios contáveis do mesmo lado da
-ficha. Três rodadas, uma por processo, nesta ordem: A11_fixo(24) ordem 1 (HIPÓTESE DE SENSIBILIDADE)
-→ A36_fixo(30) ordem 1 → A36_fixo(30) ordem 2; 60 min cada, no máximo (~3 h). Com o Claude Code, o
-Chrome e o VS Code fechados (≥ 3 GB livres; o script espera até 15 min e para se não houver). No
-PowerShell, um comando por linha:
+**1. Otávio: aprovar (ou corrigir) a seção 15 do `NUMEROS_TCC.md`** (casos A e B: 15.1 fase 2,
+15.2 caso A pela prática), gravada como PENDENTE DE APROVAÇÃO em 24/10. Previsto para 25/10, dia do
+congelamento. Só depois os números vão ao texto.
 
-    cd D:\dev\tcc-nrp
-    .\.venv\Scripts\Activate.ps1
-    python docs\diagnostico\caso_a_pratica.py --rodar
-
-Termina com "TUDO OK" (e o `resultado.md` na mesma pasta) ou "PARADO: ...". **Retomar** (pula o que
-já tem resultado): o mesmo comando, de novo. Se a noite der problema, a ordem 2 é a primeira a sair:
-Ctrl+C depois de "A36_fixo_30_ordem1: codigo 0" e, para o relatório só com o que rodou:
-
-    python docs\diagnostico\caso_a_pratica.py --relatorio
-
-**1. Otávio: aprovar (ou corrigir) a seção 15 proposta para o `NUMEROS_TCC.md`** (casos A e B), no
-`resultados/relatorio_2026-10-21.md`. Só depois os números vão ao texto.
-
-**2. Otávio: aprovar (ou não) a tabela de tamanho (nosso × Santos)**, pendente no `NUMEROS_TCC.md`.
-Antes de citar, conferir a formulação de Santos no artigo (a coluna de Santos é um piso).
+**2. Redação: usar a cadeia de validação** (`resultados/cadeia_validacao_2026-10-24.md`) para dizer
+em que versão cada evidência rodou e por que vale na v1.4.4; onde está "não coberto", o texto não
+afirma a ligação.
 
 **3. Opcional — terminar o B11 da sensibilidade de 3.600 s** (~2 h; só se o Otávio quiser o caso
 no texto). Com o Claude Code e outros programas fechados (o avaliador Java pode usar até 6 GB). No
@@ -92,6 +85,13 @@ raiz, um por linha:
     git worktree remove --force ..\tcc-nrp-v142
 
 (apaga só as pastas; as tags e o histórico ficam).
+
+## Decisões de 24/10
+
+- Orientação: leitura C da borda (a posteriori) registrada no DECISOES "2026-10-23 — Caso A", com A
+  e B; "mesmo turno no fim de semana" pela semântica do avaliador.
+- Caso A pela prática rodado na v1.4.4: TUDO OK. Seção 15 do NUMEROS_TCC gravada como pendente.
+- Seção 15b (nosso × Santos) aprovada, com a conferência no artigo.
 
 ## Decisões de 23/10 (v1.4.4)
 
@@ -230,6 +230,16 @@ raiz, um por linha:
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **24/10:** (1) Cadeia de validação: `resultados/cadeia_validacao_2026-10-24.md` — o texto diz em
+  que versão cada evidência rodou; onde a tabela diz "não coberto", não afirma a ligação (ex.: K1–K6,
+  propriedades e nível 3 não foram refeitos depois de 07–09/10; a comparação por tipo com o avaliador
+  da §14 não foi refeita na v1.4.4). (2) Caso A pela prática (seção 15.2, só depois da aprovação):
+  as férias no INRC contam como dias sem trabalho — os 22 de máx. folgas seguidas são de férias
+  (semântica do INRC, não escolha da ferramenta); os 4 da Noite A 1 no mín. turnos são inevitáveis só
+  com o turno fixo no Essencial; a penalidade total do avaliador não vai ao texto; as linhas
+  "Unwanted pattern" do avaliador são o artefato da P13. (3) A contagem da escala real é sobre o
+  formato do INRC e não afirma descumprimento de lei.
 
 - **v1.4.4 — suíte fechada em 23/10 (TUDO OK, 37 de 37): passam a valer as entradas de 21 e 22/10
   que diziam "se a suíte fechar"** (consolidadas aqui):
