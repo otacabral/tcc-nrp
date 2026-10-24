@@ -277,6 +277,89 @@ Aprovada pelo Otávio em 19/10 (2º bloco). Esperado commitado antes (`8d20313`;
 
 Substitui, como evidência de restrições, as 207 + 36 escalas de 18/09 (perdidas; seção 1).
 
+## PENDENTE DE APROVAÇÃO — 15. Casos realistas A e B (21 e 24/10/2026)
+
+**Não aprovada: não citar até o Otávio aprovar** (previsto para 25/10). Fonte dos dados: Massens
+(2019), Anexo B (escala real da Clínica Ortovascular) e o restante da ficha do caso
+(`D:\TCC\escrita\fontes\FICHA_CASO_REALISTA.md`).
+
+**Ressalvas obrigatórias (valem para 15.1 e 15.2):**
+- a composição 10 enfermeiros + 20 técnicos é a da regra `equipe` (a proporção mínima do COFEN para o
+  grau intermediário), **não ótimo de custo**; **o 30 vale para qualquer composição** (a conta prévia
+  recusa 29 pelo total de pessoas, sem depender da mistura);
+- os limites dos critérios são os **padrões da ferramenta, não calibrados** ao hospital;
+- tempo só como **limite operacional** (i5-10210U, 11,8 GB, HiGHS 1.15.1 via appsi);
+- na 15.2, a etapa 2 do A36 ordem 1 terminou **sem prova** (o equilíbrio de carga pode melhorar); isso
+  não afeta os níveis de prioridade, **todos provados**;
+- a **penalidade total do avaliador oficial não vai ao texto** (é a do INRC com os pesos gravados no
+  XML, não o objetivo da ferramenta); vai "sem violação de restrição dura";
+- 11 h depois do D12 é **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA**; o texto não afirma que o
+  hospital descumpre a lei ("a regra, como modelada, segue o art. 59-A").
+
+### 15.1 Fase 2 (21/10/2026), classificação padrão
+
+Origem: `resultados/fase2_2026-10-21/` (JSON, `.txt`, XML da instância e da escala, saída do
+avaliador, `resumo.txt`). Comando: `docs/diagnostico/rodar_fase2.sh` (um processo por rodada,
+`docs/diagnostico/fase2.py`). Versão **v1.4.1** (`9afa334`). Entradas:
+`resultados/caso_a_2026-10-20/entrada.py` e `caso_b_2026-10-20/entrada.py`. Esperados commitados
+antes: os `ESPERADO.md` das duas pastas. Classificação padrão, orçamento 60 min, 1.800 s por nível e
+na etapa 2. Proposta original: `resultados/relatorio_2026-10-21.md`. Uma rodada por configuração.
+
+| Valor | O que mede | Conferência | Ressalva |
+|---|---|---|---|
+| caso A, 36 h: **faltam 6; menor quadro viável 30** (turno fixo e rodízio livre) | 24–29 recusados pela conta prévia (dom 17 + seg 18/01: 17 + 11 = 28 postos contra 22 disponíveis); 30 com escala, etapa 1 provada | cobertura: **avaliador oficial, sem violação de dura**; descanso no relógio: menor 36 h depois de D12 e de N (compartilha a premissa com o modelo); conta à mão no `ESPERADO.md` (≥ 30) | o 30 vale para qualquer composição; 10 + 20 não é ótimo de custo |
+| caso A, 30 = 10 enf. + 20 téc.; **13 turnos** de enfermeiro em posto de técnico (rodízio livre; 14 no turno fixo) | composição e uso de enfermeiro em vaga de técnico na escala entregue | recontado dos XMLs, fora da ferramenta | a busca tenta só duas composições por tamanho |
+| caso B, 36 h: **não há escala legal até 101** | 89–101 recusados pela conta prévia (dom 10 + seg 11/01: 65 + 40 = 105 contra 89) | conta à mão no `ESPERADO.md` (≥ 105) | a busca vai até 89 + 12; o menor viável não foi determinado (≥ 105 pela conta, condição necessária) |
+| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** com 11 h depois do D12, A (turno fixo) admite 24, provado; B admite 89, **sem prova** (gap 100%) | o quanto a regra das 36 h depois do D12 pesa no quadro | avaliador oficial, sem violação de dura (B reconferido com `-Xmx6g`: na rodada, o avaliador tinha parado sem memória); descanso no relógio: D12 → 12 h | parâmetro de pesquisa, fora da tela |
+
+### 15.2 Caso A pela prática e sensibilidade a 2 ordens (24/10/2026)
+
+Decisão e esperado commitados antes: `DECISOES.md`, "2026-10-23 — Caso A: classificação dos
+critérios pela escala real e sensibilidade (2 ordens)"; `resultados/caso_a_pratica_2026-10-23/
+ESPERADO.md`. Resultado: `resultado.md` (com o complemento de 24/10) e `recontagem.md`, na mesma
+pasta. Versão **v1.4.4** (`src/` idêntico desde `ed621a2`). Comando: `python docs\diagnostico\
+caso_a_pratica.py --rodar` (um processo por rodada). Orçamento padrão de 60 min por rodada.
+**Esperado cumprido nas três rodadas** (frase, sem violação de dura, descanso, direção da ordem 2
+com prova).
+
+**Classificação dos critérios pela escala real** (transcrição célula a célula da p. 70 de Massens,
+24 linhas, 26/10 a 25/11/2018). Regra: violado em alguma ocorrência → Não considerar; nunca violado,
+com ocorrência → Importante; sem evidência → padrão; Essencial só para regra declarada na fonte (o
+turno fixo). Recontagem independente pelo `avaliacao.py`: **os 13 critérios contáveis do mesmo lado
+da contagem da ficha**, com a leitura da borda **C, adotada a posteriori (23/10)**: formulada depois
+de a recontagem expor a divergência entre a regra escrita na ficha (tirar todo bloco de borda) e a
+contagem da ficha; motivo independente do resultado — na borda do mês, o bloco conta nos critérios de
+máximo e sai nos de mínimo; o bloco que toca as férias sai sempre. As leituras A e B e o que davam
+estão no DECISOES. Nunca violados na prática: máx. folgas seguidas (4), mín. fins de semana seguidos
+(2), mín. turnos (10). "Mesmo turno no fim de semana" é violado pela semântica do avaliador (um dia só
+do fim de semana já viola): Não considerar, por evidência.
+
+**Ordens:** ordem 1 (a prática) — Essencial: as 29 linhas "Só este turno"; Importante: máx. folgas
+seguidas (4), mín. fins de semana seguidos (2), mín. turnos (10), enfermeiro em posto de técnico; o
+resto, Não considerar. Ordem 2 — máx. fins de semana seguidos (3) no Essencial; "Só este turno" no
+Desejável; o resto igual.
+
+| Valor | O que mede | Conferência | Ressalva |
+|---|---|---|---|
+| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** A11 (11 h depois do D12), 24 (4 + 20), ordem 1: "O quadro informado admite escala legal. Escala gerada."; Essencial **0** e Importante **27**, os dois **provados**; etapa 2 provada | frase da tela e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | parâmetro de pesquisa |
+| A11, Importante 27 = máx. folgas seguidas **22** + mín. fins de semana seguidos **1** + mín. turnos **4** + enfermeiro em posto de técnico **0**; "Só este turno": **0** quebras | violações por critério | avaliador oficial (critérios ligados, peso 1): **22, 1, 4** — iguais à ferramenta; enfermeiro em posto de técnico: sem conferência externa | os 22 e os 4 são de férias (nota abaixo) |
+| A36, 30 (10 + 20), ordem 1: "O quadro informado admite escala legal. Escala gerada."; Essencial **0** e Importante **51**, os dois **provados**; etapa 2 sem prova | frase e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | etapa 2 sem prova: o equilíbrio pode melhorar; os níveis de prioridade estão provados |
+| A36 ordem 1, Importante 51 = máx. folgas seguidas **22** + mín. fins de semana seguidos **1** + mín. turnos **10** + enfermeiro em posto de técnico **18**; "Só este turno": **0** quebras; máx. fins de semana seguidos (não considerado nesta ordem, avaliado com o critério ligado): **17** | violações por critério | avaliador oficial (peso 1): **22, 1, 10** e **17** — iguais à ferramenta; posto de técnico: sem conferência externa | dos 10 do mín. turnos, 4 são de férias (Noite A 1) e 6 de enfermeiros com 8–9 turnos |
+| A36, 30, ordem 2: "O quadro informado admite escala legal. Escala gerada."; Essencial **0**, Importante **61**, Desejável **7**, os três **provados**; etapa 2 provada | frase e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | — |
+| A36 ordem 2: máx. fins de semana seguidos **0**; Importante 61 = máx. folgas seguidas **22** + mín. fins de semana seguidos **15** + mín. turnos **1** + posto de técnico **23**; "Só este turno": **7** quebras, todas da Noite A 1 | violações por critério | avaliador oficial (peso 1): **0, 22, 15, 1, 7** — iguais à ferramenta; posto de técnico: sem conferência externa | — |
+| **Ordem 2 × ordem 1, com prova nos níveis envolvidos:** máx. fins de semana seguidos **0 ≤ 17**; quebras do "Só este turno" **7 ≥ 0** | a direção registrada antes (pôr o máx. fins de semana seguidos no Essencial e o turno fixo no Desejável troca um pelo outro) | as duas escalas avaliadas no avaliador com o critério ligado | uma rodada por ordem; os outros critérios do Importante também mudam (mín. fins de semana seguidos 1 → 15; posto de técnico 18 → 23) |
+| enfermeiro em posto de técnico, por origem: A36 ordem 1 — 4 da unidade **6** (38 turnos), 6 acrescidos **12** (56 turnos); ordem 2 — unidade **10** (40 turnos), acrescidos **13** (59 turnos); A11 — **0** (4 enfermeiros, 76 turnos) | quem cobre vaga de técnico, os 4 enfermeiros da unidade (6118, 4798, 4969, 5993) × os 6 acrescidos (Enf 5 a Enf 10) | recontado das escalas gravadas, fora da ferramenta (`--complemento`); soma igual ao resultado por critério (0, 18, 23) | sem conferência externa (o avaliador não pontua) |
+
+**Nota das férias (semântica do INRC, não escolha da ferramenta):** no formato do INRC, dia de férias
+conta como dia sem trabalho — o `avaliacao.py` e o avaliador oficial concordam. Com 15 dias de
+férias seguidos, o máx. folgas seguidas (4) é violado em pelo menos 15 − 4 = 11: os **22** das três
+rodadas são a Tarde 1 e a Noite A 1, 11 cada — com o nível provado, **inevitáveis**. No mín. turnos,
+os **4** da Noite A 1 (A11 e A36 ordem 1) vêm da mesma semântica somada ao turno fixo no Essencial
+(só noites, em metade do mês) e, com prova, são inevitáveis nessas ordens; na ordem 2, com o turno
+fixo no Desejável, a Noite A 1 chega aos 10 turnos à custa das 7 quebras. As linhas "Unwanted
+pattern" (ex.: N-null-D12) da saída do avaliador são o artefato dos padrões das 36 h (`DECISOES.md`,
+"2026-10-06 — Padrão das 36 h fica no XML (opção (a) da P13)") e não entram na conferência.
+
 ## 15b. Tamanho do modelo: nosso × Santos et al. (2016)
 
 **Aprovada pelo Otávio em 24/10/2026.** (O número 15 fica para a seção dos casos A e B, ainda
