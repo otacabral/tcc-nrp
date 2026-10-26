@@ -3052,6 +3052,19 @@ As três leituras e o que cada uma dava (com o `avaliacao.py`):
 um só dia do fim de semana já viola: 93 violações, 21 pessoas). A ficha foi corrigida pela
 Orientação (dizia "sem ocorrência"). Classificação: Não considerar, agora por evidência.
 
+**Linhas contadas — a posteriori, 26/10** (Orientação). Na contagem da escala real (a evidência para
+classificar os critérios) entram **só as linhas do Anexo B com pelo menos um registro: 21 de 24**.
+Ficam fora as três linhas sem nenhum registro: **6118 e 4798** (enfermeiros diurnos) e **6089**
+(integral). Motivo: linha vazia não mostra prática; pela leitura "dia útil em branco = trabalho", ela
+viraria trabalho em todo dia útil, e o vazio no fim de semana só seria folga por suposição. Apoio: no
+Apêndice A de Massens (escala recriada pelo algoritmo do autor), o enfermeiro diurno faz plantão de
+supervisão em alguns fins de semana (fichamento MAS-014, `D:\TCC\escrita\fontes\fichamentos\Camada 7
+...\massens.md`). **A entrada do caso não muda:** o caso continua com 24 pessoas, e as rodadas de 21
+e 24/10 continuam valendo. A Orientação conferiu à mão que os três critérios nunca violados (máx.
+folgas seguidas 4, mín. fins de semana seguidos 2, mín. turnos 10) continuam nunca violados sem as
+três linhas; recontagem com as 21 linhas em `recontagem.md` (a de 24 linhas fica como histórico).
+Se algum critério mudasse de lado, a regra era parar e levar à Orientação.
+
 **As duas ordens:**
 - **Ordem 1 (a prática):** Essencial = as linhas "Só este turno" da A36_fixo (29 linhas); Importante =
   máx. folgas seguidas (4), mín. fins de semana seguidos (2), mín. turnos (10) e enfermeiro em posto
