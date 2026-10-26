@@ -2556,6 +2556,10 @@ produto ("2026-10-20 — a posteriori: descanso depois do D12 como parâmetro de
   modelada, segue o art. 59-A". A sensibilidade com D12 = 11 h continua rotulada como hipótese,
   não regra da ferramenta.
 
+**Nota de 26/10 (correção de citação; raciocínio e código não mudam):** o limite de 8 h diárias é
+do art. 58 da CLT (CLT-005); o art. 59 admite o acréscimo de até 2 h extras (CLT-006), conferidos
+no Planalto em 26/10. O texto de 20/10 fica como está.
+
 ---
 
 ## 2026-10-20 — Piso por pares de dias (v1.4.1)
@@ -3095,6 +3099,53 @@ instância com o critério ligado (a ordem 1 não o tem ligado).
 
 **Números** só vão ao `NUMEROS_TCC.md` depois da aprovação do Otávio. **Afirmação fraca:** um setor,
 um mês, uma rodada por ordem; tempo como limite operacional (máquina e solver nomeados).
+
+---
+
+## 2026-10-26 — Limitações declaradas: duração diária do turno e limite semanal de horas
+
+**Status: vigente — declaração, sem mudança de código** (Orientação, 26/10).
+
+**O que a v1.4.4 aceita.** Turnos com início de 0 a 23 h e duração de 1 a 24 h, em hora cheia
+(validação dos turnos em `instancia_br.py`, `_validar_turnos`; duração por `ferramenta.duracao`).
+Carga contratual de 30, 36, 40 ou 44 h por semana (`instancia_br.CARGAS_CONTRATUAIS`), com o teto
+sobre o horizonte, não por semana ("2026-10-02 — Carga por contrato", item b, motivo registrado lá:
+o 12×36 tem semanas de 48 h compensadas por semanas de 36 h).
+
+**O que não é verificado:**
+- a **duração máxima diária do turno** (CLT, arts. 58, 59 e 59-A): um turno de 1 a 24 h é aceito;
+- um **limite semanal de horas**.
+
+Para a duração do turno **não há motivo registrado**; é **limitação declarada a posteriori**. Para
+o limite semanal, o motivo é o do item b de 02/10.
+
+**Frase admitida no texto:** "A ferramenta não verifica a duração máxima diária do turno, que aceita
+de 1 a 24 h, nem um limite semanal de horas; a carga contratual é limitada no horizonte de 28 dias."
+
+---
+
+## 2026-10-26 — Capturas da tela da v1.4.4 para o texto (4.7)
+
+**Status: vigente — registrada ANTES de rodar** (Orientação, 26/10). Código congelado: nada em
+`src/` muda.
+
+**O quê.** Uma rodada da demonstração com 18 técnicos (`docs/demonstracao`, a rodada
+`rodada2_18tec`) na v1.4.4, **só para as capturas** (tela de entrada e resultado). Gravada com o
+nome `rodada2_18tec_v144`, para não sobrescrever os arquivos de 09/10, que são a origem da seção 9
+do `NUMEROS_TCC.md`.
+
+**Exceção** à regra "sem solver depois de 24/10". Motivo: as capturas anteriores a 21/10 estão
+superadas pelos textos da tela de 21/10.
+
+**Esperado** (= `NUMEROS_TCC.md`, seção 9, as linhas "conta antes"):
+- frase "Falta 1; o menor quadro viável é 29";
+- motivo "Alternância" (ter 03/11 e qua 04/11: 28 plantões, 27 pessoas), **único motivo**;
+- o alerta do QP.
+
+**Regras.** Nenhum número novo vai ao NUMEROS nem ao texto. Se a frase, o menor quadro ou o motivo
+diferirem, **parar e relatar** (é achado, não captura). Se o `capturas.py` precisar de ajuste aos
+textos novos da tela, ajustar só em `docs/demonstracao`. Execução longa: o menor caso até o fim antes
+(regra de 03/10) — aqui, o preenchimento da tela sem gerar (`--so-preencher`), antes da rodada.
 
 ---
 
