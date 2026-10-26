@@ -1,6 +1,28 @@
-# Caso A — recontagem independente da escala real (23/10/2026)
+# Caso A — recontagem independente da escala real (23/10/2026; 21 linhas em 26/10)
 
-Fonte: `D:\TCC\escrita\fontes\transcricao_anexoB_massens.csv` (24 linhas, 26/10 a 25/11/2018); leituras da ficha (corrigida pela Orientação em 23/10); contagem pelo `avaliacao.py` (noturno na véspera: contador da ferramenta, que o avaliacao.py não pontua). Borda e férias pela **leitura C** (Orientação, 23/10, a posteriori): bloco que toca a borda do mês conta nos critérios de máximo e sai nos de mínimo; bloco que toca as férias sai sempre. Totais de turnos só sem férias. Calendário conferido: todo P das linhas diurnas cai em sábado ou domingo (27/10/2018 é sábado).
+Fonte: `D:\TCC\escrita\fontes\transcricao_anexoB_massens.csv` (24 linhas transcritas, 21 com registro contadas; 26/10 a 25/11 (ano não impresso na escala; 2018 inferido pelo calendário: os fins de semana sombreados só caem em sábado e domingo em 2018)). Ficam fora da contagem as 3 linhas sem nenhum registro (6118, 4798, 6089), mas não do caso (Orientação, 26/10, a posteriori: linha vazia não mostra prática; DECISOES.md, "2026-10-23 — Caso A"). Leituras da ficha (corrigida pela Orientação em 23/10); contagem pelo `avaliacao.py` (noturno na véspera: contador da ferramenta, que o avaliacao.py não pontua). Borda e férias pela **leitura C** (Orientação, 23/10, a posteriori): bloco que toca a borda do mês conta nos critérios de máximo e sai nos de mínimo; bloco que toca as férias sai sempre. Totais de turnos só sem férias. Calendário conferido: todo P das linhas diurnas cai em sábado ou domingo (27/10/2018 é sábado).
+
+| Critério (limite padrão) | Na recontagem (avaliacao.py) | Pessoas com violação | Ficha (Orientação) | Mesmo lado? |
+|---|---|---:|---|---|
+| Máx. dias seguidos, preferência (5) | violado: 30 violação(ões) | 9 (dia 9) | violado | sim |
+| Mín. dias seguidos (3) | violado: 302 violação(ões) | 16 (dia 5, noite_A 5, noite_B 6) | violado | sim |
+| Máx. folgas seguidas (4) | nunca: 0 violação(ões) | 0 (—) | nunca | sim |
+| Mín. folgas seguidas (3) | violado: 359 violação(ões) | 21 (dia 10, noite_A 5, noite_B 6) | violado | sim |
+| Máx. fins de semana seguidos (3) | violado: 26 violação(ões) | 14 (dia 9, noite_A 3, noite_B 2) | violado | sim |
+| Mín. fins de semana seguidos (2) | nunca: 0 violação(ões) | 0 (—) | nunca | sim |
+| Fins de semana em 4 semanas (2) | violado: 63 violação(ões) | 19 (dia 9, noite_A 4, noite_B 6) | violado | sim |
+| Fim de semana completo | violado: 93 violação(ões) | 21 (dia 10, noite_A 5, noite_B 6) | violado | sim |
+| Mesmo turno no fim de semana | violado: 93 violação(ões) | 21 (dia 10, noite_A 5, noite_B 6) | violado | sim |
+| Máx. turnos, preferência (18) | violado: 59 violação(ões) | 9 (dia 9) | violado | sim |
+| Mín. turnos (10) | nunca: 0 violação(ões) | 0 (—) | nunca | sim |
+| Noturno na véspera de fim de semana livre | violado: 4 violação(ões) | 4 (noite_A 1, noite_B 3) | violado | sim |
+| Duas folgas depois de noites | violado: 137 violação(ões) | 11 (noite_A 5, noite_B 6) | violado | sim |
+
+**Os 13 critérios contáveis ficam do mesmo lado da ficha.**
+
+## Histórico: a contagem com as 24 linhas (23/10)
+
+Mesma leitura (C), com as três linhas sem registro contadas (dia útil em branco = trabalho no turno da linha; fim de semana em branco = não trabalha). Foi a base da classificação usada nas rodadas de 24/10; a regra de 26/10 não muda nenhum lado.
 
 | Critério (limite padrão) | Na recontagem (avaliacao.py) | Pessoas com violação | Ficha (Orientação) | Mesmo lado? |
 |---|---|---:|---|---|
@@ -18,7 +40,7 @@ Fonte: `D:\TCC\escrita\fontes\transcricao_anexoB_massens.csv` (24 linhas, 26/10 
 | Noturno na véspera de fim de semana livre | violado: 4 violação(ões) | 4 (noite_A 1, noite_B 3) | violado | sim |
 | Duas folgas depois de noites | violado: 137 violação(ões) | 11 (noite_A 5, noite_B 6) | violado | sim |
 
-**Os 13 critérios contáveis ficam do mesmo lado da ficha.**
+Com as 24 linhas: os 13 critérios do mesmo lado da ficha.
 
 ## Histórico: as três leituras da borda (23/10)
 

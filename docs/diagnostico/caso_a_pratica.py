@@ -17,6 +17,10 @@ do penultimo; o total de turnos, so em quem nao teve ferias; o resto, nos dias f
 Calendario: a transcricao nao marca o fim de semana; os P das linhas diurnas so fecham com 27/10
 num sabado (2018: 02/11 sexta e 15/11 quinta, as duas colunas sombreadas fora do fim de semana) —
 o script confere isso antes de contar.
+
+Linhas contadas (Orientacao, 26/10, a posteriori): so as linhas com pelo menos um registro (21 de
+24); as tres sem nenhum (6118, 4798, 6089) ficam fora da contagem, mas no caso. A contagem com as
+24 linhas fica no recontagem.md como historico.
 """
 
 from __future__ import annotations
@@ -114,17 +118,19 @@ def _contrato():
 
 
 def ler():
-    """(pessoas, dias, escala {(n, d): turno}, ferias {(n, d)}, grupo {n})."""
+    """(pessoas, dias, escala {(n, d): turno}, ferias {(n, d)}, grupo {n}, erros, com_registro)."""
     with open(CSV, encoding="utf-8") as arq:
         linhas = list(csv.reader(arq))
     cab = linhas[0]
     dias = [date(ANO, int(c.split("/")[1]), int(c.split("/")[0])) for c in cab[3:]]
-    escala, ferias, grupo, pessoas = {}, set(), {}, []
+    escala, ferias, grupo, pessoas, com_registro = {}, set(), {}, [], []
     erros = []
     for linha in linhas[1:]:
         n, horario, g = linha[0], linha[1], linha[2]
         pessoas.append(n)
         grupo[n] = g
+        if any(c.strip() for c in linha[3:]):
+            com_registro.append(n)
         diurno = g == "dia"
         turno_linha = ("T" if horario.startswith("12:50") else
                        "I" if horario.startswith("06:00") else "M")
@@ -144,7 +150,7 @@ def ler():
                     escala[(n, d)] = turno_linha
             else:
                 erros.append(f"{n} {d}: celula desconhecida {c!r}")
-    return pessoas, dias, escala, ferias, grupo, erros
+    return pessoas, dias, escala, ferias, grupo, erros, com_registro
 
 
 def _inst(pessoas, ini, fim):
@@ -199,11 +205,7 @@ def _conta(inst, escala_seg, familias):
     return c
 
 
-def recontar() -> int:
-    pessoas, dias, escala, ferias, grupo, erros = ler()
-    if erros:
-        print("PARADO: leitura da transcricao nao fecha com o calendario:", *erros[:10], sep="\n  ")
-        return 1
+def _contagem(pessoas, dias, escala, ferias) -> Counter:
     total = Counter()                 # (familia, pessoa) -> excesso
     ocorrencias = Counter()           # familia -> pessoas com ocorrencia possivel
     for n in pessoas:
@@ -245,6 +247,10 @@ def recontar() -> int:
         if not fora:
             esc_n = {k: v for k, v in escala.items() if k[0] == n}
             total.update(_conta(_inst([n], dias[0], dias[-1]), esc_n, TOTAIS))
+    return total
+
+
+def _tabela(total, grupo):
     linhas = ["| Critério (limite padrão) | Na recontagem (avaliacao.py) | Pessoas com violação | "
               "Ficha (Orientação) | Mesmo lado? |", "|---|---|---:|---|---|"]
     mudou = []
@@ -258,8 +264,26 @@ def recontar() -> int:
         linhas.append(f"| {rotulo} | {lado}: {sum(por.values())} violação(ões) | {len(por)} "
                       f"({', '.join(f'{g} {k}' for g, k in sorted(grupos.items())) or '—'}) | "
                       f"{ficha} | {'sim' if igual else '**NÃO**'} |")
-    texto = ["# Caso A — recontagem independente da escala real (23/10/2026)", "",
-             f"Fonte: `{CSV}` (24 linhas, 26/10 a 25/11/{ANO}); leituras da ficha (corrigida pela "
+    return linhas, mudou
+
+
+PERIODO = ("26/10 a 25/11 (ano não impresso na escala; 2018 inferido pelo calendário: os fins de "
+           "semana sombreados só caem em sábado e domingo em 2018)")
+
+
+def recontar() -> int:
+    pessoas, dias, escala, ferias, grupo, erros, com_registro = ler()
+    if erros:
+        print("PARADO: leitura da transcricao nao fecha com o calendario:", *erros[:10], sep="\n  ")
+        return 1
+    fora = [n for n in pessoas if n not in com_registro]
+    linhas, mudou = _tabela(_contagem(com_registro, dias, escala, ferias), grupo)
+    linhas24, mudou24 = _tabela(_contagem(pessoas, dias, escala, ferias), grupo)
+    texto = ["# Caso A — recontagem independente da escala real (23/10/2026; 21 linhas em 26/10)", "",
+             f"Fonte: `{CSV}` (24 linhas transcritas, {len(com_registro)} com registro contadas; "
+             f"{PERIODO}). Ficam fora da contagem as {len(fora)} linhas sem nenhum registro "
+             f"({', '.join(fora)}), mas não do caso (Orientação, 26/10, a posteriori: linha vazia "
+             "não mostra prática; DECISOES.md, \"2026-10-23 — Caso A\"). Leituras da ficha (corrigida pela "
              "Orientação em 23/10); contagem pelo `avaliacao.py` (noturno na véspera: contador da "
              "ferramenta, que o avaliacao.py não pontua). Borda e férias pela **leitura C** "
              "(Orientação, 23/10, a posteriori): bloco que toca a borda do mês conta nos critérios "
@@ -268,6 +292,13 @@ def recontar() -> int:
              "domingo (27/10/2018 é sábado).", "", *linhas, "",
              (f"**Os {len(FICHA)} critérios contáveis ficam do mesmo lado da ficha.**" if not mudou
               else "**PARAR: mudaram de lado: " + "; ".join(mudou) + "** (levar à Orientação)."),
+             "", "## Histórico: a contagem com as 24 linhas (23/10)", "",
+             "Mesma leitura (C), com as três linhas sem registro contadas (dia útil em branco = "
+             "trabalho no turno da linha; fim de semana em branco = não trabalha). Foi a base da "
+             "classificação usada nas rodadas de 24/10; a regra de 26/10 não muda nenhum lado.", "",
+             *linhas24, "",
+             (f"Com as 24 linhas: os {len(FICHA)} critérios do mesmo lado da ficha." if not mudou24
+              else "Com as 24 linhas, mudavam de lado: " + "; ".join(mudou24) + "."),
              "", HISTORICO]
     SAIDA.mkdir(parents=True, exist_ok=True)
     (SAIDA / "recontagem.md").write_text("\n".join(texto) + "\n", encoding="utf-8")
