@@ -105,6 +105,26 @@ raiz, um por linha:
   no XML. Frase admitida no texto: "No medium_late05, os pesos das restrições suaves dos contratos
   atribuídos vão de 3 a 10; os padrões indesejados e os pedidos de folga têm peso 1. No sprint01 e
   no long01, todas as restrições ativas têm peso 1." O peso 31 não vai ao texto.
+- Sessão a pedido da Orientação (tarde de 26/10; nada em `src/`):
+  1. DECISOES, entrada das 36 h de 20/10: nota de 26/10 (correção de citação) — as 8 h diárias são do
+     art. 58 da CLT (CLT-005), e o art. 59 admite até 2 h extras (CLT-006); conferidos no Planalto.
+     O texto de 20/10 fica como está.
+  2. DECISOES, entrada nova "2026-10-26 — Limitações declaradas: duração diária do turno e limite
+     semanal de horas": a v1.4.4 aceita turno de 1 a 24 h (início 0–23 h, hora cheia) e não verifica a
+     duração máxima diária (arts. 58, 59 e 59-A) nem um limite semanal; carga 30/36/40/44 h com o teto
+     no horizonte (02/10, item b). Para a duração do turno não há motivo registrado: limitação
+     declarada a posteriori. Frase admitida no texto na entrada.
+  3. DECISOES, entrada nova "2026-10-26 — Capturas da tela da v1.4.4 para o texto (4.7)", registrada
+     antes de rodar (exceção à regra "sem solver depois de 24/10"). Rodada `rodada2_18tec_v144` (nome
+     novo, para não sobrescrever a origem da seção 9 do NUMEROS): **esperado cumprido** — "Falta 1; o
+     menor quadro viável é 29", motivo único "Alternância" (ter 03/11 e qua 04/11: 28 plantões, 27
+     pessoas), alerta do QP; conferidor da planilha OK. O `capturas.py` foi ajustado à tela da v1.4.4
+     (rótulos da demanda, ordem das grades, pedidos na seção 4, rótulo da alta dependência, aviso da
+     etapa 1); ensaio só de preenchimento antes da rodada. Nenhum número novo.
+  4. GUIA_DE_USO, seção 6: linha do motivo "Dois dias seguidos" na tabela do diagnóstico (faltava
+     desde a v1.4.1).
+  5. Comandos da identidade do pacote B2 (Apêndice C) conferidos em PowerShell, sem mudar a forma:
+     "243 arquivos; 243 identicos; 0 diferentes".
 
 ## Decisões de 24/10
 
@@ -260,6 +280,13 @@ raiz, um por linha:
   entra nos pacotes de 4.1 e 4.7. A Redação já a incluiu na 4.5 com (F23)-(F24), pela entrada
   vigente de 19/10; o PACOTE_B1_26-10 não a citava. (2) Perguntas ao Prof. Ormeu, ainda sem resposta
   (estão no PASSAGEM da Redação): instituição (CEFET/RJ), título, declaração de uso de IA, banca.
+- **26/10 (c):** (1) Capturas da v1.4.4 para a 4.7: `docs/demonstracao/rodada2_18tec_v144_entrada.png`,
+  `_equilibrando.png` e `_resultado.png` (texto da tela em `_tela.txt`). Substituem as de 09/10 só
+  como imagem; os números da seção 9 do NUMEROS continuam com origem nos arquivos de 09/10. O texto
+  não cita o tempo da rodada. (2) Apêndice C: os cinco comandos da identidade funcionam em PowerShell
+  como estão no PACOTE_B2_26-10 — tirar o `[CONFERIR COMANDO]`. A pasta `$env:TEMP\id` é criada
+  pelo script; a gravação na cópia da v1.4.2 regrava um `.pyc` versionado de lá (inofensivo; o
+  Claude Code restaurou).
 
 - **24/10:** (1) Cadeia de validação: `resultados/cadeia_validacao_2026-10-24.md` — o texto diz em
   que versão cada evidência rodou; onde a tabela diz "não coberto", não afirma a ligação (ex.: K1–K6,
