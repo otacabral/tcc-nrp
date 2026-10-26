@@ -55,14 +55,15 @@ fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-**1. Redação: seção 15 do `NUMEROS_TCC.md` aprovada (26/10)** — os números dos casos A e B
-podem ir ao texto, com as ressalvas da seção e a da tabela da escala real.
+**1. Semana de escrita (26/10 a 30/10):** a Orientação monta um pacote de base por bloco para a
+Redação, no formato de `D:\TCC\escrita\texto\esqueletos\PACOTE_B1_26-10.md` (afirmações L/F/A com
+fonte, perguntas de banca, o que não escrever). O cronograma e a situação de cada seção estão no
+PASSAGEM de `D:\TCC\escrita`. A ferramenta está congelada (só correção de defeito, com registro no
+DECISOES antes). Seção 15 do NUMEROS aprovada em 26/10 e cadeia de validação
+(`resultados/cadeia_validacao_2026-10-24.md`) são fonte do texto; onde a cadeia diz "não coberto", o
+texto não afirma a ligação.
 
-**2. Redação: usar a cadeia de validação** (`resultados/cadeia_validacao_2026-10-24.md`) para dizer
-em que versão cada evidência rodou e por que vale na v1.4.4; onde está "não coberto", o texto não
-afirma a ligação.
-
-**3. Opcional — terminar o B11 da sensibilidade de 3.600 s** (~2 h; só se o Otávio quiser o caso
+**2. Opcional — terminar o B11 da sensibilidade de 3.600 s** (~2 h; só se o Otávio quiser o caso
 no texto). Com o Claude Code e outros programas fechados (o avaliador Java pode usar até 6 GB). No
 PowerShell, um comando por linha:
 
@@ -98,6 +99,12 @@ raiz, um por linha:
 - Orientação: na contagem da escala real entram só as 21 linhas com registro (nota a posteriori no
   DECISOES "2026-10-23 — Caso A"); a entrada do caso não muda. Recontagem sem mudança de lado.
 - Seção 15 do NUMEROS_TCC aprovada pelo Otávio, com os ajustes (a)–(d) da Orientação.
+- Precisão dos pesos do medium_late05 (commit `d9705c4`): pesos de 3 a 10 nas restrições suaves dos
+  contratos atribuídos (0, 1 e 2); padrões indesejados e pedidos de folga com peso 1; contrato 3
+  (peso 31) sem ninguém; sprint01 e long01 com todos os pesos 1 (ou 0, quando desligada). Conferido
+  no XML. Frase admitida no texto: "No medium_late05, os pesos das restrições suaves dos contratos
+  atribuídos vão de 3 a 10; os padrões indesejados e os pedidos de folga têm peso 1. No sprint01 e
+  no long01, todas as restrições ativas têm peso 1." O peso 31 não vai ao texto.
 
 ## Decisões de 24/10
 
@@ -249,6 +256,10 @@ raiz, um por linha:
   mas no caso; o ano (2018) é inferido pelo calendário, não impresso na escala. (3) A tabela da
   escala real vai com a ressalva: um setor, um mês; leituras da imagem adotadas na ficha (dia útil
   em branco = trabalho); não afirma descumprimento de lei.
+- **26/10 (b):** (1) A tabela "Pedidos e regras dos profissionais" (DECISOES 2026-10-19; GUIA_DE_USO)
+  entra nos pacotes de 4.1 e 4.7. A Redação já a incluiu na 4.5 com (F23)-(F24), pela entrada
+  vigente de 19/10; o PACOTE_B1_26-10 não a citava. (2) Perguntas ao Prof. Ormeu, ainda sem resposta
+  (estão no PASSAGEM da Redação): instituição (CEFET/RJ), título, declaração de uso de IA, banca.
 
 - **24/10:** (1) Cadeia de validação: `resultados/cadeia_validacao_2026-10-24.md` — o texto diz em
   que versão cada evidência rodou; onde a tabela diz "não coberto", não afirma a ligação (ex.: K1–K6,
