@@ -10,6 +10,11 @@ Streamlit no ar (`streamlit run src\\app.py --server.port 8599`) e `pip install 
 
 As tabelas da tela (st.data_editor) sao preenchidas por COLAR: seleciona-se a celula com o
 teclado e cola-se texto separado por tabulacao, como faria quem copia de uma planilha.
+
+Ajustado aos textos e a ordem da tela da v1.4.4 em 26/10 (DECISOES.md, "2026-10-26 — Capturas da
+tela da v1.4.4 para o texto (4.7)"): rotulos da demanda por turno ("Dia", "Noite", "(fim de
+semana)"), a tabela de pedidos na secao 4 (Prioridades) e depois da demanda por data, o painel
+do COFEN como caixa da secao 3, o rotulo da alta dependencia e o aviso da etapa 1.
 """
 
 from __future__ import annotations
@@ -119,7 +124,13 @@ def valor_celula(pg, indice_grade, coluna, linha) -> str | None:
     return c.first.text_content() if c.count() else None
 
 
-GRADE_DATAS = 4      # a grade "Demanda especifica por data", na ordem das tabelas da tela
+# grades, na ordem da pagina da v1.4.4: 0 turnos, 1 cargas, 2 ferias, 3 demanda por data (na
+# caixa fechada, mas ja na pagina), 4 "Pedidos e regras dos profissionais" (secao 4). Ate a v1.2
+# eram 3 pedidos e 4 demanda por data
+GRADE_DATAS = 3
+GRADE_REGRAS = 4
+# rotulos de tela dos turnos (app.ROTULO_TURNO) e o sufixo do fim de semana, da v1.4.4
+ROTULO_TURNO = {"D": "Dia", "N": "Noite"}
 
 
 def selecionada(pg, indice_grade) -> tuple[int, int] | None:
@@ -244,7 +255,6 @@ def preencher(pg, n_tec: int | None):
         area.press("Control+Enter")
         esperar(pg)
 
-    # grades, na ordem da pagina: 0 turnos, 1 cargas, 2 ferias, 3 pedidos, 4 demanda por data
     pessoas = caso.ENFERMEIROS + tecnicos
     pg.get_by_text("2. Equipe").click()           # tira o foco da caixa de nomes
     esperar(pg, 2500)
@@ -252,30 +262,33 @@ def preencher(pg, n_tec: int | None):
         if n in e.cargas:
             carga(pg, k, str(int(e.cargas[n])))
     linhas_novas(pg, 2, e.indisponibilidades)
-    linhas_novas(pg, 3, e.pedidos)
 
     # 3. demanda
     pg.get_by_text("Fim de semana com demanda própria").click()
     esperar(pg)
     for turno, (enf, tec) in caso.DEMANDA.items():
-        numero(pg, f"{turno}: enfermeiros", enf)
-        numero(pg, f"{turno}: técnicos", tec)
+        numero(pg, f"{ROTULO_TURNO[turno]}: enfermeiros", enf)
+        numero(pg, f"{ROTULO_TURNO[turno]}: técnicos", tec)
     for turno, (enf, tec) in caso.DEMANDA_FDS.items():
-        numero(pg, f"{turno}: enfermeiros (fds)", enf)
-        numero(pg, f"{turno}: técnicos (fds)", tec)
+        numero(pg, f"{ROTULO_TURNO[turno]}: enfermeiros (fim de semana)", enf)
+        numero(pg, f"{ROTULO_TURNO[turno]}: técnicos (fim de semana)", tec)
     pg.get_by_text("Demanda específica por data").click()
     esperar(pg, 1500)
     for d in caso.FERIADOS:
         valores = [caso.DEMANDA_FERIADO[t][i] for t in ("D", "N") for i in (0, 1)]
         colar_na_data(pg, d, valores)
 
-    # 4. COFEN
-    pg.get_by_text("4. Conferir com o COFEN").click()
+    # COFEN (caixa da secao 3 na v1.4.4)
+    pg.get_by_text("Conferir com o COFEN (opcional)").click()
     esperar(pg, 800)
     rotulos = {"minimo": "Mínimo (4 h/paciente)", "intermediario": "Intermediário (6 h)",
-               "alta": "Alta dependência (10 h)"}
+               "alta": "Alta dependência (10 h; 36% enfermeiros)"}
     for g, v in caso.PACIENTES.items():
         numero(pg, rotulos[g], f"{v:.2f}")
+
+    # 4. prioridades: os pedidos de folga na tabela "Pedidos e regras dos profissionais" (tipo e
+    # importancia em branco = o padrao da tela: folga num dia, Essencial)
+    linhas_novas(pg, GRADE_REGRAS, e.pedidos)
 
 
 def foto(pg, caminho):
@@ -330,7 +343,7 @@ def main() -> int:
         pg.get_by_role("button", name="Gerar escala").click()
         # P12 (08/10): a escala da etapa 1 aparece enquanto a etapa 2 equilibra a carga
         try:
-            pg.wait_for_selector("text=Escala pronta; equilibrando", timeout=900000)
+            pg.wait_for_selector("text=Escala encontrada; equilibrando", timeout=900000)
             print(f"ESCALA DA ETAPA 1 NA TELA aos {time.time() - t0:.0f} s do clique")
             # sem `esperar`: ele aguarda a tela terminar de calcular, e a foto sairia ja com o
             # resultado final (foi o que aconteceu nas capturas de 08 e 09/10)

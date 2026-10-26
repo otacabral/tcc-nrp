@@ -25,7 +25,9 @@ import caso_clinica_medica as caso  # noqa: E402
 import ferramenta as fe  # noqa: E402
 import solucao  # noqa: E402
 
-RODADAS = {"rodada1": None, "rodada2_19tec": 19, "rodada2_18tec": 18}
+RODADAS = {"rodada1": None, "rodada2_19tec": 19, "rodada2_18tec": 18,
+           # capturas da v1.4.4 para a 4.7 (DECISOES, "2026-10-26 — Capturas da tela")
+           "rodada2_18tec_v144": 18}
 
 
 def instancia(e, nomes: list[str]):

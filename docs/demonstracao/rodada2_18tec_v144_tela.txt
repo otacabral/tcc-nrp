@@ -1,0 +1,204 @@
+demanda de seg 02/11 colada e conferida na linha 0: [1, 4, 1, 4]
+demanda de dom 15/11 colada e conferida na linha 13: [1, 4, 1, 4]
+demanda de sex 20/11 colada e conferida na linha 18: [1, 4, 1, 4]
+ESCALA DA ETAPA 1 NA TELA aos 28 s do clique
+TEMPO DO CLIQUE ATE O RESULTADO: 3604 s
+Escala de enfermagem
+
+A escala sempre cumpre a CLT; as recomendações do COFEN aparecem como alerta, sem impedir a escala. O período é de 28 dias, começando numa segunda-feira.
+
+1. Configuração da unidade
+
+Modelo de turnos
+
+Fim de semana
+
+sábado e domingo
+
+sexta a domingo
+
+Grau de dependência predominante
+
+Início (segunda-feira)
+
+02
+/
+11
+/
+2026
+
+Turnos: nome, início e fim (hora cheia). 
+
+2. Equipe
+
+Enfermeiros
+
+Técnicos e auxiliares
+
+keyboard_arrow_down
+
+Nomes (opcional)
+
+Enfermeiros, um por linha
+
+Técnicos, um por linha
+
+Horas por semana do contrato de cada profissional (padrão 44 h). 
+
+Férias e licenças: nesses dias a pessoa nunca é escalada.
+
+3. Demanda
+
+Quantas pessoas de cada categoria em cada turno. Valores próprios para o fim de semana são opcionais.
+
+Fim de semana com demanda própria
+
+Dia: enfermeiros
+
+Dia: técnicos
+
+Dia: enfermeiros (fim de semana)
+
+Dia: técnicos (fim de semana)
+
+Noite: enfermeiros
+
+Noite: técnicos
+
+Noite: enfermeiros (fim de semana)
+
+Noite: técnicos (fim de semana)
+
+keyboard_arrow_down
+
+Demanda específica por data (feriados, eventos) — opcional
+
+Preenchida a partir da demanda acima; edite só o que muda. Mudar a demanda acima refaz esta grade.
+
+keyboard_arrow_down
+
+Conferir com o COFEN (opcional) — pacientes por grau
+
+Média de pacientes por dia em cada grau de dependência. Serve só para comparar a equipe com o quadro recomendado pelo Parecer do COFEN; não muda a escala.
+
+Mínimo (4 h/paciente)
+
+Intermediário (6 h)
+
+Alta dependência (10 h; 36% enfermeiros)
+
+Semi-intensivo (10 h; 42% enfermeiros)
+
+Intensivo (18 h)
+
+4. Prioridades da escala
+
+Classifique cada critério: Essencial, Importante, Desejável ou Não considerar. 
+
+Restaurar padrão
+
+keyboard_arrow_down
+
+Pedidos e qualificação — 1 de 1 considerados
+
+Pedidos e regras dos profissionais
+
+Folga ou turno fixo, de cada profissional. Importância em branco: Essencial para folga num dia; Desejável nos demais. 
+
+Critério
+
+Importância
+
+Limite
+
+Enfermeiro em posto de técnico 
+
+keyboard_arrow_right
+
+Sequências de trabalho e folga — 0 de 2 considerados
+
+keyboard_arrow_right
+
+Fins de semana — 0 de 3 considerados
+
+keyboard_arrow_right
+
+Noturno e carga — 0 de 4 considerados
+
+Tempo máximo para gerar a escala (minutos)
+
+Gerar escala
+
+5. Resultado
+
+Falta 1; o menor quadro viável é 29. Escala gerada.
+
+Por que não há escala legal com 28: Alternância do plantão de 12 h
+
+Com plantões de 12 h ninguém trabalha dois dias seguidos (a folga depois do plantão é de 36 h). ter 03/11 e qua 04/11 somam 28 plantões, que precisam de 28 pessoas diferentes; descontadas férias e licenças, 27 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, falta pelo menos 1 pessoa.
+
+Falta 1; o menor quadro viável é 29. Escala gerada.
+
+Alerta COFEN (não impede a escala): quadro de 28 abaixo do QP completo do Parecer (29,70, com IST de 15%); o núcleo assistencial, sem IST, é 25,82
+
+QP: quadro de pessoal recomendado pelo Parecer do COFEN. IST: índice de segurança técnica, a margem de 15% para férias e ausências que a escala não cobre.
+
+Quadro da escala
+
+29
+
+Enfermeiro em posto de técnico
+
+34
+
+Pedidos de folga atendidos
+
+6 de 6
+
+Contrato cumprido (mín.–máx.)
+
+75%–100%
+
+Conferência de descanso
+
+cumpre
+
+Resultado por critério
+
+Essencial e Importante: 0 e 34 violações — a melhor possível.
+
+Equilíbrio entre colegas: pode haver uma escala mais equilibrada.
+
+keyboard_arrow_right
+
+Detalhes da escala
+
+Quadro recomendado pelo COFEN, só assistência (QP)
+
+25,82
+
+Quadro recomendado pelo COFEN, com 15% para ausências (QP com IST)
+
+29,70
+
+Horas semanais usadas na conta do COFEN (CHS, carga horária semanal): 42,3 h, a média dos contratos da equipe.
+
+keyboard_arrow_right
+
+Como o resultado foi obtido
+
+Horas semanais usadas na conta do COFEN (CHS, carga horária semanal): 42,3 h, a média dos contratos da equipe.
+
+keyboard_arrow_right
+
+Como o resultado foi obtido
+
+Baixar planilha (.xlsx)
+
+Código com * = posto de enfermeiro.
+PICO DE MEMORIA (MB): servidor Streamlit + solver 497; Chrome do Playwright (soma dos processos) 601; este roteiro 59
+rodada2_18tec_v144: cobertura contra a demanda DECLARADA no caso: igual em todos os dias
+rodada2_18tec_v144: 29 profissionais, 359 atribuicoes | rigidas ok | descanso cumpre (menor folga 0 h, semanal 36 h, 1 dias seguidos) | teto ok | ferias ok
+planilhas da demonstracao: OK
+status 0
+menor memoria livre: 18:11:03 livre_MB=1270
