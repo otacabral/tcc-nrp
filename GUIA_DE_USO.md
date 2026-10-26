@@ -387,6 +387,7 @@ cada um com os números. Cada motivo, sozinho, já prova que não há escala:
 |---|---|
 | **Horas** | As horas de técnico passam do que os técnicos podem trabalhar mais a folga dos enfermeiros. O limite de cada pessoa é a carga contratual nos dias disponíveis e, no 12×36, a alternância: no máximo um plantão a cada dois dias. |
 | **Alternância do plantão de 12 h** | Ninguém faz dois plantões de 12 h em dias seguidos. Por isso, dois dias seguidos precisam de pessoas diferentes, e quem está de férias nos dois dias não conta. |
+| **Dois dias seguidos** | Num par de dias seguidos, os postos do segundo dia mais os do primeiro em turnos que impedem trabalhar no dia seguinte passam das pessoas disponíveis em pelo menos um dos dois dias (férias descontadas). |
 | **Categoria** | Faltam enfermeiros para os postos que só enfermeiro cobre (em horas, ou num par de dias seguidos). |
 | **Dia específico** | Num dia, com férias e licenças, sobram menos pessoas do que postos. |
 | **Combinação de regras** | Nenhuma conta simples explica. As regras juntas (descanso, dias seguidos, férias) é que impedem. |
