@@ -277,9 +277,11 @@ Aprovada pelo Otávio em 19/10 (2º bloco). Esperado commitado antes (`8d20313`;
 
 Substitui, como evidência de restrições, as 207 + 36 escalas de 18/09 (perdidas; seção 1).
 
-## PENDENTE DE APROVAÇÃO — 15. Casos realistas A e B (21 e 24/10/2026)
+## 15. Casos realistas A e B (21 e 24/10/2026)
 
-**Não aprovada: não citar até o Otávio aprovar** (previsto para 25/10). Fonte dos dados: Massens
+**Aprovada pelo Otávio em 26/10/2026** (transcrição da p. 70 conferida por ele contra a p. 70 em
+26/10), com os ajustes da Orientação de 26/10 (período com o ano inferido; tabela da escala real
+com as 21 linhas com registro). Fonte dos dados: Massens
 (2019), Anexo B (escala real da Clínica Ortovascular) e o restante da ficha do caso
 (`D:\TCC\escrita\fontes\FICHA_CASO_REALISTA.md`).
 
@@ -323,8 +325,9 @@ caso_a_pratica.py --rodar` (um processo por rodada). Orçamento padrão de 60 mi
 com prova).
 
 **Classificação dos critérios pela escala real** (transcrição célula a célula da p. 70 de Massens,
-24 linhas, 26/10 a 25/11/2018). Regra: violado em alguma ocorrência → Não considerar; nunca violado,
-com ocorrência → Importante; sem evidência → padrão; Essencial só para regra declarada na fonte (o
+24 linhas transcritas, 21 com registro contadas; 26/10 a 25/11 (ano não impresso na escala; 2018
+inferido pelo calendário: os fins de semana sombreados só caem em sábado e domingo em 2018)).
+Regra: violado em alguma ocorrência → Não considerar; nunca violado, com ocorrência → Importante; sem evidência → padrão; Essencial só para regra declarada na fonte (o
 turno fixo). Recontagem independente pelo `avaliacao.py`: **os 13 critérios contáveis do mesmo lado
 da contagem da ficha**, com a leitura da borda **C, adotada a posteriori (23/10)**: formulada depois
 de a recontagem expor a divergência entre a regra escrita na ficha (tirar todo bloco de borda) e a
@@ -333,6 +336,33 @@ máximo e sai nos de mínimo; o bloco que toca as férias sai sempre. As leitura
 estão no DECISOES. Nunca violados na prática: máx. folgas seguidas (4), mín. fins de semana seguidos
 (2), mín. turnos (10). "Mesmo turno no fim de semana" é violado pela semântica do avaliador (um dia só
 do fim de semana já viola): Não considerar, por evidência.
+
+**A escala real, por critério** (21 linhas com registro: 10 diurnas, 5 da noite A, 6 da noite B; as
+três linhas sem nenhum registro — 6118, 4798, 6089 — ficam fora da contagem, mas no caso: DECISOES,
+"2026-10-23 — Caso A", nota a posteriori de 26/10; a contagem com as 24 linhas, com os mesmos 13
+lados, fica no `recontagem.md` como histórico). Limites = os padrões da ferramenta. Conferência:
+transcrição célula a célula da p. 70 (chat de Orientação, 23/10), conferida pelo Otávio contra a
+p. 70 em 26/10; contagem pelo `avaliacao.py` (recontagem independente; noturno na véspera pelo
+contador da ferramenta); leitura C da borda (a posteriori, 23/10); 21 de 24 linhas (a posteriori,
+26/10). Totais de turnos só de quem não teve férias. **Ressalva:** um setor, um mês; leituras da
+imagem adotadas na ficha (dia útil em branco = trabalho); as três linhas sem registro (6118, 4798,
+6089) ficam fora da contagem, mas no caso; não afirma descumprimento de lei.
+
+| Critério (limite padrão) | Violações | Pessoas com violação, por grupo |
+|---|---:|---|
+| Máx. dias seguidos, preferência (5) | 30 | 9 (diurno 9) |
+| Mín. dias seguidos (3) | 302 | 16 (diurno 5, noite A 5, noite B 6) |
+| Máx. folgas seguidas (4) | **0** | 0 |
+| Mín. folgas seguidas (3) | 359 | 21 (diurno 10, noite A 5, noite B 6) |
+| Máx. fins de semana seguidos (3) | 26 | 14 (diurno 9, noite A 3, noite B 2) |
+| Mín. fins de semana seguidos (2) | **0** | 0 |
+| Fins de semana em 4 semanas (2) | 63 | 19 (diurno 9, noite A 4, noite B 6) |
+| Fim de semana completo | 93 | 21 (diurno 10, noite A 5, noite B 6) |
+| Mesmo turno no fim de semana | 93 | 21 (diurno 10, noite A 5, noite B 6) |
+| Máx. turnos, preferência (18) | 59 | 9 (diurno 9) |
+| Mín. turnos (10) | **0** | 0 |
+| Noturno na véspera de fim de semana livre | 4 | 4 (noite A 1, noite B 3) |
+| Duas folgas depois de noites | 137 | 11 (noite A 5, noite B 6) |
 
 **Ordens:** ordem 1 (a prática) — Essencial: as 29 linhas "Só este turno"; Importante: máx. folgas
 seguidas (4), mín. fins de semana seguidos (2), mín. turnos (10), enfermeiro em posto de técnico; o
@@ -362,8 +392,8 @@ pattern" (ex.: N-null-D12) da saída do avaliador são o artefato dos padrões d
 
 ## 15b. Tamanho do modelo: nosso × Santos et al. (2016)
 
-**Aprovada pelo Otávio em 24/10/2026.** (O número 15 fica para a seção dos casos A e B, ainda
-proposta.) Levada em 22/10 (pedido do orientador na reunião
+**Aprovada pelo Otávio em 24/10/2026.** (O número 15 ficou para a seção dos casos A e B,
+aprovada em 26/10.) Levada em 22/10 (pedido do orientador na reunião
 de 22/10, junto da bateria HiGHS × SCIP). Origem: `docs/diferencas_inrc_ferramenta.md`, parte (a);
 contagem do nosso modelo por `docs/diagnostico/tamanho_modelos.py` (sem solver; os mesmos números
 saíram de novo em 22/10 pela `bateria_solvers.py --montar`, e o HiGHS e o SCIP recebem exatamente
