@@ -1,6 +1,6 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 24/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 26/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
@@ -33,6 +33,11 @@ fim de cada sessão (dele ou do chat).
   violação de dura, descanso, direção da ordem 2 com prova). Resultado e complemento só leitura (por
   enfermeiro: unidade × acrescidos; violações por profissional com as férias; nota do "Unwanted
   pattern") em `resultados/caso_a_pratica_2026-10-23/resultado.md`. Sem solver daqui em diante.
+- **Escala real recontada com 21 linhas (26/10):** a Orientação decidiu contar só as linhas com
+  algum registro; as três vazias (6118, 4798, 6089) ficam fora da contagem, mas no caso (24 pessoas;
+  rodadas de 21 e 24/10 valem). Recontagem (`recontagem.md`): **os 13 critérios do mesmo lado**;
+  só mudam contagens dentro do lado (mín. folgas seguidas 371 → 359; máx. turnos 68 → 59). A
+  contagem com 24 linhas ficou como histórico.
 - **Cadeia de validação até a v1.4.4** (24/10, só leitura): `resultados/cadeia_validacao_2026-10-24.md`
   — em que versão cada evidência rodou, o que mudou depois e o que a liga à v1.4.4. Para a bateria,
   nenhuma restrição dura mudou (art. 67 sem par novo); K1–K6, propriedades e nível 3 não foram
@@ -41,16 +46,17 @@ fim de cada sessão (dele ou do chat).
   - seção "Comportamento computacional: HiGHS × SCIP" **aprovada em 23/10**;
   - seção **15b** (tamanho do modelo, nosso × Santos) **aprovada em 24/10**, com a formulação de
     Santos conferida no artigo;
-  - seção **15** (casos A e B: 15.1 fase 2 de 21/10; 15.2 caso A pela prática de 24/10) **PENDENTE
-    DE APROVAÇÃO**, para o Otávio aprovar em 25/10;
+  - seção **15** (casos A e B: 15.1 fase 2 de 21/10; 15.2 caso A pela prática de 24/10) **aprovada
+    em 26/10**, com a transcrição da p. 70 conferida pelo Otávio, o período com o ano inferido e a
+    tabela da escala real com as 21 linhas;
   - corrigidos dois caracteres de controle da seção 14 (texto de comando, nenhum número mudou).
-  - Congelamento dos números: **25/10**.
+  - Congelamento dos números: **25/10**; a seção 15 foi aprovada em 26/10, com as rodadas já
+    feitas (sem solver depois de 24/10).
 
 ## Próxima tarefa
 
-**1. Otávio: aprovar (ou corrigir) a seção 15 do `NUMEROS_TCC.md`** (casos A e B: 15.1 fase 2,
-15.2 caso A pela prática), gravada como PENDENTE DE APROVAÇÃO em 24/10. Previsto para 25/10, dia do
-congelamento. Só depois os números vão ao texto.
+**1. Redação: seção 15 do `NUMEROS_TCC.md` aprovada (26/10)** — os números dos casos A e B
+podem ir ao texto, com as ressalvas da seção e a da tabela da escala real.
 
 **2. Redação: usar a cadeia de validação** (`resultados/cadeia_validacao_2026-10-24.md`) para dizer
 em que versão cada evidência rodou e por que vale na v1.4.4; onde está "não coberto", o texto não
@@ -65,7 +71,8 @@ PowerShell, um comando por linha:
     python docs\diagnostico\bateria_solvers.py --todos --limite 3600 --saida resultados\solvers_2026-10-23_3600 --casos medium_late05 A36_livre_30 B11_livre_89
 
 Sensibilidade com 2 ou 3 ordens de critérios: **sem proposta até a decisão do Otávio**.
-Congelamento dos números: **25/10**; a partir de 26/10, só escrita.
+Congelamento dos números: **25/10**; a partir de 26/10, só escrita (a seção 15 entrou em 26/10
+por aprovação, sem número novo além da recontagem de 21 linhas, que é só leitura).
 
 ## Worktrees de leitura (D:\dev)
 
@@ -85,6 +92,12 @@ raiz, um por linha:
     git worktree remove --force ..\tcc-nrp-v142
 
 (apaga só as pastas; as tags e o histórico ficam).
+
+## Decisões de 26/10
+
+- Orientação: na contagem da escala real entram só as 21 linhas com registro (nota a posteriori no
+  DECISOES "2026-10-23 — Caso A"); a entrada do caso não muda. Recontagem sem mudança de lado.
+- Seção 15 do NUMEROS_TCC aprovada pelo Otávio, com os ajustes (a)–(d) da Orientação.
 
 ## Decisões de 24/10
 
@@ -230,6 +243,12 @@ raiz, um por linha:
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **26/10:** (1) Seção 15 aprovada: pode ir ao texto. (2) Escala real: dizer "24 linhas transcritas,
+  21 com registro contadas"; as três linhas sem registro (6118, 4798, 6089) ficam fora da contagem,
+  mas no caso; o ano (2018) é inferido pelo calendário, não impresso na escala. (3) A tabela da
+  escala real vai com a ressalva: um setor, um mês; leituras da imagem adotadas na ficha (dia útil
+  em branco = trabalho); não afirma descumprimento de lei.
 
 - **24/10:** (1) Cadeia de validação: `resultados/cadeia_validacao_2026-10-24.md` — o texto diz em
   que versão cada evidência rodou; onde a tabela diz "não coberto", não afirma a ligação (ex.: K1–K6,
