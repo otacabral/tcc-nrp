@@ -287,6 +287,15 @@ raiz, um por linha:
   como estão no PACOTE_B2_26-10 — tirar o `[CONFERIR COMANDO]`. A pasta `$env:TEMP\id` é criada
   pelo script; a gravação na cópia da v1.4.2 regrava um `.pyc` versionado de lá (inofensivo; o
   Claude Code restaurou).
+- **26/10 (d):** a conferência fora do modelo **na entrega** (`ferramenta.verificar` →
+  `conferencia_descanso_escala.cumpre`) cobre só **descanso entre turnos, descanso semanal e dias
+  seguidos**. Cobertura, um turno por dia, teto de horas e férias são restrições do modelo, conferidas
+  fora dele por `solucao.conferir_rigidas` **apenas nos testes** (`testes_ferramenta`,
+  `testes_entrada`, `bateria_rodar`, `conferir_planilhas`; também no `main` de linha de comando do
+  `modelo.py` e na `escalabilidade.py`, que não são o caminho da entrega). O pacote B2 (4.2, item 4) e o
+  texto da 4.3/4.4 diziam mais que isso; a Redação corrige o texto. Não é defeito da ferramenta: nada
+  muda no código. (Conferido no código em 26/10: `ferramenta.py` só chama `cumpre`; `conferir_rigidas`
+  não aparece em `ferramenta.py` nem em `app.py`.)
 
 - **24/10:** (1) Cadeia de validação: `resultados/cadeia_validacao_2026-10-24.md` — o texto diz em
   que versão cada evidência rodou; onde a tabela diz "não coberto", não afirma a ligação (ex.: K1–K6,
