@@ -2175,7 +2175,8 @@ passo fixo, depois dos níveis.
 **Motivo** (Otávio, 14/10, 18h; texto em `D:\TCC\escrita\RETORNO_ORMEU_14-10.md`, seção
 "Justificativa da opção B"). Peso é informação de **quantidade** ("um pedido negado vale 7 fins
 de semana incompletos"), que ninguém sabe justificar — nem o INRC, cujos pesos variam por
-instância (todas as suaves com peso 1 em `sprint01` e `long01`; de 3 a 10 em `medium_late05`).
+instância (todas as suaves com peso 1 em `sprint01` e `long01`; de 3 a 10 em `medium_late05` (restrições dos contratos atribuídos; padrões e pedidos com peso 1 —
+precisão de 26/10)).
 A descrição oficial da competição (`docs/nrpcompetition_description.pdf`, seção 2.2) chama a
 divisão entre duras e suaves de "rather arbitrary" e diz que unidades diferentes dão pesos
 diferentes. Ordem é informação de **prioridade** ("o pedido importa mais que o fim de semana

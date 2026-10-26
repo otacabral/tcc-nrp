@@ -50,7 +50,7 @@ odar_medium_late05.py` (esperado registrado antes, commit `b9921fb`) | **avaliad
 | 28 | dias do horizonte (01/01/2010 a 28/01/2010) | idem |
 | 5 | tipos de turno, todos de 8 h (E, D, DH, L, N); `DH` exige `HeadNurse`, que 3 pessoas têm | idem |
 | 390 | pedidos de folga (300 por turno, 90 por dia) | idem |
-| quase todas | restrições flexíveis ativas, com pesos de 1 a 10 | idem |
+| quase todas | restrições flexíveis ativas, com pesos de 3 a 10 nas restrições suaves dos contratos atribuídos (contratos 0, 1 e 2); padrões indesejados e pedidos de folga com peso 1; o contrato 3 (peso 31 no mínimo de folgas seguidas) não é atribuído a ninguém | idem |
 | 7 | padrões indesejados por contrato | idem |
 
 **Ressalva.** É **comparação de estrutura** com a instância da demonstração (30 pessoas em
