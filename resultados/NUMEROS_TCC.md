@@ -129,6 +129,12 @@ Origem: `resultados/escalabilidade_objetivo_folga.csv`; logs `folga_teste_N40_20
 
 ## 7. Limites de tempo da tela
 
+> **Nota de 28/10/2026.** Os valores desta seção são os limites fixos de versões anteriores à
+> v1.4.0. Na v1.4.4, `ferramenta.py` não tem `TEMPO` nem `TEMPO_ETAPA2` fixos: o campo "Tempo
+> máximo para gerar a escala" (padrão 60 min, `ORCAMENTO = 3600 s`) é dividido proporcionalmente
+> entre as etapas, conforme `D:\TCC\escrita\insumos\DOSSIE_FERRAMENTA.md`, seção 5. A tabela abaixo
+> fica como registro histórico e não deve ser citada como limite da versão citável.
+
 | Valor | O que mede | Origem | Conferência | Ressalva |
 |---|---|---|---|---|
 | 600 s | limite da etapa 1 | `src/ferramenta.py` (`TEMPO`); decidido em 05/10 | — | decisão, não medição |

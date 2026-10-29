@@ -13,8 +13,8 @@ devolve:
 - **se a equipe dá conta** de uma escala que cumpre as regras de descanso da CLT;
 - **a escala** de 28 dias, para baixar em planilha (.xlsx);
 - **se não dá conta**, o motivo e o **menor quadro** com que daria;
-- **alertas do COFEN** (Parecer Normativo nº 1/2024): proporção de enfermeiros e quadro de
-  pessoal. Os alertas só avisam; não impedem a escala;
+- **alertas do COFEN** (Parecer Normativo nº 1/2024): proporção de enfermeiros, turnos sem
+  enfermeiro na demanda e quadro de pessoal. Os alertas só avisam; não impedem a escala;
 - **alerta de descanso semanal** abaixo de 35 h (Súmula 110 do TST). Também só avisa.
 
 Entre todas as escalas legais, ela escolhe esta, nesta ordem:
@@ -319,7 +319,8 @@ Com mais tempo (o campo do tempo máximo), a ferramenta poderia melhorar a escal
 
 ### Alertas do COFEN (em vermelho)
 
-Começam com "Alerta COFEN (não impede a escala)". São de dois tipos.
+Começam com "Alerta COFEN (não impede a escala)". São de três tipos (corrigido em 28/10/2026;
+antes o guia listava dois).
 
 **Proporção de enfermeiros.** Exemplo:
 
@@ -333,6 +334,10 @@ O alerta diz qual grau usou e por quê:
 - sem pacientes, o alerta termina com "grau informado na tela";
 - se dois grupos empatam em carga, o alerta diz "empate de carga entre…" e usa o maior
   percentual. Essa é uma escolha da ferramenta, conservadora; o Parecer não trata empate.
+
+**Turnos sem enfermeiro na demanda.** Aparece quando algum turno de algum dia pede técnicos e
+nenhum enfermeiro. Exemplo: "3 turnos sem enfermeiro na demanda (ex.: 03/11 N, 04/11 N, 05/11 N,
+...)". Lista até três ocorrências. Não depende de pacientes informados.
 
 **Quadro de pessoal (QP).** Aparece quando você informa pacientes e a equipe fica abaixo do
 QP completo. Exemplo, da demonstração:

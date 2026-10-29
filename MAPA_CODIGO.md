@@ -1,5 +1,14 @@
 # Mapa do código — o que é cada arquivo e o que serve à ferramenta
 
+> **Correção de 28/10/2026** (conferência do código da v1.4.4 para o texto do TCC, registrada em
+> `D:\TCC\escrita\insumos\DOSSIE_FERRAMENTA.md`, seção 10): (1) `ferramenta.py` não resolve pelo
+> `experimento_a.tentar`; monta o modelo com `experimento_a.modelo_br` e resolve com o
+> `modelo.resolver` próprio. (2) `regressao.py` faz 5 conferências, não 4. (3)
+> `docs/conferencia_descanso_escala.py` não é "função sem interface": é **dependência do produto
+> em execução** (`ferramenta.py` o importa via `sys.path` e reprova a escala que não cumpre a
+> conferência), apesar de morar em `docs/`. (4) Na v1.4.4 `src/` tem 20 arquivos `.py`. O texto
+> original abaixo foi mantido; onde conflitar, vale esta nota.
+
 **28/09/2026.** Escrito depois da virada de escopo de 24/09, para responder a uma pergunta
 simples: *destes treze arquivos, quais são a ferramenta e quais são o trabalho anterior?*
 
@@ -20,7 +29,7 @@ da ferramenta**, só que sem interface. Estão marcadas com ⭐ abaixo.
 | `src/instancia_br.py` | **A tradução da norma.** Parecer COFEN + CLT → instância resolvível. Recebe grau de dependência, porte, regime, efetivo e devolve o problema montado. Na ferramenta, isto é a camada que fica atrás do formulário. Desde 29/09: caminho por turnos configurados e demanda informada; `pares_proibidos_por_horario`, fonte única das regras de descanso; `alertas_cofen`, que não trava. |
 | `src/solucao.py` | Escreve a escala produzida e valida contra o esquema. É a saída. |
 | `src/tabela.py` | Gravação de CSV por mesclagem, com testes próprios. Utilitário. |
-| `src/ferramenta.py` | **A ferramenta sem tela** (29/09): entrada do formulário → veredito do quadro ("admite escala legal" / "faltam N; o menor quadro viável é X"), QP em duas parcelas, escala conferida e planilha `.xlsx`. Resolve pelo `experimento_a.tentar`, sem copiar a configuração do modelo. |
+| `src/ferramenta.py` | **A ferramenta sem tela** (29/09): entrada do formulário → veredito do quadro ("admite escala legal" / "faltam N; o menor quadro viável é X"), QP em duas parcelas, escala conferida e planilha `.xlsx`. Monta o modelo com `experimento_a.modelo_br` e resolve com `modelo.resolver` (corrigido em 28/10; antes dizia "resolve pelo `experimento_a.tentar`"). |
 | `src/app.py` | **A tela** (Streamlit): `streamlit run src\app.py`. Só a casca de `ferramenta.py`. Desde 29/09 (Etapa 6), na ordem da especificação: unidade (modelo de turnos editável, fim de semana, grau), equipe (férias, pedidos de folga), demanda por turno (generalista e específica), painel COFEN opcional, resultado com alertas em vermelho. |
 | `src/testes_ferramenta.py` | Ponta a ponta pela tela (AppTest): configuração do Experimento A, 12×36, razão 20/29 — 40 admite, 39 diz que o menor viável é 40, QP 35,24 e 40,52, planilha abre. |
 | `src/testes_entrada.py` | Testes das entradas da ferramenta (29/09): pacientes, QP em duas parcelas, razão fim de semana/dia útil, equipe por quantidade, indisponibilidade. Reproduz 40 e 37 do Experimento A pela razão 20/29. `--rapido` pula o solver. |
@@ -30,7 +39,7 @@ da ferramenta**, só que sem interface. Estão marcadas com ⭐ abaixo.
 | Arquivo | A função que ele é |
 |---|---|
 | ⭐ `src/experimento_a.py` | *"O quadro que a fórmula do COFEN dá admite escala legal?"* Varre o efetivo, prova inviabilidade abaixo do mínimo e exibe escala acima. **É o caso de uso principal da ferramenta** — o gestor calcula o quadro pela fórmula e quer saber se ele fecha. |
-| ⭐ `docs/conferencia_descanso_escala.py` | *"Esta escala é legal?"* Mede o descanso real entre plantões a partir dos horários, sem depender de padrão nem de avaliador. **É o relatório de conformidade** que o usuário precisa ver junto com a escala. |
+| ⭐ `docs/conferencia_descanso_escala.py` | **Dependência do produto em execução** (28/10): `ferramenta.py` importa `medir`, `cumpre`, `semanal_sem_bordas`, `MIN_SEMANAL` e `fmt_semanal` daqui e não entrega escala reprovada. *"Esta escala é legal?"* Mede o descanso real entre plantões a partir dos horários, sem depender de padrão nem de avaliador. **É o relatório de conformidade** que o usuário precisa ver junto com a escala. |
 | ⭐ `src/experimentos.py` | Entre escalas de mesmo custo ótimo, mede quanto a carga individual pode variar. **É a base do "me dê a escala mais equilibrada"** em vez de aceitar a que o solver devolveu por acaso. |
 
 ## Validação — a prova de que o motor funciona
@@ -39,7 +48,7 @@ Não entram no produto, mas sustentam o capítulo que diz que ele está correto.
 
 | Arquivo | O que faz |
 |---|---|
-| `src/regressao.py` | **O portão.** 4 instâncias × 4 conferências. Roda antes de qualquer alteração no modelo entrar. Continua valendo no escopo novo. |
+| `src/regressao.py` | **O portão.** 4 instâncias × 5 conferências (corrigido em 28/10; antes dizia 4). Roda antes de qualquer alteração no modelo entrar. Continua valendo no escopo novo. |
 | `src/avaliacao.py` | Reimplementação da penalidade em Python puro. É o oráculo: existe para o modelo ter com quem discordar. |
 | `src/validar.py` | Chama o avaliador oficial da competição (Java) e compara. |
 | `src/parser.py` | Lê o XML do INRC. Necessário para a validação; e se a ferramenta um dia importar instâncias, é por aqui. |
