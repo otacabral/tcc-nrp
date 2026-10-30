@@ -628,8 +628,12 @@ def preparar_equilibrio(m, inst, z: int, exato: bool = True) -> None:
                                    rule=lambda m, n: m.f_max[categoria(inst, n)] >= m.fracao[n])
     m.piso_fracao = pyo.Constraint(list(termos),
                                    rule=lambda m, n: m.f_min[categoria(inst, n)] <= m.fracao[n])
+    m.amplitude = pyo.Var(domain=pyo.NonNegativeReals)
+    m.amplitude_constraints = pyo.ConstraintList()
+    for g in grupos:
+        m.amplitude_constraints.add(m.amplitude >= m.f_max[g] - m.f_min[g])
     m.objetivo_equilibrio = pyo.Objective(
-        expr=sum(m.f_max[g] - m.f_min[g] for g in grupos), sense=pyo.minimize)
+        expr=m.amplitude, sense=pyo.minimize)
 
 
 def fracoes(inst, escala) -> dict[str, float]:
@@ -680,9 +684,15 @@ def por_categoria(inst, escala) -> dict[str, dict]:
 
 
 def amplitude(inst, escala) -> float:
-    """O criterio da etapa 2: (maior - menor fracao cumprida) entre enfermeiros + o mesmo
-    entre tecnicos. 0 = dentro de cada categoria, todos cumprem a mesma parte do contrato."""
+    """O criterio da etapa 2 até v1.4.4: (maior - menor fracao cumprida) entre enfermeiros + o mesmo
+    entre tecnicos. Mantido para compatibilidade (escalabilidade, logs). Ver max_amplitude para v1.4.5+."""
     return sum(c["amplitude"] for c in por_categoria(inst, escala).values())
+
+
+def max_amplitude(inst, escala) -> float:
+    """O criterio da etapa 2 em v1.4.5+: maior amplitude (φmax - φmin) entre as categorias.
+    0 = dentro de cada categoria, todos cumprem a mesma fração do contrato."""
+    return max((c["amplitude"] for c in por_categoria(inst, escala).values()), default=0.0)
 
 
 def fmt_diferenca(cat: dict) -> str:
@@ -838,7 +848,7 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | No
         return veredito, inst, None, info
     z = modelo.valor_objetivo(m)
     info["penalidade"] = z
-    info["amplitude_etapa1"] = amplitude(inst, escala)
+    info["amplitude_etapa1"] = max_amplitude(inst, escala)
     # P14 (09/10): sem prova, a etapa 2 roda assim mesmo, sem piorar o valor da etapa 1. Guarda
     # a escala da etapa 1 para a tela e as conferencias compararem ("antes" = esta rodada).
     ind1 = indicadores(inst, escala)
@@ -861,15 +871,15 @@ def resolver_com_objetivo(inst, tempo: int | None, aviso=None, prazo: float | No
     if v2 == ea.VIAVEL:
         # salvaguarda do caminho sem prova (DECISOES.md, "2026-10-09 — P14"): o HiGHS nao parte
         # da escala da etapa 1 e para no limite; se o equilibrio sair pior, fica a da etapa 1
-        if not provado and amplitude(inst, escala2) > info["amplitude_etapa1"] + 1e-9:
+        if not provado and max_amplitude(inst, escala2) > info["amplitude_etapa1"] + 1e-9:
             info["etapa2"] = "não melhorou o equilíbrio no tempo; fica a escala da etapa 1"
             return veredito, inst, escala, info
         # P17, item c (11/10): sem prova e sem melhora do criterio, a tela mostra a escala da
         # etapa 1 e diz isso (`frase_vigente`); a etapa 2 entregou escala, entao `etapa2` = "ok"
-        if not provado and amplitude(inst, escala2) >= info["amplitude_etapa1"] - 1e-9:
+        if not provado and max_amplitude(inst, escala2) >= info["amplitude_etapa1"] - 1e-9:
             escala2 = escala
         info.update(etapa2="ok", provado_etapa2=provado2, gap_etapa2=gap2,
-                    amplitude=amplitude(inst, escala2))
+                    amplitude=max_amplitude(inst, escala2))
         return veredito, inst, escala2, info
     info["etapa2"] = f"sem resposta ({v2}); fica a escala da etapa 1"
     return veredito, inst, escala, info
