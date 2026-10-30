@@ -1294,6 +1294,7 @@ devidas, com horas devidas = carga semanal × dias disponíveis ÷ 7. Quem tem 4
 de férias deve 88 h, não 176 h. Resolve a P4 (amplitude distorcida por férias). Quem não tem
 dia disponível no período fica fora da fração. Substitui a etapa 2 por horas da nota de 02/10
 na entrada "Redesenho"; o mecanismo continua o do Experimento B.
+*Marca de revisão em 30/10/2026:* o critério de minimização muda de **soma das amplitudes por categoria** para **min-max (máxima das amplitudes)**. Ver "2026-10-30 — Etapa 2 por min-max (v1.4.5)".
 
 **d) O teto também usa os dias disponíveis** — é a mesma conta das horas devidas,
 `Instancia.horas_devidas`, que serve ao teto rígido (`modelo.py`), à conferência
@@ -1415,6 +1416,31 @@ Máquina: i5-10210U, 12 GB, Windows 11, HiGHS 1.15.1 via appsi.
   tela "nenhuma (0 h)" e "1 plantão (8 h)"), sem exigir prova. Teste novo, 9c-tela: com a
   etapa 2 encurtada para 20 s, para que termine sem prova, nem a tela nem a planilha podem
   dizer "provado".
+
+---
+
+## 2026-10-30 — Etapa 2 por min-max (v1.4.5)
+
+**Status: vigente — MUDANÇA DE FORMULAÇÃO (só a etapa 2)**
+
+Pedido do Prof. Ormeu em 30/10/2026; aprovado pelo Otávio em 30/10/2026; validado pela Orientação.
+
+**Motivo:** a soma das amplitudes não controla como a amplitude se divide entre as categorias (13 + 1 empata com 7 + 7). O min-max força a escolha equilibrada: 7 + 7 é melhor que 13 + 1 ou 14 + 0, porque max(7, 7) = 7 < max(13, 1) = 13 e < max(14, 0) = 14. Referência: Guéret, Prins e Sevaux, *Applications of optimization with Xpress-MP*, seção 2.10.1, "Minimax objective functions".
+
+**Mudança técnica:**
+1. Adiciona variável real `t ≥ 0` no modelo da etapa 2.
+2. Para cada categoria presente (enfermeiros, técnicos): `t ≥ φmax_g − φmin_g`.
+3. Objetivo da etapa 2: `min t` (substitui `min Σ_g (φmax_g − φmin_g)`).
+4. Sem critério de desempate: escalas com a mesma maior amplitude empatam — 7 + 0 e 7 + 7 valem 7 (limitação declarada).
+
+**Onde a SOMA das amplitudes decide algo, passa a valer a MAIOR das duas:**
+- Escolha entre a escala da etapa 1 e a da etapa 2 quando não há prova (P17): antes `amplitude_etapa2 < soma_etapa1`, agora `max_amplitude_etapa2 < max_amplitude_etapa1`.
+- Estado que gera a frase do equilíbrio na tela: mesma mudança.
+- As exibições **por categoria** (diferença entre colegas, horas não utilizadas, planilha) **não mudam**. O teste 9c, com min-max, confere a maior amplitude (4,55 pp dos técnicos), e a amplitude dos enfermeiros pode subir de 0 sem custo — não é exigido que fique em 0.
+
+**Não muda:** etapa 1, restrições duras e suaves, divisão do tempo, conferência de descanso, diagnóstico, limite inferior do quadro, caminho do INRC (regressão), textos da tela fora da frase do equilíbrio.
+
+**Suíte:** identidade v1.4.4 × v1.4.5 (XML e LP etapa 1 idênticos; LP etapa 2 diferente só no objetivo e linhas de `t`), regressão (56, 58, 197, 219 idênticos), testes de entrada, testes da ferramenta que passam pela etapa 2 (9, 9c, 9c-tela, 9d, p20, 8, 12, opB-*, pref-tela se existirem) e conferidores (p14, p17) se rodarem.
 
 ---
 
