@@ -1,9 +1,27 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 26/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 30/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
+
+- **v1.4.5 (30/10) — etapa 2 por min-max, no branch `v1.4.5-minmax`, AINDA SEM MERGE NEM TAG**
+  (esperam o ok do Otávio). Pedido do Prof. Ormeu; registro em `DECISOES.md`, "2026-10-30 — Etapa 2
+  por min-max (v1.4.5)". A etapa 2 minimiza a **maior** amplitude entre as categorias (variável `t`,
+  `t ≥ φmax_g − φmin_g`), sem desempate; a escolha entre etapa 1 e etapa 2 sem prova e a frase do
+  equilíbrio passam a usar a maior das duas (`ferramenta.max_amplitude`). Suíte de fechamento
+  (`docs/diagnostico/fechar_v145.sh`): **TUDO OK, 20 de 20 passos com código 0**
+  (`resultados/v145_2026-10-30/suite/resumo.txt`):
+  - identidade v1.4.4 × v1.4.5: 162 XML e LPs da etapa 1 idênticos; 81 LPs da etapa 2 diferentes só
+    no objetivo, na variável `amplitude` e nas restrições `amplitude_constraints`
+    (`identidade_v145.py`, que lê o LP como conteúdo; o controle pega 4 defeitos plantados);
+  - regressão (portão), entradas e os testes 9 (9c, 9d), 9c-tela, 8, 12, p20, opB-b/c/d/e/padroes/
+    tela, pref-tela;
+  - 9c: técnicos 4,55 pp (o mínimo da conta de `08603c6`), enfermeiros 0 nesta rodada (não exigido);
+    9d: 18,2% → 4,5% (na v1.4.4 o mesmo caso dava 36,4% → 4,5%, pela soma: 18,2 + 18,2).
+  - Fora da suíte: `p14_conferir.py` (o item 3 compara a diferença de **cada** categoria com a
+    etapa 1, o que o min-max não garante para a categoria que não é a maior — esperado a decidir) e
+    `p17_frase_conferir.py` (falha igual na v1.4.4: espera os textos da tela anteriores à v1.4.3).
 
 - **Versão citável: v1.4.4** (v1.4.3 + P20). Tag `v1.4.4` em `e91aa05`, criada pelo Otávio; `main` e a
   tag enviadas ao GitHub. Suíte de fechamento de 23/10: **TUDO OK, 37 de 37 passos com código 0**,
@@ -54,6 +72,12 @@ fim de cada sessão (dele ou do chat).
     feitas (sem solver depois de 24/10).
 
 ## Próxima tarefa
+
+**0. Fechar a v1.4.5 (decisões do Otávio):** (a) ok para merge no `main`, tag `v1.4.5` e push;
+(b) o que fazer com o item 3 do `p14_conferir.py`; (c) quais linhas do `NUMEROS_TCC.md` que
+dependem da etapa 2 refazer ou marcar como da v1.4.4 (seções 5–8, 9, 13, 15; nenhuma foi
+alterada). Depois do merge: `MAPA_CODIGO.md` (o `identidade_v145.py`, o `fechar_v145.sh` e o
+`max_amplitude`).
 
 **1. Semana de escrita (26/10 a 30/10):** a Orientação monta um pacote de base por bloco para a
 Redação, no formato de `D:\TCC\escrita\texto\esqueletos\PACOTE_B1_26-10.md` (afirmações L/F/A com
