@@ -570,11 +570,12 @@ def casos_carga() -> None:
         confere(min(tec) - 1e-9 <= f[tec1] <= max(tec) + 1e-9,
                 f"9c: Tec 1 ({f[tec1]:.1%}) dentro da faixa dos tecnicos "
                 f"({min(tec):.1%}-{max(tec):.1%})")
-        # Com min-max sem desempate (v1.4.5+): amplitude dos enfermeiros pode variar de 0 a
-        # amplitude máxima sem custo. Esperado confere só a maior amplitude. Conta registrada
-        # antes: pose técnico 1.792 h; enfermeiro há 672 h, 6 pessoas. Com 1 enf em 63,6% e o outro
-        # leque dos tec em 86,4%-90,9%, e 23x = 224 sem inteiro, o mínimo da máxima é 1/22 = 4,55 pp
-        # (atingido com Tec 1 em 10 turnos). Não é exigido que os enfermeiros fiquem em 0.
+        # ESPERADO: Com min-max sem desempate (v1.4.5), a amplitude dos enfermeiros pode ficar
+        # em qualquer valor até a maior amplitude sem custo; confere-se só a maior. A amplitude
+        # dos técnicos não pode ficar abaixo de 1/22 (4,55 pp) pela aritmética da conta de 08603c6:
+        # posto técnico 1.792 h ÷ (Tec 1 com 88 h devidas + 11 técnicos com 176 h) = 23x = 224 sem
+        # inteiro, logo o mínimo é 1/22. A dos enfermeiros pode ser 0. Logo, o mínimo da maior
+        # amplitude é 1/22, atingido quando a dos técnicos é 1/22.
         confere(abs(cat[fe.TEC]["amplitude"] - 1 / 22) <= 1e-6,
                 f"9c: amplitude entre tecnicos {cat[fe.TEC]['amplitude']:.2%} (esperado 4,55%)")
         confere(abs(ind["amplitude"] - 1 / 22) <= 1e-6,
