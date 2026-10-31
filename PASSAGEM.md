@@ -5,8 +5,16 @@ fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
-- **v1.4.5 (30/10) — etapa 2 por min-max, no branch `v1.4.5-minmax`, AINDA SEM MERGE NEM TAG**
-  (esperam o ok do Otávio). Pedido do Prof. Ormeu; registro em `DECISOES.md`, "2026-10-30 — Etapa 2
+- **31/10, sem tocar em `src/`:**
+  - a transcrição do Anexo B (Massens) passou a ser versionada em
+    `resultados/caso_a_pratica_2026-10-23/transcricao_anexoB_massens.csv`, copiada de
+    `D:\TCC\escrita\insumos\caso_realista\`. O `caso_a_pratica.py` lê dali, por caminho relativo à
+    raiz. O `--recontar`, sem solver, deu recontagem idêntica: só muda o caminho na linha "Fonte".
+    Nota no DECISOES, entrada "2026-10-23 — Caso A" (`aebd8d2`);
+  - `resultados/DECISOES_EXTRATOS_v145.md`: cópia literal de 20 entradas do DECISOES na tag v1.4.5
+    (`634eeb5`), na ordem pedida (`569a6b3`).
+- **v1.4.5 (30/10) — etapa 2 por min-max. É a versão citável:** merge no `main` e tag `v1.4.5` em
+  `634eeb5`, feitos e enviados ao GitHub pelo Otávio em 31/10. Pedido do Prof. Ormeu; registro em `DECISOES.md`, "2026-10-30 — Etapa 2
   por min-max (v1.4.5)". A etapa 2 minimiza a **maior** amplitude entre as categorias (variável `t`,
   `t ≥ φmax_g − φmin_g`), sem desempate; a escolha entre etapa 1 e etapa 2 sem prova e a frase do
   equilíbrio passam a usar a maior das duas (`ferramenta.max_amplitude`). Suíte de fechamento
@@ -92,13 +100,11 @@ fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-**0. Fechar a v1.4.5:** o merge no `main`, a tag `v1.4.5` e o push são **feitos pelo Otávio**.
-O item 3 do p14 e as marcas do NUMEROS já foram decididos e feitos em 30/10. A seção v1.4.5 do
-NUMEROS espera aprovação. Depois do merge: `MAPA_CODIGO.md` (o `identidade_v145.py`, o
-`fechar_v145.sh`, o `max_amplitude` e o `maior_amplitude` do p14). A suíte completa (27 passos)
-passou em 31/10; nada mais a rodar antes do merge. O `checkout main` de 30/10, às 23h37, ficou
-incompleto (havia arquivos abertos no editor). Antes do merge, fechar o editor ou os arquivos do
-repositório.
+**0. Depois da v1.4.5:**
+- push dos commits de 31/10 (`aebd8d2`, `569a6b3` e este), feito pelo Otávio;
+- aprovação da seção v1.4.5 do NUMEROS;
+- `MAPA_CODIGO.md`: o `identidade_v145.py`, o `fechar_v145.sh`, o `max_amplitude` e o
+  `maior_amplitude` do p14.
 
 **1. Semana de escrita (26/10 a 30/10):** a Orientação monta um pacote de base por bloco para a
 Redação, no formato de `D:\TCC\escrita\texto\esqueletos\PACOTE_B1_26-10.md` (afirmações L/F/A com
