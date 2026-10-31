@@ -17,7 +17,7 @@ inteiro porque 0,0001 × objetivo < 1 em todos os casos, exceto na P1 de 03/10 c
 (seção 5); nesses três, o limite inferior registrado no log é igual ao objetivo (gap 0 exato).
 Conferência só de leitura em `resultados/relatorio_2026-10-09c.md` (continuação de 09/10, item 3).
 A etapa 2 tem objetivo contínuo (amplitude da fração do contrato) e fica fora deste critério; a
-tolerância nela é desprezível (0,0005 pp sobre 4,55 pp no 9c).
+tolerância nela é desprezível (0,0005 pp sobre 4,55 pp no 9c; *medido na v1.4.4 (etapa 2 pela soma)*).
 
 **Máquina e solver das medições de 02 a 05/10:** Intel Core i5-10210U (4 núcleos, 8 threads), 12 GB, Windows 11, Python 3.11.9, HiGHS 1.15.1 via `appsi_highs`. Medições anteriores a 02/10 dizem o ambiente na própria linha.
 
@@ -149,7 +149,7 @@ Origem: `src/testes_ferramenta.py`. Comandos: `python src\testes_ferramenta.py 9
 | 112 h (teto 120 h); 168 h (teto 176 h) | maior carga entre os de 30 h e entre os de 44 h (9a) | esperado antes (03/10): ninguém passa do teto | — |
 | 14 plantões | máximo no 12×36 com 44 h (9b) | esperado antes | não separa alternância de teto |
 | 14 plantões, provado | máximo sem teto de horas e sem `MaxNumAssignments` (9b-sem-teto) | esperado antes (03/10) | quem limita é a alternância |
-| 0 e 4,55 pp | amplitude entre enfermeiros e entre técnicos (9c) | **conta registrada antes**, commit `08603c6` | — |
+| 0 e 4,55 pp | amplitude entre enfermeiros e entre técnicos (9c) | **conta registrada antes**, commit `08603c6` | *medido na v1.4.4 (etapa 2 pela soma)*; reconfirmado na v1.4.5 (seção v1.4.5) |
 | 384 h e 232 h; +24,9 pp | horas não utilizadas (enf., téc.); diferença entre categorias (9c) | conta antes (`08603c6`) | — |
 | "1 plantão (8 h)" e "nenhuma (0 h)" | diferença entre colegas na tela (9c) | conta antes (05/10) | *medido na v1.4.4 (etapa 2 pela soma)* |
 | 36,4 → 4,5 pp | o critério cai da etapa 1 para a etapa 2 (9d) | esperado antes: estritamente menor | o 36,4 depende da escala da etapa 1; *medido na v1.4.4 (etapa 2 pela soma)* |
@@ -186,7 +186,7 @@ madrugada, com o conferidor passando nas três (cobertura igual à declarada em 
 rígidas, descanso, teto, férias). **Todos os valores da tabela acima se confirmaram, iguais**:
 24, 36 e 34 turnos de enfermeiro em posto de técnico (os mínimos da conta), 6 de 6 pedidos,
 contrato cumprido 68–100%, 82–100% e 75–100%, horas não utilizadas 432/108, 288/108 e 312/116 h,
-diferença entre colegas 1 e 0,6, 0,2 e 0,6, 0,9 e 0,6 plantão. As escalas mudaram (393 a 422
+diferença entre colegas 1 e 0,6, 0,2 e 0,6, 0,9 e 0,6 plantão (*medido na v1.4.4 (etapa 2 pela soma)*). As escalas mudaram (393 a 422
 células diferentes; 20/11 agora com a cobertura de feriado); os agregados não, porque as horas
 de demanda são as mesmas (4.308 h) e a contagem de enfermeiro em posto de técnico já estava no
 mínimo aritmético. Detalhe em `resultados/relatorio_2026-10-09a.md`.
@@ -482,7 +482,7 @@ INRC da escala final no avaliador oficial (na ferramenta, não é o objetivo da 
 SCIP, a fatia da etapa 1 (300 s) acabou sem escala, a proteção da primeira escala rodou de novo com
 o resto (299 s) e também não achou.
 
-Etapa 2 (equilíbrio, registrada, não decide): não provou em nenhum caso da ferramenta, nos dois
+Etapa 2 (equilíbrio, registrada, não decide; *medido na v1.4.4 (etapa 2 pela soma)*): não provou em nenhum caso da ferramenta, nos dois
 solvers. Vitórias (regra de 22/10: vence quem prova onde o outro não prova; se nenhum prova, a
 escala de menor valor; sem escala perde para quem tem; gap menor sozinho não conta): **SCIP 1
 (medium_late05) × HiGHS 2 (A36_livre, B11), 5 empates. Regra de troca: fica o HiGHS** (o SCIP não
@@ -518,7 +518,7 @@ B11 com HiGHS terminou os 3.600 s do solver (a escala foi gravada) e foi encerra
 pelo avaliador oficial (Java, até 6 GB, `-Xmx6g`), sem gravar o resultado; a escala desse ponto fica
 fora da tabela. O B11 com SCIP não começou. Faltam ~2 h, a rodar fora do Claude Code.
 
-Valor do modelo = valor da escala nas quatro rodadas concluídas. Etapa 2: não provou; no A36_livre
+Valor do modelo = valor da escala nas quatro rodadas concluídas. Etapa 2 (*medido na v1.4.4 (etapa 2 pela soma)*): não provou; no A36_livre
 com SCIP, não achou escala em 2.979 s (fica a escala da etapa 1). Por caso: **medium_late05, SCIP**
 (186 < 224, nenhum prova); **A36_livre, empate** (com 3.600 s o SCIP também prova a etapa 1, que em
 600 s não provava). Com 3.600 s, o medium_late05 com HiGHS chega aos 224 da seção 1 (06/10).
@@ -534,7 +534,7 @@ contrato entre as categorias, em vez da soma. Origem: `resultados/v145_2026-10-3
 desfecho). Comando: `python src	estes_ferramenta.py 9`. Esperado registrado antes (commits
 `ee73ac9` e `d121b8c`). Máquina e solver: i5-10210U, HiGHS 1.15.1 via `appsi_highs`.
 
-A marca *medido na v1.4.4 (etapa 2 pela soma)* nas seções 5, 6, 8, 9, 13 e 15 quer dizer: o valor
+A marca *medido na v1.4.4 (etapa 2 pela soma)* no cabeçalho, nas seções 5, 6, 8, 9, 13 e 15 e em "Comportamento computacional: HiGHS × SCIP" quer dizer: o valor
 foi medido com a etapa 2 pela soma das amplitudes, como na v1.4.4 e nas versões anteriores. A data
 de cada medição está na própria seção. Nenhum desses valores foi refeito com o min-max.
 
