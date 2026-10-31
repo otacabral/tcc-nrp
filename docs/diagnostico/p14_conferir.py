@@ -11,7 +11,8 @@ tres casos (otavio, K5, K6), comparando com a escala que a etapa 1 achou NA MESM
 etapa 1 para no limite de tempo e pode achar escalas diferentes a cada execucao):
 1. a etapa 2 roda: `etapa2` nao comeca por "nao rodou" e `tempo_etapa2` > 0;
 2. turnos de enfermeiro em posto de tecnico da escala final <= os da escala da etapa 1;
-3. diferenca maxima de carga entre colegas, em cada categoria, <= a da escala da etapa 1;
+3. a maior amplitude da fracao cumprida (criterio da etapa 2) <= a da escala da etapa 1
+   (redacao de 30/10, abaixo);
 4. descanso conferido: `conformidade["ok"]` e `solucao.conferir_rigidas` sem problema;
 5. pedidos atendidos da escala final >= os da etapa 1 (o otavio e K5/K6 nao tem pedidos).
 
@@ -19,6 +20,13 @@ P17 (09/10), com `--p17`, esperado registrado ANTES de implementar a partida da 
 6. a etapa 2 SEMPRE entrega escala (`etapa2` == "ok"): ela parte da escala da etapa 1, que
    cumpre "nao piorar" por construcao.
 A saida vai para `p17_<caso>.json`.
+
+Nota de 30/10/2026 (v1.4.5, etapa 2 por min-max; DECISOES.md, "2026-10-30 — Etapa 2 por min-max
+(v1.4.5)"), registrada ANTES de mudar a conferencia: o item 3 era "diferenca maxima de carga entre
+colegas, em cada categoria, <= a da escala da etapa 1". O min-max garante so a maior amplitude; a
+categoria menor pode subir (limitacao declarada), e nem a soma garantia o item 3 por categoria.
+Fora da suite da v1.4.5 (os casos dependem do tempo); o caminho sem prova fica coberto pelos
+testes 8 e 9c-tela. Os JSON de 09/10 foram gerados com o item 3 antigo.
 """
 
 from __future__ import annotations
@@ -47,6 +55,11 @@ def entrada(nome: str):
     return brd.entrada(next(c for c in bp.TODOS if c.nome.startswith(nome)))
 
 
+def maior_amplitude(categorias) -> float:
+    """Criterio da etapa 2 na v1.4.5: a maior amplitude da fracao entre as categorias."""
+    return max((c["amplitude"] for c in categorias.values()), default=0.0)
+
+
 def main() -> int:
     nome = sys.argv[1]
     p17 = "--p17" in sys.argv[2:]
@@ -58,8 +71,8 @@ def main() -> int:
         "1 etapa 2 rodou": not str(ind.get("etapa2", "")).startswith(("não rodou", "nao rodou"))
                            and ind.get("tempo_etapa2", 0) > 0,
         "2 enf em posto tec <= etapa 1": ind["enf_em_posto_tec"] <= e1.get("enf_em_posto_tec", -1),
-        "3 diferenca por categoria <= etapa 1": all(
-            cat[g]["diferenca_h"] <= e1["categorias"][g]["diferenca_h"] + 1e-6 for g in cat),
+        "3 maior amplitude <= etapa 1": maior_amplitude(cat) <= maior_amplitude(e1["categorias"])
+                                        + 1e-9,
         "4 descanso e rigidas": bool(r.conformidade and r.conformidade["ok"])
                                 and not solucao.conferir_rigidas(r.inst, r.escala,
                                                                  habilidade_rigida=True),
@@ -74,11 +87,13 @@ def main() -> int:
            "etapa1": {"enf_em_posto_tec": e1.get("enf_em_posto_tec"),
                       "pedidos_atendidos": e1.get("pedidos_atendidos"),
                       "fracao": (e1.get("fracao_min"), e1.get("fracao_max")),
-                      "diferenca_h": {g: c["diferenca_h"] for g, c in e1.get("categorias", {}).items()}},
+                      "diferenca_h": {g: c["diferenca_h"] for g, c in e1.get("categorias", {}).items()},
+                      "maior_amplitude": maior_amplitude(e1.get("categorias", {}))},
            "final": {"enf_em_posto_tec": ind["enf_em_posto_tec"],
                      "pedidos_atendidos": ind["pedidos_atendidos"],
                      "fracao": (ind["fracao_min"], ind["fracao_max"]),
-                     "diferenca_h": {g: c["diferenca_h"] for g, c in cat.items()}},
+                     "diferenca_h": {g: c["diferenca_h"] for g, c in cat.items()},
+                     "maior_amplitude": maior_amplitude(cat)},
            "descanso_semanal_sem_bordas": r.conformidade and r.conformidade.get("menor_semanal_interno"),
            "conferencias": ok}
     SAIDA.mkdir(parents=True, exist_ok=True)

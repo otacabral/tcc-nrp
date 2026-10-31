@@ -570,22 +570,25 @@ def casos_carga() -> None:
         confere(min(tec) - 1e-9 <= f[tec1] <= max(tec) + 1e-9,
                 f"9c: Tec 1 ({f[tec1]:.1%}) dentro da faixa dos tecnicos "
                 f"({min(tec):.1%}-{max(tec):.1%})")
-        confere(abs(cat[fe.ENF]["amplitude"]) <= 1e-6,
-                f"9c: amplitude entre enfermeiros {cat[fe.ENF]['amplitude']:.2%} (esperado 0)")
+        # ESPERADO: Com min-max sem desempate (v1.4.5), a amplitude dos enfermeiros pode ficar
+        # em qualquer valor até a maior amplitude sem custo; confere-se só a maior. A amplitude
+        # dos técnicos não pode ficar abaixo de 1/22 (4,55 pp) pela aritmética da conta de 08603c6:
+        # posto técnico 1.792 h ÷ (Tec 1 com 88 h devidas + 11 técnicos com 176 h) = 23x = 224 sem
+        # inteiro, logo o mínimo é 1/22. A dos enfermeiros pode ser 0. Logo, o mínimo da maior
+        # amplitude é 1/22, atingido quando a dos técnicos é 1/22.
         confere(abs(cat[fe.TEC]["amplitude"] - 1 / 22) <= 1e-6,
                 f"9c: amplitude entre tecnicos {cat[fe.TEC]['amplitude']:.2%} (esperado 4,55%)")
-        # Decisao de 05/10: NAO se exige prova dentro do limite (ver docstring de
-        # `casos_carga`, "9c SEM EXIGIR PROVA"); confere-se o piso da conta.
         confere(abs(ind["amplitude"] - 1 / 22) <= 1e-6,
-                f"9c: criterio da etapa 2 {ind['amplitude']:.2%} (piso da conta 4,55%; "
-                f"provado no limite: {ind['provado_etapa2']}, informativo)")
+                f"9c: criterio da etapa 2 (max das amplitudes) {ind['amplitude']:.2%} "
+                f"(piso da conta 4,55%; provado no limite: {ind['provado_etapa2']}, informativo)")
         confere(abs(cat[fe.ENF]["nao_utilizadas"] - 384) <= 1e-6
                 and abs(cat[fe.TEC]["nao_utilizadas"] - 232) <= 1e-6,
                 "9c: horas nao utilizadas 384 h (enf) e 232 h (tec)")
-        confere(fe.fmt_diferenca(cat[fe.TEC]) == "1 plantão (8 h)"
-                and fe.fmt_diferenca(cat[fe.ENF]) == "nenhuma (0 h)",
-                f"9c: diferenca entre colegas: tecnicos {fe.fmt_diferenca(cat[fe.TEC])!r}, "
-                f"enfermeiros {fe.fmt_diferenca(cat[fe.ENF])!r}")
+        # A diferença máxima de carga é observada; o rótulo na tela pode não dizer "nenhuma (0 h)"
+        # se a otimização distribuir a carga entre os enfermeiros sem aumentar a máxima.
+        diferenca_tec = fe.fmt_diferenca(cat[fe.TEC])
+        confere(diferenca_tec == "1 plantão (8 h)",
+                f"9c: diferenca entre colegas dos tecnicos {diferenca_tec!r} (esperado '1 plantão (8 h)')")
         confere(ind["amplitude"] < ind["amplitude_etapa1"] - 1e-9,
                 f"9d: amplitude {ind['amplitude_etapa1']:.1%} na etapa 1 -> "
                 f"{ind['amplitude']:.1%} na etapa 2 ({'provada' if ind['provado_etapa2'] else 'SEM prova'})"

@@ -17,7 +17,7 @@ inteiro porque 0,0001 × objetivo < 1 em todos os casos, exceto na P1 de 03/10 c
 (seção 5); nesses três, o limite inferior registrado no log é igual ao objetivo (gap 0 exato).
 Conferência só de leitura em `resultados/relatorio_2026-10-09c.md` (continuação de 09/10, item 3).
 A etapa 2 tem objetivo contínuo (amplitude da fração do contrato) e fica fora deste critério; a
-tolerância nela é desprezível (0,0005 pp sobre 4,55 pp no 9c).
+tolerância nela é desprezível (0,0005 pp sobre 4,55 pp no 9c; *medido na v1.4.4 (etapa 2 pela soma)*).
 
 **Máquina e solver das medições de 02 a 05/10:** Intel Core i5-10210U (4 núcleos, 8 threads), 12 GB, Windows 11, Python 3.11.9, HiGHS 1.15.1 via `appsi_highs`. Medições anteriores a 02/10 dizem o ambiente na própria linha.
 
@@ -110,7 +110,7 @@ Configuração: 12×36, 44 h para todos, 2 pedidos por pessoa (semente 20261002 
 | N = 200: sem escala em 900 s; limite inferior de 111 pedidos negados | etapa 1 no limite | SEM CONFERÊNCIA (log do HiGHS) | — |
 | 112, 140, 224, 322, 504 | turnos de enfermeiro em posto de técnico (N = 36, 40, 60, 80, 120) | conta: técnicos × 14 contra postos de técnico, feita **depois** de rodar | forçados pela conta |
 | 21, 21, 29, 50, 63 | pedidos de folga negados (de 72, 80, 120, 160, 240) | SEM CONFERÊNCIA | — |
-| amplitude 0 em todos | etapa 2 degenerada | conta (demanda = capacidade), feita depois | a etapa 2 não é medida por esta curva |
+| amplitude 0 em todos | etapa 2 degenerada | conta (demanda = capacidade), feita depois | a etapa 2 não é medida por esta curva; *medido na v1.4.4 (etapa 2 pela soma)* |
 | 39,8 / 168,0 / 130,1 / 693,0 / 901,9 / 902,8 s | tempo da etapa 1 | — | **limite operacional**; uma medição por tamanho; não monotônico |
 | 39,0 / 54,3 / 128,9 / 235,1 / 345,8 s | tempo até a primeira escala legal (HiGHS) | — | **limite operacional** |
 | 3.696 a 20.496 variáveis; 12.640 a 69.444 restrições | tamanho do modelo | — | — |
@@ -121,11 +121,11 @@ Origem: `resultados/escalabilidade_objetivo_folga.csv`; logs `folga_teste_N40_20
 
 | Valor | O que mede | Conferência | Ressalva |
 |---|---|---|---|
-| 13,64 pp nos três tamanhos | amplitude da fração do contrato depois da etapa 2 (6,82 + 6,82) | conta do piso feita **DEPOIS** do resultado: SEM CONFERÊNCIA no sentido estrito | a conta explica, não previu |
-| 34,09 / 20,45 / 27,27 pp | amplitude na escala da etapa 1 | SEM CONFERÊNCIA | — |
+| 13,64 pp nos três tamanhos | amplitude da fração do contrato depois da etapa 2 (6,82 + 6,82) | conta do piso feita **DEPOIS** do resultado: SEM CONFERÊNCIA no sentido estrito | a conta explica, não previu; *medido na v1.4.4 (etapa 2 pela soma)* |
+| 34,09 / 20,45 / 27,27 pp | amplitude na escala da etapa 1 | SEM CONFERÊNCIA | *medido na v1.4.4 (etapa 2 pela soma)* |
 | etapa 1 ótima em 44, 66 e 88 | prova da etapa 1 | SEM CONFERÊNCIA (estado do solver) | — |
-| 18,1 / 45,6 / 81,1 s | tempo até 90% da redução final na etapa 2 | — | **limite operacional**; coincide com a primeira escala da etapa 2 |
-| gap 19,6% / 26,1% / 37,5% | gap da etapa 2 em 900 s | — | fraqueza do limite inferior, não distância real |
+| 18,1 / 45,6 / 81,1 s | tempo até 90% da redução final na etapa 2 | — | **limite operacional**; coincide com a primeira escala da etapa 2; *medido na v1.4.4 (etapa 2 pela soma)* |
+| gap 19,6% / 26,1% / 37,5% | gap da etapa 2 em 900 s | — | fraqueza do limite inferior, não distância real; *medido na v1.4.4 (etapa 2 pela soma)* |
 
 ## 7. Limites de tempo da tela
 
@@ -149,11 +149,11 @@ Origem: `src/testes_ferramenta.py`. Comandos: `python src\testes_ferramenta.py 9
 | 112 h (teto 120 h); 168 h (teto 176 h) | maior carga entre os de 30 h e entre os de 44 h (9a) | esperado antes (03/10): ninguém passa do teto | — |
 | 14 plantões | máximo no 12×36 com 44 h (9b) | esperado antes | não separa alternância de teto |
 | 14 plantões, provado | máximo sem teto de horas e sem `MaxNumAssignments` (9b-sem-teto) | esperado antes (03/10) | quem limita é a alternância |
-| 0 e 4,55 pp | amplitude entre enfermeiros e entre técnicos (9c) | **conta registrada antes**, commit `08603c6` | — |
+| 0 e 4,55 pp | amplitude entre enfermeiros e entre técnicos (9c) | **conta registrada antes**, commit `08603c6` | *medido na v1.4.4 (etapa 2 pela soma)*; reconfirmado na v1.4.5 (seção v1.4.5) |
 | 384 h e 232 h; +24,9 pp | horas não utilizadas (enf., téc.); diferença entre categorias (9c) | conta antes (`08603c6`) | — |
-| "1 plantão (8 h)" e "nenhuma (0 h)" | diferença entre colegas na tela (9c) | conta antes (05/10) | — |
-| 36,4 → 4,5 pp | o critério cai da etapa 1 para a etapa 2 (9d) | esperado antes: estritamente menor | o 36,4 depende da escala da etapa 1 |
-| 146,9 s | prova da etapa 2 do 9c, rodando sozinho | — | **limite operacional**; já falhou com outro processo junto |
+| "1 plantão (8 h)" e "nenhuma (0 h)" | diferença entre colegas na tela (9c) | conta antes (05/10) | *medido na v1.4.4 (etapa 2 pela soma)* |
+| 36,4 → 4,5 pp | o critério cai da etapa 1 para a etapa 2 (9d) | esperado antes: estritamente menor | o 36,4 depende da escala da etapa 1; *medido na v1.4.4 (etapa 2 pela soma)* |
+| 146,9 s | prova da etapa 2 do 9c, rodando sozinho | — | **limite operacional**; já falhou com outro processo junto; *medido na v1.4.4 (etapa 2 pela soma)* |
 
 ## 9. Demonstração: clínica médica (05/10, 21h; refeita em 09/10 com o roteiro corrigido)
 
@@ -174,7 +174,7 @@ Configuração: equipe 10 + 20, 12×36, de 02/11 a 29/11/2026.
 | 6 de 6 | pedidos atendidos nas três rodadas | SEM CONFERÊNCIA | — |
 | 68%–100%; 82%–100%; 75%–100% | contrato cumprido (mín.–máx.) | SEM CONFERÊNCIA | — |
 | 432 / 108 h; 288 / 108 h; 312 / 116 h | horas de contrato não utilizadas (enf. / téc.) | SEM CONFERÊNCIA | — |
-| 1 e 0,6 plantão; 0,2 e 0,6; 0,9 e 0,6 | diferença máxima entre colegas (enf. e téc.) | SEM CONFERÊNCIA | a etapa 2 tem tempo limitado e pode variar entre rodadas |
+| 1 e 0,6 plantão; 0,2 e 0,6; 0,9 e 0,6 | diferença máxima entre colegas (enf. e téc.) | SEM CONFERÊNCIA | a etapa 2 tem tempo limitado e pode variar entre rodadas; *medido na v1.4.4 (etapa 2 pela soma)* |
 | 301–331 MB (servidor + solver); 569–600 MB (Chrome) | pico de memória por rodada | — | **limite operacional** |
 
 **Defeito e correção (08–09/10).** Nas rodadas de 05/10, o roteiro que digita a entrada na
@@ -186,7 +186,7 @@ madrugada, com o conferidor passando nas três (cobertura igual à declarada em 
 rígidas, descanso, teto, férias). **Todos os valores da tabela acima se confirmaram, iguais**:
 24, 36 e 34 turnos de enfermeiro em posto de técnico (os mínimos da conta), 6 de 6 pedidos,
 contrato cumprido 68–100%, 82–100% e 75–100%, horas não utilizadas 432/108, 288/108 e 312/116 h,
-diferença entre colegas 1 e 0,6, 0,2 e 0,6, 0,9 e 0,6 plantão. As escalas mudaram (393 a 422
+diferença entre colegas 1 e 0,6, 0,2 e 0,6, 0,9 e 0,6 plantão (*medido na v1.4.4 (etapa 2 pela soma)*). As escalas mudaram (393 a 422
 células diferentes; 20/11 agora com a cobertura de feriado); os agregados não, porque as horas
 de demanda são as mesmas (4.308 h) e a contagem de enfermeiro em posto de técnico já estava no
 mínimo aritmético. Detalhe em `resultados/relatorio_2026-10-09a.md`.
@@ -250,24 +250,24 @@ cargas.
 
 | Valor | O que mede | Conferência | Ressalva |
 |---|---|---|---|
-| a etapa 2 sem prova nunca piora a etapa 1 | garantia: a etapa 2 parte da escala da etapa 1, com "penalidade ≤ valor da etapa 1" como restrição; no fim, o critério de equilíbrio não sobe | **por construção** (a partida cumpre a restrição; ver `DECISOES.md`, P14 e P17) e conferências 2, 3 e 5 do `p14_conferir.py --p17` (enfermeiros em posto de técnico, diferença por categoria e pedidos, contra a etapa 1 da mesma rodada) nos 3 casos de 09/10 | — |
-| sem melhora em 3 de 3 (09/10) | Otávio (20 + 10, 6 h + 12 h): penalidade 57, gap 17,5%, diferença 60 h (enf.) e 24 h (téc.); K5 (13 + 5): 21, gap 33,3%, 42 h e 30 h; K6 (15 + 5): 18, gap 5,6%, 48 h e 18 h; final = etapa 1 nos três | **SEM RECONTAGEM INDEPENDENTE**: as escalas não foram gravadas; os números são os da ferramenta | limite de 180 s na etapa 2; a etapa 1 varia a cada rodada |
-| sem melhora no K5 (11/10) | partida aceita pelo HiGHS com critério 0,4091; nenhuma solução melhor em 180 s; dual ~0, gap de 100%; 0 células diferentes entre etapa 1 e final; enf. 120–162 h (42 h; 23,86 pp), téc. 144–174 h (30 h; 17,05 pp); etapa 1 com penalidade 21 e gap 28,6% | **recontagem a partir das escalas gravadas, sem `ferramenta.indicadores` nem o modelo** (`p17_diagnostico_k5.py analisar`): igual à ferramenta; critério recontado = valor da partida no log; esperado commitado antes (`d9c0677`) | uma rodada; limite de 180 s; a etapa 1 varia a cada rodada (gap 28,6% contra 33,3% em 09/10, mesma penalidade 21) |
-| sem melhora no teste 8b (11/10) | 12×36, 40 pessoas (14 enf. + 26 téc.), 20 pedidos de folga, limite de 25 s por etapa (teste 8b da tela, rodado para a `v1.2.2`): etapa 1 sem prova (gap 1,03%, 20 de 20 pedidos); critério da etapa 2 0,3409 → 0,3409; a tela mostrou a linha "a da etapa 1" | o teste conferiu, sobre os indicadores da ferramenta, que o critério final = o da etapa 1 e que a linha bate exatamente (`resultados/v122_2026-10-11/tela_8.log`); **SEM RECONTAGEM INDEPENDENTE** (a escala não foi gravada) | limite de 25 s, não o da tela (180 s) |
-| **5 de 5 resoluções sem prova, nenhuma melhora** | Otávio, K5 e K6 (09/10), K5 (11/10) e 8b (11/10): em nenhuma a etapa 2 achou escala mais equilibrada que a da etapa 1 no tempo dado | linhas acima; recontagem independente só no K5 de 11/10 | casos de fronteira (6 h + 12 h) e um 12×36 com pedidos; o caminho com prova não está nesta conta (9d melhorou: 36,4 → 4,5 pp); limites da tela, não os do diagnóstico abaixo |
+| a etapa 2 sem prova nunca piora a etapa 1 | garantia: a etapa 2 parte da escala da etapa 1, com "penalidade ≤ valor da etapa 1" como restrição; no fim, o critério de equilíbrio não sobe | **por construção** (a partida cumpre a restrição; ver `DECISOES.md`, P14 e P17) e conferências 2, 3 e 5 do `p14_conferir.py --p17` (enfermeiros em posto de técnico, diferença por categoria e pedidos, contra a etapa 1 da mesma rodada) nos 3 casos de 09/10 | *medido na v1.4.4 (etapa 2 pela soma)* |
+| sem melhora em 3 de 3 (09/10) | Otávio (20 + 10, 6 h + 12 h): penalidade 57, gap 17,5%, diferença 60 h (enf.) e 24 h (téc.); K5 (13 + 5): 21, gap 33,3%, 42 h e 30 h; K6 (15 + 5): 18, gap 5,6%, 48 h e 18 h; final = etapa 1 nos três | **SEM RECONTAGEM INDEPENDENTE**: as escalas não foram gravadas; os números são os da ferramenta | limite de 180 s na etapa 2; a etapa 1 varia a cada rodada; *medido na v1.4.4 (etapa 2 pela soma)* |
+| sem melhora no K5 (11/10) | partida aceita pelo HiGHS com critério 0,4091; nenhuma solução melhor em 180 s; dual ~0, gap de 100%; 0 células diferentes entre etapa 1 e final; enf. 120–162 h (42 h; 23,86 pp), téc. 144–174 h (30 h; 17,05 pp); etapa 1 com penalidade 21 e gap 28,6% | **recontagem a partir das escalas gravadas, sem `ferramenta.indicadores` nem o modelo** (`p17_diagnostico_k5.py analisar`): igual à ferramenta; critério recontado = valor da partida no log; esperado commitado antes (`d9c0677`) | uma rodada; limite de 180 s; a etapa 1 varia a cada rodada (gap 28,6% contra 33,3% em 09/10, mesma penalidade 21); *medido na v1.4.4 (etapa 2 pela soma)* |
+| sem melhora no teste 8b (11/10) | 12×36, 40 pessoas (14 enf. + 26 téc.), 20 pedidos de folga, limite de 25 s por etapa (teste 8b da tela, rodado para a `v1.2.2`): etapa 1 sem prova (gap 1,03%, 20 de 20 pedidos); critério da etapa 2 0,3409 → 0,3409; a tela mostrou a linha "a da etapa 1" | o teste conferiu, sobre os indicadores da ferramenta, que o critério final = o da etapa 1 e que a linha bate exatamente (`resultados/v122_2026-10-11/tela_8.log`); **SEM RECONTAGEM INDEPENDENTE** (a escala não foi gravada) | limite de 25 s, não o da tela (180 s); *medido na v1.4.4 (etapa 2 pela soma)* |
+| **5 de 5 resoluções sem prova, nenhuma melhora** | Otávio, K5 e K6 (09/10), K5 (11/10) e 8b (11/10): em nenhuma a etapa 2 achou escala mais equilibrada que a da etapa 1 no tempo dado | linhas acima; recontagem independente só no K5 de 11/10 | casos de fronteira (6 h + 12 h) e um 12×36 com pedidos; o caminho com prova não está nesta conta (9d melhorou: 36,4 → 4,5 pp); limites da tela, não os do diagnóstico abaixo; *medido na v1.4.4 (etapa 2 pela soma)* |
 
 **Diagnóstico de 11/10 (só teste, fora da ferramenta).** Origem:
 `resultados/p17_variantes_2026-10-11/A/` e `B/` (`highs.log`, `escala_final.json`, `resumo.json`).
 Comando: `python docs\diagnostico\p17_etapa2_variantes.py <A|B>`, rodado pelo Otávio. Mesmo modelo
-da etapa 2 da ferramenta, montado por fora, partindo da escala gravada da etapa 1 do K5 de 11/10
+da etapa 2 da ferramenta (medido na v1.4.4 (etapa 2 pela soma)), montado por fora, partindo da escala gravada da etapa 1 do K5 de 11/10
 (critério 0,4091, penalidade 21). Esperado commitado antes (`195cf9b`). Decisão: `DECISOES.md`,
 "2026-10-10 — P17", item d. **Afirmação fraca:** uma rodada, uma partida; tempo é limite
 operacional desta máquina (i5-10210U, HiGHS 1.15.1 via `appsi_highs`).
 
 | Valor | O que mede | Conferência | Ressalva |
 |---|---|---|---|
-| B (quebra de simetria, 180 s): **sem melhora** | ordem por horas dentro dos grupos de idênticos (13 enf. e 5 téc.; 16 restrições); partida aceita 0,4091; nenhuma solução melhor; dual ~3e-14, gap 100%; escala final = partida | conferências 1–5 do script; **recontagem independente** das escalas gravadas (`p17_diagnostico_k5.recontar`, sem `ferramenta.indicadores` nem o modelo): critério 0,4091, penalidade 21, descanso e rígidas OK, inclusive desfeita a renumeração | 180 s, o limite da tela |
-| A (1.800 s): **melhora, 0,4091 → 0,1364** | melhoras aos 1.752,1 s (0,1705) e 1.797,4 s (0,1364), as duas pela heurística Sub-MIP do HiGHS (fonte "L" na legenda do log); diferença entre colegas: enf. 42 → 12 h (144–156 h), téc. 30 → 12 h (150–162 h); penalidade 21 (= etapa 1); dual ~2e-14, gap 100% | conferências 1–4 do script; **recontagem independente** das escalas gravadas: critério 0,1364 = melhor do log, penalidade 21, descanso e rígidas OK | a melhora veio a 3 s do fim: pode haver melhor com mais tempo; sem prova de ótimo; 1.800 s está fora do orçamento do clique (20 min) |
+| B (quebra de simetria, 180 s): **sem melhora** | ordem por horas dentro dos grupos de idênticos (13 enf. e 5 téc.; 16 restrições); partida aceita 0,4091; nenhuma solução melhor; dual ~3e-14, gap 100%; escala final = partida | conferências 1–5 do script; **recontagem independente** das escalas gravadas (`p17_diagnostico_k5.recontar`, sem `ferramenta.indicadores` nem o modelo): critério 0,4091, penalidade 21, descanso e rígidas OK, inclusive desfeita a renumeração | 180 s, o limite da tela; *medido na v1.4.4 (etapa 2 pela soma)* |
+| A (1.800 s): **melhora, 0,4091 → 0,1364** | melhoras aos 1.752,1 s (0,1705) e 1.797,4 s (0,1364), as duas pela heurística Sub-MIP do HiGHS (fonte "L" na legenda do log); diferença entre colegas: enf. 42 → 12 h (144–156 h), téc. 30 → 12 h (150–162 h); penalidade 21 (= etapa 1); dual ~2e-14, gap 100% | conferências 1–4 do script; **recontagem independente** das escalas gravadas: critério 0,1364 = melhor do log, penalidade 21, descanso e rígidas OK | a melhora veio a 3 s do fim: pode haver melhor com mais tempo; sem prova de ótimo; 1.800 s está fora do orçamento do clique (20 min); *medido na v1.4.4 (etapa 2 pela soma)* |
 
 ## 14. Validação por restrição nos 4 ótimos (19/10/2026)
 
@@ -297,7 +297,7 @@ com as 21 linhas com registro). Fonte dos dados: Massens
   recusa 29 pelo total de pessoas, sem depender da mistura);
 - os limites dos critérios são os **padrões da ferramenta, não calibrados** ao hospital;
 - tempo só como **limite operacional** (i5-10210U, 11,8 GB, HiGHS 1.15.1 via appsi);
-- na 15.2, a etapa 2 do A36 ordem 1 terminou **sem prova** (o equilíbrio de carga pode melhorar); isso
+- na 15.2, a etapa 2 do A36 ordem 1 terminou **sem prova** (medido na v1.4.4 (etapa 2 pela soma)) (o equilíbrio de carga pode melhorar); isso
   não afeta os níveis de prioridade, **todos provados**;
 - a **penalidade total do avaliador oficial não vai ao texto** (é a do INRC com os pesos gravados no
   XML, não o objetivo da ferramenta); vai "sem violação de restrição dura";
@@ -377,11 +377,11 @@ Desejável; o resto igual.
 
 | Valor | O que mede | Conferência | Ressalva |
 |---|---|---|---|
-| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** A11 (11 h depois do D12), 24 (4 + 20), ordem 1: "O quadro informado admite escala legal. Escala gerada."; Essencial **0** e Importante **27**, os dois **provados**; etapa 2 provada | frase da tela e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | parâmetro de pesquisa |
+| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** A11 (11 h depois do D12), 24 (4 + 20), ordem 1: "O quadro informado admite escala legal. Escala gerada."; Essencial **0** e Importante **27**, os dois **provados**; etapa 2 provada | frase da tela e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | parâmetro de pesquisa; *medido na v1.4.4 (etapa 2 pela soma)* |
 | A11, Importante 27 = máx. folgas seguidas **22** + mín. fins de semana seguidos **1** + mín. turnos **4** + enfermeiro em posto de técnico **0**; "Só este turno": **0** quebras | violações por critério | avaliador oficial (critérios ligados, peso 1): **22, 1, 4** — iguais à ferramenta; enfermeiro em posto de técnico: sem conferência externa | os 22 e os 4 são de férias (nota abaixo) |
-| A36, 30 (10 + 20), ordem 1: "O quadro informado admite escala legal. Escala gerada."; Essencial **0** e Importante **51**, os dois **provados**; etapa 2 sem prova | frase e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | etapa 2 sem prova: o equilíbrio pode melhorar; os níveis de prioridade estão provados |
+| A36, 30 (10 + 20), ordem 1: "O quadro informado admite escala legal. Escala gerada."; Essencial **0** e Importante **51**, os dois **provados**; etapa 2 sem prova | frase e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | etapa 2 sem prova: o equilíbrio pode melhorar; os níveis de prioridade estão provados; *medido na v1.4.4 (etapa 2 pela soma)* |
 | A36 ordem 1, Importante 51 = máx. folgas seguidas **22** + mín. fins de semana seguidos **1** + mín. turnos **10** + enfermeiro em posto de técnico **18**; "Só este turno": **0** quebras; máx. fins de semana seguidos (não considerado nesta ordem, avaliado com o critério ligado): **17** | violações por critério | avaliador oficial (peso 1): **22, 1, 10** e **17** — iguais à ferramenta; posto de técnico: sem conferência externa | dos 10 do mín. turnos, 4 são de férias (Noite A 1) e 6 de enfermeiros com 8–9 turnos |
-| A36, 30, ordem 2: "O quadro informado admite escala legal. Escala gerada."; Essencial **0**, Importante **61**, Desejável **7**, os três **provados**; etapa 2 provada | frase e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | — |
+| A36, 30, ordem 2: "O quadro informado admite escala legal. Escala gerada."; Essencial **0**, Importante **61**, Desejável **7**, os três **provados**; etapa 2 provada | frase e prova por nível | avaliador oficial: sem violação de dura; descanso no relógio aprovado | *medido na v1.4.4 (etapa 2 pela soma)* |
 | A36 ordem 2: máx. fins de semana seguidos **0**; Importante 61 = máx. folgas seguidas **22** + mín. fins de semana seguidos **15** + mín. turnos **1** + posto de técnico **23**; "Só este turno": **7** quebras, todas da Noite A 1 | violações por critério | avaliador oficial (peso 1): **0, 22, 15, 1, 7** — iguais à ferramenta; posto de técnico: sem conferência externa | — |
 | **Ordem 2 × ordem 1, com prova nos níveis envolvidos:** máx. fins de semana seguidos **0 ≤ 17**; quebras do "Só este turno" **7 ≥ 0** | a direção registrada antes (pôr o máx. fins de semana seguidos no Essencial e o turno fixo no Desejável troca um pelo outro) | as duas escalas avaliadas no avaliador com o critério ligado | uma rodada por ordem; os outros critérios do Importante também mudam (mín. fins de semana seguidos 1 → 15; posto de técnico 18 → 23) |
 | enfermeiro em posto de técnico, por origem: A36 ordem 1 — 4 da unidade **6** (38 turnos), 6 acrescidos **12** (56 turnos); ordem 2 — unidade **10** (40 turnos), acrescidos **13** (59 turnos); A11 — **0** (4 enfermeiros, 76 turnos) | quem cobre vaga de técnico, os 4 enfermeiros da unidade (6118, 4798, 4969, 5993) × os 6 acrescidos (Enf 5 a Enf 10) | recontado das escalas gravadas, fora da ferramenta (`--complemento`); soma igual ao resultado por critério (0, 18, 23) | sem conferência externa (o avaliador não pontua) |
@@ -482,7 +482,7 @@ INRC da escala final no avaliador oficial (na ferramenta, não é o objetivo da 
 SCIP, a fatia da etapa 1 (300 s) acabou sem escala, a proteção da primeira escala rodou de novo com
 o resto (299 s) e também não achou.
 
-Etapa 2 (equilíbrio, registrada, não decide): não provou em nenhum caso da ferramenta, nos dois
+Etapa 2 (equilíbrio, registrada, não decide; *medido na v1.4.4 (etapa 2 pela soma)*): não provou em nenhum caso da ferramenta, nos dois
 solvers. Vitórias (regra de 22/10: vence quem prova onde o outro não prova; se nenhum prova, a
 escala de menor valor; sem escala perde para quem tem; gap menor sozinho não conta): **SCIP 1
 (medium_late05) × HiGHS 2 (A36_livre, B11), 5 empates. Regra de troca: fica o HiGHS** (o SCIP não
@@ -518,9 +518,28 @@ B11 com HiGHS terminou os 3.600 s do solver (a escala foi gravada) e foi encerra
 pelo avaliador oficial (Java, até 6 GB, `-Xmx6g`), sem gravar o resultado; a escala desse ponto fica
 fora da tabela. O B11 com SCIP não começou. Faltam ~2 h, a rodar fora do Claude Code.
 
-Valor do modelo = valor da escala nas quatro rodadas concluídas. Etapa 2: não provou; no A36_livre
+Valor do modelo = valor da escala nas quatro rodadas concluídas. Etapa 2 (*medido na v1.4.4 (etapa 2 pela soma)*): não provou; no A36_livre
 com SCIP, não achou escala em 2.979 s (fica a escala da etapa 1). Por caso: **medium_late05, SCIP**
 (186 < 224, nenhum prova); **A36_livre, empate** (com 3.600 s o SCIP também prova a etapa 1, que em
 600 s não provava). Com 3.600 s, o medium_late05 com HiGHS chega aos 224 da seção 1 (06/10).
 Leitura provisória, sem o B11: o SCIP não perde nada para o HiGHS nos dois casos concluídos e ganha
 um — vai ao Otávio e ao orientador; não há troca automática.
+
+## v1.4.5 — etapa 2 por min-max (30/10/2026), PENDENTE DE APROVAÇÃO
+
+Branch `v1.4.5-minmax`, sem merge nem tag até o ok do Otávio. Decisão: `DECISOES.md`, "2026-10-30 —
+Etapa 2 por min-max (v1.4.5)": a etapa 2 passa a minimizar a **maior** amplitude da fração do
+contrato entre as categorias, em vez da soma. Origem: `resultados/v145_2026-10-30/`
+(`suite/tela_9.log`, na suíte; `tela_9_solo.log`, o teste 9 rodado sozinho antes, com o mesmo
+desfecho). Comando: `python src	estes_ferramenta.py 9`. Esperado registrado antes (commits
+`ee73ac9` e `d121b8c`). Máquina e solver: i5-10210U, HiGHS 1.15.1 via `appsi_highs`.
+
+A marca *medido na v1.4.4 (etapa 2 pela soma)* no cabeçalho, nas seções 5, 6, 8, 9, 13 e 15 e em "Comportamento computacional: HiGHS × SCIP" quer dizer: o valor
+foi medido com a etapa 2 pela soma das amplitudes, como na v1.4.4 e nas versões anteriores. A data
+de cada medição está na própria seção. Nenhum desses valores foi refeito com o min-max.
+
+| Valor | O que mede | Conferência | Ressalva |
+|---|---|---|---|
+| maior amplitude **4,55 pp** (técnicos 4,55 pp; enfermeiros 0 pp, não exigido) | critério da etapa 2 no 9c | **conta registrada antes** (`08603c6`; esperado do min-max em `ee73ac9` e `d121b8c`): o piso dos técnicos é 1/22 e a dos enfermeiros pode ser 0, logo o mínimo da maior é 1/22 | com min-max sem desempate, a amplitude dos enfermeiros pode subir até 4,55 pp sem custo; o 0 é o observado, não garantido |
+| **18,2% → 4,5%**, provado | o critério (maior amplitude) cai da etapa 1 para a etapa 2 (9d) | esperado antes: estritamente menor | o 18,2 depende da escala da etapa 1; pela soma, a mesma linha era 36,4 → 4,5 (seção 8) |
+
