@@ -11,8 +11,8 @@
 # resultados/v145_<data>/suite/resumo.txt. RETOMAR=1 pula o que ja esta no resumo com codigo 0.
 # PULAR_SOLVER=1: teste do script, so os passos sem solver.
 #
-# Fora da suite: p14_conferir.py (o item 3 confere a diferenca de CADA categoria contra a etapa 1,
-# o que o min-max nao garante para a categoria que nao e a maior; esperado a decidir) e a
+# Fora da suite: p14_conferir.py (os casos dependem do tempo; o item 3 passou em 30/10 a "maior
+# amplitude <= etapa 1", nota no DECISOES; o caminho sem prova fica nos testes 8 e 9c-tela) e a
 # escalabilidade (fora da v1.4.5). E p17_frase_conferir.py: falha igual na v1.4.4 (saida
 # identica), porque espera os textos da tela anteriores a v1.4.3 (704cb6a, 22/10); a escolha da
 # frase continua coberta pelos testes 8 e 12.

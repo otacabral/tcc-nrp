@@ -19,9 +19,18 @@ fim de cada sessão (dele ou do chat).
     tela, pref-tela;
   - 9c: técnicos 4,55 pp (o mínimo da conta de `08603c6`), enfermeiros 0 nesta rodada (não exigido);
     9d: 18,2% → 4,5% (na v1.4.4 o mesmo caso dava 36,4% → 4,5%, pela soma: 18,2 + 18,2).
-  - Fora da suíte: `p14_conferir.py` (o item 3 compara a diferença de **cada** categoria com a
-    etapa 1, o que o min-max não garante para a categoria que não é a maior — esperado a decidir) e
-    `p17_frase_conferir.py` (falha igual na v1.4.4: espera os textos da tela anteriores à v1.4.3).
+  - Fora da suíte: `p14_conferir.py` (os casos dependem do tempo; o caminho sem prova fica nos
+    testes 8 e 9c-tela) e `p17_frase_conferir.py` (falha igual na v1.4.4: espera os textos da tela
+    anteriores à v1.4.3).
+  - Decisões do Otávio com a Orientação (30/10), feitas no branch:
+    - item 3 do p14 passa a "a maior amplitude da fração cumprida ≤ a da etapa 1". A nota está
+      datada no DECISOES e no cabeçalho do script (`9ea6831`), e a conferência mudou depois
+      (`fa72d36`). Ainda não rodado.
+    - `NUMEROS_TCC.md`: as linhas que dependem da etapa 2 (§5, §6, §8 linhas 154–156, §9, §13,
+      §15) levam a marca *medido na v1.4.4 (etapa 2 pela soma)*, sem valor mudado; a §7 fica sem
+      marca. Seção nova "v1.4.5 — etapa 2 por min-max (30/10/2026), PENDENTE DE APROVAÇÃO", com o
+      9c (maior 4,55 pp) e o 9d (18,2% → 4,5%, provado).
+    - `resultados/cadeia_validacao_2026-10-24.md`: elo v1.4.4 × v1.4.5 (`cc7763c`).
 
 - **Versão citável: v1.4.4** (v1.4.3 + P20). Tag `v1.4.4` em `e91aa05`, criada pelo Otávio; `main` e a
   tag enviadas ao GitHub. Suíte de fechamento de 23/10: **TUDO OK, 37 de 37 passos com código 0**,
@@ -73,11 +82,12 @@ fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-**0. Fechar a v1.4.5 (decisões do Otávio):** (a) ok para merge no `main`, tag `v1.4.5` e push;
-(b) o que fazer com o item 3 do `p14_conferir.py`; (c) quais linhas do `NUMEROS_TCC.md` que
-dependem da etapa 2 refazer ou marcar como da v1.4.4 (seções 5–8, 9, 13, 15; nenhuma foi
-alterada). Depois do merge: `MAPA_CODIGO.md` (o `identidade_v145.py`, o `fechar_v145.sh` e o
-`max_amplitude`).
+**0. Fechar a v1.4.5:** o merge no `main`, a tag `v1.4.5` e o push são **feitos pelo Otávio**.
+O item 3 do p14 e as marcas do NUMEROS já foram decididos e feitos em 30/10. A seção v1.4.5 do
+NUMEROS espera aprovação. Depois do merge: `MAPA_CODIGO.md` (o `identidade_v145.py`, o
+`fechar_v145.sh`, o `max_amplitude` e o `maior_amplitude` do p14). As linhas 485 e 521 do NUMEROS
+(HiGHS × SCIP, "etapa 2 não provou") também foram medidas pela soma e ficaram sem marca, porque
+estão fora da lista da decisão; decidir se marca.
 
 **1. Semana de escrita (26/10 a 30/10):** a Orientação monta um pacote de base por bloco para a
 Redação, no formato de `D:\TCC\escrita\texto\esqueletos\PACOTE_B1_26-10.md` (afirmações L/F/A com
