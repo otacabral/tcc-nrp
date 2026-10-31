@@ -27,6 +27,10 @@ OUT=resultados/v145_$DATA/suite
 mkdir -p "$OUT"
 RESUMO="$OUT/resumo.txt"
 [ "${RETOMAR:-0}" = 1 ] || : > "$RESUMO"
+# ao retomar, o fecho da rodada anterior (TUDO OK ou PARADO) sai do resumo; os passos ficam
+if [ "${RETOMAR:-0}" = 1 ] && [ -f "$RESUMO" ]; then
+    grep -v -e '^TUDO OK$' -e '^PARADO: ' "$RESUMO" > "$RESUMO.tmp"; mv "$RESUMO.tmp" "$RESUMO"
+fi
 export PYTHONIOENCODING=utf-8
 BASE="${TEMP:-/tmp}/v145_identidade_suite"
 V144=../tcc-nrp-v144
@@ -64,4 +68,10 @@ roda testes_entrada "$PY" src/testes_entrada.py
 for caso in p20 opB-d opB-padroes opB-b 9 9c-tela 8 12 pref-tela opB-tela opB-c opB-e; do
     roda "tela_$caso" "$PY" src/testes_ferramenta.py "$caso"
 done
-echo "TUDO OK" | tee -a "$RESUMO"
+# (e) complemento de 30/10 (Otavio): os testes de ponta a ponta da suite da v1.4.4
+# (fechar_v143.sh) que faltavam acima. Curtos primeiro. Rodar com RETOMAR=1 depois da primeira
+# suite: os 20 passos que ja passaram nao repetem.
+for caso in max-dias 16 4b 7.4 4 5 15 tela-limpa; do
+    roda "tela_$caso" "$PY" src/testes_ferramenta.py "$caso"
+done
+echo "TUDO OK" | tee -a "$RESUMO" | tee -a "$RESUMO"
