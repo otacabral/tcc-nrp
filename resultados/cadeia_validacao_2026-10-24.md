@@ -77,3 +77,27 @@ orçamento hoje).
   novo); P01–P18 e a demonstração foram refeitos até a v1.4.2 com desfechos iguais, e a v1.4.4 recebe
   a mesma entrada; K1–K6, propriedades e nível 3 não foram refeitos depois de 07–09/10.
 - §15.2: rodou na v1.4.4.
+
+## Elo v1.4.4 × v1.4.5 (30/10/2026, PENDENTE DE APROVAÇÃO)
+
+Acrescentado em 30/10. A v1.4.5 está no branch `v1.4.5-minmax`, sem merge nem tag até o ok do
+Otávio. A mudança é só da etapa 2, que passa da soma das amplitudes para o min-max (`DECISOES.md`,
+"2026-10-30 — Etapa 2 por min-max (v1.4.5)"). Origem: `resultados/v145_2026-10-30/suite/resumo.txt`
+(TUDO OK, 20 de 20 passos), com o worktree da v1.4.4 (`e91aa05`) em `../tcc-nrp-v144`.
+
+- **Identidade da entrada do solver**, nos mesmos 81 casos: o XML e o LP da etapa 1 são idênticos
+  byte a byte (162 de 162). Os 81 LPs da etapa 2 diferem **só** no objetivo, na variável
+  `amplitude` e nas restrições `amplitude_constraints`, uma por categoria presente. A conferência é
+  `docs/diagnostico/identidade_v145.py`, que lê o LP como conteúdo, porque o Pyomo reordena termos
+  e limites quando aparece uma variável nova.
+- **Controle da conferência** (`identidade_v145.py --controle`): quatro defeitos plantados numa
+  cópia de um LP da etapa 2, os quatro pegos. Os defeitos foram um coeficiente de restrição antiga
+  mudado, uma restrição de amplitude faltando, um limite de `f_max` mudado e um termo a mais no
+  objetivo.
+- **Regressão** (`src/regressao.py --todos`): passou, idêntica (56, 58, 197, 219 provados = Tabela
+  6). Os testes das entradas também passaram, e os testes da ferramenta que passam pela etapa 2
+  foram 9 (com 9c e 9d), 9c-tela, 8, 12, p20, pref-tela e opB-*.
+
+**Nota:** os resultados que dependem da etapa 2 foram medidos na v1.4.4 (ou antes), com a soma.
+Estão marcados no `NUMEROS_TCC.md` como *medido na v1.4.4 (etapa 2 pela soma)*. O XML e a etapa 1
+não mudam, então as evidências que só dependem deles continuam ligadas pela identidade acima.
