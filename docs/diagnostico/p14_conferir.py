@@ -55,6 +55,11 @@ def entrada(nome: str):
     return brd.entrada(next(c for c in bp.TODOS if c.nome.startswith(nome)))
 
 
+def maior_amplitude(categorias) -> float:
+    """Criterio da etapa 2 na v1.4.5: a maior amplitude da fracao entre as categorias."""
+    return max((c["amplitude"] for c in categorias.values()), default=0.0)
+
+
 def main() -> int:
     nome = sys.argv[1]
     p17 = "--p17" in sys.argv[2:]
@@ -66,8 +71,8 @@ def main() -> int:
         "1 etapa 2 rodou": not str(ind.get("etapa2", "")).startswith(("não rodou", "nao rodou"))
                            and ind.get("tempo_etapa2", 0) > 0,
         "2 enf em posto tec <= etapa 1": ind["enf_em_posto_tec"] <= e1.get("enf_em_posto_tec", -1),
-        "3 diferenca por categoria <= etapa 1": all(
-            cat[g]["diferenca_h"] <= e1["categorias"][g]["diferenca_h"] + 1e-6 for g in cat),
+        "3 maior amplitude <= etapa 1": maior_amplitude(cat) <= maior_amplitude(e1["categorias"])
+                                        + 1e-9,
         "4 descanso e rigidas": bool(r.conformidade and r.conformidade["ok"])
                                 and not solucao.conferir_rigidas(r.inst, r.escala,
                                                                  habilidade_rigida=True),
@@ -82,11 +87,13 @@ def main() -> int:
            "etapa1": {"enf_em_posto_tec": e1.get("enf_em_posto_tec"),
                       "pedidos_atendidos": e1.get("pedidos_atendidos"),
                       "fracao": (e1.get("fracao_min"), e1.get("fracao_max")),
-                      "diferenca_h": {g: c["diferenca_h"] for g, c in e1.get("categorias", {}).items()}},
+                      "diferenca_h": {g: c["diferenca_h"] for g, c in e1.get("categorias", {}).items()},
+                      "maior_amplitude": maior_amplitude(e1.get("categorias", {}))},
            "final": {"enf_em_posto_tec": ind["enf_em_posto_tec"],
                      "pedidos_atendidos": ind["pedidos_atendidos"],
                      "fracao": (ind["fracao_min"], ind["fracao_max"]),
-                     "diferenca_h": {g: c["diferenca_h"] for g, c in cat.items()}},
+                     "diferenca_h": {g: c["diferenca_h"] for g, c in cat.items()},
+                     "maior_amplitude": maior_amplitude(cat)},
            "descanso_semanal_sem_bordas": r.conformidade and r.conformidade.get("menor_semanal_interno"),
            "conferencias": ok}
     SAIDA.mkdir(parents=True, exist_ok=True)
