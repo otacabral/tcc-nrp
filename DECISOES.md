@@ -3134,6 +3134,12 @@ instância com o critério ligado (a ordem 1 não o tem ligado).
 **Números** só vão ao `NUMEROS_TCC.md` depois da aprovação do Otávio. **Afirmação fraca:** um setor,
 um mês, uma rodada por ordem; tempo como limite operacional (máquina e solver nomeados).
 
+*31/10: a transcrição passou a ser versionada em resultados/caso_a_pratica_2026-10-23/; mesmo
+conteúdo (conferido pela recontagem idêntica).* A cópia foi feita de
+`D:\TCC\escrita\insumos\caso_realista\transcricao_anexoB_massens.csv` e é idêntica byte a byte.
+O `recontagem.md` gerado de novo por `caso_a_pratica.py --recontar` só difere do anterior no
+caminho da linha "Fonte"; todas as contagens são iguais.
+
 ---
 
 ## 2026-10-26 — Limitações declaradas: duração diária do turno e limite semanal de horas

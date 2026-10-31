@@ -4,7 +4,7 @@
     (as rodadas e a conferencia vem depois, no mesmo arquivo)
 
 Recontagem (DECISOES.md, "2026-10-23 — Caso A: classificacao dos criterios pela escala real e
-sensibilidade (2 ordens)"): le `D:\\TCC\\escrita\\fontes\\transcricao_anexoB_massens.csv` com as
+sensibilidade (2 ordens)"): le `resultados/caso_a_pratica_2026-10-23/transcricao_anexoB_massens.csv` com as
 leituras da ficha (FICHA_CASO_REALISTA.md, "Contagem na escala real (23/10/2026)") e conta cada
 criterio com o `avaliacao.py` — NAO usa o script do chat de Orientacao.
 
@@ -40,8 +40,9 @@ from avaliacao import violacoes  # noqa: E402
 from instancia import Contrato, Flexivel, Instancia, Profissional, Turno  # noqa: E402
 from solucao import noites_antes_de_fim_de_semana_livre_por_pessoa  # noqa: E402
 
-CSV = Path(r"D:\TCC\escrita\fontes\transcricao_anexoB_massens.csv")
 SAIDA = RAIZ / "resultados" / "caso_a_pratica_2026-10-23"
+# 31/10: a transcricao passou a ser versionada aqui (antes em D:\TCC\escrita\fontes\, que nao existe mais)
+CSV = SAIDA / "transcricao_anexoB_massens.csv"
 ANO = 2018
 FOLGA = {"F", "F2", "f2"}
 # limites padrao da ferramenta (prioridades.CRITERIOS), nao calibrados
@@ -280,7 +281,7 @@ def recontar() -> int:
     linhas, mudou = _tabela(_contagem(com_registro, dias, escala, ferias), grupo)
     linhas24, mudou24 = _tabela(_contagem(pessoas, dias, escala, ferias), grupo)
     texto = ["# Caso A — recontagem independente da escala real (23/10/2026; 21 linhas em 26/10)", "",
-             f"Fonte: `{CSV}` (24 linhas transcritas, {len(com_registro)} com registro contadas; "
+             f"Fonte: `{CSV.relative_to(RAIZ).as_posix()}` (24 linhas transcritas, {len(com_registro)} com registro contadas; "
              f"{PERIODO}). Ficam fora da contagem as {len(fora)} linhas sem nenhum registro "
              f"({', '.join(fora)}), mas não do caso (Orientação, 26/10, a posteriori: linha vazia "
              "não mostra prática; DECISOES.md, \"2026-10-23 — Caso A\"). Leituras da ficha (corrigida pela "
