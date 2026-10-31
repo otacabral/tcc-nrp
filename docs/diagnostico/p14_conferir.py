@@ -11,7 +11,8 @@ tres casos (otavio, K5, K6), comparando com a escala que a etapa 1 achou NA MESM
 etapa 1 para no limite de tempo e pode achar escalas diferentes a cada execucao):
 1. a etapa 2 roda: `etapa2` nao comeca por "nao rodou" e `tempo_etapa2` > 0;
 2. turnos de enfermeiro em posto de tecnico da escala final <= os da escala da etapa 1;
-3. diferenca maxima de carga entre colegas, em cada categoria, <= a da escala da etapa 1;
+3. a maior amplitude da fracao cumprida (criterio da etapa 2) <= a da escala da etapa 1
+   (redacao de 30/10, abaixo);
 4. descanso conferido: `conformidade["ok"]` e `solucao.conferir_rigidas` sem problema;
 5. pedidos atendidos da escala final >= os da etapa 1 (o otavio e K5/K6 nao tem pedidos).
 
@@ -19,6 +20,13 @@ P17 (09/10), com `--p17`, esperado registrado ANTES de implementar a partida da 
 6. a etapa 2 SEMPRE entrega escala (`etapa2` == "ok"): ela parte da escala da etapa 1, que
    cumpre "nao piorar" por construcao.
 A saida vai para `p17_<caso>.json`.
+
+Nota de 30/10/2026 (v1.4.5, etapa 2 por min-max; DECISOES.md, "2026-10-30 — Etapa 2 por min-max
+(v1.4.5)"), registrada ANTES de mudar a conferencia: o item 3 era "diferenca maxima de carga entre
+colegas, em cada categoria, <= a da escala da etapa 1". O min-max garante so a maior amplitude; a
+categoria menor pode subir (limitacao declarada), e nem a soma garantia o item 3 por categoria.
+Fora da suite da v1.4.5 (os casos dependem do tempo); o caminho sem prova fica coberto pelos
+testes 8 e 9c-tela. Os JSON de 09/10 foram gerados com o item 3 antigo.
 """
 
 from __future__ import annotations

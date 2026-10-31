@@ -1442,6 +1442,14 @@ Pedido do Prof. Ormeu em 30/10/2026; aprovado pelo Otávio em 30/10/2026; valida
 
 **Suíte:** identidade v1.4.4 × v1.4.5 (XML e LP etapa 1 idênticos; LP etapa 2 diferente só no objetivo e linhas de `t`), regressão (56, 58, 197, 219 idênticos), testes de entrada, testes da ferramenta que passam pela etapa 2 (9, 9c, 9c-tela, 9d, p20, 8, 12, opB-*, pref-tela se existirem) e conferidores (p14, p17) se rodarem.
 
+*Nota de 30/10/2026 (Otávio, com a Orientação), registrada antes de mudar a conferência:* o item 3
+do `docs/diagnostico/p14_conferir.py` passa a ser **"a maior amplitude da fração cumprida (critério
+da etapa 2) é ≤ a da escala da etapa 1"**. Antes era "diferença máxima de carga entre colegas, em
+cada categoria, ≤ a da escala da etapa 1". Motivo: o min-max garante só a maior; a categoria
+menor pode subir (limitação já declarada no item 4 acima), e nem a soma garantia o item 3 por
+categoria. O p14 continua fora da suíte, porque os casos dependem do tempo; o caminho sem prova
+fica coberto pelos testes 8 e 9c-tela.
+
 ---
 
 ## 2026-10-05 — Arquivo de configuração vira trabalho futuro
