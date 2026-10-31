@@ -83,7 +83,7 @@ orçamento hoje).
 Acrescentado em 30/10. A v1.4.5 está no branch `v1.4.5-minmax`, sem merge nem tag até o ok do
 Otávio. A mudança é só da etapa 2, que passa da soma das amplitudes para o min-max (`DECISOES.md`,
 "2026-10-30 — Etapa 2 por min-max (v1.4.5)"). Origem: `resultados/v145_2026-10-30/suite/resumo.txt`
-(TUDO OK, 20 de 20 passos), com o worktree da v1.4.4 (`e91aa05`) em `../tcc-nrp-v144`.
+(TUDO OK; 19 passos com código 0 na primeira rodada, 27 com o complemento de 30–31/10), com o worktree da v1.4.4 (`e91aa05`) em `../tcc-nrp-v144`.
 
 - **Identidade da entrada do solver**, nos mesmos 81 casos: o XML e o LP da etapa 1 são idênticos
   byte a byte (162 de 162). Os 81 LPs da etapa 2 diferem **só** no objetivo, na variável

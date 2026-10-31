@@ -1,6 +1,6 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 30/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
+Atualizado em 31/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
 fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
@@ -10,13 +10,18 @@ fim de cada sessão (dele ou do chat).
   por min-max (v1.4.5)". A etapa 2 minimiza a **maior** amplitude entre as categorias (variável `t`,
   `t ≥ φmax_g − φmin_g`), sem desempate; a escolha entre etapa 1 e etapa 2 sem prova e a frase do
   equilíbrio passam a usar a maior das duas (`ferramenta.max_amplitude`). Suíte de fechamento
-  (`docs/diagnostico/fechar_v145.sh`): **TUDO OK, 20 de 20 passos com código 0**
-  (`resultados/v145_2026-10-30/suite/resumo.txt`):
+  (`docs/diagnostico/fechar_v145.sh`): **TUDO OK, 27 de 27 passos com código 0**
+  (`resultados/v145_2026-10-30/suite/resumo.txt`). Na primeira rodada (30/10) foram **19 passos**.
+  *(Corrigido em 31/10: o relatório e esta linha diziam 20, porque contavam a linha "TUDO OK" do
+  resumo como passo.)* O complemento de 30–31/10, rodado com `RETOMAR=1`, acrescentou os 8 testes
+  de ponta a ponta da suíte da v1.4.4 que faltavam: max-dias 6 s, 16 10 s, 4b 4 s, 7.4 2 s, 4
+  189 s, 5 194 s, 15 193 s e tela-limpa 379 s, todos com código 0 e sem esperado mudado (tempo só
+  como limite operacional). O que entrou:
   - identidade v1.4.4 × v1.4.5: 162 XML e LPs da etapa 1 idênticos; 81 LPs da etapa 2 diferentes só
     no objetivo, na variável `amplitude` e nas restrições `amplitude_constraints`
     (`identidade_v145.py`, que lê o LP como conteúdo; o controle pega 4 defeitos plantados);
   - regressão (portão), entradas e os testes 9 (9c, 9d), 9c-tela, 8, 12, p20, opB-b/c/d/e/padroes/
-    tela, pref-tela;
+    tela, pref-tela, e no complemento max-dias, 16, 4b, 7.4, 4, 5, 15 e tela-limpa;
   - 9c: técnicos 4,55 pp (o mínimo da conta de `08603c6`), enfermeiros 0 nesta rodada (não exigido);
     9d: 18,2% → 4,5% (na v1.4.4 o mesmo caso dava 36,4% → 4,5%, pela soma: 18,2 + 18,2).
   - Fora da suíte: `p14_conferir.py` (os casos dependem do tempo; o caminho sem prova fica nos
@@ -31,6 +36,11 @@ fim de cada sessão (dele ou do chat).
       marca. Seção nova "v1.4.5 — etapa 2 por min-max (30/10/2026), PENDENTE DE APROVAÇÃO", com o
       9c (maior 4,55 pp) e o 9d (18,2% → 4,5%, provado).
     - `resultados/cadeia_validacao_2026-10-24.md`: elo v1.4.4 × v1.4.5 (`cc7763c`).
+    - (30/10, noite) a marca entrou também nas linhas ~485 e ~521 (HiGHS × SCIP). Pela regra
+      geral, "tudo o que foi medido com a soma leva a marca", entrou ainda na tolerância do
+      cabeçalho (9c), na linha "0 e 4,55 pp" da §8 e no parágrafo da §9 (`d829846`).
+    - Defeito do script corrigido: o complemento gravava "TUDO OK" duas vezes no resumo. A cópia
+      a mais foi tirada do log.
 
 - **Versão citável: v1.4.4** (v1.4.3 + P20). Tag `v1.4.4` em `e91aa05`, criada pelo Otávio; `main` e a
   tag enviadas ao GitHub. Suíte de fechamento de 23/10: **TUDO OK, 37 de 37 passos com código 0**,
@@ -85,9 +95,10 @@ fim de cada sessão (dele ou do chat).
 **0. Fechar a v1.4.5:** o merge no `main`, a tag `v1.4.5` e o push são **feitos pelo Otávio**.
 O item 3 do p14 e as marcas do NUMEROS já foram decididos e feitos em 30/10. A seção v1.4.5 do
 NUMEROS espera aprovação. Depois do merge: `MAPA_CODIGO.md` (o `identidade_v145.py`, o
-`fechar_v145.sh`, o `max_amplitude` e o `maior_amplitude` do p14). As linhas 485 e 521 do NUMEROS
-(HiGHS × SCIP, "etapa 2 não provou") também foram medidas pela soma e ficaram sem marca, porque
-estão fora da lista da decisão; decidir se marca.
+`fechar_v145.sh`, o `max_amplitude` e o `maior_amplitude` do p14). A suíte completa (27 passos)
+passou em 31/10; nada mais a rodar antes do merge. O `checkout main` de 30/10, às 23h37, ficou
+incompleto (havia arquivos abertos no editor). Antes do merge, fechar o editor ou os arquivos do
+repositório.
 
 **1. Semana de escrita (26/10 a 30/10):** a Orientação monta um pacote de base por bloco para a
 Redação, no formato de `D:\TCC\escrita\texto\esqueletos\PACOTE_B1_26-10.md` (afirmações L/F/A com

@@ -70,8 +70,8 @@ for caso in p20 opB-d opB-padroes opB-b 9 9c-tela 8 12 pref-tela opB-tela opB-c 
 done
 # (e) complemento de 30/10 (Otavio): os testes de ponta a ponta da suite da v1.4.4
 # (fechar_v143.sh) que faltavam acima. Curtos primeiro. Rodar com RETOMAR=1 depois da primeira
-# suite: os 20 passos que ja passaram nao repetem.
+# suite: os 19 passos que ja passaram nao repetem.
 for caso in max-dias 16 4b 7.4 4 5 15 tela-limpa; do
     roda "tela_$caso" "$PY" src/testes_ferramenta.py "$caso"
 done
-echo "TUDO OK" | tee -a "$RESUMO" | tee -a "$RESUMO"
+echo "TUDO OK" | tee -a "$RESUMO"
