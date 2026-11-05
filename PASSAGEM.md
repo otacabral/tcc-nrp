@@ -173,9 +173,11 @@ escrito pela Orientação em 05/11). Entrega: **06/11/2026**. Ferramenta: **v1.4
 código congelado.
 
 - **P1** (Claude Code; NUMEROS e cadeia, sem solver): **feita nesta sessão**. Falta o push, que o Otávio faz.
-- **P2** (Otávio): recopiar o `NUMEROS_TCC.md` e a cadeia para `D:\TCC\escrita\insumos
-umeros\`
-  e atualizar o `MANIFESTO.md` (commit novo, sha256) e o `INDICE.md`, conforme a seção 4 do ESTADO_TCC.
+- **P2** (cópia para os insumos): **feita em 05/11** pelo Claude Code, a pedido do Otávio. O NUMEROS
+  e a cadeia foram copiados do `c351d1e`, com o sha256 conferido contra `git show c351d1e:` (NUMEROS
+  `74e68352b4e6`, cadeia `81ab5bd538de`). No `MANIFESTO.md` mudaram as linhas, a frase do topo e o
+  rodapé; no `INDICE.md` saiu a nota de pendente. Commit `258c440` em `D:\TCC\escrita`. Falta o
+  push dos dois repositórios, que o Otávio faz.
 - **P3 e P4** (Redação): Cap. 5 v8 do zero e as correções de versão, pelas mensagens do ESTADO_TCC.
 - Pendências antigas que continuam abertas, sem prazo: `MAPA_CODIGO.md` (o `identidade_v145.py`, o
   `fechar_v145.sh`, o `max_amplitude` e o `maior_amplitude` do p14).
