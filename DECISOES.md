@@ -3189,6 +3189,27 @@ textos novos da tela, ajustar só em `docs/demonstracao`. Execução longa: o me
 
 ---
 
+## 2026-11-05 — Limitações declaradas: intervalo intrajornada (art. 71) e hora noturna reduzida (art. 73, § 1º)
+
+**Status: vigente — declaração a posteriori, sem mudança de código** (pedido do Otávio, 04/11).
+
+**O que a ferramenta faz.** Cada turno é um bloco contínuo, com início e duração. As horas de um
+turno são a duração pelos horários (`instancia.Turno.duracao_h`), e é essa duração que entra no
+teto de horas do contrato (`modelo.py`, restrição (IV), `carga_horaria`) e no descanso exigido
+depois do turno (`instancia_br.descanso_exigido`, chamada pelo gerador de pares
+`pares_proibidos_por_horario`).
+
+**O que não é modelado:**
+- o **intervalo para repouso ou alimentação** (CLT, art. 71): não há pausa dentro do turno, e o
+  intervalo não é descontado das horas;
+- a **hora noturna reduzida** de 52 min 30 s (CLT, art. 73, § 1º): o turno noturno conta pelas
+  horas do relógio.
+
+**Não há motivo registrado.** É limitação declarada a posteriori, como a de 26/10 ("Limitações
+declaradas: duração diária do turno e limite semanal de horas").
+
+---
+
 ## Modelo de entrada
 
 ```
