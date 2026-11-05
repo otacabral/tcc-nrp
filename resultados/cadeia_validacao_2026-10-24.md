@@ -82,10 +82,10 @@ orçamento hoje).
 - §15.2: rodou na v1.4.4. **Histórico** desde 05/11: o caso A no texto vem da §15c.
 - §15c (05/11): rodou na v1.4.5 com a entrada de 04/11 (janela real do Anexo B, férias reais); evidência direta, com o avaliador oficial nas escalas; a §15.1 e a §15.2 ficam como histórico.
 
-## Elo v1.4.4 × v1.4.5 (30/10/2026, PENDENTE DE APROVAÇÃO)
+## Elo v1.4.4 × v1.4.5 (30/10/2026; aprovado pelo Otávio em 05/11/2026)
 
-Acrescentado em 30/10. A v1.4.5 está no branch `v1.4.5-minmax`, sem merge nem tag até o ok do
-Otávio. A mudança é só da etapa 2, que passa da soma das amplitudes para o min-max (`DECISOES.md`,
+Acrescentado em 30/10. A v1.4.5 foi aprovada pelo Otávio em 05/11/2026; merge e tag `v1.4.5` em
+31/10 (commit `634eeb5`). A mudança é só da etapa 2, que passa da soma das amplitudes para o min-max (`DECISOES.md`,
 "2026-10-30 — Etapa 2 por min-max (v1.4.5)"). Origem: `resultados/v145_2026-10-30/suite/resumo.txt`
 (TUDO OK; 19 passos com código 0 na primeira rodada, 27 com o complemento de 30–31/10), com o worktree da v1.4.4 (`e91aa05`) em `../tcc-nrp-v144`.
 
@@ -98,6 +98,12 @@ Otávio. A mudança é só da etapa 2, que passa da soma das amplitudes para o m
   cópia de um LP da etapa 2, os quatro pegos. Os defeitos foram um coeficiente de restrição antiga
   mudado, uma restrição de amplitude faltando, um limite de `f_max` mudado e um termo a mais no
   objetivo.
+- **Reexecução de 05/11/2026** (sem solver): a identidade e o controle rodaram de novo com os
+  comandos do Apêndice C v4 (os mesmos que ficaram na v5), copiados exatamente como estão e
+  executados no PowerShell a partir de `D:\dev\tcc-nrp`: "162 identicos, 0 diferentes"; "81 com a
+  diferenca restrita ao min-max, 0 fora"; **"IDENTIDADE V145 OK"**; os 4 defeitos plantados
+  detectados, **"CONTROLE OK"**. Nenhum arquivo versionado da cópia `../tcc-nrp-v144` mudou. As
+  saídas ficaram em `%TEMP%`, fora do repositório (registro no `PASSAGEM.md`, 05/11).
 - **Regressão** (`src/regressao.py --todos`): passou, idêntica (56, 58, 197, 219 provados = Tabela
   6). Os testes das entradas também passaram, e os testes da ferramenta que passam pela etapa 2
   foram 9 (com 9c e 9d), 9c-tela, 8, 12, p20, pref-tela e opB-*.

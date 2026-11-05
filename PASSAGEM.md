@@ -1,10 +1,31 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 05/11/2026 (fechamento das rodadas da v1.4.5). Lido primeiro pelo chat de Orientação; atualizado pelo Claude
+Atualizado em 05/11/2026 (P1 do ESTADO_TCC_05-11: NUMEROS e cadeia completados, sem solver). Lido primeiro pelo chat de Orientação; atualizado pelo Claude
 Code ao fim de cada sessão (dele ou do chat).
 
 
 ## Onde paramos
+
+- **05/11 (tarde) — P1 do `D:\TCC\escrita\ESTADO_TCC_05-11.md` feita, sem solver e sem tocar em `src/`**
+  (aprovada pelo Otávio; a Orientação valida). No `resultados/NUMEROS_TCC.md`:
+  - §15c, linha do B11: "0 e 1" = 0 no Essencial e 1 no Importante, níveis fundidos (como no JSON);
+  - complemento da 15c, item 4: as contas do `ESPERADO.md` (`b39dd13`): 3.600 h contra 3.878 h (caso
+    A, 23; não aperta); caso B, dom + seg, 65 + 40 = 105 contra 89; hipótese de 11 h, cota de
+    enfermeiro em posto de técnico 0 (14 + 4 = 18 contra 18);
+  - item 5: contagem nossa na transcrição v2, por grupo: maior sequência de dias trabalhados 7
+    (técnicos diurnos), 1 (técnicos noturnos), 1 (enfermeiros); máximo de turnos (18): 59 / 0 / 0
+    (total 59, igual ao `recontagem_v2.md`);
+  - item 6: tabela "Etapa 2 (equilíbrio, min-max)" das cinco rodadas. O "depois" por categoria foi
+    **recalculado** na escala gravada com `ferramenta.por_categoria` (a maior bate com o JSON nas
+    cinco). O "antes" por categoria **não existe**: a escala da etapa 1 não foi gravada, só a maior
+    dela;
+  - seção v1.4.5: "aprovada pelo Otávio em 05/11/2026; merge e tag em 31/10 (`634eeb5`)", e a linha
+    "Verificação entre versões".
+  - Na cadeia (`resultados/cadeia_validacao_2026-10-24.md`), o elo v1.4.4 × v1.4.5 aparece como
+    aprovado, com a nota da reexecução de 05/11.
+  - Script da contagem e do recálculo: fora do repositório, no scratchpad da sessão. É só leitura:
+    usa `caso_a_pratica.ler`/`_contagem`, `caso_a_v145.entrada`, `ferramenta.montar` e
+    `ferramenta.por_categoria`.
 
 - **05/11 — elo de identidade v1.4.4 × v1.4.5 reproduzido pelo Apêndice C v4, sem solver.**
   - Rodaram os 6 comandos do bloco depois de "A identidade da entrada do solver entre versões"
@@ -147,34 +168,17 @@ ova`, fora do repositório.
 
 ## Próxima tarefa
 
-**00. Rodadas de 05/11:** a 15c foi aprovada e já está no NUMEROS. Falta o push dos commits de
-04–05/11, feito pelo Otávio.
+**Estado de 05/11: ver `D:\TCC\escrita\ESTADO_TCC_05-11.md`** (ponto de entrada único da reta final,
+escrito pela Orientação em 05/11). Entrega: **06/11/2026**. Ferramenta: **v1.4.5** (tag em `634eeb5`),
+código congelado.
 
-**0. Depois da v1.4.5:**
-- push dos commits de 31/10 (`aebd8d2`, `569a6b3` e este), feito pelo Otávio;
-- aprovação da seção v1.4.5 do NUMEROS;
-- `MAPA_CODIGO.md`: o `identidade_v145.py`, o `fechar_v145.sh`, o `max_amplitude` e o
-  `maior_amplitude` do p14.
-
-**1. Semana de escrita (26/10 a 30/10):** a Orientação monta um pacote de base por bloco para a
-Redação, no formato de `D:\TCC\escrita\texto\esqueletos\PACOTE_B1_26-10.md` (afirmações L/F/A com
-fonte, perguntas de banca, o que não escrever). O cronograma e a situação de cada seção estão no
-PASSAGEM de `D:\TCC\escrita`. A ferramenta está congelada (só correção de defeito, com registro no
-DECISOES antes). Seção 15 do NUMEROS aprovada em 26/10 e cadeia de validação
-(`resultados/cadeia_validacao_2026-10-24.md`) são fonte do texto; onde a cadeia diz "não coberto", o
-texto não afirma a ligação.
-
-**2. Opcional — terminar o B11 da sensibilidade de 3.600 s** (~2 h; só se o Otávio quiser o caso
-no texto). Com o Claude Code e outros programas fechados (o avaliador Java pode usar até 6 GB). No
-PowerShell, um comando por linha:
-
-    cd D:\dev\tcc-nrp
-    .\.venv\Scripts\Activate.ps1
-    python docs\diagnostico\bateria_solvers.py --todos --limite 3600 --saida resultados\solvers_2026-10-23_3600 --casos medium_late05 A36_livre_30 B11_livre_89
-
-Sensibilidade com 2 ou 3 ordens de critérios: **sem proposta até a decisão do Otávio**.
-Congelamento dos números: **25/10**; a partir de 26/10, só escrita (a seção 15 entrou em 26/10
-por aprovação, sem número novo além da recontagem de 21 linhas, que é só leitura).
+- **P1** (Claude Code; NUMEROS e cadeia, sem solver): **feita nesta sessão**. Falta o push, que o Otávio faz.
+- **P2** (Otávio): recopiar o `NUMEROS_TCC.md` e a cadeia para `D:\TCC\escrita\insumos
+umeros\`
+  e atualizar o `MANIFESTO.md` (commit novo, sha256) e o `INDICE.md`, conforme a seção 4 do ESTADO_TCC.
+- **P3 e P4** (Redação): Cap. 5 v8 do zero e as correções de versão, pelas mensagens do ESTADO_TCC.
+- Pendências antigas que continuam abertas, sem prazo: `MAPA_CODIGO.md` (o `identidade_v145.py`, o
+  `fechar_v145.sh`, o `max_amplitude` e o `maior_amplitude` do p14).
 
 ## Worktrees de leitura (D:\dev)
 

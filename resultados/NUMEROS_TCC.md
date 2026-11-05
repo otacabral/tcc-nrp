@@ -469,7 +469,7 @@ Anexo B, v1.4.5); elas ficam como histórico (entrada antiga, v1.4.1 e v1.4.4).
 | violação inevitável só no máximo de folgas seguidas: **19** (6137: 12; 5976: 7), atingida exatamente nas classificações 1 e 2 | o que as férias impõem | conta à mão no `ESPERADO.md` §4 | o mínimo de turnos **não** é inevitável: a classificação 2 dá 0 (5976 à custa da linha "Só N") |
 | **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** com 11 h depois do D12, A (turno fixo, classificação 1) **admite 23, provado**; 14 quebras das linhas no Essencial, 0 enfermeiro em posto de técnico | o quanto a regra das 36 h depois do D12 pesa no quadro (28 × 23) | avaliador oficial, sem violação de dura; descanso no relógio: D12 → 12 h; conta à mão (22 contra 22) | parâmetro de pesquisa, fora da tela |
 | caso B, 36 h: **não há escala legal até 101** (igual a 15.1) | 89–101 recusados pela conta (105 contra 89) | conta à mão no `ESPERADO.md` §5 | só a janela mudou; o menor viável não foi determinado |
-| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** com 11 h depois do D12, B (rodízio livre) **admite 89, sem prova** (0 e 1 violação, limite inferior 0); os mesmos valores da v1.4.1 (15.1) | o quanto a regra das 36 h depois do D12 pesa no caso B | avaliador oficial (`-Xmx6g`), sem violação de dura, na própria rodada; descanso no relógio: D12 → 12 h | parâmetro de pesquisa, fora da tela; sem prova no orçamento de 60 min |
+| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** com 11 h depois do D12, B (rodízio livre) **admite 89, sem prova** (0 e 1 violação: 0 no Essencial e 1 no Importante, níveis fundidos, como no JSON — `"caminho": "fundido"`; limite inferior 0); os mesmos valores da v1.4.1 (15.1) | o quanto a regra das 36 h depois do D12 pesa no caso B | avaliador oficial (`-Xmx6g`), sem violação de dura, na própria rodada; descanso no relógio: D12 → 12 h | parâmetro de pesquisa, fora da tela; sem prova no orçamento de 60 min |
 
 
 ### 15c — complemento (aprovado pelo Otávio em 05/11/2026)
@@ -536,6 +536,69 @@ avaliador oficial. Os lados (violado / nunca violado / sem evidência) dão a cl
 Ressalva: 9 + 19 vem de a busca ter acrescentado as 5 pessoas como enfermeiros. A regra
 `ferramenta.equipe` só acrescenta, então o máximo é 4 + 5 = 9, e a regra pediria 10
 (`ceil(0,33 × 28)`). Por isso o próprio quadro de 28 dispara o alerta.
+
+**4. Contas do esperado, registradas antes das rodadas** (`resultados/caso_a_2026-11-04/ESPERADO.md`,
+commit `b39dd13`, de 05/11, antes das rodadas; sem solver). Acrescentado em 05/11/2026; nenhum valor
+novo, só transcrito do ESPERADO.
+
+| Valor | O que mede | Origem | Ressalva |
+|---|---|---|---|
+| caso A, 23 pessoas: **3.600 h demandadas contra 3.878 h de teto da equipe** | a conta de horas; não aperta (o que recusa o 23 é o par dom + seg) | `ESPERADO.md` §1 | conta da ferramenta (`ferramenta.piso`) conferida à mão; mesma regra de descanso do modelo |
+| caso B, 36 h, par domingo + segunda: **65 + 40 = 105 contra 89** | a conta prévia que recusa de 89 a 101 (piso 105 > 89 + 12) | `ESPERADO.md` §5 | só a janela mudou em relação a 20/10; a conta saiu igual |
+| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** com 11 h depois do D12, caso A com 23: cota inferior de enfermeiro em posto de técnico **0** (14 + 4 = 18 contra 18 técnicos) | quanto a falta de técnicos obriga a usar enfermeiro em vaga de técnico sob a hipótese | `ESPERADO.md` §4 | cota pela conta, não inevitável de uma pessoa; a rodada A11 deu 0, igual |
+
+**5. Escala real por grupo: maior sequência de dias trabalhados e máximo de turnos (18)** — contagem
+nossa sobre a transcrição v2 (`resultados/caso_a_2026-11-04/transcricao_anexoB_massens_v2.csv`), sem
+solver, em 05/11/2026. Mesma leitura do `recontagem_v2.md` (`caso_a_pratica.ler`: dia útil em branco
+nas linhas diurnas = trabalho no turno da linha; P = plantão de 12 h; linhas noturnas em branco =
+folga) e as mesmas 21 linhas com registro. Grupos: enfermeiros = 4969 e 5993 (os outros dois, 6118 e
+4798, não têm registro); técnicos noturnos = as linhas noite_A e noite_B sem os enfermeiros (com o
+volante 4309); técnicos diurnos = as linhas "dia" com registro.
+
+| Grupo | Linhas | Maior sequência de dias trabalhados | Violações do máx. de turnos (18) | Pessoas com violação | Pessoas testáveis (sem férias) |
+|---|---:|---:|---:|---:|---:|
+| técnicos diurnos | 10 | **7** (9 pessoas: 28/10–03/11 ou 04/11–10/11) | **59** | 9 | 9 |
+| técnicos noturnos | 9 | **1** | **0** | 0 | 8 |
+| enfermeiros | 2 | **1** | **0** | 0 | 2 |
+| **total** | 21 | — | **59** (= `recontagem_v2.md`) | 9 | 19 |
+
+- A maior sequência é sobre a janela inteira (26/10–25/11), dia a dia; nenhuma das sequências de 7
+  toca a borda do mês ou as férias. Ela não é o critério "máx. dias seguidos" do `recontagem_v2.md`
+  (que usa a leitura C da borda); só mede o comprimento.
+- Máximo de turnos: as violações são o excesso sobre 18, só em quem não teve férias (como no
+  `recontagem_v2.md`); os técnicos diurnos têm de 24 a 26 turnos, os noturnos de 13 a 15, os
+  enfermeiros 15 e 16.
+- Ressalva: contagem nossa sobre a transcrição, não sobre a escala executada; não passou pelo
+  avaliador oficial; a leitura do dia útil em branco é da ficha (premissa da transcrição).
+
+**6. Etapa 2 (equilíbrio, min-max)** — lida dos JSON de `rodadas/` (`provado_etapa2`,
+`amplitude_etapa1`, `amplitude`), em 05/11/2026, sem rodar nada. **O valor por categoria não está no
+JSON:** o "depois" por categoria foi **recalculado** na escala gravada (o campo `escala` do JSON), com
+a função da ferramenta (`ferramenta.por_categoria`; a maior das duas por `ferramenta.max_amplitude`),
+e a maior recalculada é igual à do JSON nas cinco rodadas. **O "antes" por categoria não pode ser
+recalculado:** a escala da etapa 1 não foi gravada (só a maior amplitude dela, `amplitude_etapa1`);
+refazê-la exigiria solver. Amplitude = maior menos menor fração cumprida do contrato dentro da
+categoria, em pontos percentuais.
+
+| Rodada | Quadro | Prova da etapa 2 | Antes (etapa 1): maior | Depois: enfermeiros | Depois: técnicos | Depois: maior (categoria) |
+|---|---:|---|---:|---:|---:|---:|
+| A36_fixo_padrao | 28 (9 + 19) | provada | 54,55 pp | 3,41 pp | 4,55 pp | **4,55 pp** (técnicos) |
+| A36_livre_padrao | 28 (9 + 19) | **sem prova** | 47,73 pp | 3,41 pp | 3,41 pp | **3,41 pp** (empate) |
+| A36_fixo_class1 | 28 (9 + 19) | provada | 40,91 pp | 30,68 pp | 10,23 pp | **30,68 pp** (enfermeiros) |
+| A36_fixo_class2 | 28 (9 + 19) | provada | 27,27 pp | 27,27 pp | 13,64 pp | **27,27 pp** (enfermeiros) |
+| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** A11_fixo_class1 | 23 (4 + 19) | provada | 27,27 pp | 27,27 pp | 3,41 pp | **27,27 pp** (enfermeiros) |
+
+Ressalvas:
+- **sem esperado registrado antes** (o `ESPERADO.md` §6 diz que a etapa 2 não tem esperado);
+- "provada" = ótimo do min-max **com os níveis da etapa 1 fixados** (a penalidade de cada nível presa
+  no valor da etapa 1), não ótimo do equilíbrio sem essa trava;
+- A36_livre_padrao: etapa 2 **sem prova** — a escala é a encontrada no tempo máximo; pode haver uma
+  mais equilibrada;
+- o min-max controla **só a maior** amplitude: a outra categoria não é minimizada (sem desempate) e
+  pode ficar acima do que seria possível;
+- na class2 e no A11 a maior não muda (antes = depois): a escala da etapa 1 já atingia o ótimo do
+  min-max; a escala pode ter mudado, mas não há como dizer, porque a da etapa 1 não foi gravada;
+- uma rodada por configuração.
 
 ## Comportamento computacional: HiGHS × SCIP (22 e 23/10/2026)
 
@@ -635,9 +698,9 @@ com SCIP, não achou escala em 2.979 s (fica a escala da etapa 1). Por caso: **m
 Leitura provisória, sem o B11: o SCIP não perde nada para o HiGHS nos dois casos concluídos e ganha
 um — vai ao Otávio e ao orientador; não há troca automática.
 
-## v1.4.5 — etapa 2 por min-max (30/10/2026), PENDENTE DE APROVAÇÃO
+## v1.4.5 — etapa 2 por min-max (30/10/2026), aprovada pelo Otávio em 05/11/2026
 
-Branch `v1.4.5-minmax`, sem merge nem tag até o ok do Otávio. Decisão: `DECISOES.md`, "2026-10-30 —
+Aprovada pelo Otávio em 05/11/2026; merge e tag `v1.4.5` em 31/10 (commit `634eeb5`). Decisão: `DECISOES.md`, "2026-10-30 —
 Etapa 2 por min-max (v1.4.5)": a etapa 2 passa a minimizar a **maior** amplitude da fração do
 contrato entre as categorias, em vez da soma. Origem: `resultados/v145_2026-10-30/`
 (`suite/tela_9.log`, na suíte; `tela_9_solo.log`, o teste 9 rodado sozinho antes, com o mesmo
@@ -652,4 +715,5 @@ de cada medição está na própria seção. Nenhum desses valores foi refeito c
 |---|---|---|---|
 | maior amplitude **4,55 pp** (técnicos 4,55 pp; enfermeiros 0 pp, não exigido) | critério da etapa 2 no 9c | **conta registrada antes** (`08603c6`; esperado do min-max em `ee73ac9` e `d121b8c`): o piso dos técnicos é 1/22 e a dos enfermeiros pode ser 0, logo o mínimo da maior é 1/22 | com min-max sem desempate, a amplitude dos enfermeiros pode subir até 4,55 pp sem custo; o 0 é o observado, não garantido |
 | **18,2% → 4,5%**, provado | o critério (maior amplitude) cai da etapa 1 para a etapa 2 (9d) | esperado antes: estritamente menor | o 18,2 depende da escala da etapa 1; pela soma, a mesma linha era 36,4 → 4,5 (seção 8) |
+| **Verificação entre versões:** elo v1.4.4 × v1.4.5 — **162 arquivos** de XML e LP da etapa 1 **idênticos**; nos **81** LPs da etapa 2, diferença **só no min-max** (objetivo, variável `amplitude`, restrições `amplitude_constraints`); controle com **4 defeitos plantados, os 4 detectados**. Suíte da v1.4.5: **27 passos, TUDO OK**. Histórico, pela cadeia: elo v1.4.2 × v1.4.4 **243 de 243**; suíte da v1.4.4, **37 passos** (23/10) | que a v1.4.5 resolve o mesmo problema da v1.4.4 na entrada e na etapa 1, e que a etapa 2 só mudou no que a decisão de 30/10 manda | `docs/diagnostico/identidade_v145.py` (lê o LP como conteúdo) e `--controle`; na suíte de 30/10 (`resultados/v145_2026-10-30/suite/resumo.txt`) e **reexecutado em 05/11** com os comandos do Apêndice C v4 (os mesmos que ficaram na v5), em PowerShell, exatamente como estão: "IDENTIDADE V145 OK" e "CONTROLE OK"; elos anteriores em `resultados/cadeia_validacao_2026-10-24.md` | prova a **entrada** do solver, não a saída; nos mesmos 81 casos, classificação padrão; a reexecução de 05/11 não foi versionada (saídas em `%TEMP%`) |
 
