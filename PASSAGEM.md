@@ -6,6 +6,12 @@ Code ao fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
+- **05/11 (noite) — §15c, só transcrição:** na linha "classificação 2 × 1 no 28", a coluna de
+  conferência passou a dizer o que o `RELATORIO.md` registra para A36_fixo_class1 e A36_fixo_class2:
+  avaliador oficial sem violação de dura nas duas e, no descanso medido no relógio, menor 36 h nas
+  duas. Nenhum valor mudou. O NUMEROS foi recopiado para os insumos da escrita, com o MANIFESTO
+  atualizado; o push da escrita é do Otávio.
+
 - **05/11 (tarde) — P1 do `D:\TCC\escrita\ESTADO_TCC_05-11.md` feita, sem solver e sem tocar em `src/`**
   (aprovada pelo Otávio; a Orientação valida). No `resultados/NUMEROS_TCC.md`:
   - §15c, linha do B11: "0 e 1" = 0 no Essencial e 1 no Importante, níveis fundidos (como no JSON);
