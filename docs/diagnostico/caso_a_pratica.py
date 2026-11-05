@@ -206,8 +206,11 @@ def _conta(inst, escala_seg, familias):
     return c
 
 
-def _contagem(pessoas, dias, escala, ferias) -> Counter:
+def _contagem(pessoas, dias, escala, ferias, testaveis: Counter | None = None) -> Counter:
+    """`testaveis` (05/11, so na v2): por familia, quantas ocorrencias a leitura C deixou contar
+    (`_testaveis`)."""
     total = Counter()                 # (familia, pessoa) -> excesso
+    t = Counter() if testaveis is None else testaveis
     ocorrencias = Counter()           # familia -> pessoas com ocorrencia possivel
     for n in pessoas:
         fora = {d for (m, d) in ferias if m == n}
@@ -221,6 +224,9 @@ def _contagem(pessoas, dias, escala, ferias) -> Counter:
             for modo, familias in SEQ_DIAS.items():
                 ij = _janela(b, modo, ini_ferias, fim_ferias)
                 if ij:
+                    contados = [marcas[b[k][0]] for k in range(ij[0], ij[1] + 1)]
+                    t[familias[0]] += sum(contados)                 # blocos de trabalho
+                    t[familias[1]] += len(contados) - sum(contados)  # blocos de folga
                     ini, fim = seg[b[ij[0]][0]], seg[b[ij[1]][1]]
                     janela = {k: v for k, v in esc_seg.items() if ini <= k[1] <= fim}
                     total.update(_conta(_inst([n], ini, fim), janela, familias))
@@ -234,6 +240,7 @@ def _contagem(pessoas, dias, escala, ferias) -> Counter:
             for modo, familias in SEQ_FDS.items():
                 ij = _janela(bf, modo, ini_ferias, fim_ferias) if bf else None
                 if ij:
+                    t[familias[0]] += sum(trab[bf[k][0]] for k in range(ij[0], ij[1] + 1))
                     ini, fim = fdss[bf[ij[0]][0]].datas[0], fdss[bf[ij[1]][1]].datas[-1]
                     janela = {k: v for k, v in esc_seg.items() if ini <= k[1] <= fim}
                     total.update(_conta(_inst([n], ini, fim), janela, familias))
@@ -242,13 +249,32 @@ def _contagem(pessoas, dias, escala, ferias) -> Counter:
                      "identical_shift_types_during_weekend", "two_free_days_after_night_shifts",
                      "noturno_antes_fds")
             total.update(_conta(inst_seg, esc_seg, resto))
+            _testaveis(t, n, seg, esc_seg, fdss, trab)
             if any(sum((n, d) in esc_seg for d in f.datas) == 2 for f in fdss):
                 ocorrencias["fds_dois_dias"] += 1
         # totais de turnos: so quem nao teve ferias
         if not fora:
+            t.update(TOTAIS)
             esc_n = {k: v for k, v in escala.items() if k[0] == n}
             total.update(_conta(_inst([n], dias[0], dias[-1]), esc_n, TOTAIS))
     return total
+
+
+def _testaveis(t: Counter, n, seg, esc_seg, fdss, trab) -> None:
+    """Ocorrencias testaveis no trecho fora das ferias (05/11), para as familias de `resto`: fim de
+    semana com algum dia trabalhado (completo, mesmo turno); trecho com pelo menos 3 fins de semana
+    inteiros (4 semanas, limite 2: com menos, nao ha como passar); fim de semana livre com a sexta
+    no trecho (noturno na vespera); sequencia de noites com os 2 dias seguintes no trecho."""
+    k = sum(trab)
+    t["complete_weekends"] += k
+    t["identical_shift_types_during_weekend"] += k
+    t["max_working_weekends_in_four_weeks"] += len(fdss) >= 3
+    t["noturno_antes_fds"] += sum(1 for f, w in zip(fdss, trab)
+                                  if not w and f.datas[0] - timedelta(days=1) in seg)
+    noites = [esc_seg.get((n, d)) == "N" for d in seg]
+    for a, b in _blocos(noites):
+        if noites[a] and b + 2 < len(seg):
+            t["two_free_days_after_night_shifts"] += 1
 
 
 def _tabela(total, grupo):
@@ -266,6 +292,77 @@ def _tabela(total, grupo):
                       f"({', '.join(f'{g} {k}' for g, k in sorted(grupos.items())) or '—'}) | "
                       f"{ficha} | {'sim' if igual else '**NÃO**'} |")
     return linhas, mudou
+
+
+# --- v2 (05/11; DECISOES.md, "2026-11-04 — Caso A: entrada revista ...") -------------------------
+CSV_V2 = RAIZ / "resultados" / "caso_a_2026-11-04" / "transcricao_anexoB_massens_v2.csv"
+SAIDA_V2 = CSV_V2.parent
+# lado esperado pela classificacao g): o da ficha, com o min. fins de semana seguidos sem evidencia
+FICHA_V2 = {"min_consecutive_working_weekends": "sem evidência"}
+
+
+def _tabela_v2(total, testaveis, grupo):
+    linhas = ["| Critério (limite padrão) | Ocorrências testáveis | Violações (avaliacao.py) | "
+              "Pessoas com violação | Lado | Esperado (classificação g) | Mesmo lado? |",
+              "|---|---:|---:|---:|---|---|---|"]
+    mudou = []
+    for rotulo, fam, ficha in FICHA:
+        por = {n: v for (f, n), v in total.items() if f == fam and v > 0}
+        lado = ("violado" if por else "nunca violado") if testaveis[fam] else "sem evidência"
+        esperado = FICHA_V2.get(fam, "nunca violado" if ficha == "nunca" else ficha)
+        igual = lado == esperado
+        if not igual:
+            mudou.append(rotulo)
+        grupos = Counter(grupo[n] for n in por)
+        linhas.append(f"| {rotulo} | {testaveis[fam]} | {sum(por.values())} | {len(por)} "
+                      f"({', '.join(f'{g} {k}' for g, k in sorted(grupos.items())) or '—'}) | "
+                      f"{lado} | {esperado} | {'sim' if igual else '**NÃO**'} |")
+    return linhas, mudou
+
+
+UNIDADE_TESTAVEL = """O que conta como ocorrência testável (o que a leitura C deixa contar):
+- sequências de dias, de folgas e de fins de semana: os blocos dentro da janela da leitura C (nos de
+  mínimo, sem o primeiro e o último bloco de cada trecho; nos de máximo, sem o bloco que toca as
+  férias); blocos de trabalho nos critérios de trabalho, blocos de folga nos de folga;
+- fim de semana completo e mesmo turno: fins de semana com algum dia trabalhado, fora das férias;
+- fins de semana em 4 semanas (limite 2): trechos com pelo menos 3 fins de semana inteiros;
+- noturno na véspera: fins de semana livres com a sexta no trecho;
+- duas folgas depois de noites: sequências de noites com os 2 dias seguintes no trecho;
+- máximo e mínimo de turnos: pessoas sem férias."""
+
+
+def recontar_v2() -> int:
+    global CSV
+    CSV = CSV_V2
+    pessoas, dias, escala, ferias, grupo, erros, com_registro = ler()
+    if erros:
+        print("PARADO: leitura da transcricao nao fecha com o calendario:", *erros[:10], sep="\n  ")
+        return 1
+    fora = [n for n in pessoas if n not in com_registro]
+    testaveis = Counter()
+    linhas, mudou = _tabela_v2(_contagem(com_registro, dias, escala, ferias, testaveis),
+                               testaveis, grupo)
+    fer = Counter(n for n, _ in ferias)
+    texto = ["# Caso A — recontagem da escala real com a transcrição v2 (05/11/2026)", "",
+             f"Fonte: `{CSV.relative_to(RAIZ).as_posix()}`. É a v1 "
+             "(`resultados/caso_a_pratica_2026-10-23/transcricao_anexoB_massens.csv`) com a faixa "
+             "de férias completa, conferida pelo Otávio na p. 70: o 6137 de 31/10 a 15/11 "
+             f"({fer['6137']} dias) e o 5976 de 15/11 a 25/11 ({fer['5976']} dias). Quinze células "
+             "passaram de branco para FERIAS; nenhuma célula com registro mudou. Janela de 31 dias, "
+             "26/10 a 25/11, como antes. Mesmas leituras, mesma leitura C e mesmas 21 linhas com "
+             f"registro do `recontagem.md` de 26/10 (ficam fora: {', '.join(fora)}). Decisão: "
+             "`DECISOES.md`, \"2026-11-04 — Caso A: entrada revista\". Regra: violado → Não "
+             "considerar; nunca violado, com ocorrência → Importante; sem ocorrência testável → sem "
+             "evidência → padrão.", "", UNIDADE_TESTAVEL, "", *linhas, "",
+             ("**Os lados dão a classificação g)**: o mínimo de fins de semana seguidos fica sem "
+              "evidência (padrão: Não considerar), e o resto fica do mesmo lado da ficha."
+              if not mudou else
+              "**Mudaram de lado além do previsto: " + "; ".join(mudou) + "**. Pela regra fixada "
+              "antes, as rodadas seguem com a classificação g); a mudança vai ao relatório.")]
+    SAIDA_V2.mkdir(parents=True, exist_ok=True)
+    (SAIDA_V2 / "recontagem_v2.md").write_text("\n".join(texto) + "\n", encoding="utf-8")
+    print("\n".join(texto))
+    return 0
 
 
 PERIODO = ("26/10 a 25/11 (ano não impresso na escala; 2018 inferido pelo calendário: os fins de "
@@ -618,6 +715,7 @@ def montar_sem_solver() -> int:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--recontar", action="store_true")
+    ap.add_argument("--v2", action="store_true", help="com --recontar: a transcricao v2 (05/11)")
     ap.add_argument("--rodar", action="store_true")
     ap.add_argument("--rodada", choices=list(RODADAS))
     ap.add_argument("--relatorio", action="store_true")
@@ -632,6 +730,6 @@ if __name__ == "__main__":
                                                            default=str), encoding="utf-8")
         print(f"{a.rodada}: {d['frase']} | {d['tempo_total_s']} s")
         sys.exit(0)
-    sys.exit(recontar() if a.recontar else rodar() if a.rodar else complemento() if a.complemento
+    sys.exit((recontar_v2() if a.v2 else recontar()) if a.recontar else rodar() if a.rodar else complemento() if a.complemento
              else relatorio() if a.relatorio
              else montar_sem_solver() if a.montar else 2)
