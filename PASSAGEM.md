@@ -6,6 +6,19 @@ Code ao fim de cada sessão (dele ou do chat).
 
 ## Onde paramos
 
+- **05/11 — elo de identidade v1.4.4 × v1.4.5 reproduzido pelo Apêndice C v4, sem solver.**
+  - Rodaram os 6 comandos do bloco depois de "A identidade da entrada do solver entre versões"
+    (`D:\TCC\escritapendicespendice-c_v4.md`), **exatamente como estão**: o bloco foi copiado
+    literalmente para um `.ps1` e executado no PowerShell a partir de `D:\dev	cc-nrp`. **A forma
+    não precisou mudar.**
+  - 5º comando: "162 arquivos XML + etapa 1: 162 identicos, 0 diferentes"; "81 LPs da etapa 2: 81
+    com a diferenca restrita ao min-max, 0 fora"; termina em **"IDENTIDADE V145 OK"**.
+  - 6º comando: os 4 defeitos plantados foram pegos; termina em **"CONTROLE OK"**.
+  - Nenhum arquivo versionado da cópia `..	cc-nrp-v144` mudou (`git status` vazio). O único
+    `.pyc` versionado de lá, `resultados/caso_a_2026-10-20/__pycache__/entrada.cpython-311.pyc`,
+    ficou intacto; nada a restaurar.
+  - Saídas em `%TEMP%\id144` e `%TEMP%\id
+ova`, fora do repositório.
 - **05/11 — rodadas da v1.4.5 com a entrada de 04/11: 7 de 7 completas, sem tocar em `src/`.**
   A noite de 04 para 05/11 rodou sem o Otávio. O mestre (`docs/diagnostico/caso_a_v145.py --rodar`)
   rodou de 01:47 a 03:55:58, com código 0 em todas as rodadas e nenhuma PARADA por memória. Só o
