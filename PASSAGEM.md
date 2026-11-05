@@ -6,9 +6,27 @@ Code ao fim de cada sessão (dele ou do chat).
 <!-- INICIO_BLOCO_MANHA -->
 ## PARA O OTÁVIO DE MANHÃ (sessão da noite de 04 para 05/11, sem você)
 
-**Situação às 01:50 de 05/11: as rodadas foram LANÇADAS** pelo script-mestre, desacoplado da
-sessão. Se este bloco não tiver sido atualizado depois, a sessão do Claude Code caiu antes do fim:
-veja o resumo abaixo.
+**Situação às 03:00 de 05/11:** o script-mestre (lançado às 01:47, desacoplado) já fechou **6 das 7
+rodadas, todas como o esperado**; às 03:00 rodava só a última (B11, hipótese de 11 h no caso B, até
+60 min + avaliador). A hipótese de 11 h no caso A admitiu 23, provado; B36: "não há escala legal até
+101", igual a 21/10. O
+vigia da sessão do Claude Code foi encerrado pelo sistema por falta de memória, então **o fim
+(linha "FIM" em `rodadas/resumo.txt`) não foi acompanhado**: confira de manhã.
+
+- **O que deu (detalhe em `resultados/caso_a_2026-11-04/RELATORIO.md`):**
+  - A36, com e sem as linhas: **"Faltam 5; o menor quadro viável é 28"**, igual ao esperado
+    (motivo dom 04 + seg 05/11, 27 contra 22; 9 enf. + 19 téc.); sem violação de dura no avaliador;
+  - classificação 2 × 1 no 28: fins de semana seguidos 0 × 13, quebras das linhas 15 × 2 — as duas
+    direções previstas, **com prova**;
+  - inevitável: só as 19 folgas seguidas (6137 e 5976), atingidas exatamente; o mínimo de turnos
+    chega a 0 na classificação 2 (confirma a divergência registrada no ESPERADO);
+  - enfermeiro em posto de técnico sem linhas: 15, exatamente a cota da conta.
+- **Nada parou** até as 03:00. Rascunho da 15c: `resultados/caso_a_2026-11-04/RASCUNHO_15c.md`
+  (o `NUMEROS_TCC.md` não foi tocado).
+- **Próxima sessão do Claude Code:** completar a §6 do RELATORIO e a última linha do rascunho com
+  o resultado do B11 (`rodadas/resumo.txt`, `rodadas/resultado_automatico.md`), e commitar o que
+  faltou: `git add -f resultados/caso_a_2026-11-04/rodadas resultados/caso_a_2026-11-04/rodadas_mestre.log`
+  (o `-f` é porque `resultados/` está no `.gitignore`).
 
 - **Onde olhar:** `resultados/caso_a_2026-11-04/rodadas/resumo.txt` (uma linha por rodada, com hora,
   código e frase da tela); log do mestre em `resultados/caso_a_2026-11-04/rodadas_mestre.log`; um
@@ -31,7 +49,7 @@ veja o resumo abaixo.
 - **Se alguma rodada ficou PARADA por memória** (às 01:35 havia só 1,3 GB livres; o Chrome usava
   ~4 GB): feche o Chrome e religue só o que faltou (pula o que já tem JSON):
 
-      cd D:\dev	cc-nrp
+      cd D:\dev\tcc-nrp
       $env:RETOMAR = "1"; .\.venv\Scripts\python.exe docs\diagnostico\caso_a_v145.py --rodar
 
 - **Religar a suspensão do Windows** (estava em "nunca" quando a sessão começou; os valores de antes

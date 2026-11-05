@@ -1,0 +1,260 @@
+{
+ "aviso": "regra da ferramenta (36 h depois de turno ≥ 12 h)",
+ "rodada": "B36_livre",
+ "caso": "B",
+ "classificacao": "padrão",
+ "importancia_linhas": null,
+ "n_linhas": 0,
+ "descanso_por_turno": {},
+ "observacao": null,
+ "versao": "v1.4.5-10-g46a7419",
+ "commit": "46a7419b0e787be3054c5b6fbf5fab6745291b17",
+ "src_alterado": false,
+ "diff_src_v145": false,
+ "maquina": {
+  "cpu": "Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz",
+  "ram_gb": "11,8",
+  "sistema": "Windows-10-10.0.26300-SP0",
+  "python": "3.11.9",
+  "solver": "HiGHS 1.15.1 (highspy, via Pyomo 6.10.1 appsi)",
+  "java_memoria": "-Xmx6g",
+  "java_tool_options": "-Duser.timezone=UTC"
+ },
+ "memoria_livre_mb_antes": 3668,
+ "quadro_informado": 89,
+ "enfermeiros": 15,
+ "tecnicos": 74,
+ "orcamento_s": 3600,
+ "piso": 105,
+ "frase": "Não há escala legal até 101 profissionais; o menor quadro viável está acima disso.",
+ "frase_vigente": null,
+ "veredito": "sem_viavel",
+ "menor_viavel": null,
+ "tentativas": [
+  [
+   89,
+   "piso",
+   null,
+   null
+  ],
+  [
+   90,
+   "piso",
+   null,
+   null
+  ],
+  [
+   91,
+   "piso",
+   null,
+   null
+  ],
+  [
+   92,
+   "piso",
+   null,
+   null
+  ],
+  [
+   93,
+   "piso",
+   null,
+   null
+  ],
+  [
+   94,
+   "piso",
+   null,
+   null
+  ],
+  [
+   95,
+   "piso",
+   null,
+   null
+  ],
+  [
+   96,
+   "piso",
+   null,
+   null
+  ],
+  [
+   97,
+   "piso",
+   null,
+   null
+  ],
+  [
+   98,
+   "piso",
+   null,
+   null
+  ],
+  [
+   99,
+   "piso",
+   null,
+   null
+  ],
+  [
+   100,
+   "piso",
+   null,
+   null
+  ],
+  [
+   101,
+   "piso",
+   null,
+   null
+  ]
+ ],
+ "tentativas_detalhe": [
+  {
+   "quadro": 89,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 90,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 91,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 92,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 93,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 94,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 95,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 96,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 97,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 98,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 99,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 100,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  },
+  {
+   "quadro": 101,
+   "status": "piso",
+   "enfermeiros": null,
+   "tecnicos": null,
+   "quem_provou": "conta",
+   "segundos": null
+  }
+ ],
+ "diagnostico": {
+  "motivo": "pares",
+  "titulo": "Dois dias seguidos",
+  "frase": "Uma conta feita antes de procurar a escala já mostra que este número de pessoas não permite escala legal. dom 04/11 e seg 05/11: 65 postos na segunda + 40 no domingo em turnos que impedem a segunda (N, D12: depois deles, o descanso exigido não deixa trabalhar no dia seguinte); são 105 pessoas diferentes, e, descontadas férias e licenças, 89 pessoas estão disponíveis em pelo menos um dos dois dias. Pela conta, faltam pelo menos 16 pessoas."
+ },
+ "provado_etapa1": false,
+ "partes": null,
+ "blocos": null,
+ "caminho": null,
+ "etapa2": null,
+ "provado_etapa2": null,
+ "amplitude_etapa1": null,
+ "amplitude": null,
+ "frase_equilibrio": null,
+ "frases_por_nivel": [],
+ "criterios": [],
+ "descumpridos": [],
+ "alertas_cofen": [
+  "15 enfermeiros em 89 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 30 — grau informado na tela"
+ ],
+ "descanso_ok": null,
+ "tempo_total_s": 0.0,
+ "progresso": [
+  "[    0.0 s] Conferindo as contas de horas e os alertas do COFEN · tempo máximo: 60 min",
+  "[    0.0 s] Quadro informado, 89 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 90 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 91 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 92 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 93 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 94 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 95 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 96 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 97 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 98 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 99 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 100 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] Busca do menor quadro, 101 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min",
+  "[    0.0 s] concluido"
+ ],
+ "erros_pos_solver": [],
+ "pico_memoria_mb": 47
+}

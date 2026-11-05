@@ -1,0 +1,10 @@
+HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA
+HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA
+HIPOTESE_SENSIBILIDADE_A11_fixo_class1: quadro 23 (4 + 19); 33 linhas; classificação 1; 
+[    0.0 s] Conferindo as contas de horas e os alertas do COFEN · tempo máximo: 60 min
+[    0.0 s] Quadro informado, 23 profissionais: procurando uma escala que cumpra a lei (até 3599 s) · tempo máximo: 60 min
+      [prioridades] caminho: em sequência, 2 blocos
+[    8.4 s] Escala encontrada com 23 profissionais; equilibrando a carga entre colegas (até 3591 s) · tempo máximo: 60 min
+[   13.4 s] concluido
+DESCANSO_POR_TURNO ao fim: {}
+[HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA] HIPOTESE_SENSIBILIDADE_A11_fixo_class1: O quadro informado admite escala legal. Escala gerada. | menor viável 23 | avaliador: não | 13 s

@@ -1,0 +1,8 @@
+A36_fixo_class1: quadro 28 (9 + 19); 33 linhas; classificação 1; quadro e composição da rodada 1: 28 (9 + 19), lidos de A36_fixo_padrao
+[    0.0 s] Conferindo as contas de horas e os alertas do COFEN · tempo máximo: 60 min
+[    0.0 s] Quadro informado, 28 profissionais: procurando uma escala que cumpra a lei (até 3599 s) · tempo máximo: 60 min
+      [prioridades] caminho: em sequência, 2 blocos
+[    6.3 s] Escala encontrada com 28 profissionais; equilibrando a carga entre colegas (até 3593 s) · tempo máximo: 60 min
+[   10.8 s] concluido
+DESCANSO_POR_TURNO ao fim: {}
+A36_fixo_class1: O quadro informado admite escala legal. Escala gerada. | menor viável 28 | avaliador: não | 11 s

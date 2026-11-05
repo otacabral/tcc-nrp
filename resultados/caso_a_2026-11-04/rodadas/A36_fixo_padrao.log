@@ -1,0 +1,13 @@
+A36_fixo_padrao: quadro 23 (4 + 19); 33 linhas; classificação padrão; 
+[    0.0 s] Conferindo as contas de horas e os alertas do COFEN · tempo máximo: 60 min
+[    0.0 s] Quadro informado, 23 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 24 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 25 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 26 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 27 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 28 profissionais: procurando uma escala que cumpra a lei (até 3599 s) · tempo máximo: 60 min
+      [prioridades] caminho: em sequência, 2 blocos
+[    5.0 s] Escala encontrada com 28 profissionais; equilibrando a carga entre colegas (até 3594 s) · tempo máximo: 60 min
+[  394.4 s] concluido
+DESCANSO_POR_TURNO ao fim: {}
+A36_fixo_padrao: Faltam 5; o menor quadro viável é 28. Escala gerada. | menor viável 28 | avaliador: não | 394 s

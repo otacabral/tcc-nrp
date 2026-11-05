@@ -1,0 +1,18 @@
+B36_livre: quadro 89 (15 + 74); 0 linhas; classificação padrão; 
+[    0.0 s] Conferindo as contas de horas e os alertas do COFEN · tempo máximo: 60 min
+[    0.0 s] Quadro informado, 89 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 90 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 91 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 92 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 93 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 94 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 95 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 96 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 97 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 98 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 99 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 100 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] Busca do menor quadro, 101 profissionais: pela conta, não basta (sem precisar procurar escala) · tempo máximo: 60 min
+[    0.0 s] concluido
+DESCANSO_POR_TURNO ao fim: {}
+B36_livre: Não há escala legal até 101 profissionais; o menor quadro viável está acima disso. | menor viável None | avaliador: - | 0 s
