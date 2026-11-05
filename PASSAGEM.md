@@ -32,6 +32,13 @@ Code ao fim de cada sessão (dele ou do chat).
   - Na cadeia de validação (`resultados/cadeia_validacao_2026-10-24.md`), o caso A passa a ter
     evidência direta na v1.4.5; as linhas antigas ficam como histórico.
   - O rascunho fica em `resultados/caso_a_2026-11-04/RASCUNHO_15c.md`, marcado como movido.
+  - **Complemento da 15c, aprovado pelo Otávio em 05/11** (sem rodar nada; lido dos JSON e das saídas
+    do avaliador):
+    - por nível e por critério no 28, classificação 1 × 2: Essencial 2 × 0; Importante 45 × 41
+      (enfermeiro em posto de técnico 25 × 22, folgas seguidas 19 × 19, mínimo de turnos 1 × 0);
+      Desejável — × 15; fins de semana seguidos 13 × 0;
+    - a contagem da escala real (`recontagem_v2.md`), com as ocorrências testáveis;
+    - os alertas do COFEN (8 de 23; 10 de 28; 8 turnos sem enfermeiro na demanda).
 - **31/10, sem tocar em `src/`:**
   - a transcrição do Anexo B (Massens) passou a ser versionada em
     `resultados/caso_a_pratica_2026-10-23/transcricao_anexoB_massens.csv`, copiada de
@@ -362,6 +369,11 @@ raiz, um por linha:
     - 9 + 19 não é ótimo de custo;
     - a etapa 2 do A36 sem linhas terminou sem prova;
     - o avaliador oficial rodou em UTC.
+  - Complemento da 15c (05/11), mais três pontos para o texto:
+    - a tabela por nível e por critério;
+    - a contagem da escala real, que é "contagem nossa sobre a transcrição v2, pela reimplementação
+      da penalidade", e não avaliador oficial;
+    - os alertas do COFEN, com a ressalva de que o 9 + 19 vem da busca só acrescentar pessoas.
 
 - **26/10:** (1) Seção 15 aprovada: pode ir ao texto. (2) Escala real: dizer "24 linhas transcritas,
   21 com registro contadas"; as três linhas sem registro (6118, 4798, 6089) ficam fora da contagem,

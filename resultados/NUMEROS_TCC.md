@@ -470,6 +470,72 @@ Anexo B, v1.4.5); elas ficam como histórico (entrada antiga, v1.4.1 e v1.4.4).
 | caso B, 36 h: **não há escala legal até 101** (igual a 15.1) | 89–101 recusados pela conta (105 contra 89) | conta à mão no `ESPERADO.md` §5 | só a janela mudou; o menor viável não foi determinado |
 | **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** com 11 h depois do D12, B (rodízio livre) **admite 89, sem prova** (0 e 1 violação, limite inferior 0); os mesmos valores da v1.4.1 (15.1) | o quanto a regra das 36 h depois do D12 pesa no caso B | avaliador oficial (`-Xmx6g`), sem violação de dura, na própria rodada; descanso no relógio: D12 → 12 h | parâmetro de pesquisa, fora da tela; sem prova no orçamento de 60 min |
 
+
+### 15c — complemento (aprovado pelo Otávio em 05/11/2026)
+
+**Complemento aprovado pelo Otávio em 05/11/2026** (validado pela Orientação). Sem rodar nada:
+os valores foram lidos dos JSON e das saídas do avaliador em `resultados/caso_a_2026-11-04/`.
+Nenhum outro valor do NUMEROS muda.
+
+**1. Por nível e por critério no 28 (9 + 19, turno fixo), classificação 1 × classificação 2**
+(`rodadas/A36_fixo_class1.json`, `rodadas/A36_fixo_class2.json`; todos os níveis provados nas
+duas):
+
+| Nível / critério | Classificação 1 | Classificação 2 | Conferência |
+|---|---:|---:|---|
+| **Essencial** | **2** | **0** | — |
+| **Importante** | **45** | **41** | — |
+| enfermeiro em posto de técnico | 25 | 22 | sem conferência externa: contado pela ferramenta e recontado fora dela (`medir_escala`) |
+| máximo de folgas seguidas (4) | 19 | 19 | avaliador oficial com peso 1 (`*_conferencia_escala_avaliador.txt`): 19 e 19 |
+| mínimo de turnos (10) | 1 | 0 | avaliador oficial com peso 1: 1 e 0 |
+| **Desejável** (linhas "Só este turno") | — | **15** | sem conferência externa: contado pela ferramenta e recontado fora dela, igual pessoa a pessoa |
+| máximo de fins de semana seguidos (3) | 13 | 0 | avaliador oficial com peso 1: 13 e 0 |
+
+- Na classificação 1, as linhas estão no Essencial. Os 2 do Essencial são as 2 quebras das linhas,
+  porque o pedido de folga no dia dá 0.
+- O máximo de fins de semana seguidos não é considerado na classificação 1. Por isso o valor dela
+  (13) vem só da conferência com peso 1.
+- Nota de conferência sobre as linhas: na instância da conferência elas vão ao XML como pedidos de
+  folga de turno (`ShiftOff`). O avaliador conta 2 e 15 em `shift_off_requests`, iguais às quebras.
+  Essa tradução das linhas para o XML é nossa, então compartilha a premissa e não vale como
+  conferência externa.
+
+**2. Contagem da escala real** (`recontagem_v2.md`). É a contagem nossa sobre a transcrição v2
+(leitura C, janela de 31 dias), pela reimplementação da penalidade (`avaliacao.py`), e foi
+registrada antes das rodadas (`5d6888d`). As 21 linhas com registro entram; 6118, 4798 e 6089
+ficam fora.
+
+| Critério (limite padrão) | Violações | Pessoas com violação | Ocorrências testáveis |
+|---|---:|---:|---:|
+| Máx. dias seguidos, preferência (5) | 30 | 9 | 211 |
+| Mín. dias seguidos (3) | 302 | 16 | 188 |
+| Máx. folgas seguidas (4) | 0 | 0 | 208 |
+| Mín. folgas seguidas (3) | 359 | 21 | 190 |
+| Máx. fins de semana seguidos (3) | 26 | 14 | 23 |
+| Mín. fins de semana seguidos (2) | 0 | 0 | 0 (sem evidência) |
+| Fins de semana em 4 semanas (2) | 63 | 19 | 20 |
+| Fim de semana completo | 93 | 21 | 93 |
+| Mesmo turno no fim de semana | 93 | 21 | 93 |
+| Máx. turnos, preferência (18) | 59 | 9 | 19 |
+| Mín. turnos (10) | 0 | 0 | 19 |
+| Noturno na véspera de fim de semana livre | 4 | 4 | 8 |
+| Duas folgas depois de noites | 137 | 11 | 146 |
+
+Ressalva: a contagem é sobre a transcrição, não sobre a escala executada, e não passou pelo
+avaliador oficial. Os lados (violado / nunca violado / sem evidência) dão a classificação g).
+
+**3. Alertas do COFEN nas rodadas** (campo `alertas_cofen` dos JSON):
+
+| Quadro | Alerta da tela |
+|---|---|
+| equipe real de 23 (rodadas padrão e A11) | "4 enfermeiros em 23 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 8 — grau informado na tela" |
+| quadro de 28 (classificações 1 e 2) | "9 enfermeiros em 28 profissionais; o Parecer pede ao menos 33% no grau intermediário, isto é, 10 — grau informado na tela" |
+| todas as rodadas do caso A | "8 turnos sem enfermeiro na demanda (ex.: 03/11 D12, 04/11 D12, 10/11 D12, ...)": os plantões diurnos de fim de semana, com 0 enfermeiros na demanda (decisão d) |
+
+Ressalva: 9 + 19 vem de a busca ter acrescentado as 5 pessoas como enfermeiros. A regra
+`ferramenta.equipe` só acrescenta, então o máximo é 4 + 5 = 9, e a regra pediria 10
+(`ceil(0,33 × 28)`). Por isso o próprio quadro de 28 dispara o alerta.
+
 ## Comportamento computacional: HiGHS × SCIP (22 e 23/10/2026)
 
 **Aprovada pelo Otávio em 23/10/2026**, com a escolha do valor da escala para a rodada de 22/10
