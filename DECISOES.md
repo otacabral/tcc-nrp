@@ -3210,6 +3210,109 @@ declaradas: duração diária do turno e limite semanal de horas").
 
 ---
 
+## 2026-11-04 — Caso A: entrada revista pela leitura independente do Anexo B; rodadas na v1.4.5
+
+**Status: vigente — DESENHO EXPERIMENTAL registrado ANTES de rodar; aprovado pelo Otávio em
+04/11/2026, validado pela Orientação.** É mudança de desenho experimental com o código congelado:
+**tudo roda na v1.4.5 (tag `v1.4.5`, `634eeb5`), e nada em `src/` muda.** A entrada de 20/10
+(`resultados/caso_a_2026-10-20/entrada.py`) e os resultados de 21 e 24/10 ficam como estão, como
+registro do que rodou. Exceção ao congelamento dos números de 25/10, por decisão do Otávio.
+Pedido: `D:\TCC\escrita\plano_noite\PROMPT_CLAUDE_CODE_RODADAS_v145.md`. Entrada nova, esperado e
+resultados em `resultados/caso_a_2026-11-04/`; scripts em `docs/diagnostico/caso_a_v145.py` (as
+rodadas) e `docs/diagnostico/caso_a_pratica.py --recontar --v2` (a recontagem).
+
+**Motivo.** O Capítulo 5 juntava números de três versões (v1.4.1, v1.4.3/`ed621a2` e v1.4.4), e a
+entrada tinha suposições que a própria fonte permite evitar. Uma leitura independente de Massens
+(2019), feita num chat só com o PDF, e a conferência do Otávio na p. 70 levaram às decisões abaixo.
+
+**Decisões:**
+- **(a) Janela real do Anexo B:** 29/10 a 25/11/2018, 28 dias a partir de uma segunda. O Anexo B
+  vai de 26/10 a 25/11; descartam-se 26 a 28/10. Substitui o mês de janeiro de 2027 e as datas
+  supostas das férias. Os feriados de 02/11 e 15/11 (colunas sombreadas em dia útil) ficam **sem
+  ajuste de demanda**, porque o Anexo B não muda nada nessas colunas. A ferramenta aceita 2018
+  (conferido sem solver).
+- **(b) Férias reais, pela faixa cinza** (conferida pelo Otávio na p. 70): o 6137 de 31/10 a
+  15/11; o 5976 de 15/11 até o fim da janela.
+- **(c) Equipe de 23:**
+  - 4 enfermeiros: 6118 (manhã), 4798 (tarde), 4969 e 5993 (noite);
+  - 19 técnicos: manhã 5762, 6262, 5697, 6017 e 6209; tarde 6003, 6052, 6271, 6187 e 6137; noite A
+    4158, 5595, 5976 e 5337; noite B 4178, 5923, 4789 e 3602; e o volante 4309, como técnico de
+    noite.
+  - **O 4309 como técnico tem evidência dividida; é decisão do Otávio.** A favor: na escala do
+    setor ele segue o regime dos técnicos noturnos (folgas de fim de semana, que os enfermeiros
+    noturnos não têm), e a folga do Téc. 17 do Apêndice A (27/10) só aparece no Anexo B na linha
+    dele. Contra: o texto chama de enfermeiros os volantes do hospital (p. 47).
+  - **A linha 6089 sai da equipe:** o horário dela (8–12:30/13:30–17:48) não corresponde a nenhum
+    turno e a linha não tem nenhum registro; o Apêndice A tem 22 pessoas (4 enfermeiros e 18
+    técnicos). A sensibilidade da conta prévia com 22, 23 e 24 cobre as duas linhas.
+  - Os cartões-ponto são usados como nomes.
+- **(d) Demanda:**
+  - dias úteis: manhã 1 enfermeiro + 5 técnicos, tarde 1 + 5, noite 1 + 4, plantão 0 + 0;
+  - fim de semana: manhã 0, tarde 0, noite 1 + 4 e **plantão diurno 0 enfermeiro + 5 técnicos**.
+    O Anexo B não tem enfermeiro no fim de semana; a Tabela 13 tem 2 enfermeiros no fim de semana
+    para os quatro setores.
+  - Turnos como antes: M 7–13, T 13–19, N 19–7, D12 7–19.
+- **(e) Turno fixo para todos com horário na escala:** linhas "Só este turno", sem dia. Cada técnico
+  da manhã tem M e D12, cada técnico da tarde T e D12, cada técnico da noite e o 4309 N, e os
+  enfermeiros 6118 M, 4798 T, 4969 e 5993 N. Total: **33 linhas**. Os acrescentados pela busca não
+  têm linha nem férias.
+- **(f)** Carga de 44 h para todos; grau intermediário (suposição declarada); sem painel de
+  pacientes; sem pedidos de folga.
+- **(g) Classificação 1 (a prática):**
+  - Essencial: as 33 linhas;
+  - Importante: máximo de dias livres seguidos (4), mínimo de turnos (10) e enfermeiro em posto de
+    técnico;
+  - o resto, Não considerar.
+  - **O mínimo de fins de semana seguidos sai do Importante** (revisa a ordem 1 de "2026-10-23 —
+    Caso A"). Na escala real, toda sequência de fins de semana trabalhados toca a borda do mês ou as
+    férias, e pela leitura C nenhuma é contável nos critérios de mínimo. O "nunca violado" de 23/10
+    não tinha ocorrência testável, e a regra de 23/10 manda: sem evidência → padrão.
+  - **Classificação 2:** máximo de fins de semana seguidos (3) no Essencial e as 33 linhas no
+    Desejável; o resto igual à classificação 1.
+
+**Antes de rodar:**
+- **Transcrição revista** (`resultados/caso_a_2026-11-04/transcricao_anexoB_massens_v2.csv`): é a v1
+  com a faixa de férias completa.
+- **Recontagem** pela leitura C, na janela de 31 dias, com o número de ocorrências testáveis de cada
+  critério. Se algum lado mudar além do do mínimo de fins de semana seguidos, a mudança é
+  registrada e vai ao relatório, e as rodadas seguem com a classificação g), porque a regra foi
+  fixada antes.
+- **Esperado sem solver** (`ESPERADO.md`). A bateria HiGHS × SCIP **não é refeita**: a regra de troca
+  de 22/10 não se reabre, o INRC não mudou e a etapa 1 é idêntica na v1.4.5. A seção fica como
+  está, declarada como rodada anterior, com a entrada de 21/10.
+
+**Rodadas, nesta ordem** (orçamento padrão de 60 min por rodada; um processo por rodada; ≥ 3 GB
+livres antes de cada uma, com espera de até 15 min; senão, PARADO registrado e segue para a
+próxima):
+1. A, 36 h, classificação padrão, com as 33 linhas em Essencial (`A36_fixo`) e sem linhas
+   (`A36_livre`). Sem importância preenchida, a ferramenta poria as linhas em Desejável
+   (`prioridades.importancia_padrao`); o "fixo" da fase 2 usava Essencial.
+2. A, 36 h, classificação 1 e classificação 2, no menor quadro e na composição achados na rodada 1.
+   Lidos da saída do `A36_fixo` (se ele não determinar, do `A36_livre`; se nenhum determinar, a
+   rodada 2 é pulada, com registro).
+3. A, **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA** (`DESCANSO_POR_TURNO = {"D12": 11}`),
+   classificação 1, equipe de 23.
+4. Caso B na v1.4.5: B36 (89) e B11 (89, hipótese), mesma entrada de 20/10 com a janela a), e o
+   avaliador oficial em `-Xmx6g`.
+
+**Em toda rodada:**
+- frase da tela, prova por nível, valores por nível e por critério e status da etapa 2;
+- violações das linhas "Só este turno" por profissional;
+- enfermeiro em posto de técnico, separando os 4 da unidade dos acrescentados;
+- avaliador oficial: restrição dura e, por critério, com peso 1 numa instância com os critérios da
+  classificação ligados (no A36 com as linhas, os da classificação 2, que contém os da 1);
+- conferência de descanso no relógio;
+- máquina e solver.
+
+As violações **inevitáveis** (as férias contam como dias livres e não reduzem o mínimo de turnos)
+são separadas das evitáveis, por critério e por pessoa.
+
+**Números** só vão ao `NUMEROS_TCC.md` depois do ok do Otávio, como proposta de seção 15c.
+**Afirmação fraca:** um setor, um mês, uma rodada por classificação; o tempo vale só como limite
+operacional (máquina e solver nomeados).
+
+---
+
 ## Modelo de entrada
 
 ```
