@@ -1,7 +1,8 @@
-# RASCUNHO — proposta de seção 15c do `NUMEROS_TCC.md` (NÃO APROVADO)
+# RASCUNHO da seção 15c — MOVIDO para o `NUMEROS_TCC.md` (aprovada pelo Otávio em 05/11/2026)
 
-> Rascunho de 05/11/2026. **Não está no `NUMEROS_TCC.md`** e não vale como número citável até o
-> ok do Otávio com a Orientação. Cobre as 7 rodadas.
+> **A versão vigente é a do `resultados/NUMEROS_TCC.md`, seção 15c.** Este arquivo fica como
+> registro do rascunho, com os dois acréscimos pedidos na aprovação (cabeçalho e ressalva da etapa 2
+> sem prova no A36_livre_padrao).
 
 ## 15c. Caso A com a entrada de 04/11 (janela real do Anexo B, férias reais) na v1.4.5 (05/11/2026)
 
@@ -10,6 +11,9 @@ a–g) e "2026-11-05 — Limitações declaradas"; `resultados/caso_a_2026-11-04
 `RELATORIO.md` e `rodadas/` na mesma pasta. Versão **v1.4.5** (`src/` idêntico à tag `634eeb5`).
 Comando: `python docs\diagnostico\caso_a_v145.py --rodar`. Orçamento 60 min por rodada; uma rodada
 por configuração.
+
+**Substitui as seções 15.1 e 15.2 como base do texto do caso A** (entrada de 04/11, janela real do
+Anexo B, v1.4.5); elas ficam como histórico (entrada antiga, v1.4.1 e v1.4.4).
 
 **Ressalvas obrigatórias:**
 - janela 29/10–25/11/2018, sem ajuste de demanda nos feriados de 02 e 15/11; equipe de 23 (o 4309
@@ -21,6 +25,8 @@ por configuração.
 - avaliador oficial rodado com o Java em UTC (o horário de verão de 04/11/2018 quebra a contagem de
   dias do avaliador no fuso de São Paulo; saída idêntica nas instâncias antigas com e sem a opção);
 - a penalidade total do avaliador não vai ao texto; vai "sem violação de restrição dura";
+- na rodada sem linhas (A36_livre_padrao), a etapa 2 terminou **sem prova**: o equilíbrio de carga
+  pode melhorar; os níveis de prioridade estão todos provados;
 - 11 h depois do D12 é **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA**.
 
 | Valor | O que mede | Conferência | Ressalva |

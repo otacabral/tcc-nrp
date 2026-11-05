@@ -24,8 +24,14 @@ Code ao fim de cada sessão (dele ou do chat).
   - **B36:** "não há escala legal até 101", igual a 21/10.
   - **Avaliador oficial em UTC**, por causa do horário de verão de 04/11/2018. A nota de 05/11 está
     no DECISOES, entrada "2026-11-04 — Caso A…"; `src/validar.py` não muda.
-  - **Rascunho da 15c:** `resultados/caso_a_2026-11-04/RASCUNHO_15c.md`, **não aprovado**. O
-    `NUMEROS_TCC.md` não foi tocado.
+  - **Seção 15c aprovada pelo Otávio em 05/11** (validada pela Orientação) e movida para o
+    `NUMEROS_TCC.md`, com dois acréscimos: o cabeçalho "substitui a 15.1 e a 15.2 como base do
+    texto do caso A" e a ressalva da etapa 2 sem prova no A36_livre_padrao.
+  - A 15.1 e a 15.2 levam no topo a marca "Histórico: substituída pela 15c". Nenhum outro valor do
+    NUMEROS mudou.
+  - Na cadeia de validação (`resultados/cadeia_validacao_2026-10-24.md`), o caso A passa a ter
+    evidência direta na v1.4.5; as linhas antigas ficam como histórico.
+  - O rascunho fica em `resultados/caso_a_2026-11-04/RASCUNHO_15c.md`, marcado como movido.
 - **31/10, sem tocar em `src/`:**
   - a transcrição do Anexo B (Massens) passou a ser versionada em
     `resultados/caso_a_pratica_2026-10-23/transcricao_anexoB_massens.csv`, copiada de
@@ -121,10 +127,8 @@ Code ao fim de cada sessão (dele ou do chat).
 
 ## Próxima tarefa
 
-**00. Rodadas de 05/11:**
-- o Otávio aprova (ou não) o `RASCUNHO_15c.md` com a Orientação; só então ele vai ao
-  `NUMEROS_TCC.md`;
-- push dos commits de 04–05/11, feito pelo Otávio.
+**00. Rodadas de 05/11:** a 15c foi aprovada e já está no NUMEROS. Falta o push dos commits de
+04–05/11, feito pelo Otávio.
 
 **0. Depois da v1.4.5:**
 - push dos commits de 31/10 (`aebd8d2`, `569a6b3` e este), feito pelo Otávio;
@@ -348,9 +352,16 @@ raiz, um por linha:
 
 ## Pendências com a Redação
 
-- **05/11:** caso A com a entrada de 04/11 (menor quadro 28, e não mais 30). Os números estão
-  pendentes de aprovação (`resultados/caso_a_2026-11-04/RASCUNHO_15c.md`). Até a aprovação, o
-  texto continua com a seção 15 aprovada em 26/10.
+- **05/11:** **a seção 15c do `NUMEROS_TCC.md` (aprovada em 05/11) é a base do texto do caso A.**
+  É a entrada de 04/11, na janela real do Anexo B, na v1.4.5. O caso A agora dá menor quadro 28
+  (faltam 5), e não mais 30.
+  - A 15.1 e a 15.2 viram histórico. O texto que cita 30, 10 + 20, A11 24 ou as duas ordens precisa
+    ser revisto pela 15c.
+  - Ressalvas obrigatórias na própria 15c, entre elas:
+    - 11 h é HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA;
+    - 9 + 19 não é ótimo de custo;
+    - a etapa 2 do A36 sem linhas terminou sem prova;
+    - o avaliador oficial rodou em UTC.
 
 - **26/10:** (1) Seção 15 aprovada: pode ir ao texto. (2) Escala real: dizer "24 linhas transcritas,
   21 com registro contadas"; as três linhas sem registro (6118, 4798, 6089) ficam fora da contagem,
