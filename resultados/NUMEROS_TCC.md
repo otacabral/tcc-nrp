@@ -447,8 +447,9 @@ Anexo B, v1.4.5); elas ficam como histórico (entrada antiga, v1.4.1 e v1.4.4).
 
 **Ressalvas obrigatórias:**
 - janela 29/10–25/11/2018, sem ajuste de demanda nos feriados de 02 e 15/11; equipe de 23 (o 4309
-  como técnico de noite é decisão do Otávio; o 6089 fora); a conta dá o mesmo menor quadro (28) com
-  22, 23 ou 24 (`ESPERADO.md` §2);
+  como técnico de noite é decisão do Otávio; o 6089 fora); a conta dá o mesmo limite inferior pela
+  conta prévia (28) com 22, 23 ou 24 (`ESPERADO.md` §2); só a equipe de 23 foi resolvida; com 1
+  enfermeiro no plantão de fim de semana, a conta dá 29 (`ESPERADO.md` §2);
 - 9 + 19 é a composição da regra `equipe` (33%, grau intermediário), **não ótimo de custo**;
 - limites dos critérios: padrões da ferramenta, não calibrados;
 - tempo só como **limite operacional** (i5-10210U, 11,8 GB, HiGHS 1.15.1 via appsi);
