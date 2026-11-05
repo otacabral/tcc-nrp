@@ -1,7 +1,50 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 31/10/2026. Lido primeiro pelo chat de Orientação; atualizado pelo Claude Code ao
-fim de cada sessão (dele ou do chat).
+Atualizado em 05/11/2026 (madrugada). Lido primeiro pelo chat de Orientação; atualizado pelo Claude
+Code ao fim de cada sessão (dele ou do chat).
+
+<!-- INICIO_BLOCO_MANHA -->
+## PARA O OTÁVIO DE MANHÃ (sessão da noite de 04 para 05/11, sem você)
+
+**Situação às 01:50 de 05/11: as rodadas foram LANÇADAS** pelo script-mestre, desacoplado da
+sessão. Se este bloco não tiver sido atualizado depois, a sessão do Claude Code caiu antes do fim:
+veja o resumo abaixo.
+
+- **Onde olhar:** `resultados/caso_a_2026-11-04/rodadas/resumo.txt` (uma linha por rodada, com hora,
+  código e frase da tela); log do mestre em `resultados/caso_a_2026-11-04/rodadas_mestre.log`; um
+  `.log` e um `.json` por rodada na pasta `rodadas/`; relatório automático em
+  `rodadas/resultado_automatico.md` (escrito no fim, linha "FIM" no resumo).
+- **O que foi feito antes de lançar (commits locais, um por passo):** passo 0 (limitações, `0d62221`);
+  entrada do DECISOES de 04/11 (`f2e1093`); transcrição v2 e recontagem (`5d6888d`: os lados dão a
+  classificação g); entrada nova A e B (`7d467db`); ESPERADO sem solver (`b39dd13`: dom + seg, 27
+  contra 22, menor quadro ≥ 28; com 11 h, 22 contra 22, a conta não recusa o 23); script das
+  rodadas (`34810ad`).
+- **Achado da noite (precisa de você):** o avaliador oficial (Java) **quebra** nesta janela de 2018
+  no fuso do Windows: o horário de verão de 2018 começou em 04/11/2018, e a meia-noite desse dia não
+  existe no fuso de São Paulo. Com o Java em UTC ele roda; nas rodadas antigas (2027) a saída é
+  idêntica byte a byte com e sem a opção. O script usa a opção só no ambiente do processo;
+  `src/validar.py` não mudou. Detalhe no `RELATORIO.md`.
+- **Divergência registrada no ESPERADO §4:** a conta não confirma que 6137 e 5976 violam o mínimo de
+  turnos "em qualquer escala": o 6137 chega a 10 turnos cumprindo as linhas; o 5976 só fica abaixo
+  de 10 se a linha "Só N" for cumprida. Inevitável provado: máximo de folgas seguidas, 12 (6137) + 7
+  (5976).
+- **Se alguma rodada ficou PARADA por memória** (às 01:35 havia só 1,3 GB livres; o Chrome usava
+  ~4 GB): feche o Chrome e religue só o que faltou (pula o que já tem JSON):
+
+      cd D:\dev	cc-nrp
+      $env:RETOMAR = "1"; .\.venv\Scripts\python.exe docs\diagnostico\caso_a_v145.py --rodar
+
+- **Religar a suspensão do Windows** (estava em "nunca" quando a sessão começou; os valores de antes
+  não estavam registrados — estes são os padrões do Windows):
+
+      powercfg /change standby-timeout-ac 30
+      powercfg /change standby-timeout-dc 15
+
+- **Enviar os commits ao GitHub** (manda os commits locais do `main`; nada de tag):
+
+      git push origin main
+
+<!-- FIM_BLOCO_MANHA -->
 
 ## Onde paramos
 
