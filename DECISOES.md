@@ -3311,6 +3311,17 @@ são separadas das evitáveis, por critério e por pessoa.
 **Afirmação fraca:** um setor, um mês, uma rodada por classificação; o tempo vale só como limite
 operacional (máquina e solver nomeados).
 
+**Nota de 05/11/2026 — avaliador oficial em UTC.** Nas rodadas desta entrada, o avaliador oficial
+(Java) rodou com `JAVA_TOOL_OPTIONS=-Duser.timezone=UTC`, posto só no ambiente do script
+(`docs/diagnostico/caso_a_v145.py`).
+- **Motivo:** o horário de verão de 2018 começou à 0 h de 04/11/2018. Essa meia-noite não existe
+  no fuso de São Paulo, e no fuso do Windows a contagem de dias do avaliador perde um dia
+  (`ArrayIndexOutOfBoundsException` em `Schedule.<init>`).
+- **Controle:** nas instâncias de 2027, a saída do avaliador é idêntica byte a byte com e sem a
+  opção (md5 em `A11_fixo_24_ordem1` e `A36_fixo_30_ordem2_conferencia`).
+- **`src/validar.py` não muda:** o código está congelado, e o avaliador é de validação, não do
+  produto.
+
 ---
 
 ## Modelo de entrada

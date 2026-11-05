@@ -1,8 +1,7 @@
 # RASCUNHO — proposta de seção 15c do `NUMEROS_TCC.md` (NÃO APROVADO)
 
-> Rascunho de 05/11/2026 (madrugada). **Não está no `NUMEROS_TCC.md`** e não vale como número
-> citável até o ok do Otávio com a Orientação. Incompleto: as linhas das rodadas 3 (11 h) e 4
-> (caso B) entram quando o `rodadas/resultado_automatico.md` existir.
+> Rascunho de 05/11/2026. **Não está no `NUMEROS_TCC.md`** e não vale como número citável até o
+> ok do Otávio com a Orientação. Cobre as 7 rodadas.
 
 ## 15c. Caso A com a entrada de 04/11 (janela real do Anexo B, férias reais) na v1.4.5 (05/11/2026)
 
@@ -33,4 +32,4 @@ por configuração.
 | violação inevitável só no máximo de folgas seguidas: **19** (6137: 12; 5976: 7), atingida exatamente nas classificações 1 e 2 | o que as férias impõem | conta à mão no `ESPERADO.md` §4 | o mínimo de turnos **não** é inevitável: a classificação 2 dá 0 (5976 à custa da linha "Só N") |
 | **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** com 11 h depois do D12, A (turno fixo, classificação 1) **admite 23, provado**; 14 quebras das linhas no Essencial, 0 enfermeiro em posto de técnico | o quanto a regra das 36 h depois do D12 pesa no quadro (28 × 23) | avaliador oficial, sem violação de dura; descanso no relógio: D12 → 12 h; conta à mão (22 contra 22) | parâmetro de pesquisa, fora da tela |
 | caso B, 36 h: **não há escala legal até 101** (igual a 15.1) | 89–101 recusados pela conta (105 contra 89) | conta à mão no `ESPERADO.md` §5 | só a janela mudou; o menor viável não foi determinado |
-| *(a preencher)* HIPÓTESE DE SENSIBILIDADE, caso B com 11 h | | | |
+| **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** com 11 h depois do D12, B (rodízio livre) **admite 89, sem prova** (0 e 1 violação, limite inferior 0); os mesmos valores da v1.4.1 (15.1) | o quanto a regra das 36 h depois do D12 pesa no caso B | avaliador oficial (`-Xmx6g`), sem violação de dura, na própria rodada; descanso no relógio: D12 → 12 h | parâmetro de pesquisa, fora da tela; sem prova no orçamento de 60 min |

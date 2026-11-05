@@ -1,0 +1,17 @@
+05/11 01:47:00 | INÍCIO (primeira) — {'versao': 'v1.4.5-10-g46a7419', 'commit': '46a7419b0e787be3054c5b6fbf5fab6745291b17', 'src_alterado': False, 'diff_src_v145': False}
+05/11 01:47:00 | A36_fixo_padrao: começando (memória livre 3215 MB)
+05/11 01:53:46 | A36_fixo_padrao: código 0 | 406 s | A36_fixo_padrao: Faltam 5; o menor quadro viável é 28. Escala gerada. | menor viável 28 | avaliador: não | 394 s
+05/11 01:53:46 | A36_livre_padrao: começando (memória livre 3831 MB)
+05/11 02:53:58 | A36_livre_padrao: código 0 | 3613 s | A36_livre_padrao: Faltam 5; o menor quadro viável é 28. Escala gerada. | menor viável 28 | avaliador: não | 3601 s
+05/11 02:53:58 | A36_fixo_class1: começando (memória livre 3707 MB)
+05/11 02:54:21 | A36_fixo_class1: código 0 | 23 s | A36_fixo_class1: O quadro informado admite escala legal. Escala gerada. | menor viável 28 | avaliador: não | 11 s
+05/11 02:54:22 | A36_fixo_class2: começando (memória livre 3777 MB)
+05/11 02:55:10 | A36_fixo_class2: código 0 | 48 s | A36_fixo_class2: O quadro informado admite escala legal. Escala gerada. | menor viável 28 | avaliador: não | 37 s
+05/11 02:55:10 | HIPOTESE_SENSIBILIDADE_A11_fixo_class1: começando (memória livre 3511 MB)
+05/11 02:55:34 | HIPOTESE_SENSIBILIDADE_A11_fixo_class1: código 0 | 24 s | [HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA] HIPOTESE_SENSIBILIDADE_A11_fixo_class1: O quadro informado admite escala legal. Escala gerada. | menor viável 23 | avaliador: não | 13 s
+05/11 02:55:34 | B36_livre: começando (memória livre 3684 MB)
+05/11 02:55:36 | B36_livre: código 0 | 3 s | B36_livre: Não há escala legal até 101 profissionais; o menor quadro viável está acima disso. | menor viável None | avaliador: - | 0 s
+05/11 02:55:36 | HIPOTESE_SENSIBILIDADE_B11_livre: começando (memória livre 3696 MB)
+05/11 03:55:58 | HIPOTESE_SENSIBILIDADE_B11_livre: código 0 | 3621 s | [HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA] HIPOTESE_SENSIBILIDADE_B11_livre: O quadro informado admite escala legal. Escala gerada; pode haver uma melhor. | menor viável 89 | avaliador: não | 3602 s
+05/11 03:55:58 | relatório automático escrito (rodadas/resultado_automatico.md)
+05/11 03:55:58 | FIM

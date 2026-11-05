@@ -12,10 +12,10 @@ confere e grava `src_alterado: false`, `diff_src_v145: false` em cada JSON). Res
 11,8 GB, Windows 11, Python 3.11.9, HiGHS 1.15.1 (highspy, via Pyomo 6.10.1 appsi); avaliador
 oficial em Java com `-Xmx6g` e `-Duser.timezone=UTC` (ver §0). Orçamento da tela: 60 min por rodada.
 
-**Estado deste relatório:** escrito às ~03:00 de 05/11, com 6 das 7 rodadas completas. Só a última
-(B11, hipótese de 11 h no caso B) ainda rodava: ver §6. O vigia em segundo plano da sessão
-foi encerrado pelo Claude Code por falta de memória da máquina, sem afetar o mestre, que segue
-desacoplado.
+**Estado deste relatório:** **7 de 7 rodadas completas**, código 0 em todas, nenhuma PARADA por
+memória. O mestre escreveu "FIM" às 03:55:58 de 05/11. Só o vigia em segundo plano da sessão do
+Claude Code caiu, encerrado pelo sistema por falta de memória da máquina. O mestre rodava
+desacoplado e não foi afetado.
 
 ## 0. Achado: o avaliador oficial quebra nesta janela de 2018 (horário de verão)
 
@@ -136,15 +136,29 @@ os critérios da classificação 1 para a A11). Quebras recontadas fora da ferra
 - **B36_livre:** **"Não há escala legal até 101 profissionais; o menor quadro viável está acima
   disso."**, as 13 tentativas pela conta, 3 s, sem solver ✔ (igual ao esperado e a 21/10). Sem
   escala, sem avaliador.
-- **HIPOTESE_SENSIBILIDADE_B11_livre** (HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA):
-  começou às 02:55:36 e **ainda rodava quando este relatório foi escrito**; sem esperado; avaliador
-  com `-Xmx6g`. O resultado fica em `rodadas/resumo.txt`, `rodadas/HIPOTESE_SENSIBILIDADE_B11_livre.json`
-  e `rodadas/resultado_automatico.md`. **Próxima sessão:** completar esta linha.
+- **HIPOTESE_SENSIBILIDADE_B11_livre** (HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA), sem
+  esperado (`ESPERADO.md` §5: a conta não recusa o 89; piso 68):
+
+| | v1.4.5 (05/11, esta rodada) | v1.4.1 (21/10, `NUMEROS_TCC.md` 15.1) |
+|---|---|---|
+| Frase | **"O quadro informado admite escala legal. Escala gerada; pode haver uma melhor."** | "… Escala gerada; pode haver uma melhor (gap 100,0%…)." |
+| Quadro | 89 (15 enf. + 74 téc.) | 89 (15 + 74) |
+| Essencial + Importante (fundido) | **0 e 1**, **sem prova** (limite inferior 0; gap 100%) | 0 e 1, sem prova (gap 100%) |
+| Etapa 2 | ok, sem prova ("pode haver uma escala mais equilibrada") | — (etapa 2 pela soma, na v1.4.1) |
+| Avaliador oficial (`-Xmx6g`) | **sem violação de dura**, na própria rodada | sem violação de dura, só na reconferência com `-Xmx6g` (na rodada, sem memória) |
+| Descanso no relógio | D12 → 12 h, N → 36 h | D12 → 12 h |
+| Tempo (operacional) | 3.602 s (etapa 1 até o limite de 1.800 s) | 3.602 s |
+
+  **Mesmos valores da v1.4.1, e de novo sem prova.** A única violação no Importante é 1 turno de
+  enfermeiro em posto de técnico. O limite inferior que o solver tem é 0, então a prova não fecha
+  neste orçamento. Rodada sem as 33 linhas e sem contagem por critério com peso 1 (só o caso A
+  tem conferência por classificação).
 
 ## 7. Dúvidas e escolhas (leitura conservadora)
 
 - Vigia do Claude Code encerrado por memória: não religado (o próprio Claude Code pede para não
-  religar sozinho); o mestre não depende dele.
+  religar sozinho). O mestre não depende dele e chegou ao FIM.
+- Avaliador em UTC: nota no `DECISOES.md`, entrada "2026-11-04 — Caso A…", de 05/11.
 - Os números da §1–§3 **não vão ao `NUMEROS_TCC.md`**: ficam no rascunho `RASCUNHO_15c.md`, pendente
   do ok do Otávio.
 - A penalidade total do avaliador não vai ao texto (pesos do INRC gravados no XML); vai "sem

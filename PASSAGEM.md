@@ -1,71 +1,31 @@
 # PASSAGEM — Orientação (ferramenta)
 
-Atualizado em 05/11/2026 (madrugada). Lido primeiro pelo chat de Orientação; atualizado pelo Claude
+Atualizado em 05/11/2026 (fechamento das rodadas da v1.4.5). Lido primeiro pelo chat de Orientação; atualizado pelo Claude
 Code ao fim de cada sessão (dele ou do chat).
 
-<!-- INICIO_BLOCO_MANHA -->
-## PARA O OTÁVIO DE MANHÃ (sessão da noite de 04 para 05/11, sem você)
-
-**Situação às 03:00 de 05/11:** o script-mestre (lançado às 01:47, desacoplado) já fechou **6 das 7
-rodadas, todas como o esperado**; às 03:00 rodava só a última (B11, hipótese de 11 h no caso B, até
-60 min + avaliador). A hipótese de 11 h no caso A admitiu 23, provado; B36: "não há escala legal até
-101", igual a 21/10. O
-vigia da sessão do Claude Code foi encerrado pelo sistema por falta de memória, então **o fim
-(linha "FIM" em `rodadas/resumo.txt`) não foi acompanhado**: confira de manhã.
-
-- **O que deu (detalhe em `resultados/caso_a_2026-11-04/RELATORIO.md`):**
-  - A36, com e sem as linhas: **"Faltam 5; o menor quadro viável é 28"**, igual ao esperado
-    (motivo dom 04 + seg 05/11, 27 contra 22; 9 enf. + 19 téc.); sem violação de dura no avaliador;
-  - classificação 2 × 1 no 28: fins de semana seguidos 0 × 13, quebras das linhas 15 × 2 — as duas
-    direções previstas, **com prova**;
-  - inevitável: só as 19 folgas seguidas (6137 e 5976), atingidas exatamente; o mínimo de turnos
-    chega a 0 na classificação 2 (confirma a divergência registrada no ESPERADO);
-  - enfermeiro em posto de técnico sem linhas: 15, exatamente a cota da conta.
-- **Nada parou** até as 03:00. Rascunho da 15c: `resultados/caso_a_2026-11-04/RASCUNHO_15c.md`
-  (o `NUMEROS_TCC.md` não foi tocado).
-- **Próxima sessão do Claude Code:** completar a §6 do RELATORIO e a última linha do rascunho com
-  o resultado do B11 (`rodadas/resumo.txt`, `rodadas/resultado_automatico.md`), e commitar o que
-  faltou: `git add -f resultados/caso_a_2026-11-04/rodadas resultados/caso_a_2026-11-04/rodadas_mestre.log`
-  (o `-f` é porque `resultados/` está no `.gitignore`).
-
-- **Onde olhar:** `resultados/caso_a_2026-11-04/rodadas/resumo.txt` (uma linha por rodada, com hora,
-  código e frase da tela); log do mestre em `resultados/caso_a_2026-11-04/rodadas_mestre.log`; um
-  `.log` e um `.json` por rodada na pasta `rodadas/`; relatório automático em
-  `rodadas/resultado_automatico.md` (escrito no fim, linha "FIM" no resumo).
-- **O que foi feito antes de lançar (commits locais, um por passo):** passo 0 (limitações, `0d62221`);
-  entrada do DECISOES de 04/11 (`f2e1093`); transcrição v2 e recontagem (`5d6888d`: os lados dão a
-  classificação g); entrada nova A e B (`7d467db`); ESPERADO sem solver (`b39dd13`: dom + seg, 27
-  contra 22, menor quadro ≥ 28; com 11 h, 22 contra 22, a conta não recusa o 23); script das
-  rodadas (`34810ad`).
-- **Achado da noite (precisa de você):** o avaliador oficial (Java) **quebra** nesta janela de 2018
-  no fuso do Windows: o horário de verão de 2018 começou em 04/11/2018, e a meia-noite desse dia não
-  existe no fuso de São Paulo. Com o Java em UTC ele roda; nas rodadas antigas (2027) a saída é
-  idêntica byte a byte com e sem a opção. O script usa a opção só no ambiente do processo;
-  `src/validar.py` não mudou. Detalhe no `RELATORIO.md`.
-- **Divergência registrada no ESPERADO §4:** a conta não confirma que 6137 e 5976 violam o mínimo de
-  turnos "em qualquer escala": o 6137 chega a 10 turnos cumprindo as linhas; o 5976 só fica abaixo
-  de 10 se a linha "Só N" for cumprida. Inevitável provado: máximo de folgas seguidas, 12 (6137) + 7
-  (5976).
-- **Se alguma rodada ficou PARADA por memória** (às 01:35 havia só 1,3 GB livres; o Chrome usava
-  ~4 GB): feche o Chrome e religue só o que faltou (pula o que já tem JSON):
-
-      cd D:\dev\tcc-nrp
-      $env:RETOMAR = "1"; .\.venv\Scripts\python.exe docs\diagnostico\caso_a_v145.py --rodar
-
-- **Religar a suspensão do Windows** (estava em "nunca" quando a sessão começou; os valores de antes
-  não estavam registrados — estes são os padrões do Windows):
-
-      powercfg /change standby-timeout-ac 30
-      powercfg /change standby-timeout-dc 15
-
-- **Enviar os commits ao GitHub** (manda os commits locais do `main`; nada de tag):
-
-      git push origin main
-
-<!-- FIM_BLOCO_MANHA -->
 
 ## Onde paramos
 
+- **05/11 — rodadas da v1.4.5 com a entrada de 04/11: 7 de 7 completas, sem tocar em `src/`.**
+  A noite de 04 para 05/11 rodou sem o Otávio. O mestre (`docs/diagnostico/caso_a_v145.py --rodar`)
+  rodou de 01:47 a 03:55:58, com código 0 em todas as rodadas e nenhuma PARADA por memória. Só o
+  vigia da sessão do Claude Code caiu por memória. Relatório: `resultados/caso_a_2026-11-04/RELATORIO.md`;
+  brutos em `rodadas/` (com `resumo.txt`, `resultado_automatico.md`) e `rodadas_mestre.log`.
+  - **Caso A, 36 h:** com e sem as 33 linhas, **"Faltam 5; o menor quadro viável é 28"**, igual ao
+    `ESPERADO.md`. O motivo é o par dom 04 + seg 05/11 (27 contra 22); a composição, 9 enf. + 19 téc.
+    O avaliador não acusou violação de dura.
+  - **Classificação 2 × 1, no 28:** fins de semana seguidos 0 × 13; quebras das linhas 15 × 2. As
+    duas direções saíram como previstas, com prova em todos os níveis.
+  - **Inevitável:** só as 19 folgas seguidas (12 do 6137, 7 do 5976), atingidas exatamente. O
+    mínimo de turnos chega a 0, o que confirma a divergência do ESPERADO §4.
+  - **Enfermeiro em posto de técnico, sem linhas:** 15, exatamente a cota da conta.
+  - **HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA:** A11 admite 23, provado; B11 admite 89,
+    sem prova (0 e 1 violação, os mesmos valores da v1.4.1).
+  - **B36:** "não há escala legal até 101", igual a 21/10.
+  - **Avaliador oficial em UTC**, por causa do horário de verão de 04/11/2018. A nota de 05/11 está
+    no DECISOES, entrada "2026-11-04 — Caso A…"; `src/validar.py` não muda.
+  - **Rascunho da 15c:** `resultados/caso_a_2026-11-04/RASCUNHO_15c.md`, **não aprovado**. O
+    `NUMEROS_TCC.md` não foi tocado.
 - **31/10, sem tocar em `src/`:**
   - a transcrição do Anexo B (Massens) passou a ser versionada em
     `resultados/caso_a_pratica_2026-10-23/transcricao_anexoB_massens.csv`, copiada de
@@ -160,6 +120,11 @@ vigia da sessão do Claude Code foi encerrado pelo sistema por falta de memória
     feitas (sem solver depois de 24/10).
 
 ## Próxima tarefa
+
+**00. Rodadas de 05/11:**
+- o Otávio aprova (ou não) o `RASCUNHO_15c.md` com a Orientação; só então ele vai ao
+  `NUMEROS_TCC.md`;
+- push dos commits de 04–05/11, feito pelo Otávio.
 
 **0. Depois da v1.4.5:**
 - push dos commits de 31/10 (`aebd8d2`, `569a6b3` e este), feito pelo Otávio;
@@ -382,6 +347,10 @@ raiz, um por linha:
   - congelamento dos números em 16/10.
 
 ## Pendências com a Redação
+
+- **05/11:** caso A com a entrada de 04/11 (menor quadro 28, e não mais 30). Os números estão
+  pendentes de aprovação (`resultados/caso_a_2026-11-04/RASCUNHO_15c.md`). Até a aprovação, o
+  texto continua com a seção 15 aprovada em 26/10.
 
 - **26/10:** (1) Seção 15 aprovada: pode ir ao texto. (2) Escala real: dizer "24 linhas transcritas,
   21 com registro contadas"; as três linhas sem registro (6118, 4798, 6089) ficam fora da contagem,

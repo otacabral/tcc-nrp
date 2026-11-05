@@ -1,0 +1,14 @@
+HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA
+HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA
+HIPOTESE_SENSIBILIDADE_B11_livre: quadro 89 (15 + 74); 0 linhas; classificação padrão; 
+[    0.0 s] Conferindo as contas de horas e os alertas do COFEN · tempo máximo: 60 min
+[    0.0 s] Quadro informado, 89 profissionais: procurando uma escala que cumpra a lei (até 3599 s) · tempo máximo: 60 min
+      [prioridades] caminho: fundido
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+[ 1803.9 s] Escala encontrada com 89 profissionais; equilibrando a carga entre colegas (até 1796 s) · tempo máximo: 60 min
+WARNING: Loading a SolverResults object with an 'aborted' status, but
+containing a solution
+[ 3602.5 s] concluido
+DESCANSO_POR_TURNO ao fim: {}
+[HIPÓTESE DE SENSIBILIDADE — NÃO REGRA DA FERRAMENTA] HIPOTESE_SENSIBILIDADE_B11_livre: O quadro informado admite escala legal. Escala gerada; pode haver uma melhor. | menor viável 89 | avaliador: não | 3602 s
